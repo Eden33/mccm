@@ -1,0 +1,11 @@
+/* 
+Theme Name: MCCM
+Author: Gopp Eduard
+Description: MCCM Theme based on twentyeleven
+Template: twentyeleven
+Version: 1.0.0
+*/
+
+@import url("../twentyeleven/style.css");
+
+.hentry { padding: 0px !important; }
