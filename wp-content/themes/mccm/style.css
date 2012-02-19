@@ -6,6 +6,31 @@ Template: twentyeleven
 Version: 1.0.0
 */
 
+/* green web color #336633 */
+
 @import url("../twentyeleven/style.css");
 
 .hentry { padding: 0px !important; }
+.entry-title { font-size: 30px !important; line-height: 30px !important; }
+.reg-fs-driver { 
+	border: 1px solid #000;
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+}
+.reg-fs-model {
+	border: 1px solid #000;
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+}
+.reg-fs-driver, .reg-fs-model > legend { font-weight: bold; }
+.reg-table { border: none !important; padding-left: 5px; }
+.reg-table > tbody > tr > td {  border: none !important; margin: 0px !important; padding: 0px !important; }
+.reg-td-first { width: 20%; }
+.reg-input { padding: 0px !important; }
+.reg-caution-head { margin: 12px 0px; color: #f00; font-style: italic; }
+.reg-caution-text { margin-bottom: 12px; font-style: italic; }
+.reg-submit-btn { margin-top: 12px; }
+
+

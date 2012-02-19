@@ -78,7 +78,11 @@ define('WPLANG', 'de_DE');
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', false);
+define('WP_DEBUG', true); // false
+//next three lines added by edi
+@ini_set('log_errors','On');
+@ini_set('display_errors','Off');
+@ini_set('error_log','c:/wamp/logs/php_error.log');
 
 /* That's all, stop editing! Happy blogging. */
 

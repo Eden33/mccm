@@ -439,6 +439,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 	try {
 		$phpmailer->Send();
 	} catch ( phpmailerException $e ) {
+		//comment @edi - if no mail server available, normally we will end up here
 		return false;
 	}
 

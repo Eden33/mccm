@@ -521,6 +521,14 @@ class PHPMailer {
    * @access public
    */
   public static function ValidateAddress($address) {
+  	
+	//next condition added by edi
+	//postmaster@localhost will not pass validation otherwise
+  	if( defined( 'WP_DEBUG') ) {
+		//postmaster@localhost will not pass
+  		return true;
+  	}
+  	
     if (function_exists('filter_var')) { //Introduced in PHP 5.2
       if(filter_var($address, FILTER_VALIDATE_EMAIL) === FALSE) {
         return false;
