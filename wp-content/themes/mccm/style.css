@@ -6,14 +6,33 @@ Template: twentyeleven
 Version: 1.0.0
 */
 
-/* green web color #336633 */
-
 @import url("../twentyeleven/style.css");
-#page { margin: 0em auto !important }
 
+/* common */
 .hentry { padding: 0px !important; }
 .entry-title { font-size: 30px !important; line-height: 30px !important; }
+#page { margin: 0em auto !important }
+/* .mccm-coloring { color: #9eae94; } */
+.mccm-coloring { color: #336633; }
+.mccm-list-style { list-style-type: disc; }
 
+/* @see detected render bugs */
+.entry-content img { max-width: 900px !important; }
+
+ .clearfix:after {
+ content:".";
+ display:block;
+ height:0;
+ clear:both;
+ visibility:hidden;
+ }
+ .clearfix {display:inline-block;}
+ /* Hide from IE Mac \*/
+ .clearfix {display:block;}
+ /* End hide from IE Mac */
+
+
+/* all driver registration pages  */
 .reg-fs-driver { border: 1px solid #000; margin: 5px; padding: 5px; width: 100%; }
 .reg-fs-model { border: 1px solid #000; margin: 5px; padding: 5px; width: 100%; }
 .reg-fs-driver, .reg-fs-model > legend { font-weight: bold; }
@@ -25,12 +44,43 @@ Version: 1.0.0
 .reg-caution-text { margin-bottom: 12px; font-style: italic; }
 .reg-submit-btn { margin-top: 12px; }
 
+/* page rennergebnisse */
 .race-results-div{ clear: both; }
 
-/* footer background */
-#site-generator { background-color: #9eae94; }
-
-.mccm-coloring { color: #9eae94; }
-
+/* page eintrittspreise, vorstand, mitglieder */
 .no-border-table { border: none! important; }
 .no-border-table tbody > tr > td { border: none !important; }
+
+/* page kontakt */
+.medium-padding-table > tbody > tr > td { padding: 0px 2px 0px 2px; }
+#kontakt-table > tbody { vertical-align: top; }
+#kontakt-table > tbody > tr { vertical-align: top; }
+#kontakt-table > tbody > tr > td { vertical-align: top; }
+
+/* page vorstand */
+.management-table tbody > tr > td > a { font-size: 11px !important; }
+.management-table tbody > tr > td > a > img { padding: 0px !important; margin-right: 8px !important; }
+.management-info { vertical-align: bottom !important; padding-bottom: 1.625em !important; }
+
+/* page mitglieder */
+.member-overview { width: 220px; overflow: hidden; }
+.member-overview > span { float: right; font-weight: bold; display: inline;  }
+.member-table tbody > tr > td > span { font-weight: bold; }
+
+/* page history */
+.history-left-div { min-width: 90px; float: left; display: inline-block; }
+.history-right-div { width: 479px; float: right; }
+.history-right-div:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow: hidden; }
+.floating-hr { clear: both; float: left; margin: 0.9em 0em; width: 100%; }
+.div-head { margin-bottom: 0.6em; float: left; width: 100%; }
+
+/* footer override */
+#mccm-site-generator { background-color: #000; color: #FFF; padding: 1.5em 0.0em 0.6em 0em; font-size: 12px; };
+#mccm-site-generator > ul { display: block; }
+#mccm-site-generator > ul > li { float: left; padding: 0em 0em 0em 1em; list-style: none; }
+
+
+/* detected render bugs: 
+- IE 8 -> zeitungsartikel - fixed in common css section
+- IE 8 -> img kontakt - fixed in common css section
+- IE 7 -> mitglieder */

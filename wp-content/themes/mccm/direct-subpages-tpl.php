@@ -1,11 +1,14 @@
 <?php
 /**
- * Takes presendence over page.php.
- * Introduced for testing purposes ... will be obsolete in future commits.
+ * Template for displaying direct sub pages in list form.
+ * Used at the moment from "Verein", "Rennen" and "Archiv" page.
+ * 
+ * Template Name: Direct Subpages list
  */
+?>
 
+<?php
 get_header(); ?>
-
 		<div id="primary">
 			<div id="content" role="main">
 				<?php while ( have_posts() ) : the_post(); ?>
@@ -13,9 +16,9 @@ get_header(); ?>
 					<?php get_template_part( 'content', 'page' ); ?>
 
 					<?php
-					  $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0');
+					  $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0&depth=1');
 					  if ($children) { ?>
-					  <ul>
+					  <ul class="mccm-list-style">
 					  <?php echo $children; ?>
 					  </ul>
 					<?php } ?>
