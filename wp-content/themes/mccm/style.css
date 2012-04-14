@@ -30,6 +30,10 @@ Version: 1.0.0
  /* Hide from IE Mac \*/
  .clearfix {display:block;}
  /* End hide from IE Mac */
+ 
+ /* registration flash counter */
+ #reg-counter-div { display: none; }
+ #mccm_countdown { position: absolute; right: 2%; top: 290px; max-width: 280px; }
 
 
 /* all driver registration pages  */
@@ -67,12 +71,45 @@ Version: 1.0.0
 .member-overview > span { float: right; font-weight: bold; display: inline;  }
 .member-table tbody > tr > td > span { font-weight: bold; }
 
-/* page history */
-.history-left-div { min-width: 90px; float: left; display: inline-block; }
+/* page history, links */
+.history-left-div { width: 90px; float: left; display: inline-block; }
 .history-right-div { width: 479px; float: right; }
 .history-right-div:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow: hidden; }
 .floating-hr { clear: both; float: left; margin: 0.9em 0em; width: 100%; }
 .div-head { margin-bottom: 0.6em; float: left; width: 100%; }
+
+/* page links */
+.link-box { margin-bottom: 15px; }
+.history-left-div > a { display: block; width: 100%; height: 100%; }
+#link-sport2 { background: url(../../uploads/2012/02/sport2.gif) no-repeat; background-position: right; height: 45px; }
+#link-sidecar-mx { background: url(../../uploads/2012/02/sidecar.gif) no-repeat; background-position: right; height: 50px; }
+#link-sidecar-mx:hover { background: url(../../uploads/2012/02/sidecar2.gif) no-repeat scroll right; }
+#link-sam{ background: url(../../uploads/2012/02/sam.gif) no-repeat; background-position: right; height: 50px; }
+#link-sam:hover { background: url(../../uploads/2012/02/sam2.gif) no-repeat scroll right; }
+#link-mft{ background: url(../../uploads/2012/02/mft.gif) no-repeat; background-position: right; height: 50px; }
+#link-mft:hover { background: url(../../uploads/2012/02/mft2.gif) no-repeat scroll right; }
+#link-moeggers{ background: url(../../uploads/2012/02/moeggers.gif) no-repeat; background-position: right; height: 50px; }
+#link-moeggers:hover { background: url(../../uploads/2012/02/moeggers2.gif) no-repeat scroll right; }
+#link-dornbirn{ background: url(../../uploads/2012/02/mccd.gif) no-repeat; background-position: right; height: 50px; }
+#link-dornbirn:hover { background: url(../../uploads/2012/02/mccd2.gif) no-repeat scroll right; }
+#link-drivers-mc{ background: url(../../uploads/2012/02/dmc.gif) no-repeat; background-position: right; height: 50px; }
+#link-drivers-mc:hover { background: url(../../uploads/2012/02/dmc2.gif) no-repeat scroll right; }
+#link-mcc-bw{ background: url(../../uploads/2012/02/mcb.gif) no-repeat; background-position: right; height: 50px; }
+#link-mcc-bw:hover { background: url(../../uploads/2012/02/mcb2.gif) no-repeat scroll right; }
+#link-omcs{ background: url(../../uploads/2012/02/omcs.gif) no-repeat; background-position: right; height: 50px; }
+#link-omcs:hover { background: url(../../uploads/2012/02/omcs2.gif) no-repeat scroll right; }
+#link-mcc-tr{ background: url(../../uploads/2012/02/mcct.gif) no-repeat; background-position: right; height: 50px; }
+#link-mcc-tr:hover { background: url(../../uploads/2012/02/mcct2.gif) no-repeat scroll right; }
+#link-sjmcc { background: url(../../uploads/2012/02/sjmcc.gif) no-repeat; background-position: right; height: 50px; }
+#link-sjmcc:hover { background: url(../../uploads/2012/02/sjmcc2.gif) no-repeat scroll right; }
+#link-mahmutovic { background: url(../../uploads/2012/02/md.gif) no-repeat; background-position: right; height: 50px; }
+#link-mahmutovic:hover { background: url(../../uploads/2012/02/md2.gif) no-repeat scroll right; }
+#link-noto { background: url(../../uploads/2012/02/noto.gif) no-repeat; background-position: right; height: 50px; }
+#link-noto:hover { background: url(../../uploads/2012/02/noto2.gif) no-repeat scroll right; }
+
+/* page sponsoren */
+#sponsors-div > a > img { padding: 0px !important; margin-right: 8px !important; }
+#sponsors-div > img { padding: 0px !important; margin-right: 8px !important; }
 
 /* footer override */
 #mccm-site-generator { background-color: #000; color: #FFF; padding: 1.5em 0.0em 0.6em 0em; font-size: 12px; };
@@ -83,4 +120,5 @@ Version: 1.0.0
 /* detected render bugs: 
 - IE 8 -> zeitungsartikel - fixed in common css section
 - IE 8 -> img kontakt - fixed in common css section
-- IE 7 -> mitglieder */
+- IE 7 -> mitglieder 
+- IE 7 -> horizontal navigation white gap at the top */

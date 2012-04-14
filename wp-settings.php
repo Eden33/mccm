@@ -32,9 +32,10 @@ wp_check_php_mysql_versions();
 @ini_set( 'magic_quotes_runtime', 0 );
 @ini_set( 'magic_quotes_sybase',  0 );
 
+//default timezone changed by edi from utc to Europe/Berlin
 // Set default timezone in PHP 5.
 if ( function_exists( 'date_default_timezone_set' ) )
-	date_default_timezone_set( 'UTC' );
+	date_default_timezone_set( 'Europe/Berlin' );
 
 // Turn register_globals off.
 wp_unregister_GLOBALS();
