@@ -95,7 +95,8 @@
 				<?php endif; // end check for featured image or standard header ?>
 			</a>
 			<?php endif; // end check for removed header image ?>
-
+	
+			<div></div>
 			<?php get_registration_counter() ?>
 
 			<nav id="access" role="navigation">

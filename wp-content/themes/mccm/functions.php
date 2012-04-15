@@ -49,7 +49,7 @@ function get_registration_counter() {
 	                swfVersionStr, xiSwfUrlStr, 
 	                flashvars, params, attributes);
 	            // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
-	            swfobject.createCSS("#reg-counter-div", "position: absolute;right: 2%; top: 290px;");
+	            // swfobject.createCSS("#reg-counter-div", "position: absolute;right: 2%; top: 290px;");
 	            
 	            function register() {
 		        	window.location.href = "'.get_bloginfo('url').'/rennen/rennfahreranmeldung";
