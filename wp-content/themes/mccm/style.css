@@ -6,6 +6,7 @@ Template: twentyeleven
 Version: 1.0.0
 */
 
+/* old back #9eae94 */
 @import url("../twentyeleven/style.css");
 
 /* common */
@@ -14,7 +15,7 @@ Version: 1.0.0
 #page { margin: 0em auto !important }
 .mccm-coloring { color: #336633; }
 .mccm-list-style { list-style-type: disc; }
-
+.entry-content { font-size: 95% !important; }
 /* @see detected render bugs */
 .entry-content img { max-width: 900px !important; }
 
@@ -105,16 +106,17 @@ Version: 1.0.0
 #link-mahmutovic:hover { background: url(../../uploads/2012/02/md2.gif) no-repeat scroll right; }
 #link-noto { background: url(../../uploads/2012/02/noto.gif) no-repeat; background-position: right; height: 50px; }
 #link-noto:hover { background: url(../../uploads/2012/02/noto2.gif) no-repeat scroll right; }
+#link-highspeed { }
+#link-highspeed:hover { }
 
 /* page sponsoren */
 #sponsors-div > a > img { padding: 0px !important; margin-right: 8px !important; }
 #sponsors-div > img { padding: 0px !important; margin-right: 8px !important; }
 
 /* footer override */
-#mccm-site-generator { background-color: #000; color: #FFF; padding: 1.5em 0.0em 0.6em 0em; font-size: 12px; };
+#mccm-site-generator { background-color: #373737; color: #FFF; padding: 1.5em 0.0em 0.6em 0em; font-size: 12px; };
 #mccm-site-generator > ul { display: block; }
 #mccm-site-generator > ul > li { float: left; padding: 0em 0em 0em 1em; list-style: none; }
-
 
 /* detected render bugs: 
 - IE 8 -> zeitungsartikel - fixed in common css section

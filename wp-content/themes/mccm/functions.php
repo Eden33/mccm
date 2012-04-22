@@ -14,7 +14,7 @@ function wp_head_event() {
 add_action('wp_head', 'wp_head_event');
 
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
-$_registration_start_date = new DateTime('2012-04-14 19:00');
+$_registration_start_date = new DateTime('2012-05-09 00:00');
 $_registration_ctr_enabled = true;
 
 function get_registration_counter() {
@@ -29,7 +29,7 @@ function get_registration_counter() {
 				};
 				
 	            // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
-	            var swfVersionStr = "9.0.0";
+	            var swfVersionStr = "9.0.124";
 	            // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
 	            //var xiSwfUrlStr = "playerProductInstall.swf";
 	            var xiSwfUrlStr = "";
@@ -64,7 +64,9 @@ function is_registration_enabled() {
 	global $_registration_start_date;
 	$now = new DateTime("now");
 	//if now is greater or equal startdate then registration is enabled
-	if( $_registration_start_date <= $now ) {
+	if( $_registration_start_date <= $now 
+			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31'
+			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31') {
 		return true;
 	}
 	return false;
@@ -85,4 +87,15 @@ function filter_for_content_of_online_registration_pages( $content ) {
 add_filter('the_content', 'filter_for_content_of_online_registration_pages');
 
 /* REGISTER COUNTDOWN SECTION END -------------------------------------------------------*/
+
+if(false) {
+	ob_start();
+	phpinfo();
+	$info = ob_get_contents();
+	ob_end_clean();
+	 
+	$fp = fopen("phpinfo.txt", "w+");
+	fwrite($fp, $info);
+	fclose($fp);
+}
 ?>

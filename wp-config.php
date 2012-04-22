@@ -15,17 +15,18 @@
  */
 
 // ** MySQL settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
+
 define('DB_NAME', 'mccm');
-
-/** MySQL database username */
 define('DB_USER', 'mccm');
-
-/** MySQL database password */
 define('DB_PASSWORD', 'mccm2012');
-
-/** MySQL hostname */
 define('DB_HOST', 'localhost');
+
+/*
+define('DB_NAME', '***REMOVED***');
+define('DB_USER', '***REMOVED***');
+define('DB_PASSWORD', '***REMOVED***');
+define('DB_HOST', '***REMOVED***');
+*/
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
@@ -78,11 +79,14 @@ define('WPLANG', 'de_DE');
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', true); // false
+define('WP_DEBUG', false); // false
+
 //next three lines added by edi
 @ini_set('log_errors','On');
 @ini_set('display_errors','Off');
-@ini_set('error_log','c:/wamp/logs/php_error.log');
+//@ini_set('error_log','c:/wamp/logs/php_error.log');
+@ini_set('error_log','./error.log');
+
 
 /* That's all, stop editing! Happy blogging. */
 

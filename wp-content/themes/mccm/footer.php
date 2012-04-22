@@ -28,7 +28,7 @@
 					<li>Schillerstraße 4, 6800 Feldkirch&nbsp;&nbsp;&nbsp;&nbsp;|</li>
 					<li>Tel +43 5522 79259&nbsp;&nbsp;&nbsp;&nbsp;|</li>
 					<li>Fax +43 5522 31737&nbsp;&nbsp;&nbsp;&nbsp;|</li>
-					<li><a href="mailto:zentrale@mccm-feldkirch.at">ZENTRALE@MCC-FELDKIRCH.AT</a></li>
+					<li><a style="color:#fff; font-style:italic; " href="mailto:zentrale@mccm-feldkirch.at">ZENTRALE@MCCM-FELDKIRCH.AT</a></li>
 				</ul>
 			</div>
 	</footer><!-- #colophon -->
