@@ -49,6 +49,7 @@ Version: 1.0.0
 
 /* page rennergebnisse */
 .race-results-div{ clear: both; }
+.race-results-overview-span > a { font-size: 0.8em; text-decoration: none; font-style: italic; margin-left: 0.3em; color: #373737; }
 
 /* page eintrittspreise, vorstand, mitglieder */
 .no-border-table { border: none! important; }
@@ -80,6 +81,9 @@ Version: 1.0.0
 
 /* page links */
 .link-box { margin-bottom: 15px; }
+.link-box-right-div { float: left; margin-left: 1em; }
+.link-ul { margin: 0.7em 0em 0em 0em !important; }
+.link-ul > li { margin-bottom: 0.8em; }
 .history-left-div > a { display: block; width: 100%; height: 100%; }
 #link-sport2 { background: url(../../uploads/2012/02/sport2.gif) no-repeat; background-position: right; height: 45px; }
 #link-sidecar-mx { background: url(../../uploads/2012/02/sidecar.gif) no-repeat; background-position: right; height: 50px; }
@@ -106,8 +110,8 @@ Version: 1.0.0
 #link-mahmutovic:hover { background: url(../../uploads/2012/02/md2.gif) no-repeat scroll right; }
 #link-noto { background: url(../../uploads/2012/02/noto.gif) no-repeat; background-position: right; height: 50px; }
 #link-noto:hover { background: url(../../uploads/2012/02/noto2.gif) no-repeat scroll right; }
-#link-highspeed { }
-#link-highspeed:hover { }
+#link-highspeed { background: url(../../uploads/2012/02/volmobil.jpg) no-repeat scroll right; height: 2.3em; margin-top: 0.4em; }
+#link-highspeed:hover { background: url(../../uploads/2012/02/volmobil.jpg) no-repeat scroll right; }
 
 /* page sponsoren */
 #sponsors-div > a > img { padding: 0px !important; margin-right: 8px !important; }
