@@ -3,21 +3,34 @@ Theme Name: MCCM
 Author: Gopp Eduard
 Description: MCCM Theme based on twentyeleven
 Template: twentyeleven
-Version: 1.0.0
+Version: 1.0.1
 */
 
-/* old back #9eae94 */
 @import url("../twentyeleven/style.css");
 
-/* common */
+/* Twenty Eleven overrides */
+
+#access div { margin: 0px 11px !important; }
+#access ul { font-size: 12px !important; }
 .hentry { padding: 0px !important; }
 .entry-title { font-size: 30px !important; line-height: 30px !important; }
+.entry-content { font-size: 95% !important; }
+.entry-content img { max-width: 900px !important; } /* @see detected render bugs */
 #page { margin: 0em auto !important }
+
+input[type=text], input[type=password], textarea { background: #685A5A !important; border: 1px solid #111810 !important; color:#FFFAFA !important; }
+input[type=text]:focus, textarea:focus { color: #FFFAFA !important; }
+
+/* WPCF7 overrides */
+div.wpcf7 .watermark { color: #DF9595 !important; }
+div.wpcf7-mail-sent-ok { border: 2px solid #3A943E !important; }
+div.wpcf7-validation-errors { border: 2px solid #B32828 !important; }
+span.wpcf7-not-valid-tip { border: 1px solid #B32828 !important; }
+.wpcf7-text { height: 12px !important; line-height: 12px !important; }
+
+/* common */
 .mccm-coloring { color: #336633; }
 .mccm-list-style { list-style-type: disc; }
-.entry-content { font-size: 95% !important; }
-/* @see detected render bugs */
-.entry-content img { max-width: 900px !important; }
 
  .clearfix:after {
  content:".";
@@ -33,7 +46,6 @@ Version: 1.0.0
  
  /* registration flash counter */
  #reg-counter-div { display: none; }
- #mccm_countdown { position: absolute; right: 2%; top: 290px; max-width: 280px; }
 
 /* all driver registration pages  */
 .reg-fs-driver { border: 1px solid #000; margin: 5px; padding: 5px; width: 100%; }
@@ -42,7 +54,6 @@ Version: 1.0.0
 .reg-table { border: none !important; padding-left: 5px; }
 .reg-table > tbody > tr > td {  border: none !important; margin: 0px !important; padding: 0px !important; }
 .reg-td-first { width: 20%; }
-.reg-input { padding: 0px !important; }
 .reg-caution-head { margin: 12px 0px; color: #f00; font-style: italic; }
 .reg-caution-text { margin-bottom: 12px; font-style: italic; }
 .reg-submit-btn { margin-top: 12px; }

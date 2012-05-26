@@ -21,7 +21,9 @@ function get_registration_counter() {
 	global $_registration_ctr_enabled;
 	global $_registration_start_date;
 	if( $_registration_ctr_enabled === true ) {
-		echo '<script type="text/javascript" src="'.get_stylesheet_directory_uri().'/js/swfobject.js"></script>
+		$height = 35;
+		$width = 250;
+		return '<script type="text/javascript" src="'.get_stylesheet_directory_uri().'/js/swfobject.js"></script>
 		<script type="text/javascript">
 		
 				var flashvars = {
@@ -44,8 +46,8 @@ function get_registration_counter() {
 	            attributes.name = "mccm_countdown";
 	            attributes.align = "middle";
 	            swfobject.embedSWF(
-	                "'.get_stylesheet_directory_uri().'/flash/mccm_countdown.swf", "reg-counter-div", 
-	                "280", "43", 
+	                "'.get_stylesheet_directory_uri().'/flash/mccm_countdown.swf", "reg-counter-span", 
+	                "'.$width.'", "'.$height.'", 
 	                swfVersionStr, xiSwfUrlStr, 
 	                flashvars, params, attributes);
 	            // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
@@ -55,9 +57,17 @@ function get_registration_counter() {
 		        	window.location.href = "'.get_bloginfo('url').'/rennen/rennfahreranmeldung";
 				}
 	        </script>
-	        <div id="reg-counter-div"></div>';	
+	        <div style="min-width:'.$width.'px ; min-height='.$height.'px;">
+	         	<span id="reg-counter-span"></span>	
+	        </div>';
 	}
 }
+
+function head_menu_inject_registration_countdown($items) {
+	return $items.'<li>'.get_registration_counter().'</li>';
+}
+
+add_filter('wp_nav_menu_items', 'head_menu_inject_registration_countdown');
 
 function is_registration_enabled() {
 	global $_registration_ctr_enabled;
