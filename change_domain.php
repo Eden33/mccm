@@ -81,6 +81,7 @@
  *
  */
 
+die();
 
 /**
  * Form action attribute.
