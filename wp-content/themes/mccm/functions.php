@@ -1,6 +1,6 @@
 <?php
 
-$the_guestbook_page_id = 779;
+$the_guestbook_page_id = 793;
 
 function wp_head_event() {
 	global $the_guestbook_page_id;
