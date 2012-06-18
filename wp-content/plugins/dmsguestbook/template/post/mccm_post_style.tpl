@@ -32,7 +32,7 @@ Edit these variables on DMSGuestbook admin panel
 
 	$GuestbookEntries1 = "
 		<div>
-			<table style='margin:0px 0px; padding:0px 0px; border:10px; width:100%;' cellspacing='0' cellpadding='0' border='5'>
+			<table style='margin:0px 0px; padding:0px 0px; border:0px; width:100%;' cellspacing='0' cellpadding='0' border='0'>
 				<tr>";
 	$GuestbookEntries2 = "
 					<!-- gravatar -->
