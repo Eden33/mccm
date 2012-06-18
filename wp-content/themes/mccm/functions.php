@@ -1,6 +1,10 @@
 <?php
+
+$the_guestbook_page_id = 779;
+
 function wp_head_event() {
-	if(  is_page('rennergebnisse') ) {
+	global $the_guestbook_page_id;
+	if(  is_page('rennergebnisse') || is_page($the_guestbook_page_id)) {
 ?>
 	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/js/page-rennergebnisse.js"></script>
 <?php 
@@ -82,7 +86,25 @@ function is_registration_enabled() {
 	return false;
 }
 
-function filter_for_content_of_online_registration_pages( $content ) {
+/* REGISTER COUNTDOWN SECTION END -------------------------------------------------------*/
+
+
+/* Filter SECTION ------------------------------------------------------------------ */
+
+add_filter('the_title', 'filter_the_title', 10, 2);
+
+function filter_the_title ( $title, $id ) {
+	global $the_guestbook_page_id;
+	if( $id == $the_guestbook_page_id ) { //guestbook, add quick "Leave entry link" to title (scroll down to formular)
+		$title = $title.'&nbsp;&nbsp;<a class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=guestbookform]\').scrollTo(2000); }); return false;" href="#guestbookform">Eintrag hinterlassen</a>';
+		
+	}
+	return $title;
+}
+
+add_filter('the_content', 'filter_the_content');
+
+function filter_the_content( $content ) {
 	if(is_page( 'omc-oldtimer-online-anmeldung' ) 
 	|| is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'sam-quad-online-anmeldung' )
@@ -94,9 +116,7 @@ function filter_for_content_of_online_registration_pages( $content ) {
 	return $content;
 }
 
-add_filter('the_content', 'filter_for_content_of_online_registration_pages');
-
-/* REGISTER COUNTDOWN SECTION END -------------------------------------------------------*/
+/* Filter SECTION END------------------------------------------------------------------ */
 
 if(false) {
 	ob_start();

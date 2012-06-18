@@ -28,8 +28,13 @@ div.wpcf7-validation-errors { border: 2px solid #B32828 !important; }
 span.wpcf7-not-valid-tip { border: 1px solid #B32828 !important; }
 .wpcf7-text { height: 12px !important; line-height: 12px !important; }
 
+/* DMSGuestbook overrides */
+.css_form_successmessage { color: #3A943E !important; font-size: 13px !important; } /*wrong place */
+.css_post_embedded > div { padding: 0px 10px; }
+.css_post_embedded > div > table > tbody > tr > td { vertical-align: top !important; border-top: 0px !important; }
+
 /* common */
-.mccm-coloring { color: #336633; }
+.mccm-coloring { color: #336633 !important; }
 .mccm-list-style { list-style-type: disc; }
 
  .clearfix:after {

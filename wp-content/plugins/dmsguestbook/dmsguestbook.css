@@ -87,7 +87,6 @@ text-decoration:none;}
 text-decoration:none;}
 
 .css_navigation_char {color:#000000;
-font-size:20px;
 text-decoration:none;
 font-weight:bold;}
 
@@ -109,17 +108,16 @@ height:15px;}
 .css_post_header4 {font-size:11px;
 height:15px;}
 
-.css_post_email_image {height:15px;
-width:15px;
+.css_post_email_image {height:22px;
+width:22px;
 border:0px;}
 
-.css_post_url_image {height:15px;
-width:15px;
+.css_post_url_image {height:22px;
+width:22px;
 border:0px;}
 
-.css_post_separator {border: 1px solid #EEEEEE;
-height:1px;
-width:35%;
+.css_post_separator {height:1px;
+width:100%;
 text-align:left;
 margin:0px 0px 0px 0px;}
 
@@ -134,11 +132,11 @@ padding:0px 10px;
 margin:0px 0px 0px 0px;
 line-height:1.4em;}
 
-.css_post_embedded {width:95%;
+.css_post_embedded {width:100%;
 border:1px solid #AAAAAA;
 font-size:12px;
 text-align:left;
-padding:10px 10px;
+padding:10px 0px;
 margin:0px 0px 0px 0px;
 line-height:1.4em;}
 a.css_navigation_char:hover {text-decoration:none; color:#000000;}

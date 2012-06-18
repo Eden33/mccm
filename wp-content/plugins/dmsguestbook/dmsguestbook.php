@@ -390,7 +390,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	# read the guestbook
 	# if flag = 1 the admin will review this post
 	$query2 = $wpdb->get_results("SELECT * FROM $table_name
-	WHERE flag != '1' && guestbook = '" . sprintf("%d", $var_multi_gb_id) ."' && spam = '0' ORDER BY id
+	WHERE flag != '1' && guestbook = '" . sprintf("%d", $var_multi_gb_id) ."' && spam = '0' ORDER BY date
 	" . sprintf("%s", $var_sortitem) . " LIMIT " . $from .
 	"," . sprintf("%d", $var_step) . ";");
 	$num_rows2 = $wpdb->num_rows;
@@ -399,21 +399,18 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	$back=$from-$var_step;
 
 
-	$DMSGuestbookContent .= "<div class='css_navigation_totalcount'>($num_rows1)</div>";
-	$DMSGuestbookContent .= "<div class='css_navigation_overview'>";
-
+	$navigation_overview = "";
 	for($x=0; $x<$num_rows1; ($x=$x+$var_step))
 	{
 	$y++;
 		if($select==$y) {
-		$DMSGuestbookContent .= "<a class=\"css_navigation_select\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y </a> ";
+		$navigation_overview .= "<a class=\"css_navigation_select\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y </a> ";
 		}
 		else {
-		     $DMSGuestbookContent .= "<a class=\"css_navigation_notselect\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y</a> ";
+		     $navigation_overview .= "<a class=\"css_navigation_notselect\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y</a> ";
 			 }
 	}
-	$DMSGuestbookContent .= "</div>";
-
+	
 	// navigation char forward construct
 	if($next>=$num_rows1) {} else {
 	$_REQUEST[select_forward]=$select+1;
@@ -427,7 +424,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	}
 
 	// show top navigation
-	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward);
+	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview);
 
 	// setlocale
 	setlocale(LC_TIME, "$var_setlocale");
@@ -571,7 +568,7 @@ $gravatar_url = "http://www.gravatar.com/avatar/".$dbresult->gravatar . "?r=" . 
 	}
 
 	// show bottom navigation
-	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward);
+	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview);
 
 	// if guestbook form is on bottom the side
 	if ($var_formpos =="bottom") {
@@ -782,10 +779,10 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
 
 
 	/* create navigation */
-	function navigation($num_rows1, $var_step, $var_width, $backward, $forward) {
+	function navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview) {
 		if($num_rows1 > $var_step) {
 		$DMSGuestbookContent .= "<div class='css_navigation_char_position'>";
-		$DMSGuestbookContent .= $backward . " " .$forward;
+		$DMSGuestbookContent .= $backward . " &nbsp; $navigation_overview &nbsp; " .$forward;
 		$DMSGuestbookContent .= "</div>";
 	 	}
 	return $DMSGuestbookContent;
