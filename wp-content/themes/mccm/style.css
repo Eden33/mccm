@@ -36,6 +36,7 @@ span.wpcf7-not-valid-tip { border: 1px solid #B32828 !important; }
 /* common */
 .mccm-coloring { color: #336633 !important; }
 .mccm-list-style { list-style-type: disc; }
+.fb-like {margin-bottom: 8px; }
 
  .clearfix:after {
  content:".";
