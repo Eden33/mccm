@@ -18,7 +18,7 @@ function wp_head_event() {
 add_action('wp_head', 'wp_head_event');
 
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
-$_registration_start_date = new DateTime('2012-05-09 00:00');
+$_registration_start_date = new DateTime('2013-05-09 00:00');
 $_registration_ctr_enabled = false;
 
 function get_registration_counter() {
@@ -111,7 +111,7 @@ function filter_the_content( $content ) {
 	|| is_page( 'inter-sam-online-anmeldung' )
 	|| is_page( 'sjmcc-meisterschaftslauf-online-anmeldung' ) ) {
 		if( is_registration_enabled() === false )
-			return "Online Rennanmeldungen sind ab dem 9 Mai m&ouml;glich.";
+			return "Zur Zeit sind keine Rennanmeldungen m&ouml;glich.";
 	}
 	return $content;
 }

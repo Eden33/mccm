@@ -18,7 +18,7 @@ get_header(); ?>
 					<?php
 					  $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0&depth=1');
 					  if ($children) { ?>
-					  <ul class="mccm-list-style">
+					  <ul class="mccm-list-style subpages-list subpages-list-post-id-<?php echo $post->ID?>">
 					  <?php echo $children; ?>
 					  </ul>
 					<?php } ?>
