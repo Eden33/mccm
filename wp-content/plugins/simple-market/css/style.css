@@ -1,0 +1,9 @@
+@CHARSET "ISO-8859-1";
+
+/* We use dmsguestbook.css 
+*  - to maintain a global look an feel
+*  - we can't define it again because dmsguestbook.css is unfortunately included on every page : (
+*
+*  if someting happens to stlye of the market you know where you have to look first
+*/
+

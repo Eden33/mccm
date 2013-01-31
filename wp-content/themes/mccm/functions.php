@@ -1,13 +1,16 @@
 <?php
 
 $the_guestbook_page_id = 793;
+$the_market_page_id = 49;
 
 function wp_head_event() {
 	global $the_guestbook_page_id;
-	if(  is_page('rennergebnisse') || is_page($the_guestbook_page_id)) {
+	global $the_market_page_id;
+	
+	if(  is_page('rennergebnisse') || is_page($the_guestbook_page_id) || is_page($the_market_page_id)) {
 ?>
-	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/js/page-rennergebnisse.js"></script>
-<?php 
+	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/js/jQuery-extends.js"></script>
+<?php
 	}
 }
 
@@ -95,9 +98,11 @@ add_filter('the_title', 'filter_the_title', 10, 2);
 
 function filter_the_title ( $title, $id ) {
 	global $the_guestbook_page_id;
+	global $the_market_page_id;
 	if( $id == $the_guestbook_page_id ) { //guestbook, add quick "Leave entry link" to title (scroll down to formular)
 		$title = $title.'&nbsp;&nbsp;<a class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=guestbookform]\').scrollTo(2000); }); return false;" href="#guestbookform">Eintrag hinterlassen</a>';
-		
+	} else if( $id == $the_market_page_id) {
+		$title = $title.'&nbsp;&nbsp;<a class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=simplemarketform]\').scrollTo(2000); }); return false;" href="#simplemarketform">Eigenes Inserat aufgeben</a>';
 	}
 	return $title;
 }
