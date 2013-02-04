@@ -102,7 +102,7 @@ function filter_the_title ( $title, $id ) {
 	if( $id == $the_guestbook_page_id ) { //guestbook, add quick "Leave entry link" to title (scroll down to formular)
 		$title = $title.'&nbsp;&nbsp;<a class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=guestbookform]\').scrollTo(2000); }); return false;" href="#guestbookform">Eintrag hinterlassen</a>';
 	} else if( $id == $the_market_page_id) {
-		$title = $title.'&nbsp;&nbsp;<a class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=simplemarketform]\').scrollTo(2000); }); return false;" href="#simplemarketform">Eigenes Inserat aufgeben</a>';
+		$title = $title.'&nbsp;&nbsp;<a id="sm-head-anchor" class="mccm-coloring" style="font-size:13px;" onClick="jQuery(function ($) { $(\'a[name=simplemarketform]\').scrollTo(2000); }); return false;" href="#simplemarketform">Eigenes Inserat aufgeben</a>';
 	}
 	return $title;
 }

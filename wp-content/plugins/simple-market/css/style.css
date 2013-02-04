@@ -1,9 +1,41 @@
-@CHARSET "ISO-8859-1";
-
-/* We use dmsguestbook.css 
-*  - to maintain a global look an feel
-*  - we can't define it again because dmsguestbook.css is unfortunately included on every page : (
-*
-*  if someting happens to stlye of the market you know where you have to look first
-*/
-
+.sm-top-div {
+	width:95%;
+	border:1px solid #AAAAAA;
+	font-size:12px;
+	text-align:left;
+	padding:0px 10px;
+	margin:0px 0px 0px 0px;
+	line-height:1.4em;
+}
+.sm-form-submit {
+	color:#000000;
+}
+.sm-form-submit-div {
+	text-align:center;
+	padding:20px 0px 10px 0px;
+	}
+.sm-form-input {
+	border:1px solid #DEDEDE;
+	width:150px;
+	color:#000000;
+	}
+.sm-form-div {
+	text-align:left;
+	padding:5px 0px 0px 0px;
+	margin:0px 0px;
+}
+.sm-form-textarea {
+	border:1px solid #DEDEDE;
+	width:80%;
+	height:150px;
+	color:#000000;
+}
+.sm-error-div {
+	color:#bb0000;
+	font-size: 11px;
+	text-decoration: none;
+	font-weight:bold;
+}
+#content {
+	min-height: 730px;
+}
