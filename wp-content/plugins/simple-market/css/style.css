@@ -3,9 +3,21 @@
 	border:1px solid #AAAAAA;
 	font-size:12px;
 	text-align:left;
-	padding:0px 10px;
 	margin:0px 0px 0px 0px;
 	line-height:1.4em;
+}
+.sm-top-div > table {
+	margin: 0px;
+	border-bottom: 1px solid;
+	border-color: #CCC;
+}
+.sm-top-div > table > tbody > tr > td {
+	height: 13px;
+	padding: 2px 6px !important;
+	border-top: none !important;
+}
+.sm-top-div > div {
+	margin: 10px 6px;	
 }
 .sm-form-submit {
 	color:#000000;
@@ -35,6 +47,11 @@
 	font-size: 11px;
 	text-decoration: none;
 	font-weight:bold;
+}
+.sm-h {
+	height: 1px;
+	width: 100%;
+	margin-bottom: 0px;
 }
 #content {
 	min-height: 730px;

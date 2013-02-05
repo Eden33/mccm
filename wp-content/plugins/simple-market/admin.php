@@ -154,7 +154,6 @@ function sm_form_submit_handler() {
 	//first check nonce
 	if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
 		die();
-	$bla = "";
 	
 	if(isset($_POST['sm_submit_id']) && isset($_SESSION['sm_submit_id'])) {		
 		if(strcmp($_POST['sm_submit_id'], $_SESSION['sm_submit_id']) != 0)
@@ -168,25 +167,50 @@ function sm_form_submit_handler() {
 		
 		$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
 		if( $resp->is_valid !== true ) {
-			$form_response->captcha_error = true;
+			$form_response->set_captcha_error(true);
 			echo $form_response->get_json_response();
 			exit();
 		}
 	}
-
-	$sm_submit_item = new SimpleMarketItem($_POST['sm_first_name'], $_POST['sm_last_name'],
-			$_POST['sm_zip_code'], $_POST['sm_city'], $_POST['sm_country'],
-			$_POST['sm_text'], new DateTime('now'));
 	
-	//TODO: validation of submited user data goes here
+	$first_name = $_POST['sm_first_name'];
+	$last_name = $_POST['sm_last_name'];
+	$mail = $_POST['sm_mail'];
+	$phone = $_POST['sm_phone'];
+	$zip_code = $_POST['sm_zip_code'];
+	$city =  $_POST['sm_city'];
+	$country = $_POST['sm_country'];
+	$text = $_POST['sm_text'];
 	
-	if(isset($_SESSION['sm_submit_id']) === false) {
-		$_SESSION['sm_submit_id'] = uniqid(); //by default 13 chararcters
+	UserInputPreprocessor::prepare_the_text($text);
+	
+	if(UserInputValidator::is_first_name_valid($first_name) === false) {
+		$form_response->set_first_name_error(true);
+	}
+	if(UserInputValidator::is_last_name_valid($last_name) === false) {
+		$form_response->set_last_name_error(true);
+	}
+	if(UserInputValidator::is_mail_valid($mail) === false) {
+		$form_response->set_mail_error(true);
+	}
+	if(UserInputValidator::is_phone_valid($phone) === false) {
+		$form_response->set_phone_error(true);
+	}
+	if(UserInputValidator::is_zip_code_valid($zip_code) === false) {
+		$form_response->set_zip_code_error(true);
+	}
+	if(UserInputValidator::is_country_valid($country) === false) {
+		$form_response->set_country_error(true);
+	}
+	if(UserInputValidator::is_text_valid($text) === false) {
+		$form_response->set_text_error(true);
 	}
 	
-	$form_response->preview_mode = true;
-	$form_response->submit_id = $_SESSION['sm_submit_id'];
-	$form_response->market_item = $sm_submit_item;
+	$sm_submit_item = new SimpleMarketItem($first_name, $last_name, $mail, $phone, $zip_code, $city, $country,
+			$text, new DateTime('now'));
+	
+	$market_item_renderer = new MarketItemRenderer($sm_submit_item);
+	$form_response->set_market_item_renderer($market_item_renderer);
 	
 	echo $form_response->get_json_response();
 	exit();	

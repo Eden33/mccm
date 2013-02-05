@@ -7,58 +7,62 @@ function get_the_form() {
 	return 
 	'	<div id="sm-preview-div"></div>
 		<div id="sm-market-div"> Market Data </div>
-		<div id="sm-first-from-div" class="sm-top-div">
+		<div id="sm-first-from-div" class="sm-top-div" style="padding:0px 10px;">
 		
-		<a name="simplemarketform"></a>
+		<a id="sm-form-a"></a>
 			
-		<div class="sm-error-div" for=sm_first_name" id="first_name_error" style="display:none;">Vorname pr&uuml;fen</div>
-		<div class="sm-error-div" for="sm_last_name" id="last_name_error" style="display:none;">Nachname pr&uuml;fen</div>			
-		<div class="sm-error-div" for="sm_last_name" id="mail_error" style="display:none;">Mail pr&uuml;fen</div>	
-		<div class="sm-error-div" for="sm_last_name" id="phone_error" style="display:none;">Telefonnummer pr&uuml;fen</div>	
-		<div class="sm-error-div" for="sm_last_name" id="country_error" style="display:none;">Land pr&uuml;fen</div>	
-		<div class="sm-error-div" for="sm_last_name" id="city_error" style="display:none;">Stadt pr&uuml;fen</div>
-		<div class="sm-error-div" for="sm_last_name" id="zip_code_error" style="display:none;">Postleitzahl pr&uuml;fen</div>		
-		<div class="sm-error-div" for="sm_last_name" id="text_error" style="display:none;">Anzeige Text pr&uuml;fen</div>		
-		<div class="sm-error-div" for="sm_last_name" id="captcha_error" style="display:none;">Eingegebens Captcha war falsch. Bitte erneut versuchen.</div>
+		<div class="sm-error-div" id="first_name_error" style="display:none;">Vorname pr&uuml;fen</div>
+		<div class="sm-error-div" id="last_name_error" style="display:none;">Nachname pr&uuml;fen</div>			
+		<div class="sm-error-div" id="mail_error" style="display:none;">Mail pr&uuml;fen</div>	
+		<div class="sm-error-div" id="phone_error" style="display:none;">Telefonnummer pr&uuml;fen</div>	
+		<div class="sm-error-div" id="country_error" style="display:none;">Land pr&uuml;fen</div>	
+		<div class="sm-error-div" id="city_error" style="display:none;">Stadt pr&uuml;fen</div>
+		<div class="sm-error-div" id="zip_code_error" style="display:none;">Postleitzahl pr&uuml;fen</div>		
+		<div class="sm-error-div" id="text_error" style="display:none;">Anzeige Text pr&uuml;fen</div>		
+		<div class="sm-error-div" id="captcha_error" style="display:none;">Eingegebens Captcha war falsch. Bitte erneut versuchen.</div>
 						
 		<form method="post" id="sm-form" onsubmit="return false;">
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['first_name'].'" 
-						value="'.$_SESSION['sm_first_name'].'" name="sm_first_name" />
+						value="Eduard" name="sm_first_name" />
 				Vorname *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['last_name'].'" 
-						value="'.$_SESSION['sm_last_name'].'" name="sm_last_name" />
+						value="Gopp" name="sm_last_name" />
 				Nachname *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['mail'].'" 
-						value="'.$_SESSION['sm_mail'].'" name="sm_mail" />
+						value="eduard.gopp@gmail.com" name="sm_mail" />
 				E-Mail *
 			</div>						
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['phone'].'" 
-						value="'.$_SESSION['sm_phone'].'" name="sm_phone" />
+						value="004369911223949" name="sm_phone" />
 				Telefon
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['country'].'" 
-						value="'.$_SESSION['sm_country'].'" name="sm_country" />
+						value="Austria" name="sm_country" />
 				Land *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['city'].'" 
-						value="'.$_SESSION['sm_city'].'" name="sm_city" />
+						value="Feldkirch" name="sm_city" />
 				Stadt *
 			</div>							
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['zip_code'].'" 
-						value="'.$_SESSION['sm_zip_code'].'" name="sm_zip_code" />
+						value="6800" name="sm_zip_code" />
 				Postleitzahl *
 			</div>
 			<div class="sm-form-div">
-				<textarea class="sm-form-textarea" cols="0" rows="0" name="sm_text">'.$_SESSION['sm_text'].'</textarea>
+				<textarea class="sm-form-textarea" name="sm_text">Ich verkaufe mein Fahrrad, da ich es nicht mehr brauche.
+						
+				Preis Verhandlungssache.
+						
+				Bitte erst ab 18 Uhr anrufen.</textarea>
 				Ihr Anzeigen Text *
 			</div>
 			<div style="text-align: left;">
@@ -80,7 +84,7 @@ function get_the_form() {
 			<div class="sm-form-submit-div">
 				<input class="sm-form-submit" type="submit" id="sm-submit-btn" value="Anzeigen Vorschau" />
 			</div>
-			<input type="hidden" name="sm_submit_id"value="'.$_SESSION['sm_submit_id'].'"> 
+			<input type="hidden" name="sm_submit_id" value="'.$_SESSION['sm_submit_id'].'"> 
 		</form>
 	</div>';
 }
