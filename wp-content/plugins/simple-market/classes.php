@@ -1,5 +1,6 @@
 <?php
 class SimpleMarketItem {
+	private $id;
 	private $first_name;
 	private $last_name;
 	private $mail;
@@ -7,43 +8,130 @@ class SimpleMarketItem {
 	private $zip_code;
 	private $city;
 	private $country;
-	private $text;
+	private $ip;
 	private $date_time;
+	private $text;
+	private $image_uuid;
+	private $mail_approve;
+	private $mail_approval_key;
+	private $webmaster_approve;
+
 		
-	function __construct($first_name, $last_name, $mail, $phone, $zip_code, $city, $country, $text, $date_time) {
-		$this->first_name = $first_name;
-		$this->last_name = $last_name;
-		$this->mail = $mail;
-		$this->phone = $phone;
-		$this->zip_code = $zip_code;
-		$this->city = $city;
-		$this->country  = $country;
-		$this->text = $text;
-		$this->date_time = $date_time;
+	function __construct($assoc_array, $first_name = NULL, $last_name=NULL, $mail=NULL, $phone=NULL, $zip_code=NULL, 
+							$city=NULL, $country=NULL, $text=NULL, $date_time=NULL, $image_uuid=NULL) {
+		if(isset($assoc_array) === true && is_array($assoc_array)) {
+			foreach ($assoc_array as $key => $value) {
+				switch ($key) {
+					case 'id'					:	$this->id = $value; break;
+					case 'first_name'			:	$this->first_name = $value; break;
+					case 'last_name'			: 	$this->last_name = $value; break;
+					case 'mail'					: 	$this->mail = $value; break;
+					case 'phone'				: 	$this->phone = $value; break;
+					case 'zip_code'				: 	$this->zip_code = $value; break;
+					case 'city'					: 	$this->city = $value; break;
+					case 'country'				: 	$this->country = $value; break;
+					case 'ip'					: 	$this->ip = $value; break;
+					case 'date_time'			: 	$this->date_time = $value; break;
+					case 'text'					: 	$this->text = $value; break;
+					case 'image_uuid'			: 	$this->image_uuid = $value; break;
+					case 'mail_approve'			: 	$this->mail_approve = $value; break;
+					case 'mail_approval_key'	: 	$this->mail_approval_key = $value; break;
+					case 'webmaster_approve'	: 	$this->webmaster_approve = $value; break;
+					default						: 	throw new Exception("Column: $key not knwon!");
+				}
+			}
+		} else {
+			$this->first_name = $first_name;
+			$this->last_name = $last_name;
+			$this->mail = $mail;
+			$this->phone = $phone;
+			$this->zip_code = $zip_code;
+			$this->city = $city;
+			$this->country  = $country;
+			$this->text = $text;
+			$this->date_time = $date_time;
+			$this->image_uuid = $image_uuid;
+		}
 	}
 	function get_first_name() {
 		return $this->first_name;
 	}
+	function get_first_name_html_encoded() {
+		$encoded = htmlentities($this->first_name);
+		return $encoded;
+	}
 	function get_last_name() {
 		return $this->last_name;
+	}
+	function get_last_name_html_encoded() {
+		$encoded = htmlentities($this->last_name);
+		return $encoded;
 	}
 	function get_mail() {
 		return $this->mail;
 	}
+	function get_mail_html_encoded() {
+		$encoded = htmlentities($this->mail);
+		return $encoded;
+	}
+	function get_phone() {
+		return $this->phone;	
+	}
+	function get_phone_html_encoded() {
+		$encoded = htmlentities($this->phone);
+		return $phone;
+	}
 	function get_zip_code() {
 		return $this->zip_code;
+	}
+	function get_zip_code_html_encoded() {
+		$encoded = htmlentities($this->zip_code);
+		return $encoded;
 	}
 	function get_city() {
 		return $this->city;
 	}
+	function get_city_html_encoded() {
+		$encoded = htmlentities($this->city);
+		return $encoded;
+	}
 	function get_country() {
 		return $this->country;
+	}
+	function get_country_html_encoded() {
+		$encoded = htmlentities($this->country);
+		return $encoded;
 	}
 	function get_text() {
 		return $this->text;	
 	}
+	function get_text_html_encoded() {
+		$encoded = htmlentities($this->text);
+		$encoded = nl2br($encoded, false);
+		return $encoded;
+	}
 	function get_date_time() {
 		return $this->date_time;	
+	}
+	/**
+	 * The tag images are marked with during submission process.
+	 * Alias used in forms/posts is 'sm_submit_id'
+	 */
+	function get_image_uuid() {
+		return $this->image_uuid;
+	}
+	
+	function is_approved_by_mail() {
+		if(isset($this->mail_approve) && $this->mail_approve == 1) {
+			return true;
+		}
+		return false;
+	}
+	function is_approved_by_webmaster() {
+		if(isset($this->webmaster_approve) && $this->webmaster_approve == 1) {
+			return true;
+		}
+		return false;
 	}
 }
 
@@ -59,14 +147,17 @@ class SimpleMarketFormResponse {
 	private $country_error = false;
 	private $text_error = false;
 	
-	private $submit_id;
 	private $market_item_renderer;
+	private $market_item;
 	
 	private $resp = array();
-	
+		
 	//general setters
 	public function set_market_item_renderer($market_item_renderer) {
 		$this->market_item_renderer = $market_item_renderer;
+	}
+	public function set_market_item($market_item) {
+		$this->market_item = $market_item;
 	}
 	
 	//error setters
@@ -144,13 +235,17 @@ class SimpleMarketFormResponse {
 		if(isset($this->resp['errors'])) {
 			$this->resp['success'] = false;
 		} else {
-			$this->resp['success'] = true;
+			$this->resp['success'] = true;			//all data user passed to the script are OK
+
+			$_SESSION['market_item_to_submit'] = null;
+			unset($_SESSION['market_item_to_submit']);
+			$_SESSION['market_item_to_submit'] = $this->market_item; //store data in SESSION
+			$this->resp['submit_id'] = $this->market_item->get_image_uuid();
+			
 			$this->add_preview();
-			$this->set_submit_id();
-			$this->resp['submit_id'] = $this->submit_id;
 		}
 		
-		return json_encode($this->resp);		
+		return json_encode($this->resp);	//return preview of the ad to the user
 	}
 	
 	private function add_errors_array_if_not_exist() {
@@ -160,12 +255,6 @@ class SimpleMarketFormResponse {
 	
 	private function add_preview() {
 		$this->resp['preview'] = $this->market_item_renderer->get_markup();
-	}
-	private function set_submit_id() {
-		if(isset($_SESSION['sm_submit_id']) === false) {
-			$_SESSION['sm_submit_id'] = uniqid(); //by default 13 chararcters
-		}
-		$this->submit_id = $_SESSION['sm_submit_id'];
 	}
 }
 class MarketItemRenderer {
@@ -183,15 +272,15 @@ class MarketItemRenderer {
 			'<div class="sm-top-div">
 				 <table>
 					<tbody>
-						<tr><td>'.$this->market_item->get_first_name() .' '
-							 .$this->market_item->get_last_name().'</td></tr>
-						<tr><td>'.$this->market_item->get_zip_code().', '
-							 .$this->market_item->get_city().', '
-							 .$this->market_item->get_country().'</td></tr>
+						<tr><td>'.$this->market_item->get_first_name_html_encoded() .' '
+							 .$this->market_item->get_last_name_html_encoded().'</td></tr>
+						<tr><td>'.$this->market_item->get_zip_code_html_encoded().', '
+							 .$this->market_item->get_city_html_encoded().', '
+							 .$this->market_item->get_country_html_encoded().'</td></tr>
 						<tr><td>Anzeige vom: '.$this->get_formated_date_time().'</td></tr>					
 					</tbody>
 				</table>
-				<div>'.$this->market_item->get_text().'</div>
+				<div>'.$this->market_item->get_text_html_encoded().'</div>
 				<hr class="sm-h"/>
 				<div>
 					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
@@ -204,13 +293,23 @@ class MarketItemRenderer {
 						//]]>
 					</script>
 				</div>
+			</div>
+			<div>
+			<div style="width: 95%; text-align: center; margin-top: 6px;">
+				<form id="sm-preview-form" action="#" method="post" onsubmit="return false;">
+					<input type="submit" id="sm-preview-submit-btn" value="OK - Inserat abschicken" /></td>
+					<input type="reset" id="sm-preview-abort-btn" value="Ich will noch etwas ändern" /></td>
+					<input type="hidden" name="sm_submit_id" value="'.$this->market_item->get_image_uuid().'" />
+				</form>
 			</div>';
+		
 		return utf8_encode($markup);
 	}
 	
 	private function get_formated_date_time() {
 		$date_time = $this->market_item->get_date_time();
-		return $date_time->format('Y-m-d H:i:s');
+		$date_time_blog_time_zone = get_date_from_gmt($date_time);
+		return $date_time_blog_time_zone;
 	}
 }
 class UserInputValidator {
@@ -222,7 +321,10 @@ class UserInputValidator {
 		return true;
 	}
 	static function is_mail_valid($mail) {
-		return true;
+		//sanitize_email()
+		if(is_email($mail) !== false)
+			return true;
+		return false;
 	}
 	static function is_phone_valid($phone) {
 		return true;

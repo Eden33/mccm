@@ -3,7 +3,7 @@
 //http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-page-refresh-using-jquery/
 
 function get_the_form() {
-	global $mysql_column_length;
+	global $sm_mysql_column_length;
 	return 
 	'	<div id="sm-preview-div"></div>
 		<div id="sm-market-div"> Market Data </div>
@@ -23,37 +23,37 @@ function get_the_form() {
 						
 		<form method="post" id="sm-form" onsubmit="return false;">
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['first_name'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['first_name'].'" 
 						value="Eduard" name="sm_first_name" />
 				Vorname *
 			</div>
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['last_name'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['last_name'].'" 
 						value="Gopp" name="sm_last_name" />
 				Nachname *
 			</div>
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['mail'].'" 
-						value="eduard.gopp@gmail.com" name="sm_mail" />
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['mail'].'" 
+						value="e.gopp@gmail.com" name="sm_mail" />
 				E-Mail *
 			</div>						
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['phone'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['phone'].'" 
 						value="004369911223949" name="sm_phone" />
 				Telefon
 			</div>
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['country'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['country'].'" 
 						value="Austria" name="sm_country" />
 				Land *
 			</div>
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['city'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['city'].'" 
 						value="Feldkirch" name="sm_city" />
 				Stadt *
 			</div>							
 			<div class="sm-form-div">
-				<input class="sm-form-input" type="text" maxlength="'.$mysql_column_length['zip_code'].'" 
+				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['zip_code'].'" 
 						value="6800" name="sm_zip_code" />
 				Postleitzahl *
 			</div>
@@ -70,21 +70,22 @@ function get_the_form() {
 			</div>
 			
 			<!-- Google Captcha -->
-			<script type="text/javascript"
-		    	src="http://www.google.com/recaptcha/api/challenge?k=6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j">
-		  	</script>
-		  	<noscript>
-		     	<iframe src="http://www.google.com/recaptcha/api/noscript?k=your_public_key"
-		         	height="300" width="500" frameborder="0"></iframe><br>
-		     	<textarea name="recaptcha_challenge_field" rows="3" cols="40">
-		     	</textarea>
-		    <input type="hidden" name="recaptcha_response_field" value="manual_challenge">
-		  	</noscript>			
-			
+			<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+			<div id="captchadiv"></div>
+			<script type="text/javascript">
+				//<![CDATA[
+			  		function showRecaptcha(element) {
+			        	Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "captchadiv", {
+			            theme: "red"
+			            });
+			         }
+				//]]>
+			</script>
+						
 			<div class="sm-form-submit-div">
 				<input class="sm-form-submit" type="submit" id="sm-submit-btn" value="Anzeigen Vorschau" />
 			</div>
-			<input type="hidden" name="sm_submit_id" value="'.$_SESSION['sm_submit_id'].'"> 
+			<input type="hidden" name="sm_submit_id" value="" /> 
 		</form>
 	</div>';
 }

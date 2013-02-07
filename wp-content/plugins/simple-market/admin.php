@@ -14,43 +14,54 @@ Author URI: http://www.mccm-feldkirch.at/
  */
 $sm_table_name = $wpdb->prefix . 'simple_market';
 $sm_initialize_options = array(
-	'plugin_name' 	 => 'simple_market',
-	'plugin_version' => '1.0.3',
-	'target_post_name' => 'markt'
+	'plugin_name' 	 						=> 'simple_market',
+	'plugin_version' 						=> '1.0.8',
+	'target_post_name' 						=> 'markt',
+	'target_post_id'						=> 49,
+	'ad_max_active_in_days'					=> 30,
+	'ad_reactivation_treshold_in_days'		=> 5,
+	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at'
 );
 $sm_options = NULL;
-$mysql_column_length = array (
-	'first_name' 	=> 50,
-	'last_name'  	=> 50,
-	'zip_code'		=> 15,
-	'city'			=> 30,
-	'country'		=> 30,
-	'mail'			=> 80,
-	'phone'			=> 50
+$sm_mysql_column_length = array (
+	'first_name' 		=> 50,
+	'last_name'  		=> 50,
+	'zip_code'			=> 15,
+	'city'				=> 30,
+	'country'			=> 30,
+	'mail'				=> 80,
+	'phone'				=> 50,
+	'image_uuid'		=> 13,
+	'mail_approval_key' => 23		//uniqid with more entropy returns 23 symbols, do not change!
 );
 
 function on_plugin_activate() {
 	global $wpdb;
 	global $sm_table_name;
 	global $sm_initialize_options;
-	global $mysql_column_length;
+	global $sm_mysql_column_length;
 
+	//TODO: make mail_approval_key unique
+	
 	$sql = "CREATE TABLE $sm_table_name (
 		id INT NOT NULL AUTO_INCREMENT,
-		first_name varchar(".$mysql_column_length['first_name'].") DEFAULT '' NOT NULL,
-		last_name varchar(".$mysql_column_length['last_name'].") DEFAULT '' NOT NULL,
-		zip_code varchar(".$mysql_column_length['zip_code'].") DEFAULT '' NOT NULL,
-		city varchar(".$mysql_column_length['city'].") DEFAULT '' NOT NULL,
-		country varchar(".$mysql_column_length['country'].") DEFAULT '' NOT NULL,
-		email varchar(".$mysql_column_length['mail'].") DEFAULT '' NOT NULL,
-		phone varchar(".$mysql_column_length['phone'].") DEFAULT '' NOT NULL,
-		time timestamp DEFAULT CURRENT_TIMESTAMP,
+		first_name varchar(".$sm_mysql_column_length['first_name'].") DEFAULT '' NOT NULL,
+		last_name varchar(".$sm_mysql_column_length['last_name'].") DEFAULT '' NOT NULL,
+		mail varchar(".$sm_mysql_column_length['mail'].") DEFAULT '' NOT NULL,
+		phone varchar(".$sm_mysql_column_length['phone'].") DEFAULT '' NOT NULL,	
+		zip_code varchar(".$sm_mysql_column_length['zip_code'].") DEFAULT '' NOT NULL,
+		city varchar(".$sm_mysql_column_length['city'].") DEFAULT '' NOT NULL,
+		country varchar(".$sm_mysql_column_length['country'].") DEFAULT '' NOT NULL,
+		ip varchar(15) DEFAULT '' NOT NULL,
+		date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 	  	text longtext NOT NULL,
-	  	mail_approve int(1) DEFAULT 0 NOT NULL,
-	  	mail_approval_key varchar(100) DEFAULT '' NOT NULL,
+		image_uuid char(".$sm_mysql_column_length['image_uuid'].") DEFAULT '' NOT NULL,
+		mail_approve int(1) DEFAULT 0 NOT NULL,
+	  	mail_approval_key varchar(".$sm_mysql_column_length['mail_approval_key'].") DEFAULT '' NOT NULL,
 	  	webmaster_approve int(1) DEFAULT 0 NOT NULL,
-	  	UNIQUE KEY id (id)
-	)DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+	  	UNIQUE KEY id (id),
+	  	UNIQUE KEY mail_approval_key_UNIQUE (mail_approval_key)
+	) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql); //create or compute differences and alter
@@ -131,7 +142,22 @@ function get_the_market($content) {
 	
 	if($GLOBALS['post']->post_name == $sm_options['target_post_name']) {
 		
-		include_once __DIR__ . '/the_market.php';
+		$_SESSION['market_item_to_submit'] = NULL;
+		unset($_SESSION['market_item_to_submit']);
+		
+		$mail_action = $_GET['action'];
+		$key = $_GET['mccm_activation_key'];
+		if(isset($mail_action) === true && isset($key) === true) {
+			require_once __DIR__ . '/mail_functions.php';
+			switch($mail_action) {
+				case 'mccm_activate_ad'		: $the_market = sm_mail_activate_ad($key); break;
+				case 'mccm_reactivate_ad'	: $the_market = sm_mail_reactivate_ad($key); break;
+				case 'mccm_deactivate_ad'	: $the_market = sm_mail_deactivate_ad($key); break;
+				default						: $the_market = 'Action not known <br/><br/>';
+			}
+		} else {
+			include_once __DIR__ . '/the_market.php';
+		}
 	}
 	return $content . $the_market;
 }
@@ -147,18 +173,23 @@ add_action('the_content', 'get_the_market');
 add_action('wp_ajax_nopriv_sm_submit_form', 'sm_form_submit_handler');
 
 function sm_form_submit_handler() {
+	global $sm_mysql_column_length;
 	
 	require_once __DIR__ . '/classes.php';
 	$form_response = new SimpleMarketFormResponse();
 	
-	//first check nonce
-	if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
-		die();
-	
-	if(isset($_POST['sm_submit_id']) && isset($_SESSION['sm_submit_id'])) {		
-		if(strcmp($_POST['sm_submit_id'], $_SESSION['sm_submit_id']) != 0)
+	$market_item_to_submit = $_SESSION['market_item_to_submit'];
+	$unique_submit_id = NULL;
+	if(isset($_POST['sm_submit_id']) && isset($market_item_to_submit)) {
+		$unique_submit_id_in_session = $market_item_to_submit->get_image_uuid();		
+		if(strcmp($_POST['sm_submit_id'], $unique_submit_id_in_session) != 0) {
 			die();
+		}
+		$unique_submit_id = $unique_submit_id_in_session;
 	} else {
+		
+		if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
+			die();
 		
 		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
 		
@@ -171,6 +202,12 @@ function sm_form_submit_handler() {
 			echo $form_response->get_json_response();
 			exit();
 		}
+		
+		//this is the first submission of the main form,
+		//and the recaptcha validation passed allready successfully as seen some lines above
+		//generate unique id so user must not enter again a captcha in this submission process
+		//additionally this information is used as tag for images refered to this ad during activation process
+		$unique_submit_id = uniqid($sm_mysql_column_length['image_uuid']);		
 	}
 	
 	$first_name = $_POST['sm_first_name'];
@@ -182,7 +219,7 @@ function sm_form_submit_handler() {
 	$country = $_POST['sm_country'];
 	$text = $_POST['sm_text'];
 	
-	UserInputPreprocessor::prepare_the_text($text);
+	//UserInputPreprocessor::prepare_the_text($text);
 	
 	if(UserInputValidator::is_first_name_valid($first_name) === false) {
 		$form_response->set_first_name_error(true);
@@ -206,16 +243,146 @@ function sm_form_submit_handler() {
 		$form_response->set_text_error(true);
 	}
 	
-	$sm_submit_item = new SimpleMarketItem($first_name, $last_name, $mail, $phone, $zip_code, $city, $country,
-			$text, new DateTime('now'));
+	$sm_submit_item = new SimpleMarketItem(NULL, $first_name, $last_name, $mail, $phone, $zip_code, $city, $country,
+			$text, current_time('mysql', 1), $unique_submit_id);
 	
 	$market_item_renderer = new MarketItemRenderer($sm_submit_item);
 	$form_response->set_market_item_renderer($market_item_renderer);
+	$form_response->set_market_item($sm_submit_item);
 	
 	echo $form_response->get_json_response();
 	exit();	
 	
 }
 
+add_action('wp_ajax_nopriv_sm_preview_submit', 'sm_preview_submit_handler');
+
+function sm_preview_submit_handler() {
+	global $wpdb;
+	global $sm_table_name;
+	global $sm_mysql_column_length;
+	global $sm_initialize_options;
+	global $sm_options;
+	
+	header("Content-Type: application/json");
+	
+	//a few authorization checks
+	
+	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
+	if(isset($the_market_item_to_submit) === false)
+		die();
+	
+	$sm_submit_id = $the_market_item_to_submit->get_image_uuid(); 
+	if(isset($sm_submit_id) === false)
+		die();
+
+	$posted_submit_id = $_POST['sm_submit_id'];
+	if(isset($posted_submit_id) === false)
+		die();
+
+	if(strcmp($posted_submit_id, $sm_submit_id) != 0)
+		die();
+	
+	//authorization end
+
+	$mail_approval_key = uniqid('', true);
+	
+	/*
+	 * ------------------------------------------------------------------------------- send mail
+	 */
+	
+	$headers[] = 'From: MCCM Feldkirch <markt@mccm-feldkirch.at>';
+	$headers[] = 'MIME-Version: 1.0';
+	$headers[] = 'Content-type: text/html; charset=UTF-8';
+	
+	if(!isset($sm_options))
+		$sm_options = get_site_option('simple_market');
+	
+	$market_permalink = get_permalink($sm_options['target_post_id']);
+	$market_permalink = rtrim($market_permalink, '/');
+	
+	$sm_activation_link = 	$market_permalink . '?action=mccm_activate_ad&mccm_activation_key='.$mail_approval_key;
+	$sm_reactivation_link = $market_permalink . '?action=mccm_reactivate_ad&mccm_activation_key='.$mail_approval_key;
+	$sm_deactivate_link =	$market_permalink . '?action=mccm_deactivate_ad&mccm_activation_key='.$mail_approval_key;
+	
+	
+	$the_message =
+	'<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+Hallo und Danke f&uuml;r Ihre Online-Anzeige auf dem <a href="'.$market_permalink.'". target="_blank">"MCCM Online Market"</a>.<br/><br/>
+Sollte Sie keine Online-Anzeige bei uns aufgegeben haben, k&ouml;nnen Sie dieses Mail einfach l&ouml;schen.<br/><br/>
+<span style="font-weight: bold; color: #990000;">Ansonsten behalten Sie dieses E-Mail bitte nach dem Klick auf den Aktivierungs-Link, bis Ihr Verkauf abgeschlossen ist!</span><br/><br/>
+Mit den hier gelisteten Links k&ouml;nnen Sie:
+<ul>
+<li>Ihr Inserat aktivieren</li>
+<li>Ihr Inserat wird nach '.$sm_options['ad_max_active_in_days'].' Tagen automatisch deaktiviert, dieses E-Mail beinhalted auch einen Link f&uuml;r die Reaktivierung sollten Sie Ihr Inserat l&auml;nger schalten wollen.</li>
+<li>Ihr Inserat auf wunsch deaktivieren</li>
+</ul>
+<span style="font-weight: bold;">Ihr Aktivierungs-Link:</span><br/>
+'.$sm_activation_link.'<br/>
+Ihr Reaktivierungs-Link:<br/>
+'.$sm_reactivation_link.'<br/>
+Ihr Deaktivierungs-Link:<br/>
+'.$sm_deactivate_link.'<br/><br/>
+	
+Mit freundlichen Gr&uuml;&szlig;en<br/>
+Eduard Gopp - Webmaster MCCM Feldkirch
+</body>
+</html>
+';
+	
+	
+	if(!wp_mail($the_market_item_to_submit->get_mail(), "Ihres Online Inserat MCCM Feldkirch", $the_message, $headers)) {
+		echo json_encode(array('success' => false, 'error' => '0'));
+		exit();
+	}
+	
+	/*
+	 * ---------------------------------------------------------------- mail success, now insert
+	 */
+	
+	if($wpdb->insert(
+			$sm_table_name,
+			array(
+				'first_name' 		=> $the_market_item_to_submit->get_first_name(),
+				'last_name'	 		=> $the_market_item_to_submit->get_last_name(),
+				'mail'				=> $the_market_item_to_submit->get_mail(),
+				'phone'				=> $the_market_item_to_submit->get_phone(),
+				'zip_code'			=> $the_market_item_to_submit->get_zip_code(),
+				'city'				=> $the_market_item_to_submit->get_city(),
+				'country'			=> $the_market_item_to_submit->get_country(),
+				'ip'				=> $_SERVER['REMOTE_ADDR'],
+				'date_time'			=> $the_market_item_to_submit->get_date_time(),
+				'text'				=> $the_market_item_to_submit->get_text(),
+				'image_uuid'		=> $the_market_item_to_submit->get_image_uuid(),
+				'mail_approval_key' => $mail_approval_key
+			)) === false) {
+		echo json_encode(array('success' => false, 'error' => '1'));		
+		exit();
+	}
+	
+	echo json_encode(array('success' => true));
+	die();
+}
+
+/*
+ * ---------------------------------------------------------------------- session hooks
+*/
+
+add_action('init', 'sm_start_session');
+function sm_start_session() {
+	require_once __DIR__.'/classes.php';
+	if(!session_id()) {
+		session_start();
+	}
+}
+
+//http://devondev.com/2012/02/03/using-the-php-session-in-wordpress/
+//add_action('wp_logout', bla)
+//add_action('wp_login', bla)
+//both currently not needed
 
 ?>
