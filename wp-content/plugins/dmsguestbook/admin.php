@@ -1,11 +1,11 @@
 <?php
-#ini_set('display_errors', '1');
-#error_reporting(E_ALL);
+//ini_set('display_errors', '1');
+//error_reporting(E_ALL);
 /*
 Plugin Name: DMSGuestbook
 Plugin URI: http://danielschurter.net/
 Description: Create and customize your own guestbook.
-Version: 1.17.1
+Version: 1.17.2
 Author: Daniel M. Schurter
 Author URI: http://danielschurter.net/
 */
@@ -28,10 +28,11 @@ These fields are affected:
 define('BASE64', "0");
 
 /* DMSGuestbook version */
-define('DMSGUESTBOOKVERSION', "1.17.1");
+define('DMSGUESTBOOKVERSION', "1.17.2");
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-
+	
+	$_REQUEST['restore_options'] 	= (isset($_REQUEST['restore_options'])) ? $_REQUEST['restore_options'] : '';
+	
 	/* menu (DMSGuestbook, Manage) */
 	add_action('admin_menu', 'add_dmsguestbook');
 
@@ -95,13 +96,13 @@ define('DMSGUESTBOOKVERSION', "1.17.1");
 	}
 
 	/* restore options*/
-	if($_REQUEST[restore_options]==1 && $_REQUEST[restore_data]!="") {
-	$restore = str_replace("\r\n", "[br]", $_REQUEST[restore_data]);
+	if($_REQUEST['restore_options']==1 && $_REQUEST['restore_data']!="") {
+	$restore = str_replace("\r\n", "[br]", $_REQUEST['restore_data']);
 	update_option("DMSGuestbook_options", $restore);
 	message("<b>" . __("Options have been saved", "dmsguestbook") . "...</b>", 300, 800);
 	}
 
-	if($_REQUEST[restore_options]==1 && $_REQUEST[restore_data]=="") {
+	if($_REQUEST['restore_options']==1 && $_REQUEST['restore_data']=="") {
 	message("<b>" . __("Options were not saved, text box is empty", "dmsguestbook") . "...</b>", 300, 800);
 	}
 
@@ -111,6 +112,18 @@ define('DMSGUESTBOOKVERSION', "1.17.1");
 /* DMSGuestbook adminpage main function */
 
 function dmsguestbook_meta_description_option_page() {
+
+	$dmsguestbook_options 			= (isset($dmsguestbook_options)) ? $dmsguestbook_options : '';
+	$num_rows_option 				= (isset($num_rows_option)) ? $num_rows_option : '';
+	$_SESSION['missing_options'] 	= (isset($_SESSION['missing_options'])) ? $_SESSION['missing_options'] : '';
+	$_SESSION['fixed_update']	 	= (isset($_SESSION['fixed_update'])) ? $_SESSION['fixed_update'] : '';
+	$_REQUEST['dbs'] 				= (isset($_REQUEST['dbs'])) ? $_REQUEST['dbs'] : '';  	
+	$_REQUEST['basic'] 				= (isset($_REQUEST['basic'])) ? $_REQUEST['basic'] : '';
+	$_REQUEST['advanced'] 			= (isset($_REQUEST['advanced'])) ? $_REQUEST['advanced'] : '';
+	$_REQUEST['action'] 			= (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$location 						= (isset($location)) ? $location : '';
+	$fixed_update 					= (isset($fixed_update)) ? $fixed_update : '';
+	
 	$url=get_bloginfo('wpurl');
 
 	/* initialize */
@@ -139,8 +152,8 @@ function dmsguestbook_meta_description_option_page() {
 <?php
 
 	/* if option(s) are missing */
-	if(strlen($_SESSION["missing_options"])>0) {
-		$_SESSION[fixed_update] = get_option("DMSGuestbook_options") . $_SESSION["missing_options_fixed_update"];
+	if(strlen($_SESSION['missing_options'])>0) {
+		$_SESSION['fixed_update'] = get_option("DMSGuestbook_options") . $_SESSION["missing_options_fixed_update"];
 			echo "<b style='width:100%;color:#cc0000;'>" . __("One or more options are missing.", "dmsguestbook") . "</b><br />";
 			echo "<form name='form0' method='post' action='$location'>
   			<input name='action' value='fix_update' type='hidden' />
@@ -152,8 +165,8 @@ function dmsguestbook_meta_description_option_page() {
 	}
 
 	/* save the fixed options */
-	if($_REQUEST[action]=="fix_update") {
-	$restore = str_replace("\r\n", "[br]", $_SESSION[fixed_update]);
+	if($_REQUEST['action']=="fix_update") {
+	$restore = str_replace("\r\n", "[br]", $_SESSION['fixed_update']);
 	update_option("DMSGuestbook_options", $restore);
 	message("<b>" . __("Update database", "dmsguestbook") . "...</b>", 300, 800);
 	echo "<meta http-equiv='refresh' content='0; URL=$location'>";
@@ -162,7 +175,7 @@ function dmsguestbook_meta_description_option_page() {
 
 
 	/* user can create new DMSGuestbook database if these failed during the installation. */
-    if($_REQUEST[action]=="createnew") {
+    if($_REQUEST['action']=="createnew") {
 		$sql = $wpdb->query("CREATE TABLE " . $table_name . " (
 	  	id mediumint(9) NOT NULL AUTO_INCREMENT,
 	  	name varchar(50) DEFAULT '' NOT NULL,
@@ -177,7 +190,7 @@ function dmsguestbook_meta_description_option_page() {
 	  	additional varchar(50) NOT NULL,
 	  	flag int(2) NOT NULL,
 	  	UNIQUE KEY id (id)
-	  	)" . mysql_real_escape_string($_REQUEST[collate]) . "");
+	  	)" . mysql_real_escape_string($_REQUEST['collate']) . "");
 	  	$abspath = str_replace("\\","/", ABSPATH);
 	  	require_once($abspath . 'wp-admin/upgrade-functions.php');
 	  	dbDelta($sql);
@@ -185,7 +198,7 @@ function dmsguestbook_meta_description_option_page() {
 	}
 
 	/* user can delete DMSGuestbook database after the confirmation */
-	if($_REQUEST[action]=="delete" && $_REQUEST[delete]=="yes, i am sure") {
+	if($_REQUEST['action']=="delete" && $_REQUEST['delete']=="yes, i am sure") {
 		$wpdb->query('DROP TABLE IF EXISTS ' . $table_name);
 		$abspath = str_replace("\\","/", ABSPATH);
 	  	require_once($abspath . 'wp-admin/upgrade-functions.php');
@@ -193,14 +206,14 @@ function dmsguestbook_meta_description_option_page() {
 	}
 
 	/* user can create DMSGuestbook option if the failed during the installation. */
-	if($_REQUEST[action]=="createoption") {
+	if($_REQUEST['action']=="createoption") {
 		initialize_option();
 	  	message("<b>" . __("DMSGuestbook options", "dmsguestbook") . "<br /></b><br />" . __("Don't forget to set the page id.", "dmsguestbook"),260,800);
 		echo "<meta http-equiv='refresh' content='0; URL=$location'>";
 	}
 
 	/* user can delete all DMSGuestbook_ entries in DMSGuestbook option after confirmation. */
-    if($_REQUEST[action]=="deleteoption" && $_REQUEST[confirm_delete_option]=="delete") {
+    if($_REQUEST['action']=="deleteoption" && $_REQUEST['confirm_delete_option']=="delete") {
 		$wpdb->query('DELETE FROM ' . $table_option . ' WHERE option_name LIKE "DMSGuestbook_%"');
 	  	$abspath = str_replace("\\","/", ABSPATH);
 	  	require_once($abspath . 'wp-admin/upgrade-functions.php');
@@ -215,60 +228,59 @@ function dmsguestbook_meta_description_option_page() {
 function addLoadEvent(func) {if ( typeof wpOnload!='function'){wpOnload=func;}else{ var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}}
 //]]>
 </script>
-<script type="text/javascript" src="../wp-content/plugins/dmsguestbook/js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="../wp-content/plugins/dmsguestbook/js/jquery-1.7.2.js"></script>
 <link rel="stylesheet" media="screen" type="text/css" href="../wp-content/plugins/dmsguestbook/js/colorpicker/css/colorpicker.css" />
 <script type="text/javascript" src="../wp-content/plugins/dmsguestbook/js/colorpicker/js/colorpicker.js"></script>
 <link type="text/css" href="../wp-content/plugins/dmsguestbook/js/jquery-ui/css/custom-theme/jquery-ui-1.8.5.custom.css" rel="Stylesheet" />
 <link type="text/css" href="../wp-content/plugins/dmsguestbook/js/jquery-simple-tooltip-0.9.1/style.css" rel="Stylesheet" />
 <script type="text/javascript" src="../wp-content/plugins/dmsguestbook/js/jquery-ui/js/jquery-ui-1.8.5.custom.min.js"></script>
 <script type="text/javascript" src="../wp-content/plugins/dmsguestbook/js/jquery-simple-tooltip-0.9.1/jquery.simpletooltip-min.js"></script>
-
 <script>
 jQuery(document).ready(function(){
-	$( "#dmsguestbook-menu" ).accordion({
+	jQuery( "#dmsguestbook-menu" ).accordion({
 		clearStyle:true,
 		collapsible:true,
 		active:-1
 	});
 
-	$("a.tooltiplink").simpletooltip({
+	jQuery("a.tooltiplink").simpletooltip({
 		margin: 10
 	});
 
-	$('#bordercolor1').ColorPicker({
+	jQuery('#bordercolor1').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color2_div').css('background-color', '#' + hex);
-		$('#bordercolor1').val(hex);
+		jQuery('#Color2_div').css('background-color', '#' + hex);
+		jQuery('#bordercolor1').val(hex);
 		}
 	})
-	$('#bordercolor2').ColorPicker({
+	jQuery('#bordercolor2').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color3_div').css('background-color', '#' + hex);
-		$('#bordercolor2').val(hex);
+		jQuery('#Color3_div').css('background-color', '#' + hex);
+		jQuery('#bordercolor2').val(hex);
 		}
 	})
-	$('#navigationcolor').ColorPicker({
+	jQuery('#navigationcolor').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color4_div').css('background-color', '#' + hex);
-		$('#navigationcolor').val(hex);
+		jQuery('#Color4_div').css('background-color', '#' + hex);
+		jQuery('#navigationcolor').val(hex);
 		}
 	})
-	$('#separatorcolor').ColorPicker({
+	jQuery('#separatorcolor').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color1_div').css('background-color', '#' + hex);
-		$('#separatorcolor').val(hex);
+		jQuery('#Color1_div').css('background-color', '#' + hex);
+		jQuery('#separatorcolor').val(hex);
 		}
 	})
-	$('#fontcolor1').ColorPicker({
+	jQuery('#fontcolor1').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color5_div').css('background-color', '#' + hex);
-		$('#fontcolor1').val(hex);
+		jQuery('#Color5_div').css('background-color', '#' + hex);
+		jQuery('#fontcolor1').val(hex);
 		}
 	})
-	$('#captcha_color').ColorPicker({
+	jQuery('#captcha_color').ColorPicker({
 		onChange: function (hsb, hex, rgb) {
-		$('#Color6_div').css('background-color', '#' + hex);
-		$('#captcha_color').val(hex);
+		jQuery('#Color6_div').css('background-color', '#' + hex);
+		jQuery('#captcha_color').val(hex);
 		}
 	})
 
@@ -299,7 +311,7 @@ $collaps_advanced="<a href='admin.php?page=dmsguestbook&advanced=1'>
 
 <?php
 /* dashboard */
-if($_REQUEST[page]=="dmsguestbook" && ($_REQUEST[dbs]!=1 && $_REQUEST[basic]!=1 && $_REQUEST[advanced]!=1)) {
+if($_REQUEST['page']=="dmsguestbook" && ($_REQUEST['dbs']!=1 && $_REQUEST['basic']!=1 && $_REQUEST['advanced']!=1)) {
 
 	$dashcolor="#21759B";
 	function convert($convert) {
@@ -411,8 +423,8 @@ if($_REQUEST[page]=="dmsguestbook" && ($_REQUEST[dbs]!=1 && $_REQUEST[basic]!=1 
 			}
 			else {
 			     foreach ( $items as $item ) :
-					echo "<li><a href='$item[link]' title='$item[title]' target='_blank'>$item[title]</a>&nbsp;&nbsp;<span style='color:#666666;font-size:10px;'>". mb_substr($item[pubdate],5 ,12) . "</span><br />
-					" . mb_substr($item[description], 0, 80) . " [...]</li>";
+					echo "<li><a href='$item[link]' title='$item[title]' target='_blank'>$item[title]</a>&nbsp;&nbsp;<span style='color:#666666;font-size:10px;'>". mb_substr($item['pubdate'],5 ,12) . "</span><br />
+					" . mb_substr($item['description'], 0, 80) . " [...]</li>";
 			     endforeach;
 			     }
 			echo "</ul>
@@ -429,8 +441,7 @@ if($_REQUEST[page]=="dmsguestbook" && ($_REQUEST[dbs]!=1 && $_REQUEST[basic]!=1 
 }
 
 
-
-if($_REQUEST[dbs]==1) {
+if($_REQUEST['dbs']==1) {
 
 	$Role1 = CheckRole($options["role1"],0);
 	if(!current_user_can("level_" . $Role1) && ROLE != 0) {
@@ -574,7 +585,7 @@ echo "</td></tr></table>";
 if($num_rows_option==$dmsguestbook_options)
 {
 
-if($_REQUEST[basic]==1) {
+if($_REQUEST['basic']==1) {
 
 	$Role1 = CheckRole($options["role1"],0);
 	if(!current_user_can("level_" . $Role1) && ROLE != 0) {
@@ -596,21 +607,27 @@ while (list($key, $val) = each($options)) {
 		}
 
 		$c=0;
-		$data ="";
+		$data  = (isset($data)) ? $data : '';
 		$data .= "<b style='color:#bb0000;'>" . __("You have to delete the assigned guestbooks by clicking on \"Clear all\" before you can set this again. Assigned guestbooks will not be released until you press the \"Save\" button.", "dmsguestbook") . "</b>";
 		$data .= "<br /><br />" . __("To assign guestbook(s)", "dmsguestbook") . ":";
 		$data .= "<table style='width:95%;' border:0px;><tr><td>";
 
 		### Language
 		unset($tmp);
+		$tmp = (isset($tmp)) ? $tmp : '';
 		$abspath = str_replace("\\","/", ABSPATH);
 				if ($handle = opendir($abspath . 'wp-content/plugins/dmsguestbook/language/')) {
 					$tmp .= "<select name='langselect' id='langselect'>";
     				while (false !== ($file = readdir($handle))) {
         				if ($file != "." && $file != ".." && $file != "README.txt" && $file != "mo") {
-           				$tmp .= "<option value='$file'>$file</option>";
-        				}
+						$tmp_a[] = $file;
+						}
     				}
+					sort($tmp_a);
+					for($x=0; $x<count($tmp_a); $x++) {
+						$tmp .= "<option value='$tmp_a[$x]'>$tmp_a[$x]</option>";
+				
+					}
     				$tmp .= "</select>";
     			closedir($handle);
 				}
@@ -628,6 +645,7 @@ while (list($key, $val) = each($options)) {
 			$data .= "<td style='font-size:9px;background-color:#dddddd;padding:2px;'><a href='page.php?action=edit&post=$result->ID'>$result->post_status</a></td>";
 				for($v=0; $v<count($part_page_id); $v++) {
 				unset($lang);
+				$lang  = (isset($lang)) ? $lang : '';
 					if($result->ID == $part_page_id[$v]) {
 					$vv = $v +1;
 					$set = "#" . $vv;
@@ -790,12 +808,12 @@ while (list($key, $val) = each($options)) {
 		$base64 = 1;
 			/* If base64 is active */
 			if(BASE64 == 1 && $base64 == 1) {
-			$forwardchar = base64_decode($options[forwardchar]);
-			$backwardchar = base64_decode($options[backwardchar]);
+			$forwardchar = base64_decode($options['forwardchar']);
+			$backwardchar = base64_decode($options['backwardchar']);
 			}
 			else {
-			     $forwardchar = $options[forwardchar];
-			     $backwardchar = $options[backwardchar];
+			     $forwardchar = $options['forwardchar'];
+			     $backwardchar = $options['backwardchar'];
 			     }
 		$return_forwardchar = "<li><table style='width:95%;' border='0'><colgroup><col width='40%'><col width='55%'><col width='5%'><colgroup><tr><td>" . __("Navigation char style", "dmsguestbook") . ":</td>
 		<td><input style='width:50px;' type='text' name='backwardchar' value='$backwardchar' />
@@ -869,6 +887,7 @@ while (list($key, $val) = each($options)) {
 
 	if($key == "form_template") {
 		unset($tmp);
+		$tmp  = (isset($tmp)) ? $tmp : '';
 		$abspath = str_replace("\\","/", ABSPATH);
 				if ($handle = opendir($abspath . 'wp-content/plugins/dmsguestbook/template/form/')) {
     				while (false !== ($file = readdir($handle))) {
@@ -890,6 +909,7 @@ while (list($key, $val) = each($options)) {
 
 	if($key == "post_template") {
 		unset($tmp);
+		$tmp  = (isset($tmp)) ? $tmp : '';
 		$abspath = str_replace("\\","/", ABSPATH);
 				if ($handle = opendir($abspath . 'wp-content/plugins/dmsguestbook/template/post/')) {
     				while (false !== ($file = readdir($handle))) {
@@ -922,6 +942,7 @@ while (list($key, $val) = each($options)) {
 
 	if($key == "additional_option") {
 		unset($tmp);
+		$tmp  = (isset($tmp)) ? $tmp : '';
 		$abspath = str_replace("\\","/", ABSPATH);
 				if ($handle = opendir($abspath . 'wp-content/plugins/dmsguestbook/module/')) {
     				while (false !== ($file = readdir($handle))) {
@@ -1484,7 +1505,7 @@ while (list($key, $val) = each($options)) {
 		$options["css"] = str_replace("[br]", "\r\n", $options["css"]);
 		$part1 = explode("@", $options["css"]);
 
-		$part11 = explode("@", $_SESSION[csscontainer]);
+		$part11 = explode("@", $_SESSION['csscontainer']);
 
 		if(count($part11) > count($part1)) {
 		$newone="<b style='color:#bb1100;'>" . __("NEW!", "dmsguestbook") . "</b><br />";
@@ -1494,6 +1515,8 @@ while (list($key, $val) = each($options)) {
 		echo "--------------------------------------------------</b><br /><br />";
 		}
 
+		$restore_css  = (isset($restore_css)) ? $restore_css : '';
+		$t  = (isset($t)) ? $t : '';
 		if(count($part11) < count($part1)) {
 		$restore_css = 1;
 		echo "<b style='font-size:12px;color:#bb1100;'>
@@ -1505,6 +1528,7 @@ while (list($key, $val) = each($options)) {
 	   $tooltip = "{width1} = " . __("Guestbook width", "dmsguestbook") . "<br />{width2} = " . __("Separator width", "dmsguestbook") . "<br />{position1} = " . __("Relative guestbook position (left to right)", "dmsguestbook") . "<br />{separatorcolor} = " . __("Separator between header and body in each entry", "dmsguestbook") . "<br />{bordercolor1} = " . __("Border of the outside box") . "<br />{bordercolor2} = " . __("Color of all textfield border", "dmsguestbook") . "<br />{navigationcolor} = " . __("Navigation color", "dmsguestbook") . "<br />{fontcolor1} = " . __("Overall font color", "dmsguestbook") . "<br />{navigationsize} = " . __("Navigation char size", "dmsguestbook") . "<br />{captcha_color} = " . __("Antispam image text color", "dmsguestbook") . "<br /><br />" . __("Stylesheet (CSS) Help & Tutorials:<br />English: <a href=\"http://www.html.net/tutorials/css/\" target=\"_blank\">http://www.html.net/tutorials/css/</a><br />German: <a href=\"http://www.css4you.de/\" target=\"_blank\">http://www.css4you.de/</a><br />Or ask Google and friends :-)", "dmsguestbook");
 
 
+			$return_css  = (isset($return_css)) ? $return_css : '';
 			$return_css .= "<table border='0'><colgroup><col width='50'><col width='210'><col width='50'><colgroup>";
 					$xx = 0;
 					for($x=0; $x<count($part11)-1; $x++) {
@@ -1543,6 +1567,7 @@ while (list($key, $val) = each($options)) {
     		<td>$yxc[$x]<textarea name='css$x' cols='50' rows='5' >$part2[2]</textarea></td><td>$showtooltip</td></tr>";
 
 						unset($css_submitbutton);
+						$css_submitbutton  = (isset($css_submitbutton)) ? $css_submitbutton : '';
 						if($x==4 OR $x==9 OR $x==14 OR $x==19 OR $x==24 OR $x==29) {
 						$css_submitbutton = "<br /><br />" . $submitbutton . "<br /><br />";
 						}
@@ -1858,7 +1883,7 @@ echo "</form></td>";
 
 	 	#restore default settings button -->
 		echo "<td><form name='form3' method='post' action='$location'>
-		<input name='action2' value='default_settings' type='hidden' />
+		<input name='action' value='default_settings' type='hidden' />
 		<input class='button-secondary action' style='font-weight:bold; margin:10px 0px;' type='submit'
 		value='" . __("Restore default settings - All data will be replaced", "dmsguestbook") . "' onclick=\"return confirm('" . __("Would you really like to restore all data?", "dmsguestbook") . "');\" />
      	</form></td>";
@@ -1872,7 +1897,9 @@ echo "</tr></table>";
 
 <!-- language -->
 <?php
-if($_REQUEST[advanced]==1) {
+if($_REQUEST['advanced']==1) {
+
+	
 
 	$Role1 = CheckRole($options["role1"],0);
 	if(!current_user_can("level_" . $Role1) && ROLE != 0) {
@@ -1883,13 +1910,19 @@ if($_REQUEST[advanced]==1) {
 	clearstatcache();
 	$color3=settablecolor(3,0);
 	unset($buffer);
+	
+	$buffer 				= (isset($buffer)) ? $buffer : '';
+	$save_advanced_button 	= (isset($save_advanced_button)) ? $save_advanced_button : '';
+	$valid_file 			= (isset($valid_file)) ? $valid_file : '';
+	$_REQUEST['file'] 		= (isset($_REQUEST['file'])) ? $_REQUEST['file'] : '';
+	
 	echo "<b style='font-size:20px;'>" . __("Language settings", "dmsguestbook") . "</b><br />";
 	$abspath = str_replace("\\","/", ABSPATH);
 
 		if ($handle = opendir($abspath . 'wp-content/plugins/dmsguestbook/language/')) {
     		/* language */
     		while (false !== ($file = readdir($handle))) {
-        		if ($file != "." && $file != "..") {
+        		if ($file != "." && $file != ".." && $file != "mo") {
         			if($file=="README.txt") {
            			echo "<a style='color:#bb0000;' href='admin.php?page=dmsguestbook&advanced=1&folder=language/&file=$file'>$file</a>, ";
         			}
@@ -1902,13 +1935,14 @@ if($_REQUEST[advanced]==1) {
     		closedir($handle);
 		}
 
-if($_REQUEST[file]!="") {
+
+if($_REQUEST['file']!="") {
 
 	clearstatcache();
 
 	/* check the file variable for language text file */
 	if(preg_match('/^[a-z0-9_]+\.+(txt)/i', "$_REQUEST[file]")==1) {
-	$file=$_REQUEST[file];
+	$file=$_REQUEST['file'];
 
 	if(file_exists($abspath . "wp-content/plugins/dmsguestbook/language/" . $file)) {
 	$folder="language/";
@@ -1948,7 +1982,7 @@ if($_REQUEST[file]!="") {
 		<form name="form0" method="post" action="<?php echo $location;?>">
 		<td><textarea style="width:99%; height:500px;" name="advanced_data"><?php echo $showfiledata;?></textarea></td>
 	  </tr>
-		<input name="action3" value="save_advanced_data" type="hidden" />
+		<input name="action" value="save_advanced_data" type="hidden" />
 	  	<input name="folder" value="<?php echo $folder; ?>" type="hidden" />
 	  	<input name="file" value="<?php echo $file; ?>" type="hidden" />
 	  <tr>
@@ -1974,18 +2008,63 @@ if($_REQUEST[file]!="") {
 	else {
 		 $POSTVARIABLE = $_POST;
 		 }
+		 
+	$POSTVARIABLE['action'] 						= (isset($POSTVARIABLE['action'])) ? $POSTVARIABLE['action'] : '';
+	$POSTVARIABLE['base64-supergb'] 				= (isset($POSTVARIABLE['base64-supergb'])) ? $POSTVARIABLE['base64-supergb'] : '';
+	$POSTVARIABLE['base64-page_id'] 				= (isset($POSTVARIABLE['base64-page_id'])) ? $POSTVARIABLE['base64-page_id'] : '';
+	$POSTVARIABLE['base64-step'] 					= (isset($POSTVARIABLE['base64-step'])) ? $POSTVARIABLE['base64-step'] : '';
+	$POSTVARIABLE['base64-separatorcolor'] 			= (isset($POSTVARIABLE['base64-separatorcolor'])) ? $POSTVARIABLE['base64-separatorcolor'] : '';
+	$POSTVARIABLE['base64-bordercolor1'] 			= (isset($POSTVARIABLE['base64-bordercolor1'])) ? $POSTVARIABLE['base64-bordercolor1'] : '';
+	$POSTVARIABLE['base64-bordercolor2'] 			= (isset($POSTVARIABLE['base64-bordercolor2'])) ? $POSTVARIABLE['base64-bordercolor2'] : '';
+	$POSTVARIABLE['base64-navigationcolor'] 		= (isset($POSTVARIABLE['base64-navigationcolor'])) ? $POSTVARIABLE['base64-navigationcolor'] : '';
+	$POSTVARIABLE['base64-fontcolor1'] 				= (isset($POSTVARIABLE['base64-fontcolor1'])) ? $POSTVARIABLE['base64-fontcolor1'] : '';
+	$POSTVARIABLE['base64-require_email'] 			= (isset($POSTVARIABLE['base64-require_email'])) ? $POSTVARIABLE['base64-require_email'] : '';
+	$POSTVARIABLE['base64-require_url'] 			= (isset($POSTVARIABLE['base64-require_url'])) ? $POSTVARIABLE['base64-require_url'] : '';
+	$POSTVARIABLE['base64-require_antispam'] 		= (isset($POSTVARIABLE['base64-require_antispam'])) ? $POSTVARIABLE['base64-require_antispam'] : '';
+	$POSTVARIABLE['base64-akismet'] 				= (isset($POSTVARIABLE['base64-akismet'])) ? $POSTVARIABLE['base64-akismet'] : '';
+	$POSTVARIABLE['base64-akismet_action'] 			= (isset($POSTVARIABLE['base64-akismet_action'])) ? $POSTVARIABLE['base64-akismet_action'] : '';
+	$POSTVARIABLE['base64-show_url'] 				= (isset($POSTVARIABLE['base64-show_url'])) ? $POSTVARIABLE['base64-show_url'] : '';
+	$POSTVARIABLE['base64-show_email'] 				= (isset($POSTVARIABLE['base64-show_email'])) ? $POSTVARIABLE['base64-show_email'] : '';
+	$POSTVARIABLE['base64-show_ip'] 				= (isset($POSTVARIABLE['base64-show_ip'])) ? $POSTVARIABLE['base64-show_ip'] : '';
+	$POSTVARIABLE['base64-ip_mask'] 				= (isset($POSTVARIABLE['base64-ip_mask'])) ? $POSTVARIABLE['base64-ip_mask'] : '';
+	$POSTVARIABLE['base64-captcha_color'] 			= (isset($POSTVARIABLE['base64-captcha_color'])) ? $POSTVARIABLE['base64-captcha_color'] : '';
+	$POSTVARIABLE['base64-offset'] 					= (isset($POSTVARIABLE['base64-offset'])) ? $POSTVARIABLE['base64-offset'] : '';
+	$POSTVARIABLE['base64-formpos'] 				= (isset($POSTVARIABLE['base64-formpos'])) ? $POSTVARIABLE['base64-formpos'] : '';
+	$POSTVARIABLE['base64-send_mail'] 				= (isset($POSTVARIABLE['base64-send_mail'])) ? $POSTVARIABLE['base64-send_mail'] : '';
+	$POSTVARIABLE['base64-mail_method'] 			= (isset($POSTVARIABLE['base64-mail_method'])) ? $POSTVARIABLE['base64-mail_method'] : '';
+	$POSTVARIABLE['base64-smtp_port'] 				= (isset($POSTVARIABLE['base64-smtp_port'])) ? $POSTVARIABLE['base64-smtp_port'] : '';
+	$POSTVARIABLE['base64-smtp_auth'] 				= (isset($POSTVARIABLE['base64-smtp_auth'])) ? $POSTVARIABLE['base64-smtp_auth'] : '';
+	$POSTVARIABLE['base64-smtp_ssl'] 				= (isset($POSTVARIABLE['base64-smtp_ssl'])) ? $POSTVARIABLE['base64-smtp_ssl'] : '';
+	$POSTVARIABLE['base64-sortitem'] 				= (isset($POSTVARIABLE['base64-sortitem'])) ? $POSTVARIABLE['base64-sortitem'] : '';
+	$POSTVARIABLE['base64-dbid'] 					= (isset($POSTVARIABLE['base64-dbid'])) ? $POSTVARIABLE['base64-dbid'] : '';
+	$POSTVARIABLE['base64-language'] 				= (isset($POSTVARIABLE['base64-language'])) ? $POSTVARIABLE['base64-language'] : '';
+	$POSTVARIABLE['base64-admin_review'] 			= (isset($POSTVARIABLE['base64-admin_review'])) ? $POSTVARIABLE['base64-admin_review'] : '';
+	$POSTVARIABLE['base64-gravatar'] 				= (isset($POSTVARIABLE['base64-gravatar'])) ? $POSTVARIABLE['base64-gravatar'] : '';
+	$POSTVARIABLE['base64-gravatar_rating'] 		= (isset($POSTVARIABLE['base64-gravatar_rating'])) ? $POSTVARIABLE['base64-gravatar_rating'] : '';
+	$POSTVARIABLE['base64-form_template'] 			= (isset($POSTVARIABLE['base64-form_template'])) ? $POSTVARIABLE['base64-form_template'] : '';
+	$POSTVARIABLE['base64-post_template'] 			= (isset($POSTVARIABLE['base64-post_template'])) ? $POSTVARIABLE['base64-post_template'] : '';
+	$POSTVARIABLE['base64-nofollow'] 				= (isset($POSTVARIABLE['base64-nofollow'])) ? $POSTVARIABLE['base64-nofollow'] : '';
+	$POSTVARIABLE['base64-additional_option'] 		= (isset($POSTVARIABLE['base64-additional_option'])) ? $POSTVARIABLE['base64-additional_option'] : '';
+	$POSTVARIABLE['base64-show_additional_option'] 	= (isset($POSTVARIABLE['base64-show_additional_option'])) ? $POSTVARIABLE['base64-show_additional_option'] : '';
+	$POSTVARIABLE['base64-role1'] 					= (isset($POSTVARIABLE['base64-role1'])) ? $POSTVARIABLE['base64-role1'] : '';
+	$POSTVARIABLE['base64-role2'] 					= (isset($POSTVARIABLE['base64-role2'])) ? $POSTVARIABLE['base64-role2'] : '';
+	$POSTVARIABLE['base64-role3'] 					= (isset($POSTVARIABLE['base64-role3'])) ? $POSTVARIABLE['base64-role3'] : '';
+	$POSTVARIABLE['base64-css'] 					= (isset($POSTVARIABLE['base64-css'])) ? $POSTVARIABLE['base64-css'] : '';
+	$POSTVARIABLE['base64-css_customize'] 			= (isset($POSTVARIABLE['base64-css_customize'])) ? $POSTVARIABLE['base64-css_customize'] : '';
 
-
+	
 	/* write DMSGuestbook option in wordpress options database */
-	if ('insert' == $POSTVARIABLE['action'])
+	if ($POSTVARIABLE['action'] == 'insert')
 	{
 	$url=get_bloginfo('wpurl');
 	$options = create_options();
 		$save_options = default_options_array();
 		unset($save_to_db);
 		unset($save_to_dmsguestbook_css);
-
+		$save_to_db = (isset($save_to_db)) ? $save_to_db : '';
+		
 		while (list($key, $val) = each($save_options)) {
+			$POSTVARIABLE[$key] 	= (isset($POSTVARIABLE[$key])) ? $POSTVARIABLE[$key] : '';
 			if($POSTVARIABLE[$key]==""){$POSTVARIABLE[$key]=0;}
 
 			/* Convert text to base64 if is selected */
@@ -1994,7 +2073,8 @@ if($_REQUEST[file]!="") {
 			}
 
 				if($key=="css") {
-					$part = explode("@", $_SESSION[csscontainer]);
+					$cssdata = (isset($cssdata)) ? $cssdata : '';
+					$part = explode("@", $_SESSION['csscontainer']);
 					for($y=0; $y<count($part)-1; $y++) {
 					$POSTVARIABLE["cssdescription$y"] = str_replace("@", "", $POSTVARIABLE["cssdescription$y"]);
 					$POSTVARIABLE["cssdescription$y"] = str_replace("|", "", $POSTVARIABLE["cssdescription$y"]);
@@ -2017,6 +2097,7 @@ if($_REQUEST[file]!="") {
 						if($key == "page_id") {
 							$multi_gb = explode(",", $POSTVARIABLE[$key]);
 							unset($POSTVARIABLE[$key]);
+							$POSTVARIABLE[$key] 	= (isset($POSTVARIABLE[$key])) ? $POSTVARIABLE[$key] : '';
 							$multi_gb = array_unique($multi_gb);
 								for($m=0; $m<count($multi_gb); $m++) {
 									if(is_numeric($multi_gb[$m])) {
@@ -2024,14 +2105,15 @@ if($_REQUEST[file]!="") {
 									}
 								}
 
-							$multi_lang = explode(",", $POSTVARIABLE[language]);
-							unset($POSTVARIABLE[language]);
+							$multi_lang = explode(",", $POSTVARIABLE['language']);
+							unset($POSTVARIABLE['language']);
+							$POSTVARIABLE['language'] = (isset($POSTVARIABLE['language'])) ? $POSTVARIABLE['language'] : '';
 								for($m=0; $m<count($multi_lang); $m++) {
 									if(is_string($multi_lang[$m])) {
-									$POSTVARIABLE[language] .= $multi_lang[$m] . ",";
+									$POSTVARIABLE['language'] .= $multi_lang[$m] . ",";
 									}
 								}
-							$POSTVARIABLE[language] = rtrim($POSTVARIABLE[language], ",");
+							$POSTVARIABLE['language'] = rtrim($POSTVARIABLE['language'], ",");
 
 
 							$POSTVARIABLE[$key] = rtrim($POSTVARIABLE[$key], ",");
@@ -2076,12 +2158,12 @@ if($_REQUEST[file]!="") {
 
 
 	/* reset DMSGuestbook */
-	if ('default_settings' == $POSTVARIABLE['action2']) {
+	if ($POSTVARIABLE['action'] == 'default_settings') {
 	default_option();
 	}
 
 	/* save advanced */
-	if ('save_advanced_data' == $POSTVARIABLE['action3']) {
+	if ($POSTVARIABLE['action'] =='save_advanced_data') {
 	$abspath = str_replace("\\","/", ABSPATH);
 
 	/* check the folder variable */
@@ -2111,14 +2193,27 @@ if($_REQUEST[file]!="") {
 /* manage guestbook entries */
 function dmsguestbook2_meta_description_option_page() {
 
+		$_REQUEST['guestbook'] 	= (isset($_REQUEST['guestbook'])) ? $_REQUEST['guestbook'] : '';
+		$_REQUEST['htmleditor'] = (isset($_REQUEST['htmleditor'])) ? $_REQUEST['htmleditor'] : '';
+		$_REQUEST['approval'] 	= (isset($_REQUEST['approval'])) ? $_REQUEST['approval'] : '';
+		$_REQUEST['tinymce'] 	= (isset($_REQUEST['tinymce'])) ? $_REQUEST['tinymce'] : '';
+		$_REQUEST['search'] 	= (isset($_REQUEST['search'])) ? $_REQUEST['search'] : '';
+		$_REQUEST['from'] 		= (isset($_REQUEST['from'])) ? $_REQUEST['from'] : '';
+		$location 				= (isset($location)) ? $location : '';
+		$gbadditional2 			= (isset($gbadditional2)) ? $gbadditional2 : '';
+		$search_param 			= (isset($search_param)) ? $search_param : '';
+		$bgcolor 				= (isset($bgcolor)) ? $bgcolor : '';
+		$date2 					= (isset($date2)) ? $date2 : '';
+		$editor					= (isset($editor)) ? $editor : '';
+		
 		// all guestbooks are selected when this site is loading
-		if($_REQUEST[guestbook]=="") {$_REQUEST[guestbook]="all";}
+		if($_REQUEST['guestbook']=="") {$_REQUEST['guestbook']="all";}
 
 		$options=create_options();
 
 		// check Akismet is activated
 		$CheckAkismet = CheckAkismet();
-			if($CheckAkismet != "" && $options[akismet] == 1) {
+			if($CheckAkismet != "" && $options['akismet'] == 1) {
 			}
 
 ?>
@@ -2128,48 +2223,50 @@ function dmsguestbook2_meta_description_option_page() {
 <?php
 
 		/* maximum guestbook entries were displayed on page */
-		if($_REQUEST[tinymce]==1) {
+		if($_REQUEST['tinymce']==1) {
 		$gb_step=1;
 		$editor = "WHERE id = '$_REQUEST[id]'";
 		}
 
-		if($_REQUEST[htmleditor]==1) {
+		if($_REQUEST['htmleditor']==1) {
 		$gb_step=1;
 		$editor = "WHERE id = '$_REQUEST[id]'";
 		}
 
-		if($_REQUEST[approval]==1) {
+		if($_REQUEST['approval']==1) {
 		$flag="AND flag='1'";
 		} else {
 			   $flag="";
 			   }
 
-		if($_REQUEST[htmleditor]!=1 && $_REQUEST[tinymce]!=1) {
+		if($_REQUEST['htmleditor']!=1 && $_REQUEST['tinymce']!=1) {
 		$gb_step=$options["step"];
 
-			if($_REQUEST[search]!="") {
-			$_REQUEST[search] = preg_replace("/[\<\>\"\'\`\´]+/i", "", $_REQUEST[search]);
+			if($_REQUEST['search']!="") {
+			$_REQUEST['search'] = preg_replace("/[\<\>\"\'\`\´]+/i", "", $_REQUEST['search']);
 
-				if($_REQUEST[guestbook]=="all") {
+				if($_REQUEST['guestbook']=="all") {
 				$search_param ="WHERE spam = '0' AND (name LIKE '$_REQUEST[search]' OR email LIKE '$_REQUEST[search]' OR url LIKE '$_REQUEST[search]' OR ip
 				LIKE '$_REQUEST[search]' OR message LIKE '$_REQUEST[search]')";
 				} else {
-					   $search_param ="WHERE guestbook = '" . sprintf("%d", $_REQUEST[guestbook]) . "' AND spam = '0' AND (name LIKE '$_REQUEST[search]' OR email LIKE '$_REQUEST[search]'
+					   $search_param ="WHERE guestbook = '" . sprintf("%d", $_REQUEST['guestbook']) . "' AND spam = '0' AND (name LIKE '$_REQUEST[search]' OR email LIKE '$_REQUEST[search]'
 					   OR url LIKE '$_REQUEST[search]' OR ip LIKE '$_REQUEST[search]' OR message LIKE '$_REQUEST[search]')";
 					   }
 			}
 			else {
 			     $search_param="";
-			     	if($_REQUEST[guestbook]=="all") {
+			     	if($_REQUEST['guestbook']=="all") {
 			     	$editor = "WHERE spam = '0'";
 			     	} else {
-			     		   $editor = "WHERE guestbook = '" . sprintf("%d", $_REQUEST[guestbook]) . "' AND spam = '0'";
+			     		   $editor = "WHERE guestbook = '" . sprintf("%d", $_REQUEST['guestbook']) . "' AND spam = '0'";
 			     		   }
 			     }
 		}
 
 
 			/* if some option(s) data are missing*/
+			
+			$options[9999] = (isset($options[9999])) ? $options[9999] : '';
 			if($options[9999]) {
 			$gb_step="50";
 			$options["sortitem"]="DESC";
@@ -2178,7 +2275,7 @@ function dmsguestbook2_meta_description_option_page() {
 			}
 
 		/* initialize */
-		if($_REQUEST[from]=="") {$_REQUEST[from]=0; $_REQUEST[select]=1;}
+		if($_REQUEST['from']=="") {$_REQUEST['from']=0; $_REQUEST['select']=1;}
 
 		/* global var for DMSGuestbook */
 		global $wpdb;
@@ -2191,7 +2288,7 @@ function dmsguestbook2_meta_description_option_page() {
 
 		/* read all search guestbook entries */
 		$query1 = $wpdb->get_results("SELECT * FROM $table_name $search_param $editor $flag ORDER BY id " . sprintf("%s", $options["sortitem"]) . " LIMIT
-		" . sprintf("%d", $_REQUEST[from]) . "," . sprintf("%d", $gb_step) . ";");
+		" . sprintf("%d", $_REQUEST['from']) . "," . sprintf("%d", $gb_step) . ";");
 		$num_rows1 = $wpdb->num_rows;
 ?>
 		<br />
@@ -2202,8 +2299,8 @@ function dmsguestbook2_meta_description_option_page() {
 		<table style="background-color:#fff; border:1px solid #aaaaaa; width:450px; padding:5px;">
 		<tr>
 		<td><form name="search" method="post" action="<?php echo $location ?>">
-		<input style="width:250px;" type="text" name="search" value="<?php echo $_REQUEST[search]; ?>" />
-		<input type="hidden" name="guestbook" value="<?php echo $_REQUEST[guestbook]; ?>" />
+		<input style="width:250px;" type="text" name="search" value="<?php echo $_REQUEST['search']; ?>" />
+		<input type="hidden" name="guestbook" value="<?php echo $_REQUEST['guestbook']; ?>" />
 		<input class="button-secondary action" style="font-weight:bold;" type="submit" value="<?php echo __("Search", "dmsguestbook"); ?>" />
 		<input class="button-secondary action" style="font-weight:bold;" type="button" value="<?php echo __("Clear", "dmsguestbook"); ?>" onClick="document.search.search.value = ''"; />
 	 	</form></td>
@@ -2215,7 +2312,7 @@ function dmsguestbook2_meta_description_option_page() {
 		</td>
 
 		<td style="width:20px;"></td>
-		<?php if($_REQUEST[guestbook] == "all") {$active="all";} else {$active=$_REQUEST[guestbook]+1;} ?>
+		<?php if($_REQUEST['guestbook'] == "all") {$active="all";} else {$active=$_REQUEST['guestbook']+1;} ?>
 		<td style="vertical-align: top;">
 		<table style="background-color:#fff; border:1px solid #aaaaaa; width:400px; padding:5px;">
 		<tr><td><b style="font-size:14px;"><?php echo __("Active: Guestbook", "dmsguestbook"); ?> <?php echo $active; ?></b></td></tr>
@@ -2243,10 +2340,11 @@ function dmsguestbook2_meta_description_option_page() {
 
 <?php
 
+		$y=0;
 		for($q=0; $q<$num_rows0; ($q=$q+$gb_step))
 		{
 		$y++;
-			if($_REQUEST[select]==$y) {
+			if($_REQUEST['select']==$y) {
 			echo "<a style='color:#bb1100; text-decoration:none;' href='admin.php?page=Entries&from=$q&select=$y&guestbook=$_REQUEST[guestbook]&search=$_REQUEST[search]&approval=$_REQUEST[approval]'> $y</a>";
 			}
 			else {
@@ -2260,7 +2358,7 @@ function dmsguestbook2_meta_description_option_page() {
 
 
 	# overview
-	if($_REQUEST[tinymce]!=1 && $_REQUEST[htmleditor]!=1) {
+	if($_REQUEST['tinymce']!=1 && $_REQUEST['htmleditor']!=1) {
 		echo "
 		<form name='myForm' method='post' action='$location'>
 		<p>
@@ -2328,7 +2426,7 @@ function dmsguestbook2_meta_description_option_page() {
 				$gbadditional2 = "<br />\"$gbadditional\"";
 				}
 
-		if($_REQUEST[tinymce]!=1 && $_REQUEST[htmleditor]!=1) {
+		if($_REQUEST['tinymce']!=1 && $_REQUEST['htmleditor']!=1) {
 			if($result->flag == 1) {
 			$adminreview="<a style='color:#D98500;' href='admin.php?page=Entries&action=adminreview&flag=0&id=$result->id&from=$_REQUEST[from]&select=$_REQUEST[select]&guestbook=$_REQUEST[guestbook]&search=$_REQUEST[search]&approval=$_REQUEST[approval]'>[" . __("Visible", "dmsguestbook") . "]</a> | ";
 			$adminreview_color="style='background-color:#E5CDCD;'";
@@ -2357,7 +2455,7 @@ function dmsguestbook2_meta_description_option_page() {
 			}
 		echo "</form>";
 
-	if($_REQUEST[tinymce]!=1 && $_REQUEST[htmleditor]!=1) {
+	if($_REQUEST['tinymce']!=1 && $_REQUEST['htmleditor']!=1) {
 		echo "<thead>
 		<tr>
 		<th style='padding:7px 7px 7px 0px; width:20px;'><input type='checkbox' id='selectall2' name='selectall2' onClick=\"AllSelectboxes2();\"></th>
@@ -2372,7 +2470,7 @@ function dmsguestbook2_meta_description_option_page() {
 
 
 
-	if(($_REQUEST[tinymce]==1 || $_REQUEST[htmleditor]==1) && $result->id !="" & $result->spam ==0) {
+	if(($_REQUEST['tinymce']==1 || $_REQUEST['htmleditor']==1) && $result->id !="" & $result->spam ==0) {
 		echo "
 		<table class='widefat comments' cellspacing='0'>
 
@@ -2436,7 +2534,7 @@ function dmsguestbook2_meta_description_option_page() {
 				</table>
 
 	 			<td style='border:1px solid #eeeeee; background-color:#$bgcolor'>";
-	 				if($_REQUEST[htmleditor]==1) {
+	 				if($_REQUEST['htmleditor']==1) {
 						echo "
 						<script type=\"text/javascript\" src=\"../wp-content/plugins/dmsguestbook/js/quicktags/quicktags.js\"></script>
 						<script type=\"text/javascript\">
@@ -2461,7 +2559,7 @@ function dmsguestbook2_meta_description_option_page() {
 	 			<br />
 	 			</td>";
 
-	 			if($_REQUEST[htmleditor]==1) {
+	 			if($_REQUEST['htmleditor']==1) {
 					echo "<script type=\"text/javascript\">
 					{
 					edCanvas = document.getElementById('gb_message');
@@ -2527,7 +2625,7 @@ function dmsguestbook2_meta_description_option_page() {
 				</tr>
 				</thead>";
 
-					if($_REQUEST[tinymce]==1) {
+					if($_REQUEST['tinymce']==1) {
 						echo "
 						<!-- TinyMCE -->
 						<script type=\"text/javascript\" src=\"../wp-content/plugins/dmsguestbook/js/tinymce/jscripts/tiny_mce/tiny_mce.js\"></script>
@@ -2608,11 +2706,15 @@ function dmsguestbook2_meta_description_option_page() {
 
 	/* Spam */
 	function dmsguestbook5_meta_description_option_page() {
+		$_REQUEST['from'] = (isset($_REQUEST['from'])) ? $_REQUEST['from'] : '';
+		$_REQUEST['guestbook'] = (isset($_REQUEST['guestbook'])) ? $_REQUEST['guestbook'] : '';	
+		$location = (isset($location)) ? $location : '';
+	
 		$options=create_options();
 
 		// check Akismet is activated
-		$CheckAkismet = CheckAkismet();
-			if($CheckAkismet != "" && $options[akismet] == 1) {
+		$CheckAkismet = CheckAkismet(); 
+			if($CheckAkismet != "" && $options['akismet'] == 1) {
 			$aktivatedAkismet = 1;
 			}
 
@@ -2621,7 +2723,7 @@ function dmsguestbook2_meta_description_option_page() {
 		$table_posts = $wpdb->prefix . "posts";
 
 		/* initialize */
-		if($_REQUEST[from]=="") {$_REQUEST[from]=0; $_REQUEST[select]=1;}
+		if($_REQUEST['from']=="") {$_REQUEST['from']=0; $_REQUEST['select']=1;}
 		$gb_step=$options["step"];
 
 		$query1 = $wpdb->get_results("SELECT * FROM $table_name WHERE spam = '1'");
@@ -2629,7 +2731,7 @@ function dmsguestbook2_meta_description_option_page() {
 
 		/* count all search database entries / mysql_query */
     	$query0 = $wpdb->get_results("SELECT * FROM $table_name WHERE spam = '1' ORDER BY id " . sprintf("%s", $options["sortitem"]) . " LIMIT
-		" . sprintf("%d", $_REQUEST[from]) . "," . sprintf("%d", $gb_step) . ";");
+		" . sprintf("%d", $_REQUEST['from']) . "," . sprintf("%d", $gb_step) . ";");
     	$num_rows0 = $wpdb->num_rows;
 
 
@@ -2647,10 +2749,11 @@ function dmsguestbook2_meta_description_option_page() {
 		<div style='width:100%; text-align:center;'>
 		<div style='font-size:11px;'>($num_rows1)</div>";
 
+		$y=0;
 		for($q=0; $q<$num_rows1; ($q=$q+$gb_step))
 		{
 		$y++;
-			if($_REQUEST[select]==$y) {
+			if($_REQUEST['select']==$y) {
 			echo "<a style='color:#bb1100; text-decoration:none;' href='admin.php?page=Spam&from=$q&select=$y'> $y</a>";
 			}
 			else {
@@ -2800,38 +2903,44 @@ function dmsguestbook2_meta_description_option_page() {
 
 
 	/* edit */
-	if ('edit' == $POSTVARIABLE['editdata']) {
-
+	$POSTVARIABLE['editdata'] = (isset($POSTVARIABLE['editdata'])) ? $POSTVARIABLE['editdata'] : '';
+	$_REQUEST['htmleditor'] = (isset($_REQUEST['htmleditor'])) ? $_REQUEST['htmleditor'] : '';
+	$_REQUEST['gb_flag'] = (isset($_REQUEST['gb_flag'])) ? $_REQUEST['gb_flag'] : '';
+	$_REQUEST['selectpost'] = (isset($_REQUEST['selectpost'])) ? $_REQUEST['selectpost'] : '';
+	$_REQUEST['tinymce'] = (isset($_REQUEST['tinymce'])) ? $_REQUEST['tinymce'] : '';
+	$_REQUEST['id'] = (isset($_REQUEST['id'])) ? $_REQUEST['id'] : '';
+	
+	if ($POSTVARIABLE['editdata'] == 'edit') {
 	   	/* set http(s):// if not exist */
 		if(substr("$_REQUEST[gb_url]", 0, 7) != "http://" && substr("$_REQUEST[gb_url]", 0, 8) != "https://") {
-	   	$_REQUEST[gb_url]="http://";
+	   	$_REQUEST['gb_url']="http://";
 		}
 
 		/* Don't quote ampersand, TinyMCE does it*/
-		if($_REQUEST[tinymce]==1) {
-		$gbmessage = $_REQUEST[gb_message];
+		if($_REQUEST['tinymce']==1) {
+		$gbmessage = $_REQUEST['gb_message'];
 		}
 
 		/* Quote ampersand, quickhtml doesn't it*/
-		if($_REQUEST[htmleditor]==1) {
-		$gbmessage = str_replace("&","&amp;",$_REQUEST[gb_message]);
+		if($_REQUEST['htmleditor']==1) {
+		$gbmessage = str_replace("&","&amp;",$_REQUEST['gb_message']);
 		}
 
 		$table_name = $wpdb->prefix . "dmsguestbook";
 		$updatedata = $wpdb->query("UPDATE $table_name SET
-		name 		= 	'" . mysql_real_escape_string(addslashes($_REQUEST[gb_name])) . "',
-		email 		= 	'" . mysql_real_escape_string($_REQUEST[gb_email]) . "',
-		url 		= 	'" . mysql_real_escape_string($_REQUEST[gb_url]) . "',
-		ip	 		= 	'" . mysql_real_escape_string($_REQUEST[gb_ip]) . "',
+		name 		= 	'" . mysql_real_escape_string(addslashes($_REQUEST['gb_name'])) . "',
+		email 		= 	'" . mysql_real_escape_string($_REQUEST['gb_email']) . "',
+		url 		= 	'" . mysql_real_escape_string($_REQUEST['gb_url']) . "',
+		ip	 		= 	'" . mysql_real_escape_string($_REQUEST['gb_ip']) . "',
 		message 	= 	'" . mysql_real_escape_string(addslashes($gbmessage)) ."',
-		guestbook	=	'" . sprintf("%d", $_REQUEST[gb_guestbook]) . "',
-		additional	=	'" . $_REQUEST[gb_additional] . "',
-		flag		=	'" . sprintf("%d", $_REQUEST[gb_flag]) . "'
-		WHERE id = '" . sprintf("%d", $_REQUEST[id]) . "' ");
+		guestbook	=	'" . sprintf("%d", $_REQUEST['gb_guestbook']) . "',
+		additional	=	'" . $_REQUEST['gb_additional'] . "',
+		flag		=	'" . sprintf("%d", $_REQUEST['gb_flag']) . "'
+		WHERE id = '" . sprintf("%d", $_REQUEST['id']) . "' ");
   		$update = mysql_query($updatedata);
 
-		if(strlen($_REQUEST[gb_date])!=0) {
-		$part0 = explode(",", $_REQUEST[gb_date]);
+		if(strlen($_REQUEST['gb_date'])!=0) {
+		$part0 = explode(",", $_REQUEST['gb_date']);
 		$part1 = explode(".", $part0[0]);
 		$part2 = explode(":", $part0[1]);
 
@@ -2846,39 +2955,40 @@ function dmsguestbook2_meta_description_option_page() {
 
 			$updatedata2 = $wpdb->query("UPDATE $table_name SET
 			date 		= 	'$timestamp'
-			WHERE id = '" . sprintf("%d", $_REQUEST[id]) . "'");
+			WHERE id = '" . sprintf("%d", $_REQUEST['id']) . "'");
   			$update2 = mysql_query($updatedata2);
 		}
-		message("<b>" . sprintf(__("Dataset (%) was saved", "dmsguestbook"), $_REQUEST[id]) . "</b>", 50, 800);
+		message("<b>" . sprintf(__("Dataset (%) was saved", "dmsguestbook"), $_REQUEST['id']) . "</b>", 50, 800);
 	}
 /* end of manage guestbook entries */
 
 
-	/* delete multi post / spam */
-	if('deletepost2' == $POSTVARIABLE['action']) {
+	/* delete multi post / spam */	
+	if($POSTVARIABLE['action'] == 'deletepost2') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 	$dataset="";
-		for($c=0; $c<count($_REQUEST[selectpost]); $c++) {
-		$deletedata = $wpdb->query("DELETE FROM $table_name WHERE id = '" . sprintf("%d", "{$_REQUEST[selectpost][$c]}") . "'");
+		for($c=0; $c<count($_REQUEST['selectpost']); $c++) {
+		$deletedata = $wpdb->query("DELETE FROM $table_name WHERE id = '" . sprintf("%d", "{$_REQUEST['selectpost'][$c]}") . "'");
 		$delete = mysql_query($deletedata);
-		$dataset .= "{$_REQUEST[selectpost][$c]}, ";
+		$dataset .= "{$_REQUEST['selectpost'][$c]}, ";
 		}
 
-		if(count($_REQUEST[selectpost]) !=0) {
+		if(count($_REQUEST['selectpost']) !=0) {
 		message("<b>" . sprintf(__("Dataset (%) was deleted", "dmsguestbook"), $dataset) . "...</b>", 50, 800);
 		}
 	}
 
 	/* delete single post / spam*/
-	if('deletepost' == $_REQUEST['action']) {
+	$_REQUEST['action'] = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	if($_REQUEST['action'] == 'deletepost') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 		$deletedata = $wpdb->query("DELETE FROM $table_name WHERE id = '" . sprintf("%d", "$_REQUEST[id]") . "'");
 		$delete = mysql_query($deletedata);
-		message("<b>" . sprintf(__("Dataset (%) was deleted", "dmsguestbook"), $_REQUEST[id]) . "...</b>", 50, 800);
+		message("<b>" . sprintf(__("Dataset (%) was deleted", "dmsguestbook"), $_REQUEST['id']) . "...</b>", 50, 800);
 	}
 
 	/* delete ALL spam*/
-	if('deleteallpost' == $_REQUEST['action']) {
+	if($_REQUEST['action'] == 'deleteallpost') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 		$deletealldata = $wpdb->query("DELETE FROM $table_name WHERE spam = '1'");
 		$delete = mysql_query($deletealldata);
@@ -2886,52 +2996,54 @@ function dmsguestbook2_meta_description_option_page() {
 	}
 
 	/* single spam */
-	if('markasspam' == $_REQUEST['action']) {
+	if($_REQUEST['action'] == 'markasspam') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 		$updatedata3 = $wpdb->query("UPDATE $table_name SET
 		spam 		= 	'1'
-		WHERE id = '" . sprintf("%d", $_REQUEST[id]) . "'");
+		WHERE id = '" . sprintf("%d", $_REQUEST['id']) . "'");
   		$update3 = mysql_query($updatedata3);
-		SpamHam($_REQUEST[id], "spam");
+		SpamHam($_REQUEST['id'], "spam");
 	}
 
 
 	/* multi spam  */
-	if ('markasspam' == $POSTVARIABLE['action']) {
+	if ($_REQUEST['action'] == 'markasspam') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
-		for($c=0; $c<count($_REQUEST[selectpost]); $c++) {
+		for($c=0; $c<count($_REQUEST['selectpost']); $c++) {
+		$_REQUEST['selectpost'][$c] = (isset($_REQUEST['selectpost'][$c])) ? $_REQUEST['selectpost'][$c] : '';
 			$updatedata4 = $wpdb->query("UPDATE $table_name SET
 			spam 		= 	'1'
-			WHERE id = '" . sprintf("%d", "{$_REQUEST[selectpost][$c]}") . "'");
+			WHERE id = '" . sprintf("%d", "{$_REQUEST['selectpost'][$c]}") . "'");
   			$update4 = mysql_query($updatedata4);
-  			SpamHam("{$_REQUEST[selectpost][$c]}", "spam");
+  			SpamHam("{$_REQUEST['selectpost'][$c]}", "spam");
   		}
 	}
 
 	/* not spam multi */
-	if ('unmarkspam' == $POSTVARIABLE['action']) {
+	if ($_REQUEST['action'] == 'unmarkspam') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
-		for($c=0; $c<count($_REQUEST[selectpost]); $c++) {
+		for($c=0; $c<count($_REQUEST['selectpost']); $c++) {
+		$_REQUEST['selectpost'][$c] = (isset($_REQUEST['selectpost'][$c])) ? $_REQUEST['selectpost'][$c] : '';
 			$updatedata4 = $wpdb->query("UPDATE $table_name SET
 			spam 		= 	'0'
-			WHERE id = '" . sprintf("%d", "{$_REQUEST[selectpost][$c]}") . "'");
+			WHERE id = '" . sprintf("%d", "{$_REQUEST['selectpost'][$c]}") . "'");
   			$update4 = mysql_query($updatedata4);
-  			SpamHam("{$_REQUEST[selectpost][$c]}", "ham");
+  			SpamHam("{$_REQUEST['selectpost'][$c]}", "ham");
   		}
 	}
 
 	/* not spam single */
-	if ('unmarkspam' == $_REQUEST['action']) {
+	if ($_REQUEST['action'] == 'unmarkspam') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 		$updatedata4 = $wpdb->query("UPDATE $table_name SET
 		spam 		= 	'0'
 		WHERE id = '" . sprintf("%d", "$_REQUEST[id]") . "'");
   		$update4 = mysql_query($updatedata4);
-  		SpamHam($_REQUEST[id], "ham");
+  		SpamHam($_REQUEST['id'], "ham");
 	}
 
 	/* set admin review or not */
-	if ('adminreview' == $_REQUEST['action']) {
+	if ($_REQUEST['action'] == 'adminreview') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
 		$updatedata5 = $wpdb->query("UPDATE $table_name SET
 		flag 		= 	'" . sprintf("%d", "$_REQUEST[flag]") . "'
@@ -2940,23 +3052,23 @@ function dmsguestbook2_meta_description_option_page() {
 	}
 
 	/* multi set admin review set hidden */
-	if ('sethidden' == $POSTVARIABLE['action']) {
+	if ($POSTVARIABLE['action'] == 'sethidden') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
-		for($c=0; $c<count($_REQUEST[selectpost]); $c++) {
+		for($c=0; $c<count($_REQUEST['selectpost']); $c++) {
 			$updatedata6 = $wpdb->query("UPDATE $table_name SET
 			flag 		= 	'1'
-			WHERE id = '" . sprintf("%d", "{$_REQUEST[selectpost][$c]}") . "'");
+			WHERE id = '" . sprintf("%d", "{$_REQUEST['selectpost'][$c]}") . "'");
   			$update6 = mysql_query($updatedata6);
   		}
 	}
 
 	/* multi set admin review set visible */
-	if ('setvisible' == $POSTVARIABLE['action']) {
+	if ($POSTVARIABLE['action'] == 'setvisible') {
 	$table_name = $wpdb->prefix . "dmsguestbook";
-		for($c=0; $c<count($_REQUEST[selectpost]); $c++) {
+		for($c=0; $c<count($_REQUEST['selectpost']); $c++) {
 			$updatedata7 = $wpdb->query("UPDATE $table_name SET
 			flag 		= 	'0'
-			WHERE id = '" . sprintf("%d", "{$_REQUEST[selectpost][$c]}") . "'");
+			WHERE id = '" . sprintf("%d", "{$_REQUEST['selectpost'][$c]}") . "'");
   			$update7 = mysql_query($updatedata7);
   		}
 	}
@@ -3061,6 +3173,7 @@ function dmsguestbook2_meta_description_option_page() {
 	   	}
 
 	   	unset($csscode1);
+		$csscode1 = (isset($csscode1)) ? $csscode1 : '';
 	   	for($x=0; $x<count($part1)-1; $x++) {
 	   	$part2 = explode("|", $part1[$x]);
 
@@ -3117,6 +3230,7 @@ function dmsguestbook2_meta_description_option_page() {
 	/* display the dmsguestbook.php */
 	function DMSGuestBook($content) {
 	global $DMSGuestbookContent;
+		$page_id = (isset($page_id)) ? $page_id : '';
 		$options=create_options();
 		$multi_page_id = explode(",", $options["page_id"]);
 		$multi_language = explode(",", $options["language"]);
@@ -3132,12 +3246,12 @@ function dmsguestbook2_meta_description_option_page() {
 			if(is_page($page_id) AND $page_id!="")
 			{
 				$post_id = get_post($page_id);
-				if ($_COOKIE['wp-postpass_' . COOKIEHASH] == $post_id->post_password || $post_id->post_password == "") {
+				if ((!post_password_required($page_id)) || $post_id->post_password == "") 	{
 
 				include_once("dmsguestbook.php");
 				$content = $content . $DMSGuestbookContent;
-				return $content;
 				}
+				return $content;
 			}
 			else	{
 					return $content;
@@ -3359,7 +3473,7 @@ padding:10px 10px;
 margin:0px 0px 0px 0px;
 line-height:1.4em;@
 ";
-$_SESSION[csscontainer] = $csscontainer;
+$_SESSION['csscontainer'] = $csscontainer;
 
 $url=get_bloginfo('wpurl');
 
@@ -3444,7 +3558,8 @@ return $options;
 	function default_option() {
 		$options=default_options_array();
    		unset($save_options);
-
+		$save_options = (isset($save_options)) ? $save_options : '';
+		
 		while (list($key, $val) = each($options)) {
 		if($key=="antispam_key") {$val = RandomAntispamKey();}
 		$save_options.="<" . $key . ">" . $val . "</" . $key . ">\r\n";
@@ -3486,15 +3601,18 @@ return $options;
 
 	/* options */
 	function create_options() {
+	$missing_entries = (isset($missing_entries)) ? $missing_entries : '';
+	$missing_entries_for_fixed_update = (isset($missing_entries_for_fixed_update)) ? $missing_entries_for_fixed_update : '';
+	
 	$options=default_options_array();
 	$stringtext = get_option('DMSGuestbook_options');
 
 			$p=0;
 			$c=0;
 			reset($options);
-			while (list($key, $val) = each($options)) {
+			while (list($key, $val) = each($options)) {			
 			$part1 = explode("<" . $key . ">", $stringtext);
-			$part2 = explode("</" . $key . ">", $part1[1]);
+			$part2 = explode("</" . $key . ">", isset($part1[1]) ? $part1[1] : '');
 
 				if($part2[0]=="") {
 				$missing_entries_for_fixed_update .= "<" . $key . ">" . $val . "</" . $key . ">";
@@ -3602,8 +3720,8 @@ return $options;
 		return $save_advanced_button;
 		}
 		else {
-	         echo "<br />" . sprintf(__("%s is <font style='color:#bb0000;'>not writable!", "dmsguestbook"), $_REQUEST[file]) . "
-	         </font><br />" . sprintf(__("Set the write permission for %s to customize this file.", "dmsguestbook"), $_REQUEST[file]);
+	         echo "<br />" . sprintf(__("%s is <font style='color:#bb0000;'>not writable!", "dmsguestbook"), $_REQUEST['file']) . "
+	         </font><br />" . sprintf(__("Set the write permission for %s to customize this file.", "dmsguestbook"), $_REQUEST['file']);
 	         return $save_advanced_button="";
 	         }
 
@@ -3629,6 +3747,7 @@ return $options;
 		$part1 = explode("@", $label);
 		$part2 = explode("@", $additional);
 		unset($data);
+		$data  = (isset($data)) ? $data : '';
 			/* If base64 is active */
 			if(BASE64 == 1 && $base64 == 1) {
 			$value = base64_decode($value);
@@ -3649,6 +3768,7 @@ return $options;
 		$part1 = explode("@", $label);
 		$part2 = explode("@", $additional);
 		unset($data);
+		$data  = (isset($data)) ? $data : '';
 		if($tooltip!=""){$showtooltip="<a style='font-weight:bold;background-color:#bb1100;color:#fff;padding:3px;text-decoration:none;' href='#tooltip_$key' class='tooltiplink'>?</a><div id='tooltip_$key' class='tooltip'>$tooltip</div>";}
 
 		$colorid_div = "Color" . $id . "_div";
@@ -3661,6 +3781,7 @@ return $options;
 		$part1 = explode("@", $label);
 		$part2 = explode("@", $additional);
 		unset($data);
+		$data  = (isset($data)) ? $data : '';
 		for($x=1; $x<=$entries+1; $x++) {
 		$check="check" . $x;
 			if($tooltip!=""){$showtooltip="<a style='font-weight:bold;background-color:#bb1100;color:#fff;padding:3px;text-decoration:none;' href='#tooltip_$key' class='tooltiplink'>?</a><div id='tooltip_$key' class='tooltip'>$tooltip</div>";}
@@ -3676,11 +3797,13 @@ return $options;
 		$part1 = explode("@", $label);
 		$part2 = explode("@", $additional);
 		unset($data);
+		$data  = (isset($data)) ? $data : '';
 		for($x=0; $x<=$entries; $x++) {
 		$check="check" . $x;
 			if($tooltip!=""){$showtooltip="<a style='font-weight:bold;background-color:#bb1100;color:#fff;padding:3px;text-decoration:none;' href='#tooltip_$key[$x]' class='tooltiplink'>?</a><div id='tooltip_$key[$x]' class='tooltip'>$tooltip</div>";}
-
+			
 			if($value==$x) {$check = "checked";} else {$check="";}
+			$part2[$x] = (isset($part2[$x])) ? $part2[$x] : '';
 			$data .= "<table style='width:95%;' border='0'><colgroup><col width='40%'><col width='55%'><col width='5%'></colgroup><tr><td>$part1[$x]</td><td><input style='$style;' type='radio' name='$key' id='$key' value='$x' $check $jscript />$part2[$x]</td><td style='text-align:right;'>$showtooltip</td></tr></table>";
 			}
 		return $data;
@@ -3690,6 +3813,7 @@ return $options;
 		$part1 = explode("@", $option);
 		$part2 = explode("@", $additional);
 		unset($data);
+		$data  = (isset($data)) ? $data : '';
 			if($tooltip!=""){$showtooltip="<a style='font-weight:bold;background-color:#bb1100;color:#fff;padding:3px;text-decoration:none;' href='#tooltip_$key' class='tooltiplink'>?</a><div id='tooltip_$key' class='tooltip'>$tooltip</div>";}
 
 			$data .= "<table style='width:95%;' border='0'><colgroup><col width='40%'><col width='55%'><col width='5%'><colgroup><tr><td>$label</td><td><select style='$style;' name='$key' id='$key' $jscript>";
@@ -3710,6 +3834,7 @@ return $options;
 	srand(date("U"));
     $possible="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890+*%&(){}[]=?!$-_.,;:/\#~";
     unset($str);
+	$str  = (isset($str)) ? $str : '';
     	while(strlen($str)<$len) {
     	$str.=substr($possible,(rand()%(strlen($possible))),1);
 		}
@@ -3774,6 +3899,7 @@ return $options;
 	}
 
 	function CheckRole($level, $msg) {
+		$role = (isset($role)) ? $role : '';
 		$userlevel="";
 		$roles = array("0","1","2","3","4","5","6","7","8","9","10");
 		for($x=0; $x<count($roles); $x++) {

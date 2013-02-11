@@ -83,7 +83,35 @@ $table_name = $wpdb->prefix . "dmsguestbook";
 //collect datas for wp the_content
 
 $DMSGuestbookContent = "";
-
+$var_fontcolor1 = (isset($var_fontcolor1)) ? $var_fontcolor1 : '';
+$error1 = (isset($error1)) ? $error1 : '';
+$error2 = (isset($error2)) ? $error2 : '';
+$error3 = (isset($error3)) ? $error3 : '';
+$error4 = (isset($error4)) ? $error4 : '';
+$error5 = (isset($error5)) ? $error5 : '';
+$error6 = (isset($error6)) ? $error6 : '';
+$success = (isset($success)) ? $success : '';
+$submitid = (isset($submitid)) ? $submitid : '';
+$var_width = (isset($var_width)) ? $var_width : '';
+$backward = (isset($backward)) ? $backward : '';
+$forward = (isset($forward)) ? $forward : '';
+$namecheck = (isset($namecheck)) ? $namecheck : '';
+$emailcheck = (isset($emailcheck)) ? $emailcheck : '';
+$gravataremailcheck = (isset($gravataremailcheck)) ? $gravataremailcheck : '';
+$urlcheck = (isset($urlcheck)) ? $urlcheck : '';
+$messagecheck = (isset($messagecheck)) ? $messagecheck : '';
+$antispamcheck = (isset($antispamcheck)) ? $antispamcheck : '';
+$spam_detect = (isset($spam_detect)) ? $spam_detect : '';
+$gravataremail = (isset($gravataremail)) ? $gravataremail : '';
+$antispam_result = (isset($antispam_result)) ? $antispam_result : '';
+$_REQUEST['success'] = (isset($_REQUEST['success'])) ? $_REQUEST['success'] : '';
+$_REQUEST['newentry'] = (isset($_REQUEST['newentry'])) ? $_REQUEST['newentry'] : '';
+$_REQUEST['select'] = (isset($_REQUEST['select'])) ? $_REQUEST['select'] : '';
+$_REQUEST['from'] = (isset($_REQUEST['from'])) ? $_REQUEST['from'] : '';
+$_REQUEST['widget_gb_step'] = (isset($_REQUEST['widget_gb_step'])) ? $_REQUEST['widget_gb_step'] : '';
+$_REQUEST['widget'] = (isset($_REQUEST['widget'])) ? $_REQUEST['widget'] : '';
+$_REQUEST['gbgravataremail'] = (isset($_REQUEST['gbgravataremail'])) ? $_REQUEST['gbgravataremail'] : '';
+$_REQUEST['gbadditional'] = (isset($_REQUEST['gbadditional'])) ? $_REQUEST['gbadditional'] : '';
 
 // URL
 $url=get_bloginfo('wpurl');
@@ -128,7 +156,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 		// -------- success text when db was written ---------
 		// (reload block)
-		if($_REQUEST[success]==1) {
+		if($_REQUEST['success']==1) {
 		// success text
 		$success = "$lang_success<br />";
 
@@ -139,7 +167,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 
 		// --------- save the guestbook entry --------
-		if($_REQUEST[newentry]==1)
+		if($_REQUEST['newentry']==1)
 		{
 			// --------------------- check the old HTTP_POST_VARS and new $_POST var -------------
 			if(!empty($HTTP_POST_VARS)) {
@@ -151,7 +179,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 			// check the result of visual antispam
 			if($var_require_antispam==1) {
-				if(($_REQUEST[antispam_hash_key]) == sprintf("%s", strip_tags(md5($POSTVARIABLE["securecode"] . $var_antispam_key)))) {
+				if(($_REQUEST['antispam_hash_key']) == sprintf("%s", strip_tags(md5($POSTVARIABLE["securecode"] . $var_antispam_key)))) {
 					$antispam_result=1;
 					$antispamcheck=1;
 				}else { $antispam_result=0; $error5 =  "$lang_antispam_error";}
@@ -159,7 +187,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 			// check the result of mathematic antispam
 			if($var_require_antispam==2) {
-				if(($_REQUEST[antispam_hash_key]) == sprintf("%s", strip_tags(md5($POSTVARIABLE["securecode"] . $var_antispam_key)))) {
+				if(($_REQUEST['antispam_hash_key']) == sprintf("%s", strip_tags(md5($POSTVARIABLE["securecode"] . $var_antispam_key)))) {
 					$antispam_result=1;
 					$antispamcheck=1;
 				} else { $antispam_result=0; $error5 =  "$lang_antispam_error";}
@@ -207,31 +235,31 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 				/* remove all invalid chars from name field*/
 				//$_REQUEST[gbname] = preg_replace("/[[:punct:]]+/i", "", $_REQUEST[gbname]);
-				$_REQUEST[gbname] = preg_replace("/[\\\\\"<=>\(\)\{\}\/]+/i", "", $_REQUEST[gbname]);
+				$_REQUEST['gbname'] = preg_replace("/[\\\\\"<=>\(\)\{\}\/]+/i", "", $_REQUEST['gbname']);
 
 				// check name text lenght min. 1 char
-				if(strlen($_REQUEST[gbname])>=1) {
+				if(strlen($_REQUEST['gbname'])>=1) {
 				$namecheck="1"; }
 				else {$error1 = "$lang_name_error<br />";}
 
 
 				/* remove all invalid chars from email field */
-				$_REQUEST[gbemail] = preg_replace("/[^a-z-0-9-_\.@]+/i", "", $_REQUEST[gbemail]);
+				$_REQUEST['gbemail'] = preg_replace("/[^a-z-0-9-_\.@]+/i", "", $_REQUEST['gbemail']);
 				// check email email adress were is valid
-				if(strlen($_REQUEST[gbemail])>=1 || $var_require_email == 1)
+				if(strlen($_REQUEST['gbemail'])>=1 || $var_require_email == 1)
 				{
-					if(preg_match("/^([a-zA-Z0-9])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)*\.([a-zA-Z]{2,6})$/", $_REQUEST[gbemail]))
+					if(preg_match("/^([a-zA-Z0-9])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)*\.([a-zA-Z]{2,6})$/", $_REQUEST['gbemail']))
 					{$emailcheck="1";}
 					else {$error2 = "$lang_email_error<br />";}
 				}
 				else {$emailcheck=1;}
 
 				/* remove all invalid chars from gravatar email field */
-				$_REQUEST[gbgravataremail] = strtolower(preg_replace("/[^a-z-0-9-_\.@]+/i", "", $_REQUEST[gbgravataremail]));
+				$_REQUEST['gbgravataremail'] = strtolower(preg_replace("/[^a-z-0-9-_\.@]+/i", "", $_REQUEST['gbgravataremail']));
 				// check email email adress were is valid
-				if(strlen($_REQUEST[gbgravataremail])>=1)
+				if(strlen($_REQUEST['gbgravataremail'])>=1)
 				{
-					if(preg_match("/^([a-zA-Z0-9])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)*\.([a-zA-Z]{2,6})$/", $_REQUEST[gbgravataremail]))
+					if(preg_match("/^([a-zA-Z0-9])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)*\.([a-zA-Z]{2,6})$/", $_REQUEST['gbgravataremail']))
 					{$gravataremailcheck="1";}
 					else {$error6 = "$lang_email_error [Gravatar]<br />";}
 				}
@@ -239,11 +267,11 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 
 				/* remove all invalid chars from url field */
-				$_REQUEST[gburl] = preg_replace("/[^a-z-0-9-_,.:?&%=\/]+/i", "", $_REQUEST[gburl]);
+				$_REQUEST['gburl'] = preg_replace("/[^a-z-0-9-_,.:?&%=\/]+/i", "", $_REQUEST['gburl']);
 				// check url adress were is valid
-				if(strlen($_REQUEST[gburl])>=1 || $var_require_url == 1)
+				if(strlen($_REQUEST['gburl'])>=1 || $var_require_url == 1)
 				{
-					if(preg_match ("/^([^.-:\/][a-z0-9-.:\/]*)\.?+([a-z0-9-]+)*\.([a-z]{2,6})(\/)?([a-z0-9-_,.?&%=\/]*)$/i", $_REQUEST[gburl]))
+					if(preg_match ("/^([^.-:\/][a-z0-9-.:\/]*)\.?+([a-z0-9-]+)*\.([a-z]{2,6})(\/)?([a-z0-9-_,.?&%=\/]*)$/i", $_REQUEST['gburl']))
 					{$urlcheck="1";}
 					else {$error3 = "$lang_url_error<br />";}
 				}
@@ -251,15 +279,15 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 
 				/* remove all html tags from message field */
-				$_REQUEST[gbmsg] = strip_tags($_REQUEST[gbmsg]);
+				$_REQUEST['gbmsg'] = strip_tags($_REQUEST['gbmsg']);
 				/* if user want to set admin [html] tags */
-				$_REQUEST[gbmsg]=str_replace("[html]", "", $_REQUEST[gbmsg]);
-				$_REQUEST[gbmsg]=str_replace("[/html]", "", $_REQUEST[gbmsg]);
+				$_REQUEST['gbmsg']=str_replace("[html]", "", $_REQUEST['gbmsg']);
+				$_REQUEST['gbmsg']=str_replace("[/html]", "", $_REQUEST['gbmsg']);
 
-				$_REQUEST[gbmsg]=str_replace("&", "&amp;", $_REQUEST[gbmsg]);
+				$_REQUEST['gbmsg']=str_replace("&", "&amp;", $_REQUEST['gbmsg']);
 
 				// check message text lengt. min. 1 char
-				if(strlen($_REQUEST[gbmsg])>=1) {
+				if(strlen($_REQUEST['gbmsg'])>=1) {
 				$messagecheck="1"; }
 				else {$error4 = "$lang_message_error<br />";}
 
@@ -267,17 +295,17 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 					if($namecheck=='1' && $emailcheck=='1' && $gravataremailcheck=='1' && $urlcheck=='1' && $messagecheck=='1' && $antispamcheck=='1')
 					{
 						//set the http:// string if is missing
-						if(preg_match ("/^(http(s)?:\/\/)/i", $_REQUEST[gburl]))
-						{$newurl = $_REQUEST[gburl];} else {$newurl="http://" . $_REQUEST[gburl];}
+						if(preg_match ("/^(http(s)?:\/\/)/i", $_REQUEST['gburl']))
+						{$newurl = $_REQUEST['gburl'];} else {$newurl="http://" . $_REQUEST['gburl'];}
 
-						$nname=addslashes($_REQUEST[gbname]);
-						$mmu=addslashes($_REQUEST[gbmsg]);
+						$nname=addslashes($_REQUEST['gbname']);
+						$mmu=addslashes($_REQUEST['gbmsg']);
 
 						$date = mktime(date("H")+$var_offset, date("i"), date("s"), date("m"), date("d"), date("Y"));
 						$ip = getenv('REMOTE_ADDR');
 
-						if(strlen($_REQUEST[gbgravataremail]) > 0) {
-						$gravataremail = md5($_REQUEST[gbgravataremail]);
+						if(strlen($_REQUEST['gbgravataremail']) > 0) {
+						$gravataremail = md5($_REQUEST['gbgravataremail']);
 						}
 
 						/* akismet */
@@ -289,7 +317,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 								$var_akismet_key = $result->option_value;
 								}
 
-							$spam_detect = akismet($var_akismet_key, $nname, $_REQUEST[gbemail], $newurl, $mmu, $lang_spam_detect);
+							$spam_detect = akismet($var_akismet_key, $nname, $_REQUEST['gbemail'], $newurl, $mmu, $lang_spam_detect);
 								if($spam_detect==1 && $var_akismet_action==1) {
 								$error1 .= $lang_spam_detect;
 								}
@@ -309,7 +337,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 							)
 							VALUES (
 							'" . mysql_real_escape_string($nname) . "',
-							'" . mysql_real_escape_string($_REQUEST[gbemail]) . "',
+							'" . mysql_real_escape_string($_REQUEST['gbemail']) . "',
 							'" . mysql_real_escape_string($gravataremail) . "',
 							'" . mysql_real_escape_string($newurl) . "',
 							'" . mysql_real_escape_string($date) . "',
@@ -318,7 +346,7 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 							'" . sprintf("%d", $var_admin_review) . "',
 							'" . sprintf("%d", $var_multi_gb_id) . "',
 							'" . sprintf("%d", $spam_detect) . "',
-							'" . mysql_real_escape_string($_REQUEST[gbadditional]) . "')")
+							'" . mysql_real_escape_string($_REQUEST['gbadditional']) . "')")
 							or die (__("Database not available!", "dmsguestbook"));
 
 							$abspath = str_replace("\\","/", ABSPATH);
@@ -327,16 +355,16 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 
 							// send mail
 							if($var_send_mail==1) {
-								$DMSGuestbookContent .= send_email($var_mail_adress, $nname, $_REQUEST[gbemail], $newurl, $ip, $mmu, $var_mail_method, $var_smtp_host, $var_smtp_port, $var_smtp_username, $var_smtp_password, $var_smtp_auth, $var_smtp_ssl, $_REQUEST[gbadditional]);
+								$DMSGuestbookContent .= send_email($var_mail_adress, $nname, $_REQUEST['gbemail'], $newurl, $ip, $mmu, $var_mail_method, $var_smtp_host, $var_smtp_port, $var_smtp_username, $var_smtp_password, $var_smtp_auth, $var_smtp_ssl, $_REQUEST['gbadditional']);
 							}
 
 							// unset variables
-							unset($_REQUEST[gbname]);
-							unset($_REQUEST[gbemail]);
-							unset($_REQUEST[gbgravataremail]);
-							unset($_REQUEST[gburl]);
-							unset($_REQUEST[gbmsg]);
-							unset($_REQUEST[gbadditional]);
+							unset($_REQUEST['gbname']);
+							unset($_REQUEST['gbemail']);
+							unset($_REQUEST['gbgravataremail']);
+							unset($_REQUEST['gburl']);
+							unset($_REQUEST['gbmsg']);
+							unset($_REQUEST['gbadditional']);
 
 							unset($antireload);
 							$permalink = get_permalink($var_page_id);
@@ -375,9 +403,9 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	     }
 
 	# start init
-	$select = sprintf("%d", $_REQUEST[select]);
-	$from 	= sprintf("%d", $_REQUEST[from]);
-	if($_REQUEST[from]=="") {$from=0; $select=1;}
+	$select = sprintf("%d", $_REQUEST['select']);
+	$from 	= sprintf("%d", $_REQUEST['from']);
+	if($_REQUEST['from']=="") {$from=0; $select=1;}
 
 	# count all guestbook entries
 	# if flag = 1 the admin will review this post
@@ -385,12 +413,12 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	$num_rows1 = $wpdb->num_rows;
 
 	/* if widget <a href="" is activated */
-	if($_REQUEST[widget_gb_step]==1) {$var_step=1; $num_rows1=1;}
+	if($_REQUEST['widget_gb_step']==1) {$var_step=1; $num_rows1=1;}
 
 	# read the guestbook
 	# if flag = 1 the admin will review this post
 	$query2 = $wpdb->get_results("SELECT * FROM $table_name
-	WHERE flag != '1' && guestbook = '" . sprintf("%d", $var_multi_gb_id) ."' && spam = '0' ORDER BY date
+	WHERE flag != '1' && guestbook = '" . sprintf("%d", $var_multi_gb_id) ."' && spam = '0' ORDER BY id
 	" . sprintf("%s", $var_sortitem) . " LIMIT " . $from .
 	"," . sprintf("%d", $var_step) . ";");
 	$num_rows2 = $wpdb->num_rows;
@@ -399,32 +427,36 @@ $DMSGuestbookContent .= "<div class='css_guestbook_font_color'>"; }
 	$back=$from-$var_step;
 
 
-	$navigation_overview = "";
+	$DMSGuestbookContent .= "<div class='css_navigation_totalcount'>($num_rows1)</div>";
+	$DMSGuestbookContent .= "<div class='css_navigation_overview'>";
+
+	$y=0;
 	for($x=0; $x<$num_rows1; ($x=$x+$var_step))
 	{
 	$y++;
 		if($select==$y) {
-		$navigation_overview .= "<a class=\"css_navigation_select\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y </a> ";
+		$DMSGuestbookContent .= "<a class=\"css_navigation_select\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y </a> ";
 		}
 		else {
-		     $navigation_overview .= "<a class=\"css_navigation_notselect\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y</a> ";
+		     $DMSGuestbookContent .= "<a class=\"css_navigation_notselect\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$x&amp;select=$y\">$y</a> ";
 			 }
 	}
-	
+	$DMSGuestbookContent .= "</div>";
+
 	// navigation char forward construct
 	if($next>=$num_rows1) {} else {
-	$_REQUEST[select_forward]=$select+1;
+	$_REQUEST['select_forward']=$select+1;
 	$forward ="<a class=\"css_navigation_char\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$next&amp;select=$_REQUEST[select_forward]\">$var_forwardchar</a>";
 	}
 
 	// navigation char backward construct
 	if($back<=-1) {} else {
-	$_REQUEST[select_backward]=$select-1;
+	$_REQUEST['select_backward']=$select-1;
 	$backward = "<a class=\"css_navigation_char\" href=\"$url/index.php?page_id=$var_page_id&amp;from=$back&amp;select=$_REQUEST[select_backward]\">$var_backwardchar</a>";
 	}
 
 	// show top navigation
-	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview);
+	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward);
 
 	// setlocale
 	setlocale(LC_TIME, "$var_setlocale");
@@ -483,6 +515,8 @@ $gravatar_url = "http://www.gravatar.com/avatar/".$dbresult->gravatar . "?r=" . 
 		if($var_show_email==1 && $dbresult->email != "") {
 					# convert to ascii, better spam protection
 					unset($ascii_email, $ascii_email_array);
+					$ascii_email = (isset($ascii_email)) ? $ascii_email : '';
+					$ascii_email_array = (isset($ascii_email_array)) ? $ascii_email_array : '';
 					for($p=0; $p<strlen($dbresult->email); $p++) {
 					$ascii_email_array[]=ord($dbresult->email[$p]);
 					$ascii_email .= "&#" . $ascii_email_array[$p] . ";";
@@ -496,6 +530,8 @@ $gravatar_url = "http://www.gravatar.com/avatar/".$dbresult->gravatar . "?r=" . 
 		if($var_show_url==1 && ($dbresult->url != "http://" && $dbresult->url != "https://")) {
 					# convert to ascii, better spam protection
 					unset($ascii_url, $ascii_url_array);
+					$ascii_url = (isset($ascii_url)) ? $ascii_url : '';
+					$ascii_url_array = (isset($ascii_url_array)) ? $ascii_url_array : '';
 					for($p=0; $p<strlen($dbresult->url); $p++) {
 					$ascii_url_array[]=ord($dbresult->url[$p]);
 					$ascii_url .= "&#" . $ascii_url_array[$p] . ";";
@@ -514,8 +550,8 @@ $gravatar_url = "http://www.gravatar.com/avatar/".$dbresult->gravatar . "?r=" . 
 	if($var_dbid==1) {
 	$show_id = $dbresult->id;
 	} else {
-		   		if($_REQUEST[widget]==1) {
-		   		$show_id = $_REQUEST[itemnr];
+		   		if($_REQUEST['widget']==1) {
+		   		$show_id = $_REQUEST['itemnr'];
 		   		}
 		   		else {$show_id = $itemnr;}
 		   }
@@ -568,7 +604,7 @@ $gravatar_url = "http://www.gravatar.com/avatar/".$dbresult->gravatar . "?r=" . 
 	}
 
 	// show bottom navigation
-	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview);
+	$DMSGuestbookContent .= navigation($num_rows1, $var_step, $var_width, $backward, $forward);
 
 	// if guestbook form is on bottom the side
 	if ($var_formpos =="bottom") {
@@ -581,6 +617,19 @@ $DMSGuestbookContent .= "</div>";
 
 function input_form($error1, $error2, $error3, $error4, $error5, $error6, $success, $url, $var_page_id, $lang_name, $lang_email, $var_require_email, $lang_url, $var_require_url, $lang_message, $submitid, $lang_require, $var_require_antispam, $lang_antispam, $lang_submit, $var_url_overruled, $var_mandatory_char, $var_form_template, $var_antispam_key, $var_captcha_color, $var_gravatar, $var_additional_option, $var_additional_option_title, $var_recaptcha_publickey, $var_messagetext_length) {
 
+	$gbadditional_selectbox = (isset($gbadditional_selectbox)) ? $gbadditional_selectbox : '';
+	$captcha2 = (isset($captcha2)) ? $captcha2 : '';
+	$recaptcha = (isset($recaptcha)) ? $recaptcha : '';
+	$DMSGuestbookContent = (isset($DMSGuestbookContent)) ? $DMSGuestbookContent : '';
+	$_REQUEST['gbname'] = (isset($_REQUEST['gbname'])) ? $_REQUEST['gbname'] : '';
+	$_REQUEST['gbemail'] = (isset($_REQUEST['gbemail'])) ? $_REQUEST['gbemail'] : '';
+	$_REQUEST['gburl'] = (isset($_REQUEST['gburl'])) ? $_REQUEST['gburl'] : '';
+	$_REQUEST['gbgravataremail'] = (isset($_REQUEST['gbgravataremail'])) ? $_REQUEST['gbgravataremail'] : '';
+	$_REQUEST['gbmsg'] = (isset($_REQUEST['gbmsg'])) ? $_REQUEST['gbmsg'] : '';
+	$_REQUEST['gbadditional'] = (isset($_REQUEST['gbadditional'])) ? $_REQUEST['gbadditional'] : '';
+	$captcha1 = (isset($captcha1)) ? $captcha1 : '';
+	$antispam_hash_key = (isset($antispam_hash_key)) ? $antispam_hash_key : '';
+	
 	$abspath = str_replace("\\","/", ABSPATH);
 
 	###########
@@ -591,7 +640,8 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
       // all figures were captcha can use
       $possible="ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
       unset($str);
-      	while(strlen($str)<5) {
+	  $str = (isset($str)) ? $str : '';
+	  while(strlen($str)<5) {
         $str.=substr($possible,(rand()%(strlen($possible))),1);
       	}
 	$captcha1 = $url . "/wp-content/plugins/dmsguestbook/captcha/captcha.php?seed=$seed&amp;var_captcha_color=$var_captcha_color";
@@ -621,12 +671,12 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
 	}
 	###########
 
-	$gbname 	= $_REQUEST[gbname];
-	$gbemail 	= $_REQUEST[gbemail];
-	$gbgravataremail 	= $_REQUEST[gbgravataremail];
-	$gburl 		= $_REQUEST[gburl];
-	$gbmsg 		= str_replace("\\","",$_REQUEST[gbmsg]);
-	$gbadditional_raw = $_REQUEST[gbadditional];
+	$gbname 	= $_REQUEST['gbname'];
+	$gbemail 	= $_REQUEST['gbemail'];
+	$gbgravataremail 	= $_REQUEST['gbgravataremail'];
+	$gburl 		= $_REQUEST['gburl'];
+	$gbmsg 		= str_replace("\\","",$_REQUEST['gbmsg']);
+	$gbadditional_raw = $_REQUEST['gbadditional'];
 
 
 	if($var_require_email==1){$var_mandatory_email=$var_mandatory_char; } else {$var_mandatory_email=""; }
@@ -667,6 +717,11 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
 		   unset($countchars);
 		   }
 
+	$countchars = (isset($countchars)) ? $countchars : '';
+	$countchars[0] = (isset($countchars[0])) ? $countchars[0] : '';
+	$countchars[1] = (isset($countchars[1])) ? $countchars[1] : '';
+	$countchars[2] = (isset($countchars[2])) ? $countchars[2] : '';
+	$countchars[3] = (isset($countchars[3])) ? $countchars[3] : '';
 	include("template/form/$var_form_template");
 
 
@@ -738,6 +793,7 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
 		$abspath = str_replace("\\","/", ABSPATH);
 		$handle = fopen ($abspath . "wp-content/plugins/dmsguestbook/language/" . $var_language, "r");
 		unset($stringtext);
+		$stringtext = (isset($stringtext)) ? $stringtext : '';
 			if($handle) {
 				while (!feof($handle)) {
     			$buffer = fgets($handle, 4096);
@@ -779,10 +835,11 @@ function input_form($error1, $error2, $error3, $error4, $error5, $error6, $succe
 
 
 	/* create navigation */
-	function navigation($num_rows1, $var_step, $var_width, $backward, $forward, $navigation_overview) {
+	function navigation($num_rows1, $var_step, $var_width, $backward, $forward) {
+		$DMSGuestbookContent = (isset($DMSGuestbookContent)) ? $DMSGuestbookContent : '';
 		if($num_rows1 > $var_step) {
 		$DMSGuestbookContent .= "<div class='css_navigation_char_position'>";
-		$DMSGuestbookContent .= $backward . " &nbsp; $navigation_overview &nbsp; " .$forward;
+		$DMSGuestbookContent .= $backward . " " .$forward;
 		$DMSGuestbookContent .= "</div>";
 	 	}
 	return $DMSGuestbookContent;

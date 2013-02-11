@@ -1,21 +1,21 @@
 <?php
 /*
-    "Contact Form to Database Extension" Copyright (C) 2011 Michael Simpson  (email : michael.d.simpson@gmail.com)
+    "Contact Form to Database" Copyright (C) 2011-2012 Michael Simpson  (email : michael.d.simpson@gmail.com)
 
-    This file is part of Contact Form to Database Extension.
+    This file is part of Contact Form to Database.
 
-    Contact Form to Database Extension is free software: you can redistribute it and/or modify
+    Contact Form to Database is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Contact Form to Database Extension is distributed in the hope that it will be useful,
+    Contact Form to Database is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Contact Form to Database Extension.
+    along with Contact Form to Database.
     If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -125,6 +125,11 @@ class CF7FilterParser implements CF7DBEvalutator {
             // WordPress web page, the text that gets here is '&#038;&#038;' rather than '&&'
             // (But oddly, this is not always the case). So check for this case explicitly.
             $retVal = preg_split('/&#038;&#038;/', $filterString, -1, PREG_SPLIT_NO_EMPTY);
+
+            // More recently, editor seems to replace with HTML codes
+            if (count($retVal) == 1) {
+                $retVal = preg_split('/&amp;&amp;/', $filterString, -1, PREG_SPLIT_NO_EMPTY);
+            }
         }
 
         //echo "<pre>Parsed '$filterString' into " . print_r($retVal, true) . '</pre>';
@@ -157,7 +162,12 @@ class CF7FilterParser implements CF7DBEvalutator {
      */
     public function evaluate(&$data) {
         // Use times in local timezone
-        date_default_timezone_set(get_option('timezone_string'));
+        if (function_exists('get_option')) {
+            $localTz = get_option('timezone_string');
+            if ($localTz) {
+                date_default_timezone_set($localTz);
+            }
+        }
         
         $retVal = true;
         if ($this->tree) {
@@ -271,7 +281,7 @@ class CF7FilterParser implements CF7DBEvalutator {
                 break;
 
             case '~~':
-                $retVal = preg_match($right, $left) > 0;
+                $retVal = @preg_match($right, $left) > 0;
                 break;
 
             default:

@@ -1,6 +1,9 @@
 /*
-    ColorBox Core Style
-    The following rules are the styles that are consistant between all ColorBox themes
+* ColorBox Core Style
+* The following rules are the styles that are consistant between all ColorBox themes\
+* @version 2.6
+* @$Id: colorbox.css 662394 2013-02-02 05:29:55Z dzappone $
+* @$URL: http://plugins.svn.wordpress.org/lightbox-plus/tags/2.6/css/yellow/colorbox.css $
 */
 #colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
 #cboxOverlay{position:fixed; width:100%; height:100%;}
@@ -11,6 +14,7 @@
 #cboxTitle{margin:0;}
 #cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%;}
 #cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
+#colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box; -moz-box-sizing:content-box; -webkit-box-sizing:content-box;}
 
 /* 
     ColorBox example user style
