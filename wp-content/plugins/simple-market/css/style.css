@@ -1,5 +1,5 @@
 .sm-top-div {
-	width:95%;
+	width:100%;
 	border:1px solid #AAAAAA;
 	font-size:12px;
 	text-align:left;
@@ -55,4 +55,9 @@
 }
 #content {
 	min-height: 730px;
+}
+
+/* jquery.fileupload-ui.css overrides */
+.progress {
+	width: auto !important;
 }

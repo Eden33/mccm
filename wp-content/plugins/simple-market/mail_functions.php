@@ -35,6 +35,9 @@ function sm_mail_activate_ad($key) {
 	return get_sm_mail_ups_message();
 }
 function sm_mail_reactivate_ad($key) {
+	
+	die('Check sm_mail_reactivate_ad() function ....');
+	
 	if(sm_check_key($key) === true) {
 		global $wpdb;
 		global $sm_table_name;
@@ -53,7 +56,7 @@ function sm_mail_reactivate_ad($key) {
 		$reactivation_threshold_in_days = $sm_options['ad_reactivation_treshold_in_days'];
 		
 		if($sm_item->is_approved_by_mail() === true && $sm_item->is_approved_by_webmaster()) {
-			$current_ad_date_gmt = $sm_item->get_date_time();
+			$current_ad_keep_alive_date_gmt = $sm_item->get_keep_alive_date_time();
 			$now_gmt = current_time('mysql', 1);
 
 			//protect future users
@@ -62,9 +65,12 @@ function sm_mail_reactivate_ad($key) {
 			
 			$reactivation_threshold_in_seconds = $reactivation_threshold_in_days * 24 * 60 * 60;
 			$ad_max_active_in_seconds = $ad_max_active_in_days * 24 * 60 * 60;
-			$seconds_passed_since_ad_online = (mysql2date('G', $now_gmt) - mysql2date('G', $current_ad_date_gmt));
+			$seconds_passed_since_ad_online = (mysql2date('G', $now_gmt) - mysql2date('G', $current_ad_keep_alive_date_gmt));
 			
 			if($seconds_passed_since_ad_online >= ($ad_max_active_in_seconds - $reactivation_threshold_in_seconds))  {
+				
+				//TODO: check function again
+				//TODO: reaktivate keep_alive_date
 				
 				return "Inserat wurde reaktiviert und ist nun weiter $ad_max_active_in_days Tage g&uuml;ltig.";
 			} else {

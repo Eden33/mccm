@@ -15,11 +15,12 @@ Author URI: http://www.mccm-feldkirch.at/
 $sm_table_name = $wpdb->prefix . 'simple_market';
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.8',
+	'plugin_version' 						=> '1.0.9',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'ad_max_active_in_days'					=> 30,
 	'ad_reactivation_treshold_in_days'		=> 5,
+	'ad_max_images'							=> 4,
 	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at'
 );
 $sm_options = NULL;
@@ -53,7 +54,8 @@ function on_plugin_activate() {
 		city varchar(".$sm_mysql_column_length['city'].") DEFAULT '' NOT NULL,
 		country varchar(".$sm_mysql_column_length['country'].") DEFAULT '' NOT NULL,
 		ip varchar(15) DEFAULT '' NOT NULL,
-		date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		submit_date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		keep_alive_date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 	  	text longtext NOT NULL,
 		image_uuid char(".$sm_mysql_column_length['image_uuid'].") DEFAULT '' NOT NULL,
 		mail_approve int(1) DEFAULT 0 NOT NULL,
@@ -129,7 +131,26 @@ function simple_market_add_scripts() {
 		wp_enqueue_script('sm_form_js', plugins_url('/js/form.js', __FILE__), array( 'jquery' ) , $sm_options['plugin_version']);
 		wp_localize_script('sm_form_js', 'SMInject', array( 
 															'url' => admin_url( 'admin-ajax.php' ),
-															'nonce' => wp_create_nonce('sm_nonce')));
+															'nonce' => wp_create_nonce('sm_nonce'),
+															'img_map' => array()));
+		
+		//jquery-file-upload
+		//TODO: add bootstrap-ie7.min.css and html5.js
+		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
+		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
+		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
+		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
+	
+		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
+		wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
+		wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
+		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
+
+		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__));
+		//wp_enqueue_script('blueimp_main_js', plugins_url('/jquery-file-upload/js/main.js', __FILE__));
 	} 
 }
 
@@ -243,8 +264,22 @@ function sm_form_submit_handler() {
 		$form_response->set_text_error(true);
 	}
 	
-	$sm_submit_item = new SimpleMarketItem(NULL, $first_name, $last_name, $mail, $phone, $zip_code, $city, $country,
-			$text, current_time('mysql', 1), $unique_submit_id);
+	$mysql_date_time_now_gmt = current_time('mysql', 1);
+	$sm_properties = array(
+		'first_name' 			=> $first_name,
+		'last_name' 			=> $last_name,
+		'mail'					=> $mail,
+		'phone'					=> $phone,
+		'zip_code'				=> $zip_code,
+		'city'					=> $city,
+		'country'				=> $country,
+		'text'					=> $text,
+		'submit_date_time'		=> $mysql_date_time_now_gmt,
+		'keep_alive_date_time'	=> $mysql_date_time_now_gmt,
+		'image_uuid'			=> $unique_submit_id
+	);
+	
+	$sm_submit_item = new SimpleMarketItem($sm_properties);
 	
 	$market_item_renderer = new MarketItemRenderer($sm_submit_item);
 	$form_response->set_market_item_renderer($market_item_renderer);
@@ -266,24 +301,8 @@ function sm_preview_submit_handler() {
 	
 	header("Content-Type: application/json");
 	
-	//a few authorization checks
-	
+	die_if_request_not_authorized();
 	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
-	if(isset($the_market_item_to_submit) === false)
-		die();
-	
-	$sm_submit_id = $the_market_item_to_submit->get_image_uuid(); 
-	if(isset($sm_submit_id) === false)
-		die();
-
-	$posted_submit_id = $_POST['sm_submit_id'];
-	if(isset($posted_submit_id) === false)
-		die();
-
-	if(strcmp($posted_submit_id, $sm_submit_id) != 0)
-		die();
-	
-	//authorization end
 
 	$mail_approval_key = uniqid('', true);
 	
@@ -347,18 +366,19 @@ Eduard Gopp - Webmaster MCCM Feldkirch
 	if($wpdb->insert(
 			$sm_table_name,
 			array(
-				'first_name' 		=> $the_market_item_to_submit->get_first_name(),
-				'last_name'	 		=> $the_market_item_to_submit->get_last_name(),
-				'mail'				=> $the_market_item_to_submit->get_mail(),
-				'phone'				=> $the_market_item_to_submit->get_phone(),
-				'zip_code'			=> $the_market_item_to_submit->get_zip_code(),
-				'city'				=> $the_market_item_to_submit->get_city(),
-				'country'			=> $the_market_item_to_submit->get_country(),
-				'ip'				=> $_SERVER['REMOTE_ADDR'],
-				'date_time'			=> $the_market_item_to_submit->get_date_time(),
-				'text'				=> $the_market_item_to_submit->get_text(),
-				'image_uuid'		=> $the_market_item_to_submit->get_image_uuid(),
-				'mail_approval_key' => $mail_approval_key
+				'first_name' 			=> $the_market_item_to_submit->get_first_name(),
+				'last_name'	 			=> $the_market_item_to_submit->get_last_name(),
+				'mail'					=> $the_market_item_to_submit->get_mail(),
+				'phone'					=> $the_market_item_to_submit->get_phone(),
+				'zip_code'				=> $the_market_item_to_submit->get_zip_code(),
+				'city'					=> $the_market_item_to_submit->get_city(),
+				'country'				=> $the_market_item_to_submit->get_country(),
+				'ip'					=> $_SERVER['REMOTE_ADDR'],
+				'submit_date_time'		=> $the_market_item_to_submit->get_submit_date_time(),
+				'keep_alive_date_time'	=> $the_market_item_to_submit->get_keep_alive_date_time(), 
+				'text'					=> $the_market_item_to_submit->get_text(),
+				'image_uuid'			=> $the_market_item_to_submit->get_image_uuid(),
+				'mail_approval_key' 	=> $mail_approval_key
 			)) === false) {
 		echo json_encode(array('success' => false, 'error' => '1'));		
 		exit();
@@ -367,6 +387,64 @@ Eduard Gopp - Webmaster MCCM Feldkirch
 	echo json_encode(array('success' => true));
 	die();
 }
+
+add_action('wp_ajax_nopriv_sm_submit_form_images', 'sm_form_images_submit_handler');
+
+function sm_form_images_submit_handler() {
+	
+	die_if_request_not_authorized();
+	
+	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
+	$submit_id = $the_market_item_to_submit->get_image_uuid();
+	
+	$upload_dir = $_SERVER['DOCUMENT_ROOT']."/wp-content/simple-market/tmp/";
+	//just to handle malicious requests
+	die_if_image_upload_count_reached($submit_id, $upload_dir);
+	
+	if(!isset($sm_options))
+		$sm_options = get_site_option('simple_market');	
+	
+	require_once __DIR__ . '/UploadHandler.php';
+		
+	$options = array(
+			'access_control_allow_methods' 	=> array('POST'),
+			'max_number_of_files'			=> 1000,
+			'max_width'						=> 1600,
+			'max_height'					=> 1200,
+			'thumbnail' => array(
+					'max_width' => 120,
+					'max_height' => 120
+			),
+			'script_url' 					=> admin_url('admin-ajax.php'),
+			'upload_dir'					=> $upload_dir,
+			'upload_url'					=> content_url("simple-market/tmp/"),
+			'max_number_of_files'			=> 1000,						//complete directory setting
+			'max_file_size'					=> 500000,
+			'delete_type'					=> 'POST'
+	);
+	//max_file_size -> 1KB consider to be 1000 from Uploader (500 000 = 500KB)
+	
+	_log("Script URL: ".$options['script_url']);
+	_log("Upload DIR: ".$options['upload_dir']);
+	_log("Upload URL: ".$options['upload_url']);
+	_log($_FILES['files']);
+	
+	$upload_handler = new UploadHandler($options, false);
+	
+	$response = json_encode(array('success' => false));
+	switch($_SERVER['REQUEST_METHOD']) {
+		case 'POST'	:
+			$upload_handler->set_image_uuid($submit_id);
+			$upload_handler->post();
+			exit();
+		default : break;
+	}
+	
+	header("Content-Type: application/json");
+	echo $response;
+	exit();
+}
+
 
 /*
  * ---------------------------------------------------------------------- session hooks
@@ -385,4 +463,92 @@ function sm_start_session() {
 //add_action('wp_login', bla)
 //both currently not needed
 
+/*
+ * ------------------------------------------------------------------------ log utily
+ */
+
+//http://fuelyourcoding.com/simple-debugging-with-wordpress/
+if(!function_exists('_log')){
+	function _log( $message ) {
+		if( WP_DEBUG === true ){
+			if( is_array( $message ) || is_object( $message ) ){
+				error_log( print_r( $message, true ) );
+			} else {
+				error_log( $message );
+			}
+		}
+	}
+}
+
+/*
+ * --------------------------------------------------------------------- request authorization
+ */
+
+/**
+ * In first request the user data is validated (+ captcha challange).
+ * On validation success 'market_item_to_submit' is generated with unique_id 'sm_submit_id'.
+ * This 'market_item_to_submit' is stored in session and 'sm_submit_id' is passed back to client.
+ * 
+ * All further POST requests in ad creation process must contain the 'sm_submit_id' stored in SESSION.
+ * This function checks the 'sm_submit_id' and script exectuion gets stopped on authorization errors.
+ */
+function die_if_request_not_authorized() {
+	
+	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
+	if(isset($the_market_item_to_submit) === false) {
+		_log("the_market_item_to_submit is not set!!!");
+		die();
+	}
+	
+	$sm_submit_id = $the_market_item_to_submit->get_image_uuid();
+	if(isset($sm_submit_id) === false) {
+		_log("sm_submit_id ist not set!!!");
+		die();
+	}
+	
+	$posted_submit_id = $_POST['sm_submit_id'];
+	if(isset($posted_submit_id) === false) {
+		_log("post submit_id not set!!!");
+		die();
+	}
+	
+	if(strcmp($posted_submit_id, $sm_submit_id) != 0) {
+		_log("strcmp $posted_submit_id and $sm_submit_id failed!!");
+		die();
+	}
+}
+
+function die_if_image_upload_count_reached($image_uuid, $tmp_upload_dir) {
+	global $sm_options;
+	
+	if(!isset($sm_options))
+		$sm_options = get_site_option('simple_market');
+	
+	$max_images = $sm_options['ad_max_images'];
+	
+	$tmp_images = scandir($tmp_upload_dir);
+	
+	$image_count = 0;
+	$uuid_length = strlen($image_uuid);
+
+	if(is_array($tmp_images)) {
+		$image_to_compare = "";
+		$uuid_sub_str = "";
+		for($i = 0; $i < count($tmp_images); $i++) {
+			$image_to_compare = $tmp_images[$i];
+			$uuid_sub_str = substr($image_to_compare, 0, $uuid_length);
+			if(strcmp($image_uuid,  $uuid_sub_str) == 0) {
+				$image_count += 1;
+				_log("Image $image_to_compare matches $image_uuid. Image Count: $image_count");
+			} else {
+				_log("Image $image_to_compare does not match $image_uuid ... substr is $uuid_sub_str");
+			}
+		}
+		if($image_count > $max_images) {
+			_log("Image count for $image_uuid reached, die!!! Currently $image_count images.");
+			die();
+		}
+	}
+	
+}
 ?>

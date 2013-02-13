@@ -9,7 +9,8 @@ class SimpleMarketItem {
 	private $city;
 	private $country;
 	private $ip;
-	private $date_time;
+	private $submit_date_time;
+	private $keep_alive_date_time;
 	private $text;
 	private $image_uuid;
 	private $mail_approve;
@@ -18,7 +19,7 @@ class SimpleMarketItem {
 
 		
 	function __construct($assoc_array, $first_name = NULL, $last_name=NULL, $mail=NULL, $phone=NULL, $zip_code=NULL, 
-							$city=NULL, $country=NULL, $text=NULL, $date_time=NULL, $image_uuid=NULL) {
+							$city=NULL, $country=NULL, $text=NULL, $submit_date_time=NULL, $image_uuid=NULL) {
 		if(isset($assoc_array) === true && is_array($assoc_array)) {
 			foreach ($assoc_array as $key => $value) {
 				switch ($key) {
@@ -31,7 +32,8 @@ class SimpleMarketItem {
 					case 'city'					: 	$this->city = $value; break;
 					case 'country'				: 	$this->country = $value; break;
 					case 'ip'					: 	$this->ip = $value; break;
-					case 'date_time'			: 	$this->date_time = $value; break;
+					case 'submit_date_time'		: 	$this->submit_date_time = $value; break;
+					case 'keep_alive_date_time'	: 	$this->keep_alive_date_time = $value; break;
 					case 'text'					: 	$this->text = $value; break;
 					case 'image_uuid'			: 	$this->image_uuid = $value; break;
 					case 'mail_approve'			: 	$this->mail_approve = $value; break;
@@ -40,17 +42,6 @@ class SimpleMarketItem {
 					default						: 	throw new Exception("Column: $key not knwon!");
 				}
 			}
-		} else {
-			$this->first_name = $first_name;
-			$this->last_name = $last_name;
-			$this->mail = $mail;
-			$this->phone = $phone;
-			$this->zip_code = $zip_code;
-			$this->city = $city;
-			$this->country  = $country;
-			$this->text = $text;
-			$this->date_time = $date_time;
-			$this->image_uuid = $image_uuid;
 		}
 	}
 	function get_first_name() {
@@ -110,8 +101,11 @@ class SimpleMarketItem {
 		$encoded = nl2br($encoded, false);
 		return $encoded;
 	}
-	function get_date_time() {
-		return $this->date_time;	
+	function get_submit_date_time() {
+ 		return $this->submit_date_time;
+	}
+	function get_keep_alive_date_time() {
+		return $this->keep_alive_date_time;	
 	}
 	/**
 	 * The tag images are marked with during submission process.
@@ -282,6 +276,13 @@ class MarketItemRenderer {
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
 				<hr class="sm-h"/>
+				<div id="sm-thumb-preview-container">
+					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-1"></div>
+					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-2"></div>
+					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-3"></div>
+					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-4"></div>					
+				</div>
+				<hr class="sm-h"/>
 				<div>
 					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
 					<script type="text/javascript">
@@ -307,7 +308,7 @@ class MarketItemRenderer {
 	}
 	
 	private function get_formated_date_time() {
-		$date_time = $this->market_item->get_date_time();
+		$date_time = $this->market_item->get_keep_alive_date_time();
 		$date_time_blog_time_zone = get_date_from_gmt($date_time);
 		return $date_time_blog_time_zone;
 	}

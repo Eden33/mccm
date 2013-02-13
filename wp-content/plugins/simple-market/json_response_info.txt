@@ -1,0 +1,44 @@
+image success, each image is an admin-ajax.php response
+
+{
+    "files": [
+        {
+            "name": "13511a5e2b4c46d_my_image_nr_four.jpg",
+            "size": 67980,
+            "type": "image/jpeg",
+            "url": "http://www.mccm-feldkirch.at/wp-content/simple-market/tmp/13511a5e2b4c46d_my_image_nr_four.jpg",
+            "thumbnail_url": "http://www.mccm-feldkirch.at/wp-content/simple-market/tmp/thumbnail/13511a5e2b4c46d_my_image_nr_four.jpg",
+            "delete_url": "http://www.mccm-feldkirch.at/wp-admin/admin-ajax.php?file=13511a5e2b4c46d_my_image_nr_four.jpg",
+            "delete_type": "DELETE"
+        }
+    ]
+}
+
+image error ... to big
+
+{
+    "files": [
+        {
+            "name": "13511a60ee116c8_my_image_nr_one.jpg",
+            "size": 51667,
+            "type": "image/jpeg",
+            "error": "File is too big"
+        }
+    ]
+}
+
+image success, delte type set to POST
+
+{
+    "files": [
+        {
+            "name": "13511a628d97808_my_image_nr_three.jpg",
+            "size": 79564,
+            "type": "image/jpeg",
+            "url": "http://www.mccm-feldkirch.at/wp-content/simple-market/tmp/13511a628d97808_my_image_nr_three.jpg",
+            "thumbnail_url": "http://www.mccm-feldkirch.at/wp-content/simple-market/tmp/thumbnail/13511a628d97808_my_image_nr_three.jpg",
+            "delete_url": "http://www.mccm-feldkirch.at/wp-admin/admin-ajax.php?file=13511a628d97808_my_image_nr_three.jpg&_method=DELETE",
+            "delete_type": "POST"
+        }
+    ]
+}
