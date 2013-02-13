@@ -1,5 +1,7 @@
 jQuery(function ($) {
 	
+	var DEBUG_SM_JS = false;
+	
 	jQuery(document).ready(function($){
 		showRecaptcha();
 	});
@@ -92,25 +94,31 @@ jQuery(function ($) {
 	    });
 	    
 	    $('#sm-form-images').bind('fileuploaddone', function(e, data) {
+	    	if(DEBUG_SM_JS) {
+	    		console.log("done event");
+	    	}
+	    	
 	    	if(typeof data.result !== 'undefined' && $.isArray(data.result.files)) {
 	    		var img_data = data.result.files[0];
 	    		//if no error proceed
 	    		if(typeof img_data !== 'undefined' && typeof img_data.error === 'undefined')  {
 		    		//get a free "slot"
-	    			$('.sm-thumb-preview').each(function(index){
-		    			if($(this).html() == "") {
-		    				var the_html = '<a href="'+img_data.url+'" target="_blank" title="Anzeigen Bild '+
-		    								+ index + '" class="cboxElement">'
-		    								+'<img title="" alt="" src="'+img_data.thumbnail_url+'" width="120" height="120" />'
-		    								+'</a>';
-		    				$(this).html(the_html);
-		    				var img_map_obj = new Object();
-		    				img_map_obj.id = $(this).attr('id');
-		    				img_map_obj.name = img_data.name;
-		    				SMInject['img_map'].push(img_map_obj);
-		    				return false;
-		    			}
-		    		});
+	    			setTimeout(function() {
+		    			$('.sm-thumb-preview').each(function(index){
+			    			if($(this).html() == "") {
+			    				var the_html = '<a href="'+img_data.url+'" target="_blank" title="Anzeigen Bild '+
+			    								+ index + '" class="cboxElement">'
+			    								+'<img title="" alt="" src="'+img_data.thumbnail_url+'" width="120" height="120" />'
+			    								+'</a>';
+			    				$(this).html(the_html);
+			    				var img_map_obj = new Object();
+			    				img_map_obj.id = $(this).attr('id');
+			    				img_map_obj.name = img_data.name;
+			    				SMInject['img_map'].push(img_map_obj);
+			    				return false;
+			    			}
+			    		});
+	    			}, 2000);
 	    		}
 	    	} else {
 	    		alert(unescape("Ups. Da ist wohl etwas schief gegangen.... Dies h%E4tte nicht passieren d%FCfen"));
@@ -159,11 +167,14 @@ jQuery(function ($) {
 	    $('#sm-form-images').bind('fileuploadprogressall', function (e, data) {
 	    	var progress = parseInt(data.loaded / data.total * 100, 10);
 	    	if(progress >= 100) {
+	    		if(DEBUG_SM_JS) {
+	    			console.log("progess all, show Ad Preview.");
+	    		}
 	    		showAdPreview();
 	    	}
 	    	//console.log("Data progress: "+progress+" loaded: "+data.loaded+" total: "+data.total);
 	    });
-	}
+	};
 	
 	function showAdPreview() {
 		$('#sm-head-anchor').scrollTo(1000, function() {

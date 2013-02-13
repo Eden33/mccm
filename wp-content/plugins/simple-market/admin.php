@@ -134,23 +134,29 @@ function simple_market_add_scripts() {
 															'nonce' => wp_create_nonce('sm_nonce'),
 															'img_map' => array()));
 		
-		//jquery-file-upload
-		//TODO: add bootstrap-ie7.min.css and html5.js
-		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
-		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
-		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
-		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
-	
-		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
-		wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
-		wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
-		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
-
-		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__));
-		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__));
-		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__));
-		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__));
-		//wp_enqueue_script('blueimp_main_js', plugins_url('/jquery-file-upload/js/main.js', __FILE__));
+			
+		//jQuery File Upload Plugin Files
+// 		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
+// 		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
+// 		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
+//  	wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
+//  	wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
+// 		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
+		//serve blueimp files from own server
+		wp_enqueue_script('blueimp_tmp_min_js', plugins_url('/js/tmpl.min.js', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_script('blueimp_load_img_min_js', plugins_url('/js/load-image.min.js', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_script('blueimp_canvas_to_blob_min_js', plugins_url('/js/canvas-to-blob.min.js', __FILE__), false, $sm_options['plugin_version']);
+ 		wp_enqueue_style('blueimp_bootstrap_min_css', plugins_url('/css/bootstrap.min.css', __FILE__), false, $sm_options['plugin_version']);
+ 		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', plugins_url('css/bootstrap-responsive.min.css', __FILE__), false, $sm_options['plugin_version']);
+ 		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', plugins_url('css/bootstrap-image-gallery.min.css', __FILE__), false, $sm_options['plugin_version']);
+ 				
+ 		
+ 		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
+ 		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__), false, $sm_options['plugin_version']);
 	} 
 }
 

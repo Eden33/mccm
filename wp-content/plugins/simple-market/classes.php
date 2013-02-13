@@ -276,7 +276,7 @@ class MarketItemRenderer {
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
 				<hr class="sm-h"/>
-				<div id="sm-thumb-preview-container">
+				<div id="sm-thumb-preview-container" class="clearfix">
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-1"></div>
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-2"></div>
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-3"></div>
