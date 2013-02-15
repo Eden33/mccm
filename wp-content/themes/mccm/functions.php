@@ -21,7 +21,7 @@ function wp_head_event() {
 add_action('wp_head', 'wp_head_event');
 
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
-$_registration_start_date = new DateTime('2013-05-09 00:00');
+$_registration_start_date = new DateTime('2013-04-30 00:00');
 $_registration_ctr_enabled = false;
 
 function get_registration_counter() {
@@ -83,7 +83,8 @@ function is_registration_enabled() {
 	//if now is greater or equal startdate then registration is enabled
 	if( $_registration_start_date <= $now 
 			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31'
-			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31') {
+			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31'
+			|| $_SERVER['REMOTE_ADDR'] == '127.0.0.1') {
 		return true;
 	}
 	return false;
