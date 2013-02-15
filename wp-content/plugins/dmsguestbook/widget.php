@@ -4,17 +4,18 @@ Plugin Name: DMSGuestbook widget
 Plugin URI: http://DanielSchurter.net
 Description: Add a DMSGuestbook widget.
 Author: Daniel M. Schurter
-Version: 2.51
+Version: 2.50 
 Author URI: http://DanielSchurter.net
 */
 
+
+
 /* initializing */
 function widget_dmsguestbook_init() {
-	
 	if ( !function_exists('register_sidebar_widget') || !function_exists('register_widget_control') )
 		return;
 	function widget_dmsguestbook_control() {
-	
+
 		$options = $newoptions = get_option('widget_dmsguestbook');
 		if ( !is_array($newoptions) )
 			$newoptions = array(
@@ -37,7 +38,6 @@ function widget_dmsguestbook_init() {
 		 	     $POSTVARIABLE = $_POST;
 		 	     }
 
-			$POSTVARIABLE['submit'] = (isset($POSTVARIABLE['submit'])) ? $POSTVARIABLE['submit'] : '';
 			if ( $POSTVARIABLE['submit'] ) {
 
 				/* prevent XSS */
@@ -67,8 +67,6 @@ $options0 = get_option('DMSGuestbook_options');
 $part3 = explode("<page_id>", $options0);
 $part4 = explode("</page_id>", $part3[1]);
 $multi_page_id = explode(",", $part4[0]);
-$dataS = (isset($dataS)) ? $dataS : '';
-$data = (isset($data)) ? $data : '';
 
 for($m=0; $m<count($multi_page_id); $m++) {
 	$m2 = $m + 1;
@@ -129,13 +127,13 @@ $data = $dataS . $data;
 		<a href='http://www.w3.org/Style/CSS/learning' target='_blank'>CSS</a><br />" .
 		__("Don't forget to close all tags!", "dmsguestbook") . "<br /><br />";
 
-		echo "<span style='font-size:0.8em;'>
-		<a id='default_widget' class='default_widget'>" . __("Default", "dmsguestbook") . "</a> |
-		<a id='example_widget1' class='example_widget1'>" . __("Example", "dmsguestbook") . " #1</a> |
-		<a id='example_widget2' class='example_widget2'>" . __("Example", "dmsguestbook") . " #2</a> |
-		<a id='example_widget3' class='example_widget3'>" . __("Example", "dmsguestbook") . " #3</a> |
-		<a id='example_widget4' class='example_widget4'>" . __("Example", "dmsguestbook") . " #4</a> |
-		<a id='example_widget5' class='example_widget5'>" . __("Example", "dmsguestbook") . " #5</a>
+		echo "<span style='font-size:0.8em;'
+		<a id='default_widget'>" . __("Default", "dmsguestbook") . "</a> |
+		<a id='example_widget1'>" . __("Example", "dmsguestbook") . " #1</a> |
+		<a id='example_widget2'>" . __("Example", "dmsguestbook") . " #2</a> |
+		<a id='example_widget3'>" . __("Example", "dmsguestbook") . " #3</a> |
+		<a id='example_widget4'>" . __("Example", "dmsguestbook") . " #4</a> |
+		<a id='example_widget5'>" . __("Example", "dmsguestbook") . " #5</a>
 		</span><br /><br />";
 
 		echo "<b>" . __("Header", "dmsguestbook") . "</b><br />";
@@ -159,82 +157,72 @@ $data = $dataS . $data;
   <!-- Widget examples -->
   <?php
   wp_deregister_script( 'jquery' );
-  wp_enqueue_script( 'jquery', '../wp-content/plugins/dmsguestbook/js/jquery-1.7.2.js', array(), '' );
+  wp_enqueue_script( 'jquery', '../wp-content/plugins/dmsguestbook/js/jquery.js', array(), '' );
   ?>
-  
 <script type="text/javascript">
+  jQuery(document).ready(function($){
 
-	jQuery('.default_widget').click(function () {
-		var header = "<div style=\"background-color:#F7CDC1;padding:5px;border:1px dashed #dd8888;\">";
-		var widget = "<b style=\"font-weight:bold;\">\n<a href=\"LINK1\">SHOW_NAME</a>\n</b>\n<br />\nSHOW_MESSAGE\n<br />\n<br />";
-		var footer = "</div>";
+    jQuery("[id$='default_widget']").click(function () {
+    	header = "<div style=\"background-color:#F7CDC1;padding:5px;border:1px dashed #dd8888;\">";
+     	widget = "<b style=\"font-weight:bold;\">\n<a href=\"LINK1\">SHOW_NAME</a>\n</b>\n<br />\nSHOW_MESSAGE\n<br />\n<br />";
+  		footer = "</div>";
 
-		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-		jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-		jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+  		jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	jQuery('.example_widget1').click(function () {
-		var header = "<div style=\"border:1px solid #333333;padding:5px;\">";
-     	var widget = "<b style=\"font-weight:bold;\">\n(SHOW_NR) SHOW_NAME\n</b>\n<br />\n<a href=\"LINK1\">SHOW_MESSAGE</a>\n<br />\n<br />";
-  		var footer = "</div>";
-  		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-    	jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-    	jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+
+	jQuery("[id$='example_widget1']").click(function () {
+		header = "<div style=\"border:1px solid #333333;padding:5px;\">";
+     	widget = "<b style=\"font-weight:bold;\">\n(SHOW_NR) SHOW_NAME\n</b>\n<br />\n<a href=\"LINK1\">SHOW_MESSAGE</a>\n<br />\n<br />";
+  		footer = "</div>";
+
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+    	jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	jQuery('.example_widget2').click(function () {
-		var header = "<div style=\"background-color:#000000;padding:5px;\">";
-     	var widget = "<b style=\"font-weight:bold;color:#ffffff;\">\nGRAVATAR (SHOW_NR) <a href=\"LINK1\">SHOW_NAME</a>\n</b>\n<br />\n<i style=\"color:#bb1100;\">SHOW_MESSAGE</i>\n<br />\n<br />";
-  		var footer = "</div>";
-  		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-    	jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-    	jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+
+	jQuery("[id$='example_widget2']").click(function () {
+		header = "<div style=\"background-color:#000000;padding:5px;\">";
+     	widget = "<b style=\"font-weight:bold;color:#ffffff;\">\nGRAVATAR (SHOW_NR) <a href=\"LINK1\">SHOW_NAME</a>\n</b>\n<br />\n<i style=\"color:#bb1100;\">SHOW_MESSAGE</i>\n<br />\n<br />";
+  		footer = "</div>";
+
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+    	jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	jQuery('.example_widget3').click(function () {
-		var header = "<div style=\"background-image: url(wp-content/plugins/dmsguestbook/img/testimage.gif);padding:5px;border:1px dashed #000000;\">";
-     	var widget = "<b>Nr:</b> SHOW_NR\n<br />\n<b>ID:</b> SHOW_ID\n<br />\n<b>Name:</b> <a href=\"LINK1\">SHOW_NAME</a>\n<br />\n<b>Message:</b>SHOW_MESSAGE\n<br />\n<b>Date:</b> SHOW_DATE\n<br />\n<br />";
-     	var footer = "</div>";
-  		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-    	jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-    	jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+
+	jQuery("[id$='example_widget3']").click(function () {
+		header = "<div style=\"background-image: url(wp-content/plugins/dmsguestbook/img/testimage.gif);padding:5px;border:1px dashed #000000;\">";
+     	widget = "<b>Nr:</b> SHOW_NR\n<br />\n<b>ID:</b> SHOW_ID\n<br />\n<b>Name:</b> <a href=\"LINK1\">SHOW_NAME</a>\n<br />\n<b>Message:</b>SHOW_MESSAGE\n<br />\n<b>Date:</b> SHOW_DATE\n<br />\n<br />";
+     	footer = "</div>";
+
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+    	jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	jQuery('.example_widget4').click(function () {
-		var header = "<div style=\"width:100%;height:15px;background-color:#bb1100;\"></div>\n<div style=\"background-color:#dfdfdf;padding:5px;text-align:right;border:1px solid #bb1100;\">";
-     	var widget = "<b style=\"font-size:15px;\"><a href=\"LINK1\">SHOW_MESSAGE</a></b>\n<br />\nBy: <span style=\"text-transform:uppercase;\">[SHOW_NAME]</span>\n<br />\n<br />\n<br />";
-  		var footer = "</div>\n<div style=\"width:100%;height:15px;background-color:#bb1100;\"></div>";
-  		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-    	jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-    	jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+
+	jQuery("[id$='example_widget4']").click(function () {
+		header = "<div style=\"width:100%;height:15px;background-color:#bb1100;\"></div>\n<div style=\"background-color:#dfdfdf;padding:5px;text-align:right;border:1px solid #bb1100;\">";
+     	widget = "<b style=\"font-size:15px;\"><a href=\"LINK1\">SHOW_MESSAGE</a></b>\n<br />\nBy: <span style=\"text-transform:uppercase;\">[SHOW_NAME]</span>\n<br />\n<br />\n<br />";
+  		footer = "</div>\n<div style=\"width:100%;height:15px;background-color:#bb1100;\"></div>";
+
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+    	jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	jQuery('.example_widget5').click(function () {
-		var header = "<div style=\"background-color:#000000;color:#088a4b;padding:3px;letter-spacing:3px;\">";
-     	var widget = "<span style=\"font-size:8px;\">\nSHOW_NAME:~$ ./script.sh\n</span>\n<br />\n<span style=\"font-size:8px;\">\nid: (SHOW_ID)<br />\ndate: SHOW_DATE<br />\nmsg: SHOW_MESSAGE\n</span>\n<br />\n<br />\n<br />";
-  		var footer = "</div>";
-  		jQuery("[id$='DMSGuestbook_widget_header']").text(header);
-    	jQuery("[id$='DMSGuestbook_widget_data']").text(widget);
-    	jQuery("[id$='DMSGuestbook_widget_footer']").text(footer);
-		switch_color(this);
+
+	jQuery("[id$='example_widget5']").click(function () {
+		header = "<div style=\"background-color:#000000;color:#088a4b;padding:3px;letter-spacing:3px;\">";
+     	widget = "<span style=\"font-size:8px;\">\nSHOW_NAME:~$ ./script.sh\n</span>\n<br />\n<span style=\"font-size:8px;\">\nid: (SHOW_ID)<br />\ndate: SHOW_DATE<br />\nmsg: SHOW_MESSAGE\n</span>\n<br />\n<br />\n<br />";
+  		footer = "</div>";
+
+  		jQuery("[id$='DMSGuestbook_widget_header']").val(header);
+    	jQuery("[id$='DMSGuestbook_widget_data']").val(widget);
+    	jQuery("[id$='DMSGuestbook_widget_footer']").val(footer);
 	});
-	
-	function switch_color(selClass) {
-		jQuery('.default_widget').css("text-decoration", "none");
-		jQuery('.example_widget1').css("text-decoration", "none");
-		jQuery('.example_widget2').css("text-decoration", "none");
-		jQuery('.example_widget3').css("text-decoration", "none");
-		jQuery('.example_widget4').css("text-decoration", "none");
-		jQuery('.example_widget5').css("text-decoration", "none");
-		jQuery(selClass).css("text-decoration", "underline");
-	}
-	
+
+  });
 </script>
 
 <?php
@@ -285,6 +273,8 @@ $data = $dataS . $data;
 		__("Example") . ": <i style='color:#dd0000;'>" . __("This is my gravatar image") . ": GRAVATAR</i><br />
 		<br /></span>";
 	}
+
+
 
 /* what you see in the side of your webpage */
 function widget_dmsguestbook($args) {
