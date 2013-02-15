@@ -2,6 +2,16 @@
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
+
+#maintenance
+RewriteCond %{REQUEST_FILENAME}         ^.*maintenance\/maintenance.html.*$
+RewriteRule ^(.*)$                      http://%{HTTP_HOST} [R=302,L]
+
+#Under maintenance - Send anybody to maintenance site
+#RewriteCond %{REQUEST_FILENAME}        !^.*maintenance\/.*$
+#RewriteCond %{REMOTE_ADDR}             !^91\.112\.117\.34$
+#RewriteRule ^(.*)$                     http://%{HTTP_HOST}/maintenance/maintenance.html [R=302,L]
+
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
