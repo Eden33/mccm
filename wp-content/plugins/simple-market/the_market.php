@@ -1,12 +1,43 @@
 <?php
 
+//$mysql_date_time_now_gmt = current_time('mysql', 1);
+//$mysql_date_time_now_gmt . " and ".date('Y-m-d H:i:s', strtotime("-$ad_max_active days"));
+
+function get_the_ads() {
+	global $sm_options;
+	global $wpdb;
+	global $sm_table_name;
+	
+	$the_ads_markup = "";
+	
+	if(!isset($sm_options))
+		$sm_options = get_site_option('simple_market');
+	
+	$ad_max_active = $sm_options['ad_max_active_in_days'];
+	$past_day_barrierer = date('Y-m-d H:i:s', strtotime("-$ad_max_active days"));
+	
+ 	$the_ads = $wpdb->get_results(
+ 			"SELECT * FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' and webmaster_approve = 1", ARRAY_A
+ 			);
+ 	if($the_ads) {
+ 		foreach ($the_ads as $ad_data) {
+ 			$sm_item = new SimpleMarketItem($ad_data);
+ 			$renderer = new MarketItemRenderer($sm_item);
+ 			$the_ads_markup .= $renderer->get_markup();
+ 		}
+ 	}
+ 	return $the_ads_markup;
+	//return "";
+}
+
 //http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-page-refresh-using-jquery/
 
 function get_the_form() {
 	global $sm_mysql_column_length;
+	
 	return 
 	'	<div id="sm-preview-div"></div>
-		<div id="sm-market-div"> Market Data </div>
+		<div id="sm-market-div"> '.get_the_ads().'</div>
 		<div id="sm-first-from-div" class="sm-top-div" style="padding:0px 10px;">
 		
 		<a id="sm-form-a"></a>

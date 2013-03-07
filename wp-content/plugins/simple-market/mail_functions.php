@@ -11,14 +11,17 @@ function sm_mail_activate_ad($key) {
 		
 		if($sm_item->is_approved_by_mail() === false) {
 				
+			//TODO: remove webmaster_approve .. only for developing
 			$affected = $wpdb->update($sm_table_name, 
-					array('mail_approve' => 1), 
-					array('mail_approval_key' => $key),
+					array('mail_approve' => 1,
+						  'webmaster_approve' => 1), 
+					array('id' => $sm_item->get_id()),
 					array('%d'));
 			
 			if($affected === 1) {
 				
-				//TODO: move images from tmp folder to primary
+				$options = array('move_to_main_dir' => true, 'check_for_malicious' => true);
+				perform_action_on_uploaded_images($sm_item, $options);				
 				
 				$msg_ad_activated = "Ihr Inserat wurde aktiviert.<br/>";
 				if($sm_item->is_approved_by_webmaster() === false) {

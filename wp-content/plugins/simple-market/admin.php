@@ -15,7 +15,7 @@ Author URI: http://www.mccm-feldkirch.at/
 $sm_table_name = $wpdb->prefix . 'simple_market';
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.9',
+	'plugin_version' 						=> '1.0.0',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'ad_max_active_in_days'					=> 30,
@@ -42,7 +42,7 @@ function on_plugin_activate() {
 	global $sm_initialize_options;
 	global $sm_mysql_column_length;
 
-	//TODO: make mail_approval_key unique
+	//TODO: unfortunatelly called twice and first call produces a serios bug
 	
 	$sql = "CREATE TABLE $sm_table_name (
 		id INT NOT NULL AUTO_INCREMENT,
@@ -63,10 +63,10 @@ function on_plugin_activate() {
 	  	webmaster_approve int(1) DEFAULT 0 NOT NULL,
 	  	UNIQUE KEY id (id),
 	  	UNIQUE KEY mail_approval_key_UNIQUE (mail_approval_key)
-	) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+	)  ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	dbDelta($sql); //create or compute differences and alter
+ 	dbDelta($sql); //create or compute differences and alter
 	
 	//protect future users from being responsible for a "unique" salt on their own
 	require_once __DIR__ . '/utility_functions.php';
@@ -134,29 +134,23 @@ function simple_market_add_scripts() {
 															'nonce' => wp_create_nonce('sm_nonce'),
 															'img_map' => array()));
 		
-			
-		//jQuery File Upload Plugin Files
-// 		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
-// 		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
-// 		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
-//  	wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
-//  	wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
-// 		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
-		//serve blueimp files from own server
-		wp_enqueue_script('blueimp_tmp_min_js', plugins_url('/js/tmpl.min.js', __FILE__), false, $sm_options['plugin_version']);
-		wp_enqueue_script('blueimp_load_img_min_js', plugins_url('/js/load-image.min.js', __FILE__), false, $sm_options['plugin_version']);
-		wp_enqueue_script('blueimp_canvas_to_blob_min_js', plugins_url('/js/canvas-to-blob.min.js', __FILE__), false, $sm_options['plugin_version']);
- 		wp_enqueue_style('blueimp_bootstrap_min_css', plugins_url('/css/bootstrap.min.css', __FILE__), false, $sm_options['plugin_version']);
- 		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', plugins_url('css/bootstrap-responsive.min.css', __FILE__), false, $sm_options['plugin_version']);
- 		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', plugins_url('css/bootstrap-image-gallery.min.css', __FILE__), false, $sm_options['plugin_version']);
- 				
- 		
- 		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
- 		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
-		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__), false, $sm_options['plugin_version']);
-		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__), false, $sm_options['plugin_version']);
-		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__), false, $sm_options['plugin_version']);
-		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__), false, $sm_options['plugin_version']);
+		//jquery-file-upload
+		//TODO: add bootstrap-ie7.min.css and html5.js
+		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
+		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
+		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
+		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
+	
+		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
+		wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
+		wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
+		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
+
+		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__));
+		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__));
+		//wp_enqueue_script('blueimp_main_js', plugins_url('/jquery-file-upload/js/main.js', __FILE__));
 	} 
 }
 
@@ -287,7 +281,7 @@ function sm_form_submit_handler() {
 	
 	$sm_submit_item = new SimpleMarketItem($sm_properties);
 	
-	$market_item_renderer = new MarketItemRenderer($sm_submit_item);
+	$market_item_renderer = new PreviewMarketItemRenderer($sm_submit_item);
 	$form_response->set_market_item_renderer($market_item_renderer);
 	$form_response->set_market_item($sm_submit_item);
 	
@@ -403,12 +397,12 @@ function sm_form_images_submit_handler() {
 	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
 	$submit_id = $the_market_item_to_submit->get_image_uuid();
 	
-	$upload_dir = $_SERVER['DOCUMENT_ROOT']."/wp-content/simple-market/tmp/";
 	//just to handle malicious requests
-	die_if_image_upload_count_reached($submit_id, $upload_dir);
+	$options = array('check_for_malicious' => true);
+	perform_action_on_uploaded_images($the_market_item_to_submit, $options);
 	
 	if(!isset($sm_options))
-		$sm_options = get_site_option('simple_market');	
+		$sm_options = get_site_option('simple_market');
 	
 	require_once __DIR__ . '/UploadHandler.php';
 		
@@ -422,8 +416,8 @@ function sm_form_images_submit_handler() {
 					'max_height' => 120
 			),
 			'script_url' 					=> admin_url('admin-ajax.php'),
-			'upload_dir'					=> $upload_dir,
-			'upload_url'					=> content_url("simple-market/tmp/"),
+			'upload_dir'					=> get_tmp_image_upload_dir(),
+			'upload_url'					=> content_url('simple-market'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR),
 			'max_number_of_files'			=> 1000,						//complete directory setting
 			'max_file_size'					=> 500000,
 			'delete_type'					=> 'POST'
@@ -524,7 +518,89 @@ function die_if_request_not_authorized() {
 	}
 }
 
-function die_if_image_upload_count_reached($image_uuid, $tmp_upload_dir) {
+/*
+ * ---------------------------------------------------------------------- image helpers
+ */
+
+function get_tmp_image_upload_dir() {
+	return $_SERVER['DOCUMENT_ROOT']."/wp-content/simple-market/tmp/";
+}
+function get_main_image_dir($sm_item, $give_me_the_thumbnail_sub_dir = false) {
+	$main_image_dir = $_SERVER['DOCUMENT_ROOT']."/wp-content/simple-market/";
+	$main_image_dir .= $sm_item->get_image_folder_name();
+	if($give_me_the_thumbnail_sub_dir) {
+		$main_image_dir .= DIRECTORY_SEPARATOR . "thumbnail";
+	}
+	return $main_image_dir;
+}
+function get_main_image_url($sm_item, $the_image_name, $give_me_the_thumbnail_url = false) {
+	$content_url = content_url();
+	$content_url .= "/simple-market/".$sm_item->get_image_folder_name()."/";
+	if($give_me_the_thumbnail_url) {
+		$content_url .= "thumbnail/";
+	}
+	$content_url  .= $the_image_name;
+	return $content_url;
+}
+
+/**
+ * Options:
+ * if only 'check_for_malicious' is set
+ * of
+ * if 'check_for_malicious' and 'move_to_main_dir' is set
+ * --- it is checked that the temp images of the item not exceeds max allowed images
+ * 
+ * if 'check_for_malicious' and 'get_the_image_urls_of_the_sm_item' 
+ * --- it is checked that returned image count not exceeds max allowed images
+ * 
+ * @param unknown $image_uuid
+ * @param unknown $check_for_malicious - normally set to true all the times
+ * @param string $move_to_main_dir - false
+ */
+function perform_action_on_uploaded_images($sm_item, $options = array()) {
+		
+	$move_to_main_dir = false;
+	$check_for_malicious = false;
+	$get_image_urls_of_passed_sm_item = false;
+	$the_images = array();
+	
+	foreach ($options as $key => $value) {
+		switch($key) {
+			case 'move_to_main_dir' : 					
+				$move_to_main_dir = true; 
+				break;
+			case 'get_image_urls_of_passed_sm_item' : 	
+				$get_image_urls_of_passed_sm_item = true; 
+				break;
+			case 'check_for_malicious' : 
+				$check_for_malicious = true;
+				break;
+			default: throw new Exception("option $key not known in perform_action_on_uploaded_images");
+		}
+	}
+	
+	_log("perform_action_on_uploaded_images called move to main dir: $move_to_main_dir, get the images: $get_image_urls_of_passed_sm_item");
+	_log("check for malicious : $check_for_malicious");
+	
+	$tmp_upload_dir = get_tmp_image_upload_dir();
+	$tmp_upload_dir_thumbnails = $tmp_upload_dir . "thumbnail" . DIRECTORY_SEPARATOR;
+	$main_dir = get_main_image_dir($sm_item);
+	$main_dir_thumbnails = get_main_image_dir($sm_item, true);
+	
+	if(!is_dir($main_dir)) {
+		if(!mkdir($main_dir)) {
+			_log("Cant create $main_dir!!!");
+		}
+	}
+	if(!is_dir($main_dir_thumbnails)) {
+		if(!mkdir($main_dir_thumbnails)) {
+			_log("Cant create $main_dir_thumbnails!!!");
+		}
+	}
+	
+	_log("Temp upload dir: $tmp_upload_dir");
+	_log("Main dir: $main_dir");
+	
 	global $sm_options;
 	
 	if(!isset($sm_options))
@@ -532,29 +608,82 @@ function die_if_image_upload_count_reached($image_uuid, $tmp_upload_dir) {
 	
 	$max_images = $sm_options['ad_max_images'];
 	
-	$tmp_images = scandir($tmp_upload_dir);
-	
+	_log("Max images: $max_images");
+		
 	$image_count = 0;
-	$uuid_length = strlen($image_uuid);
+	$uuid_length = strlen($sm_item->get_image_uuid());
 
-	if(is_array($tmp_images)) {
-		$image_to_compare = "";
-		$uuid_sub_str = "";
-		for($i = 0; $i < count($tmp_images); $i++) {
-			$image_to_compare = $tmp_images[$i];
-			$uuid_sub_str = substr($image_to_compare, 0, $uuid_length);
-			if(strcmp($image_uuid,  $uuid_sub_str) == 0) {
-				$image_count += 1;
-				_log("Image $image_to_compare matches $image_uuid. Image Count: $image_count");
-			} else {
-				_log("Image $image_to_compare does not match $image_uuid ... substr is $uuid_sub_str");
+	if($get_image_urls_of_passed_sm_item) {
+		$main_images 		= scandir($main_dir);
+		$main_thumb_images 	= scandir($main_dir_thumbnails);
+		
+		if(is_array($main_images) && is_array($main_thumb_images)) {
+			for($i = 0; $i < count($main_images); $i++) {
+				$image_to_check = $main_images[$i];
+				$item_id = $sm_item->get_id();
+				if(preg_match("/^".$item_id."_\d+\.(jpg|jpe?g|png)$/i", $image_to_check, $match)) {
+					$the_image = $match[0];
+					$url = get_main_image_url($sm_item, $the_image);
+					$thumb_url = get_main_image_url($sm_item, $the_image, true);  
+					_log("get_image_urls_of_passed_sm_item - image $the_image matches to id: $id url: $url thumb_url: $thumb_url");
+					$an_image = array();
+					$an_image['url'] = $url;
+					$an_image['thumb'] = $thumb_url;
+					array_push($the_images, $an_image);
+				} else {
+					_log("get_image_urls_of_passed_sm_item - image $image_to_check does not match with pattern.");
+				}
 			}
+		} else {
+			_log("main images or thumb images folder seemingly does not exist!");
 		}
-		if($image_count > $max_images) {
-			_log("Image count for $image_uuid reached, die!!! Currently $image_count images.");
-			die();
+			
+	} else if ($move_to_main_dir || $check_for_malicious) {
+		$tmp_images = scandir($tmp_upload_dir);
+
+		if(is_array($tmp_images)) {
+			$image_to_compare = "";
+			$uuid_sub_str = "";
+			for($i = 0; $i < count($tmp_images); $i++) {
+				$image_to_compare = $tmp_images[$i];
+				$uuid_sub_str = substr($image_to_compare, 0, $uuid_length);
+				if(strcmp($sm_item->get_image_uuid(),  $uuid_sub_str) == 0) {
+					_log("Image found matching $sm_item->get_image_uuid() image name in tmp: $image_to_compare");
+					$ext = pathinfo($image_to_compare, PATHINFO_EXTENSION);
+					_log("Extension of image is: $ext");
+					$image_count += 1;
+					if($move_to_main_dir) {
+						$the_image = $sm_item->get_id().'_'.$image_count.'.'.$ext;
+						$tmp_image = $tmp_upload_dir.$image_to_compare;
+						$tmp_image_thumb = $tmp_upload_dir_thumbnails.$image_to_compare;
+						$main_image = $main_dir.DIRECTORY_SEPARATOR.$the_image;
+						$main_image_thumb = $main_dir_thumbnails.DIRECTORY_SEPARATOR.$the_image;
+						_log("Try to rename $tmp_image to $main_image");
+						if(!rename($tmp_image, $main_image)) {
+							_log("can't move $tmp_image to $main_image");
+						}
+						if(!rename($tmp_image_thumb, $main_image_thumb)) {
+							_log("can't move thumbnail $tmp_image_thumb to $main_image_thumb");
+						}
+					}
+					_log("Image $image_to_compare matches $sm_item->get_image_uuid(). Image Count: $image_count");
+				} else {
+					_log("Image $image_to_compare does not match $sm_item->get_image_uuid() ... substr is $uuid_sub_str");
+				}
+			}
+		} else {
+			_log("tmp image folder seemingly not exist!");
 		}
+	} else {
+		throw new Exception("Ups, it seems there is nothing to do in perform_action_on_uploaded_images!");
 	}
 	
+	if( $check_for_malicious == true && ( $image_count > $max_images || count($the_images) > $max_images ) ) {
+		_log("Image count for $sm_item->get_image_uuid() reached, die!!!");
+		throw new Exception("Max image count reached for sm_item ".$sm_item->get_image_uuid());
+	}
+	
+	_log("perform_action_on_uploaded_images returns normally");
+	return $the_images;
 }
 ?>

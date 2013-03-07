@@ -44,6 +44,9 @@ class SimpleMarketItem {
 			}
 		}
 	}
+	function get_id() {
+		return $this->id;
+	}
 	function get_first_name() {
 		return $this->first_name;
 	}
@@ -114,7 +117,17 @@ class SimpleMarketItem {
 	function get_image_uuid() {
 		return $this->image_uuid;
 	}
-	
+	function get_image_folder_name() {
+		$dt = $this->get_submit_date_time();
+		if(!isset($dt))
+			throw new Exception("submit date not set in get_image_folder getter");
+		
+		$tmp = explode(" ", $this->get_submit_date_time());
+		if(!is_array($tmp) || !isset($tmp[0]) || count($tmp) != 2)
+			throw new Exception("get_image_folder wrong date format: ".$this->get_submit_date_time());
+
+		return $tmp[0];
+	}
 	function is_approved_by_mail() {
 		if(isset($this->mail_approve) && $this->mail_approve == 1) {
 			return true;
@@ -252,15 +265,18 @@ class SimpleMarketFormResponse {
 	}
 }
 class MarketItemRenderer {
-	private $market_item = null;
+	protected $market_item = null;
 	
 	function __construct(&$market_item) {
 		$this->market_item = $market_item;
 	}
 	
-	function get_markup() {
+	public function get_markup() {
 		if(!isset($this->market_item))
 			return '';
+
+		$options = array('get_image_urls_of_passed_sm_item' => true, 'check_for_malicious' => true);
+		$the_images = perform_action_on_uploaded_images($this->market_item, $options);
 		
 		$markup = 
 			'<div class="sm-top-div">
@@ -276,11 +292,68 @@ class MarketItemRenderer {
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
 				<hr class="sm-h"/>
-				<div id="sm-thumb-preview-container" class="clearfix">
+				<div id="sm-thumb-preview-container">';
+		for($i = 0; $i < count($the_images); $i++) {
+			$markup .= '<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-'.$i.'">
+				<a href="'.$the_images[$i]['url'].'" rel="lightbox[simple-market-item-'.$this->market_item->get_id().']">
+					<img class="aligncenter size-medium wp-image-1210" title="start"
+						src="'.$the_images[$i]['thumb'].'"
+						alt="" width="120" height="120">
+				</a>
+			</div>';
+		
+		}				
+		
+		$markup .=	'</div>
+				<hr class="sm-h"/>
+				<div>
+					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
+					<script type="text/javascript">
+						//<![CDATA[
+							function contactDetailsHint() {
+							alert("Nachdem das Inserat von uns geschalted wurde, können andere Benutzer über diesen Link Ihre angegebenen Kontaktdaten (Mail und Telefon) abfragen."
+								  +"\r\nNur echte Personen können ihre Kontaktdaten einsehen. Über ein Captcha werden ihre Daten von so gennanten Robots geschützt.");
+							}
+						//]]>
+					</script>
+				</div>
+			</div>
+			<div><br/><br/>';
+		
+		return utf8_encode($markup);
+	}
+	
+	protected function get_formated_date_time() {
+		$date_time = $this->market_item->get_keep_alive_date_time();
+		$date_time_blog_time_zone = get_date_from_gmt($date_time);
+		return $date_time_blog_time_zone;
+	}
+}
+class PreviewMarketItemRenderer extends MarketItemRenderer {
+	
+	public function get_markup() {
+		if(!isset($this->market_item))
+			return '';
+	
+		$markup =
+		'<div class="sm-top-div">
+				 <table>
+					<tbody>
+						<tr><td>'.$this->market_item->get_first_name_html_encoded() .' '
+								 .$this->market_item->get_last_name_html_encoded().'</td></tr>
+						<tr><td>'.$this->market_item->get_zip_code_html_encoded().', '
+								 .$this->market_item->get_city_html_encoded().', '
+								 		.$this->market_item->get_country_html_encoded().'</td></tr>
+						<tr><td>Anzeige vom: '.$this->get_formated_date_time().'</td></tr>
+					</tbody>
+				</table>
+				<div>'.$this->market_item->get_text_html_encoded().'</div>
+				<hr class="sm-h"/>
+				<div id="sm-thumb-preview-container">
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-1"></div>
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-2"></div>
 					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-3"></div>
-					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-4"></div>					
+					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-4"></div>
 				</div>
 				<hr class="sm-h"/>
 				<div>
@@ -303,15 +376,10 @@ class MarketItemRenderer {
 					<input type="hidden" name="sm_submit_id" value="'.$this->market_item->get_image_uuid().'" />
 				</form>
 			</div>';
-		
+	
 		return utf8_encode($markup);
 	}
 	
-	private function get_formated_date_time() {
-		$date_time = $this->market_item->get_keep_alive_date_time();
-		$date_time_blog_time_zone = get_date_from_gmt($date_time);
-		return $date_time_blog_time_zone;
-	}
 }
 class UserInputValidator {
 

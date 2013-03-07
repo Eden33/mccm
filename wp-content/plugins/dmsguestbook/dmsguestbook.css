@@ -1,7 +1,7 @@
 /*
 Um die CSS Einstellungen zu ändern sollte die DMSGuestbook Admin Seite benutzt werden. Das dmsguestbook.css nicht direkt bearbeiten, denn die Einstellungen würden automatisch überschrieben werden.
 Falls dmsguestbook.css vorhanden und beschreibbar ist, werden die CSS Einstellungen aus dmsguestbook.css gelesen.<br />Ansonsten werden die Einstellungen aus der Datenbank geladen. 
-*/ 
+*/
 
 
 .css_guestbook_position {position:relative;
