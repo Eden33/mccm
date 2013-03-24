@@ -20,14 +20,15 @@ function get_the_ads() {
  			"SELECT * FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' and webmaster_approve = 1", ARRAY_A
  			);
  	if($the_ads) {
+ 		$renderer = new MarketItemRenderer();
  		foreach ($the_ads as $ad_data) {
  			$sm_item = new SimpleMarketItem($ad_data);
- 			$renderer = new MarketItemRenderer($sm_item);
+  			$renderer->set_market_item($sm_item);
  			$the_ads_markup .= $renderer->get_markup();
  		}
+ 		$the_ads_markup .= $renderer->get_contact_details_retrieval_javascript();
  	}
  	return $the_ads_markup;
-	//return "";
 }
 
 //http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-page-refresh-using-jquery/
@@ -112,6 +113,7 @@ function get_the_form() {
 			         }
 				//]]>
 			</script>
+			<!-- Google Catpcha END -->
 						
 			<div class="sm-form-submit-div">
 				<input class="sm-form-submit" type="submit" id="sm-submit-btn" value="Anzeigen Vorschau" />

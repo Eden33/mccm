@@ -271,6 +271,10 @@ class MarketItemRenderer {
 		$this->market_item = $market_item;
 	}
 	
+	public function set_market_item(SimpleMarketItem $market_item) {
+		$this->market_item = $market_item;
+	}
+	
 	public function get_markup() {
 		if(!isset($this->market_item))
 			return '';
@@ -303,24 +307,66 @@ class MarketItemRenderer {
 			</div>';
 		
 		}				
-		
+				
 		$markup .=	'</div>
 				<hr class="sm-h"/>
 				<div>
-					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
-					<script type="text/javascript">
-						//<![CDATA[
-							function contactDetailsHint() {
-							alert("Nachdem das Inserat von uns geschalted wurde, können andere Benutzer über diesen Link Ihre angegebenen Kontaktdaten (Mail und Telefon) abfragen."
-								  +"\r\nNur echte Personen können ihre Kontaktdaten einsehen. Über ein Captcha werden ihre Daten von so gennanten Robots geschützt.");
-							}
-						//]]>
-					</script>
+					<a href="#" onClick="getContactDetails('.$this->market_item->get_id().')">Kontaktinformationen</a>
 				</div>
 			</div>
 			<div><br/><br/>';
 		
 		return utf8_encode($markup);
+	}
+	
+	public function get_contact_details_retrieval_javascript() {
+
+		return '<script type="text/javascript">
+					function getContactDetails(id) {
+						jQuery(function ($) {
+							$.colorbox({
+								html:
+									"<div id=\"contact-details-div\"><div>Nach dieser kurzen Authentifizierung bekommst die die Kontaktdaten zu diesem Inserat</div>"
+									+"<div class=\"sm-error-div\" id=\"contact-form-captcha_error\" style=\"display:none;\"><br/>Eingegebens Captcha war falsch. Bitte erneut versuchen.</div>"
+									+"<form id=\"contact-details-form\"method=\"POST\" onsubmit=\"return false;\">"
+									+"<input type=\"hidden\" name=\"action\" value=\"sm_get_contact\" />"
+									+"<input type=\"hidden\" name=\"contact_id\" value=\""+id+"\" />"
+									+"<br/><div id=\"captchadiv-"+id+"\"></div><br/>"
+									+"<input id=\"get-contact-submit\" name=\"submit\" type=\"submit\" value=\"Anfrage Kontaktdaten\" /></form></div>"
+								,onComplete:function() {
+									$.colorbox.resize();
+									$("#get-contact-submit").click(function(resp) {
+				
+										$(\'.sm-error-div\').fadeOut(\'slow\');
+				
+										var form_data = $("#contact-details-form").serializeArray();
+										$.ajax({
+											type: "POST",
+											url: "'.admin_url( 'admin-ajax.php' ).'",
+											data: form_data
+											,success: function(resp) {
+												if(typeof resp !== \'undefined\') {
+													if(typeof resp[\'errors\'] !==  \'undefined\') {
+														var error = \'\';
+														for(var i = 0; i < resp[\'errors\'].length; i++) {
+															error = \'#contact-form-\' + resp[\'errors\'][i];
+															$(error).fadeIn(\'slow\');
+														}
+														Recaptcha.reload();
+													} else {
+														$(\'#contact-details-div\').html(resp[\'markup\']);
+													}
+													$.colorbox.resize();
+												}
+											}
+										});
+									});
+								}
+							});
+							Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "captchadiv-"+id+"", {theme: "red"});
+						});
+					  }
+				</script>';
 	}
 	
 	protected function get_formated_date_time() {
@@ -381,6 +427,23 @@ class PreviewMarketItemRenderer extends MarketItemRenderer {
 	}
 	
 }
+class ContactDetailsMarketItemRenderer extends MarketItemRenderer {
+	
+	public function get_markup() {
+		if(!isset($this->market_item))
+			return '';
+	
+		$markup =
+		'<table><tbody>
+			<tr><td>Insertent: </td><td>'.$this->market_item->get_last_name().' '.$this->market_item->get_first_name().'</td></tr>
+			<tr><td>E-Mail: </td><td>'.$this->market_item->get_mail().'</td></tr>
+			<tr><td>Telefon: </td><td>'.$this->market_item->get_phone().'</td></tr>
+		</tbody></table>';
+	
+		return utf8_encode($markup);
+	}
+}
+
 class UserInputValidator {
 
 	static function is_first_name_valid($first_name) {

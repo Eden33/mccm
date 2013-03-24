@@ -445,6 +445,35 @@ function sm_form_images_submit_handler() {
 	exit();
 }
 
+add_action('wp_ajax_nopriv_sm_get_contact', 'sm_get_contact_handler');
+
+function sm_get_contact_handler() {
+
+	$form_response = new SimpleMarketFormResponse();
+	require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
+	$challange_field = $_POST['recaptcha_challenge_field'];
+	$response_field = $_POST['recaptcha_response_field'];
+	$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
+	if( $resp->is_valid !== true ) {
+		$form_response->set_captcha_error(true);
+		echo $form_response->get_json_response();
+		exit();
+	}
+		
+	global $wpdb;
+	global $sm_table_name;
+		
+	$prepared_stmt = $wpdb->prepare("SELECT * FROM $sm_table_name WHERE id = %s AND mail_approve = 1 and webmaster_approve = 1 LIMIT 1", $_POST['contact_id']);
+	$row = $wpdb->get_row($prepared_stmt, ARRAY_A);
+	$sm_item = new SimpleMarketItem($row);
+	$sm_renderer = new ContactDetailsMarketItemRenderer($sm_item);
+	$contact_detail_markup = $sm_renderer->get_markup();
+	$response = array();
+	header("Content-Type: application/json");
+	$response['markup'] = $contact_detail_markup;
+	echo json_encode($response);
+	exit();
+}
 
 /*
  * ---------------------------------------------------------------------- session hooks
