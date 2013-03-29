@@ -1,12 +1,28 @@
 <?php
 
-//$mysql_date_time_now_gmt = current_time('mysql', 1);
-//$mysql_date_time_now_gmt . " and ".date('Y-m-d H:i:s', strtotime("-$ad_max_active days"));
+function get_the_ads_paging_bar($ads_per_page, $total_ads_count, $requested_page) {
+		
+	$pages = ceil($total_ads_count / $ads_per_page);
+	$market_permalink = get_market_permalink();	
+	
+	$the_bar = '<div class="sm-paging-div" style="text-align: center;">';
+	for($i = 1; $i <= $pages; $i++) {
+		$anchor_class = 'sm-paging-a';
+		if($i == $requested_page) {
+			$anchor_class .= ' sm-paging-a-selected';
+		}
+		$the_bar .= '<a class="'.$anchor_class.'" href="'.$market_permalink.'?market_page='.$i.'">'.$i.'</a>';
+	}
+	$the_bar .= '</div><br/>';
+	
+	return $the_bar;
+}
 
 function get_the_ads() {
 	global $sm_options;
 	global $wpdb;
 	global $sm_table_name;
+	$ads_per_page = 2;
 	
 	$the_ads_markup = "";
 	
@@ -15,10 +31,32 @@ function get_the_ads() {
 	
 	$ad_max_active = $sm_options['ad_max_active_in_days'];
 	$past_day_barrierer = date('Y-m-d H:i:s', strtotime("-$ad_max_active days"));
+		
+	$count = $wpdb->get_var("SELECT COUNT(*) FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' 
+			and mail_approve = 1 and webmaster_approve = 1");
+
+	if(is_null($count)) {
+		$count = 1; 
+	}
+	
+	$requested_page = intval($_GET['market_page']);
+	if($requested_page == 0) {
+		$requested_page = 1;
+	}
+	
+	$start = ($requested_page - 1) * $ads_per_page;
 	
  	$the_ads = $wpdb->get_results(
- 			"SELECT * FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' and webmaster_approve = 1", ARRAY_A
+ 			"SELECT * FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' 
+ 						 and mail_approve = 1 and webmaster_approve = 1 LIMIT $ads_per_page OFFSET $start", ARRAY_A
  			);
+
+ 	$paging_bar = get_the_ads_paging_bar($ads_per_page, $count, $requested_page);
+ 	$the_ads_markup .= $paging_bar;
+ 	
+ 	//used for debugging on client
+ 	//$the_ads_markup .= "<div>Adds per page: $ads_per_page All active ads count: $count Start: $start</div>";
+ 	
  	if($the_ads) {
  		$renderer = new MarketItemRenderer();
  		foreach ($the_ads as $ad_data) {
@@ -28,6 +66,9 @@ function get_the_ads() {
  		}
  		$the_ads_markup .= $renderer->get_contact_details_retrieval_javascript();
  	}
+ 	
+ 	$the_ads_markup .= $paging_bar;
+ 	
  	return $the_ads_markup;
 }
 

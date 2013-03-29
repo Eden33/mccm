@@ -317,8 +317,7 @@ function sm_preview_submit_handler() {
 	if(!isset($sm_options))
 		$sm_options = get_site_option('simple_market');
 	
-	$market_permalink = get_permalink($sm_options['target_post_id']);
-	$market_permalink = rtrim($market_permalink, '/');
+	$market_permalink = get_market_permalink();
 	
 	$sm_activation_link = 	$market_permalink . '?action=mccm_activate_ad&mccm_activation_key='.$mail_approval_key;
 	$sm_reactivation_link = $market_permalink . '?action=mccm_reactivate_ad&mccm_activation_key='.$mail_approval_key;
@@ -714,5 +713,18 @@ function perform_action_on_uploaded_images($sm_item, $options = array()) {
 	
 	_log("perform_action_on_uploaded_images returns normally");
 	return $the_images;
+}
+
+/*
+ * ---------------------------------------------------------------------- url helpers
+*/
+function get_market_permalink() {
+	global $sm_options;
+	if(!isset($sm_options))
+		$sm_options = get_site_option('simple_market');
+
+	$market_permalink = get_permalink($sm_options['target_post_id']);
+	$market_permalink = rtrim($market_permalink, '/');
+	return $market_permalink;
 }
 ?>

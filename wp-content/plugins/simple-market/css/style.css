@@ -53,6 +53,14 @@
 	width: 100%;
 	margin-bottom: 0px;
 }
+.sm-paging-a {
+	font-size: 17px !important;
+	margin-right: 4px;
+}
+.sm-paging-a-selected {
+	font-weight: bold !important;
+	color: #000;
+}
 #content {
 	min-height: 730px;
 }
