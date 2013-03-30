@@ -18,6 +18,9 @@ function get_the_ads_paging_bar($ads_per_page, $total_ads_count, $requested_page
 	return $the_bar;
 }
 
+/**
+ * @return string Current market page -> only the ads
+ */
 function get_the_ads() {
 	global $sm_options;
 	global $wpdb;
@@ -48,7 +51,7 @@ function get_the_ads() {
 	
  	$the_ads = $wpdb->get_results(
  			"SELECT * FROM $sm_table_name WHERE keep_alive_date_time >= '$past_day_barrierer' 
- 						 and mail_approve = 1 and webmaster_approve = 1 LIMIT $ads_per_page OFFSET $start", ARRAY_A
+ 						 and mail_approve = 1 and webmaster_approve = 1 ORDER BY keep_alive_date_time DESC LIMIT $ads_per_page OFFSET $start", ARRAY_A
  			);
 
  	$paging_bar = get_the_ads_paging_bar($ads_per_page, $count, $requested_page);
@@ -74,7 +77,10 @@ function get_the_ads() {
 
 //http://net.tutsplus.com/tutorials/javascript-ajax/submit-a-form-without-page-refresh-using-jquery/
 
-function get_the_form() {
+/**
+ * @return Current market page (with ads) and the form at the bottom of the page.
+ */
+function sm_get_the_market_page() {
 	global $sm_mysql_column_length;
 	
 	return 
@@ -143,16 +149,13 @@ function get_the_form() {
 			</div>			
 			
 			<!-- Google Captcha -->
-			<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 			<div id="captchadiv"></div>
 			<script type="text/javascript">
-				//<![CDATA[
 			  		function showRecaptcha(element) {
 			        	Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "captchadiv", {
 			            theme: "red"
 			            });
 			         }
-				//]]>
 			</script>
 			<!-- Google Catpcha END -->
 						
@@ -272,5 +275,30 @@ function get_the_form() {
 ';
 }
 
-$the_market = get_the_form();
+function sm_get_admin_preview() {
+	global $admin_key_received;
+	$the_markup = '';
+	
+	if(sm_check_key($admin_key_received) === true) {
+		global $wpdb;
+		global $sm_table_name;
+		
+		$prepared_stmt = $wpdb->prepare("SELECT * FROM $sm_table_name WHERE webmaster_approval_key = %s", $admin_key_received);
+		$row = $wpdb->get_row($prepared_stmt, ARRAY_A);
+		
+		if($row) {
+			$sm_item = new SimpleMarketItem($row);
+			$renderer = new MarketItemRenderer();
+			$renderer->set_market_item($sm_item);
+			$the_markup = $renderer->get_markup();
+			$the_markup .= $renderer->get_contact_details_retrieval_javascript();			
+		} else {
+			$the_markup = get_sm_mail_ups_message();
+		}
+		
+	} else {
+		$the_markup = get_sm_mail_ups_message();
+	}
+	return $the_markup;
+}
 ?>

@@ -16,6 +16,7 @@ class SimpleMarketItem {
 	private $mail_approve;
 	private $mail_approval_key;
 	private $webmaster_approve;
+	private $webmaster_approval_key;
 
 		
 	function __construct($assoc_array, $first_name = NULL, $last_name=NULL, $mail=NULL, $phone=NULL, $zip_code=NULL, 
@@ -39,6 +40,7 @@ class SimpleMarketItem {
 					case 'mail_approve'			: 	$this->mail_approve = $value; break;
 					case 'mail_approval_key'	: 	$this->mail_approval_key = $value; break;
 					case 'webmaster_approve'	: 	$this->webmaster_approve = $value; break;
+					case 'webmaster_approval_key':	$this->webmaster_approval_key = $value; break;
 					default						: 	throw new Exception("Column: $key not knwon!");
 				}
 			}
@@ -98,6 +100,9 @@ class SimpleMarketItem {
 	}
 	function get_text() {
 		return $this->text;	
+	}
+	function get_webmaster_approval_key() {
+		return $this->webmaster_approval_key;
 	}
 	function get_text_html_encoded() {
 		$encoded = htmlentities($this->text);

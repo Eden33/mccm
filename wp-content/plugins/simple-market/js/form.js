@@ -3,7 +3,9 @@ jQuery(function ($) {
 	var DEBUG_SM_JS = false;
 	
 	jQuery(document).ready(function($){
-		showRecaptcha();
+		if(typeof showRecaptcha === 'function') {
+			showRecaptcha();		
+		}
 	});
 	
 	$('#sm-submit-btn').click(function() {

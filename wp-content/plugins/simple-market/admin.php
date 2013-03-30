@@ -15,13 +15,15 @@ Author URI: http://www.mccm-feldkirch.at/
 $sm_table_name = $wpdb->prefix . 'simple_market';
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.0',
+	'plugin_version' 						=> '1.0.3',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'ad_max_active_in_days'					=> 30,
-	'ad_reactivation_treshold_in_days'		=> 5,
+	'ad_reactivation_treshold_in_days'		=> 30,
 	'ad_max_images'							=> 4,
-	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at'
+	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at',
+//	'reviewer_mail_addresses'				=> array('e.gopp@gmail.com', 'market@mccm-feldkirch.at')
+	'reviewer_mail_adresses'				=> array('e.gopp@gmail.com')
 );
 $sm_options = NULL;
 $sm_mysql_column_length = array (
@@ -61,6 +63,7 @@ function on_plugin_activate() {
 		mail_approve int(1) DEFAULT 0 NOT NULL,
 	  	mail_approval_key varchar(".$sm_mysql_column_length['mail_approval_key'].") DEFAULT '' NOT NULL,
 	  	webmaster_approve int(1) DEFAULT 0 NOT NULL,
+	  	webmaster_approval_key varchar(".$sm_mysql_column_length['mail_approval_key'].") DEFAULT '' NOT NULL,
 	  	UNIQUE KEY id (id),
 	  	UNIQUE KEY mail_approval_key_UNIQUE (mail_approval_key)
 	)  ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
@@ -134,7 +137,10 @@ function simple_market_add_scripts() {
 															'nonce' => wp_create_nonce('sm_nonce'),
 															'img_map' => array()));
 		
-		//jquery-file-upload
+		wp_enqueue_script('google-recptcha', "http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
+		
+		//TODO: loading external css belowis not good!!
+		
 		//TODO: add bootstrap-ie7.min.css and html5.js
 		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
 		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
@@ -156,28 +162,50 @@ function simple_market_add_scripts() {
 
 add_action('wp_enqueue_scripts', 'simple_market_add_scripts');
 
+$the_market_admin_preview_mode = false;
+$admin_key_received = NULL;
+
 function get_the_market($content) {
 	
 	//should be allready loaded @see simple_market_add_scripts()
 	global $sm_options;
+	global $the_market_admin_preview_mode;
+	global $admin_key_received;
 	
 	if($GLOBALS['post']->post_name == $sm_options['target_post_name']) {
 		
 		$_SESSION['market_item_to_submit'] = NULL;
 		unset($_SESSION['market_item_to_submit']);
 		
-		$mail_action = $_GET['action'];
-		$key = $_GET['mccm_activation_key'];
-		if(isset($mail_action) === true && isset($key) === true) {
-			require_once __DIR__ . '/mail_functions.php';
-			switch($mail_action) {
-				case 'mccm_activate_ad'		: $the_market = sm_mail_activate_ad($key); break;
-				case 'mccm_reactivate_ad'	: $the_market = sm_mail_reactivate_ad($key); break;
-				case 'mccm_deactivate_ad'	: $the_market = sm_mail_deactivate_ad($key); break;
+		$user_action = $_GET['action'];
+		$user_key_received = $_GET['mccm_activation_key'];
+		
+		$admin_action = $_GET['admin-action'];
+		$admin_key_received = $_GET['key'];
+		
+		include_once __DIR__ . '/the_market.php';
+		require_once __DIR__ . '/mail_functions.php';
+		
+		if(isset($user_action) === true && isset($user_key_received) === true) {
+			switch($user_action) {
+				case 'mccm_activate_ad'		: $the_market = sm_mail_activate_ad($user_key_received); break;
+				case 'mccm_reactivate_ad'	: $the_market = sm_mail_reactivate_ad($user_key_received); break;
+				case 'mccm_deactivate_ad'	: $the_market = sm_mail_deactivate_ad($user_key_received); break;
 				default						: $the_market = 'Action not known <br/><br/>';
 			}
 		} else {
-			include_once __DIR__ . '/the_market.php';
+							
+			if(isset($admin_action) === true && isset($admin_key_received) === true) {
+				switch($admin_action) {
+					case 'activate' 	: $the_market = sm_admin_mail_activate_ad($admin_key_received); break;
+					case 'deactivate' 	: $the_market = sm_admin_mail_deactivate_ad($admin_key_received); break;
+					case 'preview'		: $the_market =  sm_get_admin_preview(); break;
+					default				: $the_market = 'Admin action invalid <br/><br/>';
+				}
+			} else {
+				$the_market = sm_get_the_market_page();
+			}
+				
 		}
 	}
 	return $content . $the_market;
@@ -275,7 +303,7 @@ function sm_form_submit_handler() {
 		'country'				=> $country,
 		'text'					=> $text,
 		'submit_date_time'		=> $mysql_date_time_now_gmt,
-		'keep_alive_date_time'	=> $mysql_date_time_now_gmt,
+//		'keep_alive_date_time'	=> $mysql_date_time_now_gmt,		/* initial default to '0000-00-00 00:00:00' */
 		'image_uuid'			=> $unique_submit_id
 	);
 	
@@ -305,6 +333,7 @@ function sm_preview_submit_handler() {
 	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
 
 	$mail_approval_key = uniqid('', true);
+	$webmaster_approval_key = uniqid('', true);
 	
 	/*
 	 * ------------------------------------------------------------------------------- send mail
@@ -330,9 +359,10 @@ function sm_preview_submit_handler() {
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-Hallo und Danke f&uuml;r Ihre Online-Anzeige auf dem <a href="'.$market_permalink.'". target="_blank">"MCCM Online Market"</a>.<br/><br/>
+Hallo und Danke f&uuml;r Ihre Online-Anzeige auf der <a href="'.$market_permalink.'". target="_blank">"Webseite des MCCM"</a>.<br/><br/>
 Sollte Sie keine Online-Anzeige bei uns aufgegeben haben, k&ouml;nnen Sie dieses Mail einfach l&ouml;schen.<br/><br/>
-<span style="font-weight: bold; color: #990000;">Ansonsten behalten Sie dieses E-Mail bitte nach dem Klick auf den Aktivierungs-Link, bis Ihr Verkauf abgeschlossen ist!</span><br/><br/>
+<span style="font-weight: bold; color: #990000;">Ansonsten behalten Sie diese E-Mail bitte nach dem Klick auf den Aktivierungslink, bis Ihr Verkauf abgeschlossen ist!</span><br/><br/>
+<span style="font-weight: bold; color: #990000;">Bitte antworten Sie nicht auf dieses Mail, da dies automatisch generiert wurde.</span><br/><br/>
 Mit den hier gelisteten Links k&ouml;nnen Sie:
 <ul>
 <li>Ihr Inserat aktivieren</li>
@@ -377,7 +407,8 @@ Eduard Gopp - Webmaster MCCM Feldkirch
 				'keep_alive_date_time'	=> $the_market_item_to_submit->get_keep_alive_date_time(), 
 				'text'					=> $the_market_item_to_submit->get_text(),
 				'image_uuid'			=> $the_market_item_to_submit->get_image_uuid(),
-				'mail_approval_key' 	=> $mail_approval_key
+				'mail_approval_key' 	=> $mail_approval_key,
+				'webmaster_approval_key'=> $webmaster_approval_key
 			)) === false) {
 		echo json_encode(array('success' => false, 'error' => '1'));		
 		exit();
@@ -462,7 +493,9 @@ function sm_get_contact_handler() {
 	global $wpdb;
 	global $sm_table_name;
 		
-	$prepared_stmt = $wpdb->prepare("SELECT * FROM $sm_table_name WHERE id = %s AND mail_approve = 1 and webmaster_approve = 1 LIMIT 1", $_POST['contact_id']);
+	//TODO: only serve contact details if ad is active
+	
+	$prepared_stmt = $wpdb->prepare("SELECT * FROM $sm_table_name WHERE id = %s LIMIT 1", $_POST['contact_id']);
 	$row = $wpdb->get_row($prepared_stmt, ARRAY_A);
 	$sm_item = new SimpleMarketItem($row);
 	$sm_renderer = new ContactDetailsMarketItemRenderer($sm_item);
