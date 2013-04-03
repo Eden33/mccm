@@ -106,17 +106,22 @@ jQuery(function ($) {
 	    		if(typeof img_data !== 'undefined' && typeof img_data.error === 'undefined')  {
 		    		//get a free "slot"
 	    			setTimeout(function() {
-		    			$('.sm-thumb-preview').each(function(index){
-			    			if($(this).html() == "") {
+	    			    $('.sm-thumb-preview').each(function (index) {
+
+                            //second condition special treatment for IE8
+		    			    if($(this).html() == "" ||$(this).html() == "&nbsp;") {
 			    				var the_html = '<a href="'+img_data.url+'" target="_blank" title="Anzeigen Bild '+
-			    								+ index + '" class="cboxElement">'
-			    								+'<img title="" alt="" src="'+img_data.thumbnail_url+'" width="120" height="120" />'
+			    								+ index +'">'
+			    								+ '<img title="Anzeigen Bild '+ index +'" alt="Anzeige Bild ' + index + '" src="' + img_data.thumbnail_url + '" class="aligncenter size-medium wp-image-1210" >'
 			    								+'</a>';
 			    				$(this).html(the_html);
 			    				var img_map_obj = new Object();
 			    				img_map_obj.id = $(this).attr('id');
 			    				img_map_obj.name = img_data.name;
 			    				SMInject['img_map'].push(img_map_obj);
+			    				if (DEBUG_SM_JS) {
+			    				    console.log("Added image: "+img_map_obj.name+" at map index: "+SMInject['img_map'].length);
+			    				}
 			    				return false;
 			    			}
 			    		});
@@ -136,9 +141,24 @@ jQuery(function ($) {
 	    	//this is handled here -> remove image also from preview container on removal from server
 	    	if($('#sm-thumb-preview-container').length > 0 && SMInject['img_map'].length > 0) {
 	    		//go over img map and remove html
-	    		for(var i = 0; i < SMInject['img_map'].length; i++) {
-	    			if(default_url.indexOf(SMInject['img_map'][i].name) !== -1) {
-	    				$('#'+SMInject['img_map'][i].id).html("");
+	    	    for (var i = 0; i < SMInject['img_map'].length; i++) {
+	    	        var the_image_obj = SMInject['img_map'][i];
+	    	        var encoded_file_name = escape(the_image_obj.name); //get it like it is in the default_url for comparison
+	    			if(default_url.indexOf(encoded_file_name) !== -1) {
+	    			    $('#' + the_image_obj.id).html("");
+
+                        //remove the item also from array map
+	    			    if (DEBUG_SM_JS) {
+	    			        console.log("Remove image from img_map array at index: " + i + " image name is: " + the_image_obj.name);
+	    			    }
+	    			    SMInject['img_map'] = jQuery.grep(SMInject['img_map'], function (current_item) {
+	    			        return the_image_obj != current_item;
+	    			    });
+	    			    if (DEBUG_SM_JS) {
+	    			        if(i < SMInject['img_map'].length) {
+	    			            console.log("New image item at that index is now the image: " + SMInject['img_map'][i].name);
+	    			        }
+	    			    }
 	    			}
 	    		}
 	    	}

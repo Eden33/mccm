@@ -300,26 +300,23 @@ class MarketItemRenderer {
 					</tbody>
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
-				<hr class="sm-h"/>
-				<div id="sm-thumb-preview-container">';
+				<div id="sm-thumb-preview-container" class="clearfix">';
 		for($i = 0; $i < count($the_images); $i++) {
-			$markup .= '<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-'.$i.'">
+			$markup .= '<div class="sm-thumb-preview" id="sm-thumb-preview-'.$i.'">
 				<a href="'.$the_images[$i]['url'].'" rel="lightbox[simple-market-item-'.$this->market_item->get_id().']">
-					<img class="aligncenter size-medium wp-image-1210" title="start"
+					<img class="aligncenter size-medium wp-image-1210"
 						src="'.$the_images[$i]['thumb'].'"
-						alt="" width="120" height="120">
+						alt="">
 				</a>
 			</div>';
-		
 		}				
 				
 		$markup .=	'</div>
-				<hr class="sm-h"/>
 				<div>
 					<a href="#" onClick="getContactDetails('.$this->market_item->get_id().')">Kontaktinformationen</a>
 				</div>
 			</div>
-			<div><br/><br/>';
+			<br><br>';
 		
 		return utf8_encode($markup);
 	}
@@ -399,14 +396,12 @@ class PreviewMarketItemRenderer extends MarketItemRenderer {
 					</tbody>
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
-				<hr class="sm-h"/>
-				<div id="sm-thumb-preview-container">
-					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-1"></div>
-					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-2"></div>
-					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-3"></div>
-					<div class="ngg-gallery-thumbnail sm-thumb-preview" id="sm-thumb-preview-4"></div>
+				<div id="sm-thumb-preview-container" class="clearfix">
+					<div class="sm-thumb-preview" id="sm-thumb-preview-0"></div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-1"></div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-2"></div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-3"></div>
 				</div>
-				<hr class="sm-h"/>
 				<div>
 					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
 					<script type="text/javascript">
@@ -451,6 +446,8 @@ class ContactDetailsMarketItemRenderer extends MarketItemRenderer {
 
 class UserInputValidator {
 
+	//TODO: implement
+	
 	static function is_first_name_valid($first_name) {
 		return true;
 	}
@@ -477,13 +474,6 @@ class UserInputValidator {
 	}
 	static function is_text_valid($text) {
 		return true;
-	}
-}
-
-class UserInputPreprocessor {
-	static function prepare_the_text(&$text) {
-		$text = str_replace("\r\n", " <br /> ", $text);
-		$text = str_replace("\n", " <br /> ", $text);
 	}
 }
 ?>

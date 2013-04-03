@@ -48,11 +48,6 @@
 	text-decoration: none;
 	font-weight:bold;
 }
-.sm-h {
-	height: 1px;
-	width: 100%;
-	margin-bottom: 0px;
-}
 .sm-paging-a {
 	font-size: 17px !important;
 	margin-right: 4px;
@@ -63,6 +58,24 @@
 }
 #content {
 	min-height: 730px;
+}
+#sm-thumb-preview-container {
+	margin-top: 25px;
+	margin-bottom: 15px;
+}
+#sm-thumb-preview-container > div {
+	width: 120px;
+	max-width: 120px;
+	float: left;
+	margin-left: 20px;
+}
+#sm-thumb-preview-0 {
+	margin-left: 5px !important;
+}
+#sm-thumb-preview-container > div > a > img {
+	max-width: 120px;
+	width: 120px;
+  	height: auto;
 }
 
 /* jquery.fileupload-ui.css overrides */

@@ -172,7 +172,19 @@ function sm_admin_mail_activate_ad($admin_key_received) {
 				array('%d'), array('%s'));
 		
 		if($affected === 1) {
-			return "Das Inserat wurde aktiviert.";
+			
+			$prepared_stmt = $wpdb->prepare("SELECT * FROM $sm_table_name WHERE webmaster_approval_key = %s", $admin_key_received);
+			
+			$row = $wpdb->get_row($prepared_stmt, ARRAY_A);
+			$sm_item = new SimpleMarketItem($row);
+			
+			$deactivated_success_msg = "Das Inserat wurde aktiviert.<br>";
+			
+			if($sm_item->is_approved_by_mail() === false) {
+				$deactivated_success_msg .= "Es scheint zur Zeit jedoch nicht im Online-Markt auf, da der Inserent dieses Inserates nach Aktivierung wieder deaktiviert hat.";
+			}
+			
+			return $deactivated_success_msg;
 		}	
 	}
 	return get_sm_mail_ups_message();
@@ -271,9 +283,7 @@ function sm_send_admin_review_mail_request(SimpleMarketItem $market_item) {
 	$admin_headers[] = 'MIME-Version: 1.0';
 	$admin_headers[] = 'Content-type: text/html; charset=UTF-8';
 	
-	//TODO: change mail adress
-	
-	if(!wp_mail($sm_options['reviewer_mail_addresses'], "Inserat von $admin_name_info", $admin_message, $admin_headers)) {
+	if(!wp_mail($sm_options['reviewer_mail_adresses'], "Inserat von $admin_name_info", $admin_message, $admin_headers)) {
 		return false;	
 	}
 	return true;

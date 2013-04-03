@@ -83,9 +83,12 @@ function get_the_ads() {
 function sm_get_the_market_page() {
 	global $sm_mysql_column_length;
 	
-	return 
+	$returnVal =
 	'	<div id="sm-preview-div"></div>
-		<div id="sm-market-div"> '.get_the_ads().'</div>
+		<div id="sm-market-div">
+		';
+	$returnVal .= get_the_ads();
+	$returnVal .= '</div>
 		<div id="sm-first-from-div" class="sm-top-div" style="padding:0px 10px;">
 		
 		<a id="sm-form-a"></a>
@@ -273,6 +276,7 @@ function sm_get_the_market_page() {
 {% } %}
 </script>					
 ';
+return $returnVal;
 }
 
 function sm_get_admin_preview() {

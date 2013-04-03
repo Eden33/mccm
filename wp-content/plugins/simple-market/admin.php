@@ -15,7 +15,7 @@ Author URI: http://www.mccm-feldkirch.at/
 $sm_table_name = $wpdb->prefix . 'simple_market';
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.3',
+	'plugin_version' 						=> '1.0.4',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'ad_max_active_in_days'					=> 30,
@@ -23,7 +23,7 @@ $sm_initialize_options = array(
 	'ad_max_images'							=> 4,
 	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at',
 //	'reviewer_mail_addresses'				=> array('e.gopp@gmail.com', 'market@mccm-feldkirch.at')
-	'reviewer_mail_adresses'				=> array('e.gopp@gmail.com')
+	'reviewer_mail_adresses'				=> 'e.gopp@gmail.com'
 );
 $sm_options = NULL;
 $sm_mysql_column_length = array (
@@ -267,9 +267,7 @@ function sm_form_submit_handler() {
 	$city =  $_POST['sm_city'];
 	$country = $_POST['sm_country'];
 	$text = $_POST['sm_text'];
-	
-	//UserInputPreprocessor::prepare_the_text($text);
-	
+		
 	if(UserInputValidator::is_first_name_valid($first_name) === false) {
 		$form_response->set_first_name_error(true);
 	}
@@ -303,7 +301,7 @@ function sm_form_submit_handler() {
 		'country'				=> $country,
 		'text'					=> $text,
 		'submit_date_time'		=> $mysql_date_time_now_gmt,
-//		'keep_alive_date_time'	=> $mysql_date_time_now_gmt,		/* initial default to '0000-00-00 00:00:00' */
+		'keep_alive_date_time'	=> $mysql_date_time_now_gmt,
 		'image_uuid'			=> $unique_submit_id
 	);
 	
@@ -403,8 +401,7 @@ Eduard Gopp - Webmaster MCCM Feldkirch
 				'city'					=> $the_market_item_to_submit->get_city(),
 				'country'				=> $the_market_item_to_submit->get_country(),
 				'ip'					=> $_SERVER['REMOTE_ADDR'],
-				'submit_date_time'		=> $the_market_item_to_submit->get_submit_date_time(),
-				'keep_alive_date_time'	=> $the_market_item_to_submit->get_keep_alive_date_time(), 
+				'submit_date_time'		=> $the_market_item_to_submit->get_submit_date_time(), 
 				'text'					=> $the_market_item_to_submit->get_text(),
 				'image_uuid'			=> $the_market_item_to_submit->get_image_uuid(),
 				'mail_approval_key' 	=> $mail_approval_key,
@@ -421,7 +418,7 @@ Eduard Gopp - Webmaster MCCM Feldkirch
 add_action('wp_ajax_nopriv_sm_submit_form_images', 'sm_form_images_submit_handler');
 
 function sm_form_images_submit_handler() {
-	
+		
 	die_if_request_not_authorized();
 	
 	$the_market_item_to_submit = $_SESSION['market_item_to_submit'];
@@ -438,7 +435,6 @@ function sm_form_images_submit_handler() {
 		
 	$options = array(
 			'access_control_allow_methods' 	=> array('POST'),
-			'max_number_of_files'			=> 1000,
 			'max_width'						=> 1600,
 			'max_height'					=> 1200,
 			'thumbnail' => array(
@@ -447,12 +443,18 @@ function sm_form_images_submit_handler() {
 			),
 			'script_url' 					=> admin_url('admin-ajax.php'),
 			'upload_dir'					=> get_tmp_image_upload_dir(),
-			'upload_url'					=> content_url('simple-market'.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR),
+			'upload_url'					=> content_url('simple-market/tmp/'),
 			'max_number_of_files'			=> 1000,						//complete directory setting
-			'max_file_size'					=> 500000,
-			'delete_type'					=> 'POST'
+			'max_file_size'					=> 512000,
+			'delete_type'					=> 'POST',
+			'image_versions'				=> array(                
+														'thumbnail' => array(
+                    													'max_width' => 120,
+                    													'max_height' => 120,
+                														'jpeg_quality' => 100
+                														)
+													)
 	);
-	//max_file_size -> 1KB consider to be 1000 from Uploader (500 000 = 500KB)
 	
 	_log("Script URL: ".$options['script_url']);
 	_log("Upload DIR: ".$options['upload_dir']);
