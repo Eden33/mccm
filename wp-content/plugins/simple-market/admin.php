@@ -12,10 +12,14 @@ Author URI: http://www.mccm-feldkirch.at/
 /*
  * ---------------------------------------------------- Activation, deactivation and update control
  */
-$sm_table_name = $wpdb->prefix . 'simple_market';
+
+//TODO: causes an error on plugin activation, where to get the prefix from? 
+//$sm_table_name = $wpdb->prefix . 'wp_simple_market';
+$sm_table_name = 'wp_simple_market';
+
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.4',
+	'plugin_version' 						=> '1.0.0',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'ad_max_active_in_days'					=> 30,
@@ -45,6 +49,7 @@ function on_plugin_activate() {
 	global $sm_mysql_column_length;
 
 	//TODO: unfortunatelly called twice and first call produces a serios bug
+	//TODO: create directory structure if not exists
 	
 	$sql = "CREATE TABLE $sm_table_name (
 		id INT NOT NULL AUTO_INCREMENT,
@@ -112,6 +117,9 @@ function on_plugin_update() {
 add_action('plugins_loaded', 'on_plugin_update');
 
 function drop_table_and_clean_opt_version() {
+	
+	return false;
+	
 	global $wpdb;
 	global $sm_table_name;
 	$wpdb->query("DROP TABLE IF EXISTS $sm_table_name");
@@ -170,45 +178,56 @@ function get_the_market($content) {
 	global $the_market_admin_preview_mode;
 	global $admin_key_received;
 	
-	if($GLOBALS['post']->post_name == $sm_options['target_post_name']) {
+	$the_market = "";
+	global $post;
+	
+	if($sm_options['target_post_id'] == $post->ID) {
 		
-		$_SESSION['market_item_to_submit'] = NULL;
-		unset($_SESSION['market_item_to_submit']);
+			$_SESSION['market_item_to_submit'] = NULL;
+			unset($_SESSION['market_item_to_submit']);
 		
-		$user_action = $_GET['action'];
-		$user_key_received = $_GET['mccm_activation_key'];
+			$user_action = $_GET['action'];
+			$user_key_received = $_GET['mccm_activation_key'];
 		
-		$admin_action = $_GET['admin-action'];
-		$admin_key_received = $_GET['key'];
+			$admin_action = $_GET['admin-action'];
+			$admin_key_received = $_GET['key'];
 		
-		include_once __DIR__ . '/the_market.php';
-		require_once __DIR__ . '/mail_functions.php';
+			include_once __DIR__ . '/the_market.php';
+			require_once __DIR__ . '/mail_functions.php';
 		
-		if(isset($user_action) === true && isset($user_key_received) === true) {
-			switch($user_action) {
-				case 'mccm_activate_ad'		: $the_market = sm_mail_activate_ad($user_key_received); break;
-				case 'mccm_reactivate_ad'	: $the_market = sm_mail_reactivate_ad($user_key_received); break;
-				case 'mccm_deactivate_ad'	: $the_market = sm_mail_deactivate_ad($user_key_received); break;
-				default						: $the_market = 'Action not known <br/><br/>';
-			}
-		} else {
-							
-			if(isset($admin_action) === true && isset($admin_key_received) === true) {
-				switch($admin_action) {
-					case 'activate' 	: $the_market = sm_admin_mail_activate_ad($admin_key_received); break;
-					case 'deactivate' 	: $the_market = sm_admin_mail_deactivate_ad($admin_key_received); break;
-					case 'preview'		: $the_market =  sm_get_admin_preview(); break;
-					default				: $the_market = 'Admin action invalid <br/><br/>';
+			if(isset($user_action) === true && isset($user_key_received) === true) {
+				switch($user_action) {
+					case 'mccm_activate_ad'		: $the_market = sm_mail_activate_ad($user_key_received); break;
+					case 'mccm_reactivate_ad'	: $the_market = sm_mail_reactivate_ad($user_key_received); break;
+					case 'mccm_deactivate_ad'	: $the_market = sm_mail_deactivate_ad($user_key_received); break;
+					default						: $the_market = 'Action not known <br/><br/>';
 				}
 			} else {
-				$the_market = sm_get_the_market_page();
+					
+				if(isset($admin_action) === true && isset($admin_key_received) === true) {
+					switch($admin_action) {
+						case 'activate' 	: $the_market = sm_admin_mail_activate_ad($admin_key_received); break;
+						case 'deactivate' 	: $the_market = sm_admin_mail_deactivate_ad($admin_key_received); break;
+						case 'preview'		: $the_market =  sm_get_admin_preview(); break;
+						default				: $the_market = 'Admin action invalid <br/><br/>';
+					}
+				} else {
+					$the_market = sm_get_the_market_page();
+				}
+		
 			}
-				
-		}
+			
+			if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
+				$the_market = "";
+			} else {
+				$content = "";
+			}
 	}
+
 	return $content . $the_market;
 }
-add_action('the_content', 'get_the_market');
+
+add_filter('the_content', 'get_the_market');
 
 /*
  * ---------------------------------------------------------------------- ajax hooks
@@ -238,17 +257,17 @@ function sm_form_submit_handler() {
 		if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
 			die();
 		
-		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
+// 		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
 		
-		$challange_field = $_POST['recaptcha_challenge_field'];
-		$response_field = $_POST['recaptcha_response_field'];
+// 		$challange_field = $_POST['recaptcha_challenge_field'];
+// 		$response_field = $_POST['recaptcha_response_field'];
 		
-		$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
-		if( $resp->is_valid !== true ) {
-			$form_response->set_captcha_error(true);
-			echo $form_response->get_json_response();
-			exit();
-		}
+// 		$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
+// 		if( $resp->is_valid !== true ) {
+// 			$form_response->set_captcha_error(true);
+// 			echo $form_response->get_json_response();
+// 			exit();
+// 		}
 		
 		//this is the first submission of the main form,
 		//and the recaptcha validation passed allready successfully as seen some lines above

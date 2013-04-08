@@ -185,10 +185,10 @@ function sm_get_the_market_page() {
 	                    <span>Bilder f&uuml;r Inserat ausw&auml;hlen: </span>
 	                    <input type="file" name="files[]" multiple>
 	                </span>
-					<button id="sm-form-images-submit-btn" style="visiblity:hidden;" 
+					<button id="sm-form-images-submit-btn" style="display:none;" 
 								type="submit" class="btn btn-primary start">
                     	<i class="icon-upload icon-white"></i>
-                    <span>Start upload</span>
+                    
                 </button>
 	            </div>
 	            <!-- The global progress information -->
@@ -225,12 +225,12 @@ function sm_get_the_market_page() {
 						
 
 						
-			<!-- TODO only for testing ... remove afterwards -->
+			<!-- TODO only for testing ... display none -->
 			
             <td class="start">{% if (!o.options.autoUpload) { %}
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" style="display:none;">
                     <i class="icon-upload icon-white"></i>
-                    <span>Start</span>
+       
                 </button>
             {% } %}</td>
         
