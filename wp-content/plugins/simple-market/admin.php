@@ -55,7 +55,7 @@ function on_plugin_activate() {
 		zip_code varchar(".$sm_mysql_column_length['zip_code'].") DEFAULT '' NOT NULL,
 		city varchar(".$sm_mysql_column_length['city'].") DEFAULT '' NOT NULL,
 		country varchar(".$sm_mysql_column_length['country'].") DEFAULT '' NOT NULL,
-		ip varchar(15) DEFAULT '' NOT NULL,
+		ip varchar(39) DEFAULT '' NOT NULL,
 		submit_date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 		keep_alive_date_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 	  	text longtext NOT NULL,
@@ -138,25 +138,23 @@ function simple_market_add_scripts() {
 															'img_map' => array()));
 		
 		wp_enqueue_script('google-recptcha', "http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
-		
-		//TODO: loading external css belowis not good!!
-		
-		//TODO: add bootstrap-ie7.min.css and html5.js
-		wp_enqueue_style('blueimp_bootstrap_min_css', "http://blueimp.github.com/cdn/css/bootstrap.min.css");
-		wp_enqueue_style('blueimp_bootstrap_responsive_min_css', "http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css");
-		wp_enqueue_style('blueimp_bootstrap_image_gallery_min_css', "http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css");
+				
+		//http://blueimp.github.com/cdn/css/bootstrap.min.css
+		//http://blueimp.github.com/JavaScript-Templates/tmpl.min.js
+		//http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js
+		//http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js
+		wp_enqueue_style('blueimp_bootstrap_min_css', plugins_url('/jquery-file-upload/css/bootstrap.min.css', __FILE__));
 		wp_enqueue_style('blueimp_jquery_fileupload_ui_css', plugins_url('/jquery-file-upload/css/jquery.fileupload-ui.css', __FILE__));
 	
 		wp_enqueue_script('blueimp_jquery_ui_widget_js', plugins_url('/jquery-file-upload/js/vendor/jquery.ui.widget.js', __FILE__));
-		wp_enqueue_script('blueimp_tmp_min_js', 'http://blueimp.github.com/JavaScript-Templates/tmpl.min.js');
-		wp_enqueue_script('blueimp_load_img_min_js', 'http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js');
-		wp_enqueue_script('blueimp_canvas_to_blob_min_js', 'http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js');
+		wp_enqueue_script('blueimp_tmp_min_js', plugins_url('/jquery-file-upload/js/blueimp/tmpl.min.js', __FILE__));	
+		wp_enqueue_script('blueimp_load_img_min_js', plugins_url('/jquery-file-upload/js/blueimp/load-image.min.js', __FILE__));
+		wp_enqueue_script('blueimp_canvas_to_blob_min_js',  plugins_url('/jquery-file-upload/js/blueimp/canvas-to-blob.min.js', __FILE__));
 
 		wp_enqueue_script('blueimp_jquery_iframe_transport_js', plugins_url('/jquery-file-upload/js/jquery.iframe-transport.js', __FILE__));
 		wp_enqueue_script('blueimp_jquery_fileupload_js', plugins_url('/jquery-file-upload/js/jquery.fileupload.js', __FILE__));
 		wp_enqueue_script('blueimp_jquery_fileupload_fp_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-fp.js', __FILE__));
 		wp_enqueue_script('blueimp_jquery_fileupload_ui_js', plugins_url('/jquery-file-upload/js/jquery.fileupload-ui.js', __FILE__));
-		//wp_enqueue_script('blueimp_main_js', plugins_url('/jquery-file-upload/js/main.js', __FILE__));
 	} 
 }
 
