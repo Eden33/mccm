@@ -78,7 +78,7 @@ function on_plugin_activate() {
  	dbDelta($sql); //create or compute differences and alter
 	
 	//protect future users from being responsible for a "unique" salt on their own
-	require_once __DIR__ . '/utility_functions.php';
+	require_once dirname(__FILE__) . '/utility_functions.php';
 	$sm_initialize_options['mail_approval_salt'] = get_rand_string(6);
 		
 	update_option('simple_market', $sm_initialize_options);
@@ -193,8 +193,8 @@ function get_the_market($content) {
 			$admin_action = $_GET['admin-action'];
 			$admin_key_received = $_GET['key'];
 		
-			include_once __DIR__ . '/the_market.php';
-			require_once __DIR__ . '/mail_functions.php';
+			include_once dirname(__FILE__) . '/the_market.php';
+			require_once dirname(__FILE__) . '/mail_functions.php';
 		
 			if(isset($user_action) === true && isset($user_key_received) === true) {
 				switch($user_action) {
@@ -242,7 +242,7 @@ add_action('wp_ajax_nopriv_sm_submit_form', 'sm_form_submit_handler');
 function sm_form_submit_handler() {
 	global $sm_mysql_column_length;
 	
-	require_once __DIR__ . '/classes.php';
+	require_once dirname(__FILE__) . '/classes.php';
 	$form_response = new SimpleMarketFormResponse();
 	
 	$market_item_to_submit = $_SESSION['market_item_to_submit'];
@@ -258,7 +258,7 @@ function sm_form_submit_handler() {
 		if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
 			die();
 		
-		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
+		require_once dirname(__FILE__) . '/recaptcha-1.11/recaptchalib.php';
 		
 		$challange_field = $_POST['recaptcha_challenge_field'];
 		$response_field = $_POST['recaptcha_response_field'];
@@ -452,7 +452,7 @@ function sm_form_images_submit_handler() {
 	if(!isset($sm_options))
 		$sm_options = get_site_option('simple_market');
 	
-	require_once __DIR__ . '/UploadHandler.php';
+	require_once dirname(__FILE__) . '/UploadHandler.php';
 		
 	$options = array(
 			'access_control_allow_methods' 	=> array('POST'),
@@ -503,7 +503,7 @@ add_action('wp_ajax_nopriv_sm_get_contact', 'sm_get_contact_handler');
 function sm_get_contact_handler() {
 
 	$form_response = new SimpleMarketFormResponse();
-	require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
+	require_once dirname(__FILE__) . '/recaptcha-1.11/recaptchalib.php';
 	$challange_field = $_POST['recaptcha_challenge_field'];
 	$response_field = $_POST['recaptcha_response_field'];
 	$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
@@ -536,7 +536,7 @@ function sm_get_contact_handler() {
 
 add_action('init', 'sm_start_session');
 function sm_start_session() {
-	require_once __DIR__.'/classes.php';
+	require_once dirname(__FILE__).'/classes.php';
 	if(!session_id()) {
 		session_start();
 	}
