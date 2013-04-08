@@ -407,8 +407,8 @@ class PreviewMarketItemRenderer extends MarketItemRenderer {
 					<script type="text/javascript">
 						//<![CDATA[
 							function contactDetailsHint() {
-							alert("Nachdem das Inserat von uns geschalted wurde, können andere Benutzer über diesen Link Ihre angegebenen Kontaktdaten (Mail und Telefon) abfragen."
-								  +"\r\nNur echte Personen können ihre Kontaktdaten einsehen. Über ein Captcha werden ihre Daten von so gennanten Robots geschützt.");
+							alert("Nachdem das Inserat von uns geschaltet wurde, können andere Benutzer über diesen Link Ihre angegebenen Kontaktdaten (Mail und Telefon) abfragen."
+								  +"\r\nNur echte Personen können ihre Kontaktdaten einsehen. Über ein Captcha werden ihre Daten von so gennanten Robots und Spammern geschützt.");
 							}
 						//]]>
 					</script>

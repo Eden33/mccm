@@ -9,6 +9,12 @@ jQuery(function ($) {
 	});
 	
 	$('#sm-submit-btn').click(function() {
+		
+		if(!document.getElementById("sm_terms_checkbox").checked) {
+			alert("Du musst die Nutzungsbedingungen unseres MCCM Online Marktes akzeptieren bevor du ein Inserat aufgeben kannst.");
+			return false;
+		}
+		
 		clear_errors();
 		var form_data = $('#sm-form').serialize();
 		form_data +=  '&action=sm_submit_form';

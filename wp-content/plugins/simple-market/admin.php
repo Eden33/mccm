@@ -19,9 +19,10 @@ $sm_table_name = 'wp_simple_market';
 
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.0',
+	'plugin_version' 						=> '1.0.2',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
+	'terms_post_id'							=> 1312,
 	'ad_max_active_in_days'					=> 30,
 	'ad_reactivation_treshold_in_days'		=> 30,
 	'ad_max_images'							=> 4,
@@ -257,17 +258,17 @@ function sm_form_submit_handler() {
 		if(! wp_verify_nonce($_POST['sm_nonce'], 'sm_nonce'))
 			die();
 		
-// 		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
+		require_once __DIR__ . '/recaptcha-1.11/recaptchalib.php';
 		
-// 		$challange_field = $_POST['recaptcha_challenge_field'];
-// 		$response_field = $_POST['recaptcha_response_field'];
+		$challange_field = $_POST['recaptcha_challenge_field'];
+		$response_field = $_POST['recaptcha_response_field'];
 		
-// 		$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
-// 		if( $resp->is_valid !== true ) {
-// 			$form_response->set_captcha_error(true);
-// 			echo $form_response->get_json_response();
-// 			exit();
-// 		}
+		$resp = recaptcha_check_answer('6LdPfdwSAAAAAA_wdOwQLNf5ILdwXbAHL17C_s5g', $_SERVER['REMOTE_ADDR'], $challange_field, $response_field);
+		if( $resp->is_valid !== true ) {
+			$form_response->set_captcha_error(true);
+			echo $form_response->get_json_response();
+			exit();
+		}
 		
 		//this is the first submission of the main form,
 		//and the recaptcha validation passed allready successfully as seen some lines above

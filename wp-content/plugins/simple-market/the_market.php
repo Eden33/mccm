@@ -82,6 +82,7 @@ function get_the_ads() {
  */
 function sm_get_the_market_page() {
 	global $sm_mysql_column_length;
+	global $sm_options;
 	
 	$returnVal =
 	'	<div id="sm-preview-div"></div>
@@ -139,18 +140,14 @@ function sm_get_the_market_page() {
 						value="6800" name="sm_zip_code" />
 				Postleitzahl *
 			</div>
-			<div class="sm-form-div">
-				<textarea class="sm-form-textarea" name="sm_text">Ich verkaufe mein Fahrrad, da ich es nicht mehr brauche.
-						
-				Preis Verhandlungssache.
-						
-				Bitte erst ab 18 Uhr anrufen.</textarea>
-				Ihr Anzeigen Text *
+			<div class="sm-form-div" style="margin-bottom: 5px;">
+				<textarea class="sm-form-textarea" name="sm_text">bla</textarea>
+				<span style="white-space:nowrap">Ihr Anzeigen Text *</span>
 			</div>
-			<div style="text-align: left;">
-				* Eingabe erforderlich
-			</div>			
-			
+			<div style="text-align: left; margin-top:15px;">
+				Bitte alle Felder die mit einem * markiert sind ausf&uuml;llen
+			</div>	
+						
 			<!-- Google Captcha -->
 			<div id="captchadiv"></div>
 			<script type="text/javascript">
@@ -161,6 +158,10 @@ function sm_get_the_market_page() {
 			         }
 			</script>
 			<!-- Google Catpcha END -->
+
+			<div style="margin-top:10px;">
+				<input id="sm_terms_checkbox" type="checkbox" style="margin:0px;"></input><span style="margin-left:5px;">Ich habe die <a href="'. get_permalink( $sm_options['terms_post_id'] ).'" target="_blank">Nutzungssbedingungen des MCCM Online Marktes</a> gelesen und akzeptiere diese.</span>		
+			</div>
 						
 			<div class="sm-form-submit-div">
 				<input class="sm-form-submit" type="submit" id="sm-submit-btn" value="Anzeigen Vorschau" />
