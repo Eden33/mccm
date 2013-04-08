@@ -445,35 +445,123 @@ class ContactDetailsMarketItemRenderer extends MarketItemRenderer {
 }
 
 class UserInputValidator {
-
-	//TODO: implement
 	
-	static function is_first_name_valid($first_name) {
+	static function is_first_name_valid(&$first_name, $max_length = 0, $min_length = 3) {
+		if(self::is_to_long($first_name, $max_length))
+			return false;
+		
+		if(self::is_to_short($first_name, $min_length))
+			return false;
+		
 		return true;
 	}
-	static function is_last_name_valid($last_name) {
+	static function is_last_name_valid(&$last_name, $max_length = 0, $min_length = 3) {
+		if(self::is_to_long($last_name, $max_length))
+			return false;
+		
+		if(self::is_to_short($last_name, $min_length))
+			return false;
+				
 		return true;
 	}
-	static function is_mail_valid($mail) {
-		//sanitize_email()
-		if(is_email($mail) !== false)
+	static function is_mail_valid(&$mail, $max_length = 0, $min_length = 1, $use_wp_internals = true) {
+		if(self::is_to_long($mail, $max_length))
+			return false;
+		
+		if(self::is_to_short($mail, $min_length))
+			return false;
+		
+		if($use_wp_internals) {
+			if(is_email($mail) === false)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Accepted examples:
+	 * +43 000 / 0000
+	 * 43 000   / 0000
+	 * 05522 / 810233
+	 **/
+	static function is_phone_valid(&$phone, $max_length = 0, $min_length = 6) {
+		if(self::is_to_long($phone, $max_length))
+			return false;
+		
+		if(self::is_to_short($phone, $min_length)) {
+			return false;
+		}
+		
+		if(!preg_match('/^\+?[\s\d\/]*$/', $phone))
+			return false;
+		
+		return true;
+	}
+	
+	/**
+	 * Accepted are unique numeric or alphanumeric codes
+	 * containing characters like "PO1 1AA"
+	 **/
+	static function is_zip_code_valid(&$zip_code, $max_length = 0, $min_length = 3) {
+		if(self::is_to_long($zip_code, $max_length))
+			return false;
+		
+		if(self::is_to_short($zip_code, $min_length))
+			return false;
+		
+		if(!preg_match('/^[\sA-Za-z0-9]*$/', $zip_code))
+			return false;
+		
+		return true;
+	}
+	static function is_city_valid(&$city, $max_length = 0, $min_length = 3) {
+		if(self::is_to_long($city, $max_length))
+			return false;
+		
+		if(self::is_to_short($city, $min_length))
+			return false;
+		
+		return true;
+	}
+	static function is_country_valid(&$country, $max_length = 0, $min_length = 4) {
+		if(self::is_to_long($country, $max_length))
+			return false;
+		
+		if(self::is_to_short($country, $min_length))
+			return false;
+		
+		return true;
+	}
+	static function is_text_valid(&$text, $max_length = 0, $min_length = 20) {
+		
+		if(self::is_to_long($text, $max_length))
+			return false;
+		
+		if(self::is_to_short($text, $min_length))
+			return false;
+		
+		return true;
+	}
+
+	private static function trim(&$the_string) {
+		$the_string = trim($the_string);
+	}
+	
+	private static function is_to_long(&$the_string, $max_length = 0) {
+		self::trim($the_string);
+		if(strlen($the_string) > $max_length) {
 			return true;
+		}
 		return false;
 	}
-	static function is_phone_valid($phone) {
-		return true;
-	}
-	static function is_zip_code_valid($zip_code) {
-		return true;
-	}
-	static function is_city_valid($city) {
-		return true;
-	}
-	static function is_country_valid($country) {
-		return true;
-	}
-	static function is_text_valid($text) {
-		return true;
+	
+	private static function is_to_short(&$the_string, $min_length = 0) {
+		self::trim($the_string);
+		if(strlen($the_string) < $min_length) {
+			return true;
+		}
+		return false;
 	}
 }
 ?>

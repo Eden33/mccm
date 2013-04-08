@@ -19,16 +19,16 @@ $sm_table_name = 'wp_simple_market';
 
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.2',
+	'plugin_version' 						=> '1.0.0',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'terms_post_id'							=> 1312,
 	'ad_max_active_in_days'					=> 30,
-	'ad_reactivation_treshold_in_days'		=> 30,
+	'ad_reactivation_treshold_in_days'		=> 10,
 	'ad_max_images'							=> 4,
 	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at',
-//	'reviewer_mail_addresses'				=> array('e.gopp@gmail.com', 'market@mccm-feldkirch.at')
-	'reviewer_mail_adresses'				=> 'e.gopp@gmail.com'
+	'reviewer_mail_addresses'				=> array('eduard.gopp@mccm-feldkirch.at', 'a.walser@mccm-feldkirch.at')
+//	'reviewer_mail_adresses'				=> 'e.gopp@gmail.com'
 );
 $sm_options = NULL;
 $sm_mysql_column_length = array (
@@ -286,25 +286,28 @@ function sm_form_submit_handler() {
 	$country = $_POST['sm_country'];
 	$text = $_POST['sm_text'];
 		
-	if(UserInputValidator::is_first_name_valid($first_name) === false) {
+	if(UserInputValidator::is_first_name_valid($first_name, $sm_mysql_column_length['first_name']) === false) {
 		$form_response->set_first_name_error(true);
 	}
-	if(UserInputValidator::is_last_name_valid($last_name) === false) {
+	if(UserInputValidator::is_last_name_valid($last_name, $sm_mysql_column_length['last_name']) === false) {
 		$form_response->set_last_name_error(true);
 	}
-	if(UserInputValidator::is_mail_valid($mail) === false) {
+	if(UserInputValidator::is_mail_valid($mail, $sm_mysql_column_length['mail']) === false) {
 		$form_response->set_mail_error(true);
 	}
-	if(UserInputValidator::is_phone_valid($phone) === false) {
+	if(UserInputValidator::is_phone_valid($phone, $sm_mysql_column_length['phone'], 6) === false) {
 		$form_response->set_phone_error(true);
 	}
-	if(UserInputValidator::is_zip_code_valid($zip_code) === false) {
+	if(UserInputValidator::is_zip_code_valid($zip_code, $sm_mysql_column_length['zip_code']) === false) {
 		$form_response->set_zip_code_error(true);
 	}
-	if(UserInputValidator::is_country_valid($country) === false) {
+	if(UserInputValidator::is_country_valid($country, $sm_mysql_column_length['country']) === false) {
 		$form_response->set_country_error(true);
 	}
-	if(UserInputValidator::is_text_valid($text) === false) {
+	if(UserInputValidator::is_city_valid($city, $sm_mysql_column_length['city']) === false) {
+		$form_response->set_city_error(true);
+	}
+	if(UserInputValidator::is_text_valid($text, 500) === false) {
 		$form_response->set_text_error(true);
 	}
 	

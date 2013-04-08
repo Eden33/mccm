@@ -107,41 +107,41 @@ function sm_get_the_market_page() {
 		<form method="post" id="sm-form" onsubmit="return false;">
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['first_name'].'" 
-						value="Eduard" name="sm_first_name" />
+						value="'.$_POST['sm_first_name'].'" name="sm_first_name" />
 				Vorname *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['last_name'].'" 
-						value="Gopp" name="sm_last_name" />
+						value="'.$_POST['sm_last_name'].'" name="sm_last_name" />
 				Nachname *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['mail'].'" 
-						value="e.gopp@gmail.com" name="sm_mail" />
+						value="'.$_POST['sm_mail'].'" name="sm_mail" />
 				E-Mail *
 			</div>						
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['phone'].'" 
-						value="004369911223949" name="sm_phone" />
+						value="'.$_POST['sm_phone'].'" name="sm_phone" />
 				Telefon
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['country'].'" 
-						value="Austria" name="sm_country" />
+						value="'.$_POST['sm_country'].'" name="sm_country" />
 				Land *
 			</div>
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['city'].'" 
-						value="Feldkirch" name="sm_city" />
+						value="'.$_POST['sm_city'].'" name="sm_city" />
 				Stadt *
 			</div>							
 			<div class="sm-form-div">
 				<input class="sm-form-input" type="text" maxlength="'.$sm_mysql_column_length['zip_code'].'" 
-						value="6800" name="sm_zip_code" />
+						value="'.$_POST['sm_zip_code'].'" name="sm_zip_code" />
 				Postleitzahl *
 			</div>
 			<div class="sm-form-div" style="margin-bottom: 5px;">
-				<textarea class="sm-form-textarea" name="sm_text">bla</textarea>
+				<textarea class="sm-form-textarea" name="sm_text">'.$_POST['sm_text'].'</textarea>
 				<span style="white-space:nowrap">Ihr Anzeigen Text *</span>
 			</div>
 			<div style="text-align: left; margin-top:15px;">
@@ -259,10 +259,10 @@ function sm_get_the_market_page() {
             <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
         {% } else { %}
             <td class="preview">{% if (file.thumbnail_url) { %}
-                <a href="{%=file.url%}" title="{%=file.name%}" data-gallery="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+                <a href="{%=file.url%}" target="_blank" title="{%=file.name%}" data-gallery="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
             {% } %}</td>
             <td class="name">
-                <a href="{%=file.url%}" title="{%=file.name%}" data-gallery="{%=file.thumbnail_url&&\'gallery\'%}" download="{%=file.name%}">{%=file.name%}</a>
+                <a href="{%=file.url%}" target="_blank" title="{%=file.name%}" data-gallery="{%=file.thumbnail_url&&\'gallery\'%}" download="{%=file.name%}">{%=file.name%}</a>
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2"></td>

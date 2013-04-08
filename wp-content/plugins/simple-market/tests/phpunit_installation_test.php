@@ -5,5 +5,6 @@ class PHPUnitInstallationTest extends PHPUnit_Framework_TestCase {
 	}
 	public function test_one() {
 		$this->assertEmpty(array(), "Should be empt<");
-	}	
-}
+	}
+}	
+?>
