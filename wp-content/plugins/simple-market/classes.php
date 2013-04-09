@@ -53,49 +53,49 @@ class SimpleMarketItem {
 		return $this->first_name;
 	}
 	function get_first_name_html_encoded() {
-		$encoded = htmlentities($this->first_name);
+		$encoded = htmlentities($this->first_name, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_last_name() {
 		return $this->last_name;
 	}
 	function get_last_name_html_encoded() {
-		$encoded = htmlentities($this->last_name);
+		$encoded = htmlentities($this->last_name, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_mail() {
 		return $this->mail;
 	}
 	function get_mail_html_encoded() {
-		$encoded = htmlentities($this->mail);
+		$encoded = htmlentities($this->mail, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_phone() {
 		return $this->phone;	
 	}
 	function get_phone_html_encoded() {
-		$encoded = htmlentities($this->phone);
-		return $phone;
+		$encoded = htmlentities($this->phone, ENT_NOQUOTES, "UTF-8");
+		return $encoded;
 	}
 	function get_zip_code() {
 		return $this->zip_code;
 	}
 	function get_zip_code_html_encoded() {
-		$encoded = htmlentities($this->zip_code);
+		$encoded = htmlentities($this->zip_code, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_city() {
 		return $this->city;
 	}
 	function get_city_html_encoded() {
-		$encoded = htmlentities($this->city);
+		$encoded = htmlentities($this->city, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_country() {
 		return $this->country;
 	}
 	function get_country_html_encoded() {
-		$encoded = htmlentities($this->country);
+		$encoded = htmlentities($this->country, ENT_NOQUOTES, "UTF-8");
 		return $encoded;
 	}
 	function get_text() {
@@ -105,8 +105,8 @@ class SimpleMarketItem {
 		return $this->webmaster_approval_key;
 	}
 	function get_text_html_encoded() {
-		$encoded = htmlentities($this->text);
-		$encoded = nl2br($encoded, false);
+		$encoded = htmlentities($this->text, ENT_NOQUOTES, "UTF-8");
+		$encoded = str_replace(array("\r\n", "\r", "\n"), "<br/>", $encoded);
 		return $encoded;
 	}
 	function get_submit_date_time() {
@@ -435,9 +435,9 @@ class ContactDetailsMarketItemRenderer extends MarketItemRenderer {
 	
 		$markup =
 		'<table><tbody>
-			<tr><td>Insertent: </td><td>'.$this->market_item->get_last_name().' '.$this->market_item->get_first_name().'</td></tr>
-			<tr><td>E-Mail: </td><td>'.$this->market_item->get_mail().'</td></tr>
-			<tr><td>Telefon: </td><td>'.$this->market_item->get_phone().'</td></tr>
+			<tr><td>Insertent: </td><td>'.$this->market_item->get_last_name_html_encoded().' '.$this->market_item->get_first_name_html_encoded().'</td></tr>
+			<tr><td>E-Mail: </td><td>'.$this->market_item->get_mail_html_encoded().'</td></tr>
+			<tr><td>Telefon: </td><td>'.$this->market_item->get_phone_html_encoded().'</td></tr>
 		</tbody></table>';
 	
 		return utf8_encode($markup);

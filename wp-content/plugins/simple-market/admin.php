@@ -19,7 +19,7 @@ $sm_table_name = 'wp_simple_market';
 
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.0',
+	'plugin_version' 						=> '1.0.1',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'terms_post_id'							=> 1312,
@@ -27,7 +27,7 @@ $sm_initialize_options = array(
 	'ad_reactivation_treshold_in_days'		=> 10,
 	'ad_max_images'							=> 4,
 	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at',
-	'reviewer_mail_addresses'				=> array('eduard.gopp@mccm-feldkirch.at', 'a.walser@mccm-feldkirch.at')
+	'reviewer_mail_adresses'				=> array('e.gopp@mccm-feldkirch.at', 'a.walser@mccm-feldkirch.at')
 //	'reviewer_mail_adresses'				=> 'e.gopp@gmail.com'
 );
 $sm_options = NULL;
@@ -217,12 +217,6 @@ function get_the_market($content) {
 				}
 		
 			}
-			
-			if($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-				$the_market = "";
-			} else {
-				$content = "";
-			}
 	}
 
 	return $content . $the_market;
@@ -312,6 +306,8 @@ function sm_form_submit_handler() {
 	}
 	
 	$mysql_date_time_now_gmt = current_time('mysql', 1);
+	
+	//contains the raw user data sent from client
 	$sm_properties = array(
 		'first_name' 			=> $first_name,
 		'last_name' 			=> $last_name,
@@ -672,14 +668,19 @@ function perform_action_on_uploaded_images($sm_item, $options = array()) {
 	$main_dir_thumbnails = get_main_image_dir($sm_item, true);
 	
 	if(!is_dir($main_dir)) {
-		if(!mkdir($main_dir)) {
+		$oldmask = umask(0);
+		if(!mkdir($main_dir, 0777)) {
 			_log("Cant create $main_dir!!!");
 		}
+		umask($oldmask);
 	}
 	if(!is_dir($main_dir_thumbnails)) {
-		if(!mkdir($main_dir_thumbnails)) {
+		$oldmask = umask(0);
+		if(!mkdir($main_dir_thumbnails, 0777)) {
 			_log("Cant create $main_dir_thumbnails!!!");
 		}
+		umask($oldmask);
+		
 	}
 	
 	_log("Temp upload dir: $tmp_upload_dir");

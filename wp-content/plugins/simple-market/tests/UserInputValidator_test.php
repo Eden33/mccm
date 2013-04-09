@@ -185,7 +185,80 @@ class UserInputValidatorTest extends PHPUnit_Framework_TestCase {
 		$text = "   Ich verkaufe \r\n bla und kecks è		"; //to long
 		$this->assertFalse(UserInputValidator::is_text_valid($text, 30));
 	}
+
 	
+	//Prevent XSS Tests ---------------------------------------------------
 	
+	//SimpleMarketItem is used to generate all client outputs
+	//It offers html encode methods for all properties needed 
+	//The raw user input is stored in database (we have an ip and we are interested in original data of each attack)
+	
+	public function test_text_xss_1() {
+		$text = utf8_encode("Ein 'Anführungszeichen' ist <b>fett</b>"); //form data is send as UTF-8 data
+		$this->assertEquals("Ein 'AnfÃ¼hrungszeichen' ist <b>fett</b>", $text);
+		
+		$this->assertTrue(UserInputValidator::is_text_valid($text, 40));
+		
+		//sensitise output returned to client
+		$sm_item = new SimpleMarketItem(array('text' => $text));
+		$encoded = $sm_item->get_text_html_encoded();
+		$this->assertEquals("Ein 'Anf&uuml;hrungszeichen' ist &lt;b&gt;fett&lt;/b&gt;", $encoded);
+	}
+		
+	public function test_all_xss_2() {
+		//form data is send as UTF-8 data
+		$xss = "<script type=\"text/javascript\">alert ('xss')</script>";
+		$first_name = $xss;
+		$last_name = $xss;
+		$mail = $xss."@gmail.com";
+		$phone = $xss;
+		$zip_code = $xss;
+		$city = $xss;
+		$country = $xss;
+		$text = $xss;
+		 	
+
+		$this->assertTrue(UserInputValidator::is_first_name_valid($first_name, 53));
+		$this->assertTrue(UserInputValidator::is_last_name_valid($last_name, 53));
+		$this->assertFalse(UserInputValidator::is_mail_valid($mail, 53, 1, false));
+		$this->assertFalse(UserInputValidator::is_phone_valid($xss, 53));
+		$this->assertFalse(UserInputValidator::is_zip_code_valid($xss, 53));
+		$this->assertTrue(UserInputValidator::is_city_valid($city, 53));
+		$this->assertTrue(UserInputValidator::is_country_valid($country, 53));
+		$this->assertTrue(UserInputValidator::is_text_valid($text, 53));
+		
+		//sensitise output returned to client
+		$sm_item = new SimpleMarketItem(	array(
+				'first_name' 	=> $first_name,
+				'last_name'		=> $last_name,
+				'mail'			=> $mail,
+				'phone'			=> $phone,
+				'zip_code'		=> $zip_code,
+				'city'			=> $city,
+				'country'		=> $country,
+				'text'			=> $text
+				));
+		
+		$first_name_encoded 	= $sm_item->get_first_name_html_encoded();
+		$last_name_encoded		= $sm_item->get_last_name_html_encoded();
+		$mail_encoded 			= $sm_item->get_mail_html_encoded();
+		$phone_encoded 			= $sm_item->get_phone_html_encoded();
+		$zip_code_encoded 		= $sm_item->get_zip_code_html_encoded();
+		$city_encoded			= $sm_item->get_city_html_encoded();
+		$country_encoded 		= $sm_item->get_country_html_encoded();
+		$text_encoded 			= $sm_item->get_text_html_encoded();
+		
+		
+		$expected_encoding = "&lt;script type=\"text/javascript\"&gt;alert ('xss')&lt;/script&gt;";
+		
+		$this->assertEquals($expected_encoding, $first_name_encoded);
+		$this->assertEquals($expected_encoding, $last_name_encoded);
+		$this->assertEquals($expected_encoding."@gmail.com", $mail_encoded);
+		$this->assertEquals($expected_encoding, $phone_encoded);
+		$this->assertEquals($expected_encoding, $zip_code_encoded);
+		$this->assertEquals($expected_encoding, $city_encoded);
+		$this->assertEquals($expected_encoding, $country_encoded);
+		$this->assertEquals($expected_encoding, $text_encoded);
+	}
 }
 ?>

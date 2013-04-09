@@ -69,7 +69,8 @@ jQuery(function ($) {
 						if(resp['success'] == true) {							
 							$('#sm-preview-div').html("Noch einen Schritt zur Inseratsfreischaltung: <br/><br/>"
 									+"Bitte aktivieren Sie Ihren Inseratstext mit dem Aktivierungslink "
-									+"welchen wir gerade an die von Ihnen angegeben E-Mail-Adresse gesendet haben.");
+									+"welchen wir gerade an die von Ihnen angegeben E-Mail-Adresse gesendet haben. <br/>" 
+									+"Bitte &uuml;berpr&uuml;fen Sie, falls Sie kein Mail erhalten haben, zus&auml;tzlich Ihren Junk-Mail Folder.");
 							return;
 						}
 					}					
