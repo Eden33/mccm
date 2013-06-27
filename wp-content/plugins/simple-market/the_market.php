@@ -25,7 +25,7 @@ function get_the_ads() {
 	global $sm_options;
 	global $wpdb;
 	global $sm_table_name;
-	$ads_per_page = 2;
+	$ads_per_page = 10;
 	
 	$the_ads_markup = "";
 	
@@ -148,16 +148,24 @@ function sm_get_the_market_page() {
 				Bitte alle Felder die mit einem * markiert sind ausf&uuml;llen
 			</div>	
 						
-			<!-- Google Captcha -->
-			<div id="captchadiv"></div>
+			<div id="sm_recaptcha_inject_div"></div>
 			<script type="text/javascript">
-			  		function showRecaptcha(element) {
-			        	Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "captchadiv", {
-			            theme: "red"
-			            });
+				var showSimpleMarketFormRecaptcha;
+				var destroySimpleMarketFormRecaptcha;
+						
+				jQuery(function ($) {
+			  		 showSimpleMarketFormRecaptcha = function() {
+						$(SMInject[\'responsive_recaptcha_widget\']).insertAfter(\'#sm_recaptcha_inject_div\');
+			        	Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "responsive_recaptcha_widget", {
+			            theme: "custom"
+			            });						
 			         }
+					 destroySimpleMarketFormRecaptcha = function() {
+						Recaptcha.destroy();
+						$(\'#responsive_recaptcha_widget\').remove();
+					 }
+				});
 			</script>
-			<!-- Google Catpcha END -->
 
 			<div style="margin-top:10px;">
 				<input id="sm_terms_checkbox" type="checkbox" style="margin:0px;"></input><span style="margin-left:5px;">Ich habe die <a href="'. get_permalink( $sm_options['terms_post_id'] ).'" target="_blank">Nutzungssbedingungen des MCCM Online Marktes</a> gelesen und akzeptiere diese.</span>		
@@ -171,7 +179,7 @@ function sm_get_the_market_page() {
 						
 		<!-- the images form -->
 		<form id="sm-form-images" method="POST" enctype="multipart/form-data"
-						action="http://www.mccm-feldkirch.at/wp-admin/admin-ajax.php">
+						action="http://www.mccm-feldkirch.at/wp-admin/admin-ajax.php" style="width: 100%;">
 						
 			<!-- take care - it is also set in form.js for image delete requests -->
 						
@@ -179,7 +187,8 @@ function sm_get_the_market_page() {
 			<input type="hidden" name="action" value="sm_submit_form_images" />
 			<input type="hidden" name="sm_submit_id" value="" />
 			<div class="row fileupload-buttonbar">
-	            <div class="span7">
+						
+	            <div class="span7" style="left: 0px; width: 100%">
 	                <!-- The fileinput-button span is used to style the file input field as button -->
 	                <span class="btn btn-success fileinput-button">
 	                    <i class="icon-plus icon-white"></i>
@@ -193,7 +202,7 @@ function sm_get_the_market_page() {
                 </button>
 	            </div>
 	            <!-- The global progress information -->
-	            <div class="span5 fileupload-progress fade">
+	            <div class="span5 fileupload-progress fade" style="width: 90%; left: 0px;">
 	                <!-- The global progress bar -->
 	                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
 	                    <div class="bar" style="width:0%;"></div>
@@ -201,6 +210,7 @@ function sm_get_the_market_page() {
 	                <!-- The extended global progress information -->
 	                <div class="progress-extended">&nbsp;</div>
 	            </div>
+						
 	        </div>
 	        <!-- The loading indicator is shown during file processing -->
 	        <div class="fileupload-loading"></div>

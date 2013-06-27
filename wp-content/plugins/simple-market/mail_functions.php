@@ -257,7 +257,7 @@ function sm_send_admin_review_mail_request(SimpleMarketItem $market_item) {
 	$ADMIN_activation_link = $market_permalink . '?admin-action=activate&key='.$market_item->get_webmaster_approval_key();
 	$ADMIN_deactivate_link = $market_permalink . '?admin-action=deactivate&key='.$market_item->get_webmaster_approval_key();
 	
-	$admin_name_info = 	$market_item->get_last_name().' '.$market_item->get_first_name();
+	$admin_name_info = 	$market_item->get_last_name_html_encoded().' '.$market_item->get_first_name_html_encoded();
 	$admin_message =
 	'<html>
 	<head>

@@ -19,12 +19,12 @@ $sm_table_name = 'wp_simple_market';
 
 $sm_initialize_options = array(
 	'plugin_name' 	 						=> 'simple_market',
-	'plugin_version' 						=> '1.0.1',
+	'plugin_version' 						=> '1.0.3',
 	'target_post_name' 						=> 'markt',
 	'target_post_id'						=> 49,
 	'terms_post_id'							=> 1312,
-	'ad_max_active_in_days'					=> 30,
-	'ad_reactivation_treshold_in_days'		=> 10,
+	'ad_max_active_in_days'					=> 180,
+	'ad_reactivation_treshold_in_days'		=> 150,
 	'ad_max_images'							=> 4,
 	'webmaster_mail'						=> 'e.gopp@mccm-feldkirch.at',
 	'reviewer_mail_adresses'				=> array('e.gopp@mccm-feldkirch.at', 'a.walser@mccm-feldkirch.at')
@@ -138,15 +138,27 @@ function simple_market_add_scripts() {
 		$sm_options = get_site_option('simple_market');
 		
 	if(is_page($sm_options['target_post_name'])) {
-		wp_enqueue_style('sm_css', plugins_url('/css/style.css', __FILE__), false, $sm_options['plugin_version']);
 		
+		wp_enqueue_style('sm_css', plugins_url('/css/style.css', __FILE__), false, $sm_options['plugin_version']);
 		wp_enqueue_script('sm_form_js', plugins_url('/js/form.js', __FILE__), array( 'jquery' ) , $sm_options['plugin_version']);
-		wp_localize_script('sm_form_js', 'SMInject', array( 
+
+		//Google ReCaptcha and custom responsive widget which also fits to mobile screens
+		wp_enqueue_script('google-recptcha', "http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
+		
+		require_once 'responsive-recaptcha/recaptcha.php';
+		wp_enqueue_style('recptcha_mobile', responsive_recaptcha_get_css_url(), false, $sm_options['plugin_version']);
+		wp_localize_script('sm_form_js', 'SMInject', array(
 															'url' => admin_url( 'admin-ajax.php' ),
 															'nonce' => wp_create_nonce('sm_nonce'),
-															'img_map' => array()));
+															'img_map' => array(),
+															'responsive_recaptcha_widget' => responsive_recaptcha_get_widget()));
 		
-		wp_enqueue_script('google-recptcha', "http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
+		//font-awesome is used by the custom ReCaptcha widget and as well from juery-file-upload
+		wp_enqueue_style('font_awesome_min_css', plugins_url('/css/font-awesome.min.css', __FILE__), false, $sm_options['plugin_version']);
+		wp_enqueue_style('font_awesome_ie7_min_css', plugins_url('/css/font-awesome-ie7.min.css', __FILE__), false, $sm_options['plugin_version']);
+		global $wp_styles;
+		$wp_styles->add_data('font_awesome_ie7_min_css', 'conditional', 'lte IE 7');
+		
 				
 		//http://blueimp.github.com/cdn/css/bootstrap.min.css
 		//http://blueimp.github.com/JavaScript-Templates/tmpl.min.js
@@ -374,15 +386,21 @@ function sm_preview_submit_handler() {
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-Hallo und Danke f&uuml;r Ihre Online-Anzeige auf der <a href="'.$market_permalink.'". target="_blank">"Webseite des MCCM"</a>.<br/><br/>
-Sollte Sie keine Online-Anzeige bei uns aufgegeben haben, k&ouml;nnen Sie dieses Mail einfach l&ouml;schen.<br/><br/>
-<span style="font-weight: bold; color: #990000;">Ansonsten behalten Sie diese E-Mail bitte nach dem Klick auf den Aktivierungslink, bis Ihr Verkauf abgeschlossen ist!</span><br/><br/>
-<span style="font-weight: bold; color: #990000;">Bitte antworten Sie nicht auf dieses Mail, da dies automatisch generiert wurde.</span><br/><br/>
+Hallo und Danke f&uuml;r Ihre Online-Anzeige auf der <a href="'.$market_permalink.'". target="_blank">"Webseite des MCCM"</a>.
+<br/><br/>
+<span style="font-weight: bold; color: #990000;">Bei uns ist dieser Anzeigentext eingegangen:</span><br/>
+------------------------------------------------------------------
+<br/>'.$the_market_item_to_submit->get_text_html_encoded().'<br/>
+------------------------------------------------------------------
+<br/><br/>
+<span style="font-weight: bold; color: #990000;">Haben Sie diese Anzeige nicht bei uns aufgegeben, k&ouml;nnen Sie dieses Mail einfach l&ouml;schen.</span><br/><br/>
+<span style="font-weight: bold; color: #990000;">Ansonsten aktivieren Ihre Anzeige bitte mit dem Aktivierungslink weiter unten und behalten Sie diese E-Mail, bis Ihr Verkauf / Suche abgeschlossen ist!</span><br/><br/>
+Bitte antworten Sie nicht auf dieses Mail, da dies automatisch generiert wurde.<br/><br/>
 Mit den hier gelisteten Links k&ouml;nnen Sie:
 <ul>
 <li>Ihr Inserat aktivieren</li>
 <li>Ihr Inserat wird nach '.$sm_options['ad_max_active_in_days'].' Tagen automatisch deaktiviert, dieses E-Mail beinhalted auch einen Link f&uuml;r die Reaktivierung sollten Sie Ihr Inserat l&auml;nger schalten wollen.</li>
-<li>Ihr Inserat auf wunsch deaktivieren</li>
+<li>Ihr Inserat auf Wunsch wieder deaktivieren</li>
 </ul>
 <span style="font-weight: bold;">Ihr Aktivierungs-Link:</span><br/>
 '.$sm_activation_link.'<br/>
@@ -393,6 +411,8 @@ Ihr Deaktivierungs-Link:<br/>
 	
 Mit freundlichen Gr&uuml;&szlig;en<br/>
 Eduard Gopp - Webmaster MCCM Feldkirch
+<br/><br/>
+PS: Bei Probleme einfach bei mir melden: e.gopp@mccm-feldkirch.at
 </body>
 </html>
 ';
@@ -452,8 +472,8 @@ function sm_form_images_submit_handler() {
 		
 	$options = array(
 			'access_control_allow_methods' 	=> array('POST'),
-			'max_width'						=> 1600,
-			'max_height'					=> 1200,
+			'max_width'						=> 1800,
+			'max_height'					=> 2500,
 			'thumbnail' => array(
 					'max_width' => 120,
 					'max_height' => 120

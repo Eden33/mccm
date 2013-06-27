@@ -272,7 +272,7 @@ class SimpleMarketFormResponse {
 class MarketItemRenderer {
 	protected $market_item = null;
 	
-	function __construct(&$market_item) {
+	function __construct(&$market_item = NULL) {
 		$this->market_item = $market_item;
 	}
 	
@@ -322,21 +322,38 @@ class MarketItemRenderer {
 	}
 	
 	public function get_contact_details_retrieval_javascript() {
+		if(!isset($this->market_item))
+			return '';
+		
 
 		return '<script type="text/javascript">
 					function getContactDetails(id) {
 						jQuery(function ($) {
+		
+							//first remove recaptcha from market main page bevore create new one within colorbox
+							destroySimpleMarketFormRecaptcha();
+							
+							var colorboxResizePoll;
+				
 							$.colorbox({
 								html:
-									"<div id=\"contact-details-div\"><div>Nach dieser kurzen Authentifizierung bekommst die die Kontaktdaten zu diesem Inserat</div>"
+									"<div id=\"contact-details-div\"><div>Nach dieser kurzen Authentifizierung bekommst <br/> die die Kontaktdaten zu diesem Inserat</div>"
 									+"<div class=\"sm-error-div\" id=\"contact-form-captcha_error\" style=\"display:none;\"><br/>Eingegebens Captcha war falsch. Bitte erneut versuchen.</div>"
 									+"<form id=\"contact-details-form\"method=\"POST\" onsubmit=\"return false;\">"
 									+"<input type=\"hidden\" name=\"action\" value=\"sm_get_contact\" />"
 									+"<input type=\"hidden\" name=\"contact_id\" value=\""+id+"\" />"
-									+"<br/><div id=\"captchadiv-"+id+"\"></div><br/>"
+									+"<br/>"+ SMInject[\'responsive_recaptcha_widget\'] +"<br/>"
 									+"<input id=\"get-contact-submit\" name=\"submit\" type=\"submit\" value=\"Anfrage Kontaktdaten\" /></form></div>"
 								,onComplete:function() {
-									$.colorbox.resize();
+									
+									Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "responsive_recaptcha_widget", {theme: "custom"});
+									colorboxResizePoll = setInterval(function() { 
+											$.colorbox.resize();
+											if(DEBUG_SM_JS) {
+									    		console.log("Contact colorbox resize poll occured.");
+									    	} 
+									}, 1000);
+									
 									$("#get-contact-submit").click(function(resp) {
 				
 										$(\'.sm-error-div\').fadeOut(\'slow\');
@@ -364,8 +381,11 @@ class MarketItemRenderer {
 										});
 									});
 								}
+								,onClosed:function() {
+								 	clearInterval(colorboxResizePoll);
+									showSimpleMarketFormRecaptcha(); //create again captcha on market main page
+								}
 							});
-							Recaptcha.create("6LdPfdwSAAAAAMsR2AWzAq9Bdidde6V1MD77xB2j", "captchadiv-"+id+"", {theme: "red"});
 						});
 					  }
 				</script>';
@@ -384,7 +404,7 @@ class PreviewMarketItemRenderer extends MarketItemRenderer {
 			return '';
 	
 		$markup =
-		'<div class="sm-top-div">
+		'<div class="sm-top-div" id="sm-preview-mode-container">
 				 <table>
 					<tbody>
 						<tr><td>'.$this->market_item->get_first_name_html_encoded() .' '
@@ -397,10 +417,18 @@ class PreviewMarketItemRenderer extends MarketItemRenderer {
 				</table>
 				<div>'.$this->market_item->get_text_html_encoded().'</div>
 				<div id="sm-thumb-preview-container" class="clearfix">
-					<div class="sm-thumb-preview" id="sm-thumb-preview-0"></div>
-					<div class="sm-thumb-preview" id="sm-thumb-preview-1"></div>
-					<div class="sm-thumb-preview" id="sm-thumb-preview-2"></div>
-					<div class="sm-thumb-preview" id="sm-thumb-preview-3"></div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-0">
+						
+					</div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-1">
+						
+					</div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-2">
+						
+					</div>
+					<div class="sm-thumb-preview" id="sm-thumb-preview-3">
+						
+					</div>
 				</div>
 				<div>
 					<a href="#" onClick="contactDetailsHint(); return false;">Kontaktinformationen</a>
@@ -435,7 +463,7 @@ class ContactDetailsMarketItemRenderer extends MarketItemRenderer {
 	
 		$markup =
 		'<table><tbody>
-			<tr><td>Insertent: </td><td>'.$this->market_item->get_last_name_html_encoded().' '.$this->market_item->get_first_name_html_encoded().'</td></tr>
+			<tr><td>Inserent: </td><td>'.$this->market_item->get_last_name_html_encoded().' '.$this->market_item->get_first_name_html_encoded().'</td></tr>
 			<tr><td>E-Mail: </td><td>'.$this->market_item->get_mail_html_encoded().'</td></tr>
 			<tr><td>Telefon: </td><td>'.$this->market_item->get_phone_html_encoded().'</td></tr>
 		</tbody></table>';
@@ -533,7 +561,7 @@ class UserInputValidator {
 		
 		return true;
 	}
-	static function is_text_valid(&$text, $max_length = 0, $min_length = 20) {
+	static function is_text_valid(&$text, $max_length = 0, $min_length = 10) {
 		
 		if(self::is_to_long($text, $max_length))
 			return false;

@@ -67,11 +67,10 @@
 	width: 120px;
 	max-width: 120px;
 	float: left;
-	margin-left: 20px;
+	margin-left: 0px;
+	margin-right: 20px;
 }
-#sm-thumb-preview-0 {
-	margin-left: 5px !important;
-}
+
 #sm-thumb-preview-container > div > a > img {
 	max-width: 120px;
 	width: 120px;
