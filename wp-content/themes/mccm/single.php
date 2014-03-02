@@ -22,6 +22,8 @@ get_header(); ?>
 
 					<?php get_template_part( 'content', 'single' ); ?>
 
+					<?php comments_template( '', true ); ?>
+					
 					<!-- removed "comment_template" call of parent theme by edi ... remove msg like "Kommentar Funktion geschlossen" on single pages -->
 					
 				<?php endwhile; // end of the loop. ?>
