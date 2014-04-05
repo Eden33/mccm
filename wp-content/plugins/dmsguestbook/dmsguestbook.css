@@ -1,6 +1,8 @@
 /*
-Um die CSS Einstellungen zu ändern sollte die DMSGuestbook Admin Seite benutzt werden. Das dmsguestbook.css nicht direkt bearbeiten, denn die Einstellungen würden automatisch überschrieben werden.
-Falls dmsguestbook.css vorhanden und beschreibbar ist, werden die CSS Einstellungen aus dmsguestbook.css gelesen.<br />Ansonsten werden die Einstellungen aus der Datenbank geladen. 
+Use the DMSGuestbook admin interface for change these css settings.
+Don't edit this file direct, your change could be overwrite by the DMSGuestbook admin.
+If dmsguestbook.css is exist and writable, all CSS settings will be read from it.
+Otherwise these settings will be load from the database.
 */
 
 
@@ -87,6 +89,7 @@ text-decoration:none;}
 text-decoration:none;}
 
 .css_navigation_char {color:#000000;
+font-size:20px;
 text-decoration:none;
 font-weight:bold;}
 
@@ -108,16 +111,17 @@ height:15px;}
 .css_post_header4 {font-size:11px;
 height:15px;}
 
-.css_post_email_image {height:22px;
-width:22px;
+.css_post_email_image {height:15px;
+width:15px;
 border:0px;}
 
-.css_post_url_image {height:22px;
-width:22px;
+.css_post_url_image {height:15px;
+width:15px;
 border:0px;}
 
-.css_post_separator {height:1px;
-width:100%;
+.css_post_separator {border: 1px solid #EEEEEE;
+height:1px;
+width:35%;
 text-align:left;
 margin:0px 0px 0px 0px;}
 
@@ -132,11 +136,11 @@ padding:0px 10px;
 margin:0px 0px 0px 0px;
 line-height:1.4em;}
 
-.css_post_embedded {width:100%;
+.css_post_embedded {width:95%;
 border:1px solid #AAAAAA;
 font-size:12px;
 text-align:left;
-padding:10px 0px;
+padding:10px 10px;
 margin:0px 0px 0px 0px;
 line-height:1.4em;}
 a.css_navigation_char:hover {text-decoration:none; color:#000000;}
