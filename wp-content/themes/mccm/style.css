@@ -86,7 +86,7 @@ visibility:hidden;
 #kontakt-table > tbody > tr > td { vertical-align: top; }
 
 /* page vorstand */
-.management-div { float: left; border: 2px solid #336633; background: #DDD; width:275px; height:auto; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; margin: 5px; }
+.management-div { float: left; border: 2px solid #336633; background: #DDD; width:275px; height:167px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; margin: 5px; }
 .management-div > a > img { margin: 10px 5px; display: block; float: left; }
 .management-div > div { margin: 10px 0px; float: left; width: 140px; padding-right: 5px;}
 .wordwrap {   
