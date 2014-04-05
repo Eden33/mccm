@@ -65,6 +65,11 @@ class ExportBase {
     var $style;
 
     /**
+     * @var array assoc array of column names to display names
+     */
+    var $headers;
+
+    /**
      * @var CF7DBEvalutator|CF7FilterParser|CF7SearchEvaluator
      */
     var $rowFilter;
@@ -151,23 +156,65 @@ class ExportBase {
                 }
             }
 
+            $filters = array();
 
             if (isset($this->options['filter'])) {
                 require_once('CF7FilterParser.php');
                 require_once('DereferenceShortcodeVars.php');
-                $this->rowFilter = new CF7FilterParser;
-                $this->rowFilter->setComparisonValuePreprocessor(new DereferenceShortcodeVars);
-                $this->rowFilter->parseFilterString($this->options['filter']);
+                $aFilter = new CF7FilterParser;
+                $aFilter->setComparisonValuePreprocessor(new DereferenceShortcodeVars);
+                $aFilter->parseFilterString($this->options['filter']);
                 if ($this->debug) {
                     echo '<pre>\'' . $this->options['filter'] . "'\n";
-                    print_r($this->rowFilter->tree);
+                    print_r($aFilter->tree);
                     echo '</pre>';
                 }
+                $filters[] = $aFilter;
             }
-            else if (isset($this->options['search'])) {
+
+            if (isset($this->options['search'])) {
                 require_once('CF7SearchEvaluator.php');
-                $this->rowFilter = new CF7SearchEvaluator;
-                $this->rowFilter->setSearch($this->options['search']);
+                $aFilter = new CF7SearchEvaluator;
+                $aFilter->setSearch($this->options['search']);
+                $filters[] = $aFilter;
+            }
+
+            if (isset($this->options['cfilter'])) {
+                if (function_exists($this->options['cfilter'])) {
+                    require_once('CFDBFunctionEvaluator.php');
+                    $aFilter = new CFDBFunctionEvaluator;
+                    $aFilter->setFunction($this->options['cfilter']);
+                    $filters[] = $aFilter;
+                }
+                else if (class_exists($this->options['cfilter'])) {
+                    require_once('CFDBClassEvaluator.php');
+                    $aFilter = new CFDBClassEvaluator;
+                    $aFilter->setClassName($this->options['cfilter']);
+                    $filters[] = $aFilter;
+                }
+            }
+
+            $numFilters = count($filters);
+            if ($numFilters == 1) {
+                $this->rowFilter = $filters[0];
+            }
+            else if ($numFilters > 1) {
+                require_once('CFDBCompositeEvaluator.php');
+                $this->rowFilter = new CFDBCompositeEvaluator;
+                $this->rowFilter->setEvaluators($filters);
+            }
+
+            if (isset($this->options['headers'])) { // e.g. "col1=Column 1 Display Name,col2=Column2 Display Name"
+                $headersList = preg_split('/,/', $this->options['headers'], -1, PREG_SPLIT_NO_EMPTY);
+                if (is_array($headersList)) {
+                    $this->headers = array();
+                    foreach ($headersList as $nameEqualValue) {
+                        $nameEqualsValueArray = explode('=', $nameEqualValue, 2); // col1=Column 1 Display Name
+                        if (count($nameEqualsValueArray) >= 2) {
+                            $this->headers[$nameEqualsValueArray[0]] = $nameEqualsValueArray[1];
+                        }
+                    }
+                }
             }
         }
     }
@@ -390,12 +437,20 @@ class ExportBase {
         global $wpdb;
         $tableName = $this->plugin->getSubmitsTableName();
 
-        $formNameClause = '';
+        $formNameClause = '1=1';
         if (is_array($formName)) {
-            $formNameClause = '`form_name` in ( \'' . implode('\', \'', $formName) . '\' )';
+            $formNameArray = $this->escapeAndQuoteArrayValues($formName);
+            $formNameClause = '`form_name` in ( ' . implode(', ', $formNameArray) . ' )';
         }
-        else if ($formName !== null) {
-            $formNameClause =  "`form_name` = '$formName'";
+        else if ($formName !== null && $formName != '*') { // * => all forms
+            if (strpos($formName, ',') !== false) {
+                $formNameArray = explode(',', $formName);
+                $formNameArray = $this->escapeAndQuoteArrayValues($formNameArray);
+                $formNameClause = '`form_name` in ( ' . implode(', ', $formNameArray) . ' )';
+            }
+            else {
+                $formNameClause =  "`form_name` = '". mysql_real_escape_string($formName) . "'";
+            }
         }
 
         $submitTimesClause = '';
@@ -484,6 +539,18 @@ class ExportBase {
         }
         //echo $sql; // debug
         return $sql;
+    }
+
+    /**
+     * @param $anArray array
+     * @return array of quoted mysql_real_escape_string values
+     */
+    public function escapeAndQuoteArrayValues($anArray) {
+        $retArray = array();
+        foreach ($anArray as $aValue) {
+            $retArray[] = '\'' . mysql_real_escape_string($aValue) . '\'';
+        }
+        return $retArray;
     }
 
     /**

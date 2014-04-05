@@ -1,6 +1,6 @@
 <?php
 /*
-    "Contact Form to Database" Copyright (C) 2011-2012 Michael Simpson  (email : michael.d.simpson@gmail.com)
+    "Contact Form to Database" Copyright (C) 2011-2013 Michael Simpson  (email : michael.d.simpson@gmail.com)
 
     This file is part of Contact Form to Database.
 
@@ -50,13 +50,18 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
             'IntegrateWithCF7' => array(__('Capture form submissions from Contact Form 7 Plugin', 'contact-form-7-to-database-extension'), 'true', 'false'),
             'IntegrateWithFSCF' => array(__('Capture form submissions from Fast Secure Contact Form Plugin', 'contact-form-7-to-database-extension'), 'true', 'false'),
             'IntegrateWithJetPackContactForm' => array(__('Capture form submissions from JetPack Contact Form', 'contact-form-7-to-database-extension'), 'true', 'false'),
+            'IntegrateWithGravityForms' => array(__('Capture form submissions from Gravity Forms', 'contact-form-7-to-database-extension'), 'true', 'false'),
             'CanSeeSubmitData' => array(__('Can See Submission data', 'contact-form-7-to-database-extension'),
                                         'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone'),
             'CanSeeSubmitDataViaShortcode' => array(__('Can See Submission when using shortcodes', 'contact-form-7-to-database-extension'),
                                                     'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone'),
             'CanChangeSubmitData' => array(__('Can Edit/Delete Submission data', 'contact-form-7-to-database-extension'),
-                                           'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber'),
+                                           'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone'),
+            'AllowRSS' => array(__('Allow RSS URLs', 'contact-form-7-to-database-extension') .
+                    ' <a target="_blank" href="http://cfdbplugin.com/?p=918">' . __('(Creates a security hole)', 'contact-form-7-to-database-extension') . '</a>', 'false', 'true'),
+            'Timezone' => array(__('Timezone to capture Submit Time. Blank will use WordPress Timezone setting. <a target="_blank" href="http://www.php.net/manual/en/timezones.php">Options</a>', 'contact-form-7-to-database-extension')),
             'MaxRows' => array(__('Maximum number of rows to retrieve from the DB for the Admin display', 'contact-form-7-to-database-extension')),
+            'MaxVisibleRows' => array(__('#Rows (of maximum above) visible in the Admin datatable', 'contact-form-7-to-database-extension')),
             'UseDataTablesJS' => array(__('Use Javascript-enabled tables in Admin Database page', 'contact-form-7-to-database-extension'), 'true', 'false'),
             'ShowLineBreaksInDataTable' => array(__('Show line breaks in submitted data table', 'contact-form-7-to-database-extension'), 'true', 'false'),
             'UseCustomDateTimeFormat' => array(__('Use Custom Date-Time Display Format (below)', 'contact-form-7-to-database-extension'), 'true', 'false'),
@@ -229,12 +234,12 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
 
     protected function initOptions() {
         // By default ignore CF7 metadata fields
-        $this->addOption('NoSaveFields', '_wpcf7,_wpcf7_version,_wpcf7_unit_tag,_wpnonce,_wpcf7_is_ajax_call,_wpcf7_captcha_challenge_captcha');
+        $this->addOption('NoSaveFields', '/.*wpcf7.*/,_wpnonce');
     }
 
     public function add_wpcf7_noSaveFields() {
         $nsfArray = explode(',', $this->getOption('NoSaveFields',''));
-        $wpcf7Fields = array('_wpcf7', '_wpcf7_version', '_wpcf7_unit_tag', '_wpnonce', '_wpcf7_is_ajax_call', '_wpcf7_captcha_challenge_captcha');
+        $wpcf7Fields = array('/.*wpcf7.*/', '_wpnonce');
         foreach ($wpcf7Fields as $aWpcf7) {
            if (!in_array($aWpcf7, $nsfArray)) {
                $nsfArray[] = $aWpcf7;
@@ -252,6 +257,9 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
     }
 
     public function addActionsAndFilters() {
+        // Admin notices
+        add_action('admin_notices', array(&$this, 'addAdminNotices'));
+
         // Add the Admin Config page for this plugin
 
         // Add Config page as a top-level menu item on the Admin page
@@ -274,6 +282,11 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
         // Hook into JetPack Contact Form
         if ($this->getOption('IntegrateWithJetPackContactForm', 'true') == 'true') {
             add_action('grunion_pre_message_sent', array(&$this, 'saveJetPackContactFormData'), 10, 3);
+        }
+
+        // Hook into Gravity Forms
+        if ($this->getOption('IntegrateWithGravityForms', 'true') == 'true') {
+            add_action('gform_after_submission', array(&$this, 'saveGravityFormData'), 10, 2);
         }
 
         // Have our own hook to receive form submissions independent of other plugins
@@ -401,8 +414,7 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
             if (version_compare(phpversion(), '5.1.0') == -1) {
                 $invalid = -1;
             }
-            // Use times in local timezone
-            date_default_timezone_set(get_option('timezone_string'));
+            $this->setTimezone();
             $time = strtotime($submitTime);
         }
         if ($invalid === $time) {
@@ -465,7 +477,7 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
     public function saveFormData($cf7) {
         try {
             $title = stripslashes($cf7->title);
-            if (in_array($title, $this->getNoSaveForms())) {
+            if ($this->fieldMatches($title, $this->getNoSaveForms())) {
                 return; // Don't save in DB
             }
 
@@ -512,7 +524,7 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
 //            }
             foreach ($cf7->posted_data as $name => $value) {
                 $nameClean = stripslashes($name);
-                if (in_array($nameClean, $noSaveFields)) {
+                if ($this->fieldMatches($nameClean, $noSaveFields)) {
                     continue; // Don't save in DB
                 }
 
@@ -553,7 +565,9 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
             // Update: This seems to have been reversed back to the original in Contact Form 7 3.2 or 3.3
             if ($cf7->uploaded_files && is_array($cf7->uploaded_files)) {
                 foreach ($cf7->uploaded_files as $field => $filePath) {
-                    if (!in_array($field, $foundUploadFiles) && $filePath) {
+                    if (!in_array($field, $foundUploadFiles) &&
+                            $filePath &&
+                            !$this->fieldMatches($field, $noSaveFields)) {
                         $fileName = basename($filePath);
                         $content = file_get_contents($filePath);
                         $didSaveFile = $wpdb->query($wpdb->prepare($parametrizedFileQuery,
@@ -574,22 +588,20 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
             if ($this->getOption('SaveCookieData', 'false') == 'true' && is_array($_COOKIE)) {
                 $saveCookies = $this->getSaveCookies();
                 foreach ($_COOKIE as $cookieName => $cookieValue) {
-                    if (!empty($saveCookies) && !in_array($cookieName, $saveCookies)) {
-                        continue;
+                    if (empty($saveCookies) || $this->fieldMatches($cookieName, $saveCookies)) {
+                        $wpdb->query($wpdb->prepare($parametrizedQuery,
+                            $time,
+                            $title,
+                            'Cookie ' . $cookieName,
+                            $cookieValue,
+                            $order++));
                     }
-                    $wpdb->query($wpdb->prepare($parametrizedQuery,
-                                                $time,
-                                                $title,
-                                                'Cookie ' . $cookieName,
-                                                $cookieValue,
-                                                $order++));
                 }
             }
 
             // If the submitter is logged in, capture his id
             if ($user) {
                 $order = ($order < 9999) ? 9999 : $order + 1; // large order num to try to make it always next-to-last
-                $current_user = wp_get_current_user(); // WP_User
                 $wpdb->query($wpdb->prepare($parametrizedQuery,
                                             $time,
                                             $title,
@@ -611,6 +623,27 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
         catch (Exception $ex) {
             error_log(sprintf('CFDB Error: %s:%s %s  %s', $ex->getFile(), $ex->getLine(), $ex->getMessage(), $ex->getTraceAsString()));
         }
+    }
+
+    /**
+     * @param $fieldName string
+     * @param $patternsArray array
+     * @return boolean true if $fieldName is in $patternsArray or matches any element of it that is a regex
+     */
+    public function fieldMatches($fieldName, $patternsArray) {
+        if (is_array($patternsArray)) {
+            foreach($patternsArray as $pattern) {
+                if ($fieldName == $pattern) {
+                    return true;
+                }
+                if (strncmp($pattern, '/', 1)  == 0) {
+                    if (@preg_match($pattern , $fieldName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -638,6 +671,116 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
             'title' => $title,
             'posted_data' => $all_values,
             'uploaded_files' => null);
+        $this->saveFormData($data);
+    }
+
+    /**
+     * http://www.gravityhelp.com/documentation/page/Gform_after_submission
+     * @param $entry Entry Object The entry that was just created.
+     * http://www.gravityhelp.com/documentation/page/Entry_Object
+     * @param $form Form Object The current form
+     * http://www.gravityhelp.com/documentation/page/Form_Object
+     */
+    public function saveGravityFormData($entry, $form) {
+
+        //error_log('Form Definition: ' . print_r($form, true)); // debug
+        //error_log('Entry Definition: ' . print_r($entry, true)); // debug
+
+        $postedData = array();
+        $uploadFiles = array();
+
+        // Iterate through the field definitions and get their values
+        if (! is_array($form['fields'])) {
+            return;
+        }
+        foreach ($form['fields'] as $field) {
+            if (! is_array($field)) {
+                continue;
+            }
+            $fieldName = $field['label'];
+
+            if (!empty($field['inputs']) && is_array($field['inputs'])) {
+                // This is a multi-input field
+
+                if ($field['type'] == 'checkbox') {
+                    $values = array();
+                    foreach ($field['inputs'] as $input) {
+                        $inputId = strval($input['id']); // Need string value of number like '1.3'
+                        if (! empty($entry[$inputId])) {
+                            $values[] = $entry[$inputId];
+                        }
+                    }
+                    $postedData[$fieldName] = implode(',', $values);
+                }
+                else {
+                    foreach ($field['inputs'] as $input) {
+                        $inputId = strval($input['id']); // Need string value of number like '1.3'
+                        $label = $input['label']; // Assumption: all inputs have diff labels
+                        $effectiveFieldName = $fieldName;
+                        if (!empty($label)) {
+                            $effectiveFieldName = $fieldName . ' ' . $label;
+                        }
+                        $postedData[$effectiveFieldName] = $entry[$inputId];
+                    }
+                }
+            }
+            else {
+                $fieldId = $field['id'];
+                switch ($field['type']) {
+                    case 'list' :
+                        // List - value is serialized array
+                        $valueArray = @unserialize($entry[$fieldId]);
+                        if (is_array($valueArray)) {
+                            $postedData[$fieldName] = implode(',',$valueArray);
+                        }
+                        else {
+                            $postedData[$fieldName] = $entry[$fieldId];
+                        }
+                        break;
+
+                    case 'fileupload':
+                        // File Upload - value is file URL
+                        // http://<SITE>/wp-content/uploads/gravity_forms/<PATH>/<FILE>
+                        $url = $entry[$fieldId];
+                        $fileName = basename($url);
+                        $postedData[$fieldName] = $fileName;
+
+                        $filePath = ABSPATH . substr($url, strlen(get_site_url()));
+                        $uploadFiles[$fieldName] = $filePath;
+                        break;
+
+                    default:
+                        $postedData[$fieldName] = $entry[$fieldId];
+                        break;
+                }
+
+            }
+        }
+
+        // Other form metadata
+        $paymentMetaData = array(
+            //'currency',
+            'payment_status', 'payment_date',
+            'transaction_id', 'payment_amount', 'payment_method',
+            'is_fulfilled', 'transaction_type');
+        foreach ($paymentMetaData as $pmt) {
+            $hasPaymentInfo = false;
+            if (! empty($entry[$pmt])) {
+                $postedData[$pmt] = $entry[$pmt];
+                $hasPaymentInfo = true;
+            }
+            if ($hasPaymentInfo && ! empty($entry['currency'])) {
+                // It seems currency is always set but only meaningful
+                // if the other payment info is set.
+                $postedData['currency'] = $entry['currency'];
+            }
+        }
+
+
+        $data = (object)  array(
+            'title' => $form['title'],
+            'posted_data' => $postedData,
+            'uploaded_files' => $uploadFiles);
         $this->saveFormData($data);
     }
 
@@ -724,6 +867,15 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
                          $this->getSortCodeBuilderPageSlug(),
                          array(&$this, 'showShortCodeBuilderPage'));
 
+        if ($this->isEditorActive()) {
+            add_submenu_page($menuSlug,
+                    $displayName . ' Import',
+                __('Import', 'contact-form-7-to-database-extension'),
+                $this->roleToCapability($this->getRoleOption('CanChangeSubmitData')),
+                    get_class($this) . 'Import',
+                array(&$this, 'showShortImportCsvPage'));
+        }
+
         add_submenu_page($menuSlug,
                          $displayName . ' Options',
                          __('Options', 'contact-form-7-to-database-extension'),
@@ -758,6 +910,12 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
         $view->display($this);
     }
 
+    public function showShortImportCsvPage() {
+        require_once('CFDBViewImportCsv.php');
+        $view = new CFDBViewImportCsv;
+        $view->display($this);
+    }
+
     /**
      * Display the Admin page for this Plugin that show the form data saved in the database
      * @return void
@@ -789,8 +947,7 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
                CF7DBPlugin::$dateFormat = get_option('date_format');
                CF7DBPlugin::$timeFormat = get_option('time_format');
             }
-            // Convert time to local timezone
-            date_default_timezone_set(get_option('timezone_string'));
+            $this->setTimezone();
             CF7DBPlugin::$checkForCustomDateFormat = false;
         }
 
@@ -934,5 +1091,86 @@ class CF7DBPlugin extends CF7DBPluginLifeCycle {
         return $url;
     }
 
+    public function setTimezone() {
+        $timezone = trim($this->getOption('Timezone'));
+        if (empty($timezone)) {
+            $timezone = get_option('timezone_string');
+        }
+        if (!empty($timezone)) {
+            date_default_timezone_set($timezone);
+        }
+    }
+
+    /**
+     * @return boolean Is the CFDB Editor extension installed?
+     */
+    public function isEditorInstalled() {
+        return get_option('CFDBEditPlugin__installed', false) == true;
+    }
+
+
+    /**
+     * @return string|null get the CFDB Editor extension version string.
+     * return null if not installed
+     */
+    public function getEditorSavedVersion() {
+        return get_option('CFDBEditPlugin__version', null);
+    }
+
+    /**
+     * @return array of CFDB Editor plugin data, see: http://codex.wordpress.org/Function_Reference/get_plugin_data
+     */
+    public function getEditorPluginData() {
+            $editPluginFile = WP_PLUGIN_DIR .
+                    '/contact-form-to-database-extension-edit/contact-form-to-database-extension-edit.php';
+            if(@file_exists($editPluginFile)) {
+                $pluginData = get_plugin_data($editPluginFile);
+                if (is_array($pluginData)) {
+                    return $pluginData;
+            }
+        }
+        return array();
+    }
+
+    /**
+     * @return bool if CFDB Editor extension plugin is activated
+     */
+    public function isEditorActive() {
+        $editPluginFile = 'contact-form-to-database-extension-edit/contact-form-to-database-extension-edit.php';
+        return function_exists('is_plugin_active') && is_plugin_active($editPluginFile);
+    }
+
+
+    public function addAdminNotices() {
+        if (!$this->isEditorActive()) {
+            return;
+        }
+        $requiredEditorVersion = '1.2.2';
+        $editorData = $this->getEditorPluginData();
+        if (isset($editorData['Version'])) {
+            if (version_compare($editorData['Version'], $requiredEditorVersion) == -1) {
+                ?>
+                <div id="message" class="error">Plugin <strong>Contact Form to DB Extension Edit</strong> should be updated.
+                    <a target="_cfdbeditupgrade" href="http://cfdbplugin.com/?page_id=939">Get the upgrade</a><br/>
+                    Current version: <?php echo $editorData['Version']; ?>, Needed version: <?php echo $requiredEditorVersion; ?>
+                </div>
+            <?php
+            }
+        }
+    }
+
+    /**
+     * @return array of form names that have data in the DB
+     */
+    public function getForms() {
+        global $wpdb;
+        $forms = array();
+        $tableName = $this->getSubmitsTableName();
+        $formsFromQuery = $wpdb->get_results("select distinct `form_name` from `$tableName` order by `form_name`");
+        foreach ($formsFromQuery as $aRow) {
+            $forms[] = $aRow->form_name;
+        }
+        return $forms;
+    }
 
 }

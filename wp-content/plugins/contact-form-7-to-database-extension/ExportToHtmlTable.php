@@ -1,6 +1,6 @@
 <?php
 /*
-    "Contact Form to Database" Copyright (C) 2011-2012 Michael Simpson  (email : michael.d.simpson@gmail.com)
+    "Contact Form to Database" Copyright (C) 2011-2013 Michael Simpson  (email : michael.d.simpson@gmail.com)
 
     This file is part of Contact Form to Database.
 
@@ -47,6 +47,7 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
 
         $canDelete = false;
         $useDT = false;
+        $editMode = false;
         $printScripts = false;
         $printStyles = false;
 
@@ -62,6 +63,9 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
                 if (isset($options['printStyles'])) {
                     $printStyles = $options['printStyles'];
                 }
+                if (isset($options['edit'])) {
+                    $editMode = 'true' == $options['edit'];
+                }
             }
 
             if (isset($options['canDelete'])) {
@@ -73,6 +77,9 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
         if (!$this->isAuthorized()) {
             $this->assertSecurityErrorMessage();
             return;
+        }
+        if ($editMode && !$this->plugin->canUserDoRoleOption('CanChangeSubmitData')) {
+            $editMode = false;
         }
 
         // Headers
@@ -108,19 +115,27 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
         $this->setDataIterator($formName, $submitTimeKeyName);
 
         if ($useDT) {
-            $dtJsOptions = isset($options['dt_options']) ? $options['dt_options'] : false;
-            if (!$dtJsOptions) {
-                $dtJsOptions = '"bJQueryUI": true, "aaSorting": []';
-                $i18nUrl = $this->plugin->getDataTableTranslationUrl();
-                if ($i18nUrl) {
-                    $dtJsOptions = $dtJsOptions . ", \"oLanguage\": { \"sUrl\":  \"$i18nUrl\" }";
+            $dtJsOptions = isset($options['dt_options']) ?
+                    $options['dt_options'] :
+                    '"bJQueryUI": true, "aaSorting": [], "iDisplayLength": -1, "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "' . __('All', 'contact-form-7-to-database-extension') . '"]]';
+            $i18nUrl = $this->plugin->getDataTableTranslationUrl();
+            if ($i18nUrl) {
+                if (!empty($dtJsOptions)) {
+                    $dtJsOptions .= ',';
                 }
+                $dtJsOptions .=  " \"oLanguage\": { \"sUrl\":  \"$i18nUrl\" }";
             }
+            $dtJsOptions = stripslashes($dtJsOptions); // unescape single quotes when posted via URL
             ?>
             <script type="text/javascript" language="Javascript">
                 jQuery(document).ready(function() {
                     jQuery('#<?php echo $this->htmlTableId ?>').dataTable({
-                        <?php echo $dtJsOptions ?> })
+                        <?php
+                            echo $dtJsOptions;
+                            if ($editMode) {
+                                do_action_ref_array('cfdb_edit_fnDrawCallbackJsonForSC', array($this->htmlTableId));
+                            }
+                        ?> })
                 });
             </script>
             <?php
@@ -186,14 +201,26 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
             ?>
             <tr>
             <?php if ($canDelete) { ?>
-            <th>
+            <th id="delete_th">
                 <button id="delete" name="delete" onclick="this.form.submit()"><?php _e('Delete', 'contact-form-7-to-database-extension')?></button>
+                <input type="checkbox" id="selectall"/>
+                <script type="text/javascript">
+                    jQuery(document).ready(function() {
+                        jQuery('#selectall').click(function() {
+                            jQuery('#<?php echo $this->htmlTableId ?>').find('input[id^="delete_"]').attr('checked', this.checked);
+                        });
+                    });
+                </script>
             </th>
             <?php
 
             }
             foreach ($this->dataIterator->displayColumns as $aCol) {
-                printf('<th title="%s"><div id="%s,%s">%s</div></th>', $aCol, $formName, $aCol, $aCol);
+                $colDisplayValue = $aCol;
+                if ($this->headers && isset($this->headers[$aCol])) {
+                    $colDisplayValue = $this->headers[$aCol];
+                }
+                printf('<th title="%s"><div id="%s,%s">%s</div></th>', $colDisplayValue, $formName, $aCol, $colDisplayValue);
             }
             ?>
             </tr>
@@ -210,7 +237,7 @@ class ExportToHtmlTable extends ExportBase implements CFDBExport {
                 <tr>
                 <?php if ($canDelete) { // Put in the delete checkbox ?>
                     <td align="center">
-                        <input type="checkbox" name="<?php echo $submitKey ?>" value="row"/>
+                        <input type="checkbox" id="delete_<?php echo $submitKey ?>" name="<?php echo $submitKey ?>" value="row"/>
                     </td>
                 <?php
 
