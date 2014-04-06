@@ -9,7 +9,7 @@ RewriteRule ^(.*)$                      http://%{HTTP_HOST} [R=302,L]
 
 #Under maintenance - Send anybody to maintenance site
 #RewriteCond %{REQUEST_FILENAME}        !^.*maintenance\/.*$
-#RewriteCond %{REMOTE_ADDR}             !^91\.112\.117\.34$
+#RewriteCond %{REMOTE_ADDR}             !^194\.208\.180\.31$
 #RewriteRule ^(.*)$                     http://%{HTTP_HOST}/maintenance/maintenance.html [R=302,L]
 
 RewriteBase /

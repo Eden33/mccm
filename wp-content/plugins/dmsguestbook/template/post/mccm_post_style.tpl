@@ -44,8 +44,10 @@ Edit these variables on DMSGuestbook admin panel
 					<div class='css_post_header4'>$displaydate $slash $show_ip</div></td>
 					<td style='width:1px;'></td>
 					<!-- url & email -->
+					<!--
 					<td class='css_post_header2'>$show_url</td>
 					<td class='css_post_header3'>$show_email</td>
+					-->
 				</tr>
 			</table>
 			<!-- separator -->

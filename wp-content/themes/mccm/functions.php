@@ -21,7 +21,7 @@ function wp_head_event() {
 add_action('wp_head', 'wp_head_event');
 
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
-$_registration_start_date = new DateTime('2013-05-01 00:00');
+$_registration_start_date = new DateTime('2014-05-01 00:00');
 $_registration_ctr_enabled = false;
 
 function get_registration_counter() {
