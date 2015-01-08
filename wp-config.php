@@ -20,6 +20,8 @@ define('DB_USER', '***REMOVED***');
 define('DB_PASSWORD', '***REMOVED***');
 define('DB_HOST', 'localhost');
 
+//***REMOVED***
+//***REMOVED***
 /*
 define('DB_NAME', '***REMOVED***');
 define('DB_USER', '***REMOVED***');
