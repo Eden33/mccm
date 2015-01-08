@@ -29,11 +29,16 @@ class M_NextGen_Admin extends C_Base_Module
 		C_Photocrati_Installer::add_handler($this->module_id, 'C_NextGen_Admin_Installer');
 
 		include_once('class.nextgen_admin_option_handler.php');
-		C_NextGen_Settings::add_option_handler('C_NextGen_Admin_Option_Handler', array(
+		C_NextGen_Settings::get_instance()->add_option_handler('C_NextGen_Admin_Option_Handler', array(
 			'jquery_ui_theme',
 			'jquery_ui_theme_version',
 			'jquery_ui_theme_url'
 		));
+        if (is_multisite()) C_NextGen_Global_Settings::get_instance()->add_option_handler('C_NextGen_Admin_Option_Handler', array(
+            'jquery_ui_theme',
+            'jquery_ui_theme_version',
+            'jquery_ui_theme_url'
+        ));
 	}
 
 	/**
@@ -96,6 +101,11 @@ class M_NextGen_Admin extends C_Base_Module
 
 		// Provides menu options for managing NextGEN Settings
 		add_action('admin_menu', array(&$this, 'add_menu_pages'), 999);
+		
+		$notices = C_Admin_Notification_Manager::get_instance();
+		add_action('init', array($notices, 'serve_ajax_request'));
+		add_action('admin_footer', array($notices, 'enqueue_scripts'));
+		add_action('all_admin_notices', array($notices, 'render'));
 	}
 
     function register_scripts()
@@ -107,6 +117,11 @@ class M_NextGen_Admin extends C_Base_Module
         wp_register_style('ngg_progressbar', $router->get_static_url('photocrati-nextgen_admin#ngg_progressbar.css'), array('gritter'));
         wp_register_style('select2', $router->get_static_url('photocrati-nextgen_admin#select2/select2.css'));
         wp_register_script('select2', $router->get_static_url('photocrati-nextgen_admin#select2/select2.modded.js'));
+        wp_register_script(
+            'jquery.nextgen_radio_toggle',
+            $router->get_static_url('photocrati-nextgen_admin#jquery.nextgen_radio_toggle.js'),
+            array('jquery')
+        );
 
         if (preg_match("#/wp-admin/post(-new)?.php#", $_SERVER['REQUEST_URI']))
         {
@@ -140,7 +155,8 @@ class M_NextGen_Admin extends C_Base_Module
             'I_Form_Manager' => 'interface.form_manager.php',
             'I_Nextgen_Admin_Page' => 'interface.nextgen_admin_page.php',
             'I_Nextgen_Settings' => 'interface.nextgen_settings.php',
-            'I_Page_Manager' => 'interface.page_manager.php'
+            'I_Page_Manager' => 'interface.page_manager.php',
+            'C_Admin_Notification_Manager'  =>  'class.admin_notification_manager.php'
         );
     }
 }

@@ -7,7 +7,7 @@ class C_Attach_Controller extends C_NextGen_Admin_Page_Controller
 	var    $_marked_scripts;
 	var 	 $_is_rendering;
 
-	static function &get_instance($context)
+	static function &get_instance($context='all')
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();
@@ -87,7 +87,7 @@ class Mixin_Attach_To_Post extends Mixin
 {
 	function _load_displayed_gallery()
 	{
-		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		$mapper = C_Displayed_Gallery_Mapper::get_instance();
 		if (!($this->object->_displayed_gallery = $mapper->find($this->object->param('id'), TRUE))) {
 			$this->object->_displayed_gallery = $mapper->create();
 		}
@@ -101,6 +101,7 @@ class Mixin_Attach_To_Post extends Mixin
 	function enqueue_backend_resources()
 	{
 		$this->call_parent('enqueue_backend_resources');
+
         // Enqueue frame event publishing
 		wp_enqueue_script('frame_event_publisher');
 		$this->object->mark_script('frame_event_publisher');
@@ -245,7 +246,7 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function _get_page_title()
 	{
-		return _('NextGEN Gallery - Attach To Post');
+		return __('NextGEN Gallery - Attach To Post', 'nggallery');
 	}
 
 
@@ -263,35 +264,35 @@ class Mixin_Attach_To_Post extends Mixin
         if ($sec_actor->is_allowed('NextGEN Manage gallery')) {
             $retval['displayed_tab']    = array(
                 'content'   => $this->object->_render_display_tab(),
-                'title'     => _('Display Galleries')
+                'title'     => __('Display Galleries', 'nggallery')
             );
         }
 
         if ($sec_actor->is_allowed('NextGEN Upload images')) {
             $retval['create_tab']       = array(
                 'content'   =>  $this->object->_render_create_tab(),
-                'title'     =>  _('Add Gallery / Images')
+                'title'     =>  __('Add Gallery / Images', 'nggallery')
             );
         }
 
         if ($sec_actor->is_allowed('NextGEN Manage others gallery') && $sec_actor->is_allowed('NextGEN Manage gallery')) {
             $retval['galleries_tab']    = array(
                 'content'   =>  $this->object->_render_galleries_tab(),
-                'title'     =>  _('Manage Galleries')
+                'title'     =>  __('Manage Galleries', 'nggallery')
             );
         }
 
         if ($sec_actor->is_allowed('NextGEN Edit album')) {
             $retval['albums_tab']       = array(
                 'content'   =>  $this->object->_render_albums_tab(),
-                'title'     =>  _('Manage Albums')
+                'title'     =>  __('Manage Albums', 'nggallery')
             );
         }
 
         if ($sec_actor->is_allowed('NextGEN Manage tags')) {
             $retval['tags_tab']         = array(
                 'content'   =>  $this->object->_render_tags_tab(),
-                'title'     =>  _('Manage Tags')
+                'title'     =>  __('Manage Tags', 'nggallery')
             );
         }
 

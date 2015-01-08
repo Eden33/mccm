@@ -46,8 +46,16 @@ class C_NextGen_Shortcode_Manager
 	 */
 	private function __construct()
 	{
-		add_filter('the_content', array(&$this, 'deactivate_all'), -(PHP_INT_MAX-1));
-		add_filter('the_content', array(&$this, 'parse_content'), PHP_INT_MAX-1);
+        // For theme & plugin compatibility and to prevent the output of our shortcodes from being
+        // altered we disable our shortcodes at the beginning of the_content and enable them at the end
+        // however a bug in Wordpress (see comments in deactivate_all() below) causes another issue
+        // of compatibility causing our shortcodes to not be registered at the time the_content is run.
+        // This disables that at the risk that themes may alter our HTML output in an attempt to sanitize it.
+        if (defined('NGG_DISABLE_FILTER_THE_CONTENT') && NGG_DISABLE_FILTER_THE_CONTENT)
+            return;
+
+        add_filter('the_content', array(&$this, 'deactivate_all'), -(PHP_INT_MAX-1));
+        add_filter('the_content', array(&$this, 'parse_content'), PHP_INT_MAX-1);
 	}
 
 	/**
@@ -55,25 +63,25 @@ class C_NextGen_Shortcode_Manager
 	 */
 	function deactivate_all($content)
 	{
-        // There is a bug in Wordpress itself: when a hook recurses any hooks meant to execute after it are discarded.
-        // For example the following code, despite expectations, will NOT display 'bar' as bar() is never executed.
-        // See https://core.trac.wordpress.org/ticket/17817 for more information.
-        /* function foo() {
-         *     remove_action('foo', 'foo');
-         * }
-         * function bar() {
-         *     echo('bar');
-         * }
-         * add_action('foo', 'foo');
-         * add_action('foo', 'bar');
-         * do_action('foo');
-         */
-        $this->_runlevel += 1;
-        if ($this->_runlevel > 1 && defined('WP_DEBUG') && WP_DEBUG && !is_admin() && !$this->_has_warned)
-        {
-            $this->_has_warned = TRUE;
-            error_log('Sorry, but recursing filters on "the_content" breaks NextGEN Gallery. Please see https://core.trac.wordpress.org/ticket/17817');
-        }
+		// There is a bug in Wordpress itself: when a hook recurses any hooks meant to execute after it are discarded.
+		// For example the following code, despite expectations, will NOT display 'bar' as bar() is never executed.
+		// See https://core.trac.wordpress.org/ticket/17817 for more information.
+		/* function foo() {
+		 *     remove_action('foo', 'foo');
+		 * }
+		 * function bar() {
+		 *     echo('bar');
+		 * }
+		 * add_action('foo', 'foo');
+		 * add_action('foo', 'bar');
+		 * do_action('foo');
+		 */
+		$this->_runlevel += 1;
+		if ($this->_runlevel > 1 && defined('WP_DEBUG') && WP_DEBUG && !is_admin() && !$this->_has_warned)
+		{
+			$this->_has_warned = TRUE;
+			error_log('Sorry, but recursing filters on "the_content" breaks NextGEN Gallery. Please see https://core.trac.wordpress.org/ticket/17817 and NGG_DISABLE_FILTER_THE_CONTENT');
+		}
 
 		foreach (array_keys($this->_shortcodes) as $shortcode) {
 			$this->deactivate($shortcode);
@@ -125,7 +133,7 @@ class C_NextGen_Shortcode_Manager
 	function activate($shortcode)
 	{
 		if (isset($this->_shortcodes[$shortcode])) {
-			add_shortcode($shortcode, $this->_shortcodes[$shortcode]);
+			add_shortcode($shortcode, array(&$this, "{$shortcode}__callback"));
 		}
 	}
 
@@ -147,5 +155,38 @@ class C_NextGen_Shortcode_Manager
 	{
 		if (isset($this->_shortcodes[$shortcode]))
 			remove_shortcode($shortcode);
+	}
+
+	function __call($method, $params)
+	{
+		$retval = NULL;
+
+		if (strpos($method, '__callback') !== FALSE) {
+			$parts = explode('__callback', $method);
+			$shortcode = $parts[0];
+			$inner_content = isset($params[1]) ? $params[1] : '';
+			$params = isset($params[0]) ? $params[0] : array();
+			$retval = $this->callback_wrapper($shortcode, $params, $inner_content);
+		}
+
+		return $retval;
+	}
+
+	function callback_wrapper($shortcode, $params, $inner_content)
+	{
+		$retval = '';
+
+		if (is_array($params))
+		{
+			foreach ($params as $key => &$val) {
+				$val = preg_replace("/^(&[^;]+;)?(.*)/", '\2', $val);
+				$val = preg_replace("/(&[^;]+;)?$/", '', $val);
+			}
+		}
+
+		if (isset($this->_shortcodes[$shortcode]))
+			$retval = call_user_func($this->_shortcodes[$shortcode], $params, $inner_content);
+
+		return $retval;
 	}
 }
