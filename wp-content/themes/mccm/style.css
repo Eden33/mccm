@@ -15,7 +15,7 @@ Version: 1.0.6
 .hentry { padding: 0px !important; }
 .entry-title { font-size: 30px !important; line-height: 30px !important; }
 .entry-content { font-size: 95% !important; }
-.entry-content img { max-width: 900px !important; } /* @see detected render bugs */
+.entry-content img { max-width: 98% !important; }
 #page { margin: 0em auto !important }
 
 input[type=text], input[type=password], textarea { background: #685A5A !important; border: 1px solid #111810 !important; color:#FFFAFA !important; }
