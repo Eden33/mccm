@@ -24,7 +24,7 @@
 
 			<div id="mccm-site-generator">
 				<ul>
-					<li>&copy; 2014 MCCM&nbsp;&nbsp;&nbsp;&nbsp;|</li>
+					<li>&copy; <?= date("Y"); ?> MCCM&nbsp;&nbsp;&nbsp;&nbsp;|</li>
 					<li>Schillerstraße 4, 6800 Feldkirch&nbsp;&nbsp;&nbsp;&nbsp;|</li>
 					<li>Tel +43 5522 79259&nbsp;&nbsp;&nbsp;&nbsp;|</li>
 					<li>Fax +43 5522 31737&nbsp;&nbsp;&nbsp;&nbsp;|</li>
