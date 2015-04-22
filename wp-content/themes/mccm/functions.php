@@ -6,10 +6,25 @@ $the_market_page_id = 49;
 function wp_head_event() {
 	global $the_guestbook_page_id;
 	global $the_market_page_id;
-	
+        global $_registration_ctr_enabled;
+        global $_registration_start_date;
+        $stylesheet_directory_uri = get_stylesheet_directory_uri();
+        
+        if( $_registration_ctr_enabled) {
+?>
+        <script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/countdown.min.js"></script>
+        <script type="text/javascript">
+            var registrationStartDate = '<?= $_registration_start_date->format("Y/m/d H:i") ?> UTC';
+            function register() {
+                window.location.href = "<?= get_bloginfo('url') ?>/rennen/rennfahreranmeldung";
+            }
+        </script> 
+        <script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/countdown-init.js"></script>
+<?php
+        }
 	if(  is_page('rennergebnisse') || is_page($the_guestbook_page_id) || is_page($the_market_page_id)) {
 ?>
-	<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/js/jQuery-extends.js"></script>
+	<script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/jQuery-extends.js"></script>
 <?php
 	}
 }
@@ -21,57 +36,14 @@ function wp_head_event() {
 add_action('wp_head', 'wp_head_event');
 
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
-$_registration_start_date = new DateTime('2014-05-01 00:00');
-$_registration_ctr_enabled = false;
-
-function get_registration_counter() {
-	global $_registration_ctr_enabled;
-	global $_registration_start_date;
-	if( $_registration_ctr_enabled === true ) {
-		$height = 35;
-		$width = 250;
-		return '<script type="text/javascript" src="'.get_stylesheet_directory_uri().'/js/swfobject.js"></script>
-		<script type="text/javascript">
-		
-				var flashvars = {
-					registrationStartDate: "'.$_registration_start_date->format("Y/m/d H:i").'"
-				};
-				
-	            // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
-	            var swfVersionStr = "9.0.124";
-	            // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
-	            //var xiSwfUrlStr = "playerProductInstall.swf";
-	            var xiSwfUrlStr = "";
-	            var params = {};
-	            params.quality = "high";
-	            params.bgcolor = "#00FF00";
-	            params.allowscriptaccess = "always";
-	            params.allowfullscreen = "true";
-	            params.wmode = "transparent";
-	            var attributes = {};
-	            attributes.id = "mccm_countdown";
-	            attributes.name = "mccm_countdown";
-	            attributes.align = "middle";
-	            swfobject.embedSWF(
-	                "'.get_stylesheet_directory_uri().'/flash/mccm_countdown.swf", "reg-counter-span", 
-	                "'.$width.'", "'.$height.'", 
-	                swfVersionStr, xiSwfUrlStr, 
-	                flashvars, params, attributes);
-	            // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
-	            // swfobject.createCSS("#reg-counter-div", "position: absolute;right: 2%; top: 290px;");
-	            
-	            function register() {
-		        	window.location.href = "'.get_bloginfo('url').'/rennen/rennfahreranmeldung";
-				}
-	        </script>
-	        <div style="min-width:'.$width.'px ; min-height='.$height.'px;">
-	         	<span id="reg-counter-span"></span>	
-	        </div>';
-	}
-}
+// russmedia server setting is UTC
+// to enable registration at UTC+1 (Austria) you have to set 23:00 as 
+// hour and minute configuration
+$_registration_start_date = new DateTime('2015-05-01 23:00');
+$_registration_ctr_enabled = true;
 
 function head_menu_inject_registration_countdown($items) {
-	return $items.'<li>'.get_registration_counter().'</li>';
+	return $items.'<li id="counter-li"></li>';
 }
 
 add_filter('wp_nav_menu_items', 'head_menu_inject_registration_countdown');

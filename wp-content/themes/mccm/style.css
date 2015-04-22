@@ -55,7 +55,9 @@ visibility:hidden;
 /* End hide from IE Mac */
  
 /* registration flash counter */
-#reg-counter-div { display: none; }
+#counter-li { color: #eee; line-height: 3.333em; }
+#counter-li span { padding-left: 1.2125em; }
+#counter-li a { color:#FF0B0B; font-weight:bold; }
  
 /* horizontal nav menu */
 #menu-item-933 a { color: #F12525; } /* page Fotos 2012*/
