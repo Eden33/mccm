@@ -41,6 +41,9 @@ add_action('wp_head', 'wp_head_event');
 // hour and minute configuration
 $_registration_start_date = new DateTime('2015-05-01 23:00');
 $_registration_ctr_enabled = true;
+$_registration_ip_whitelist = array(
+    '77.101.135.7'
+);
 
 function head_menu_inject_registration_countdown($items) {
 	return $items.'<li id="counter-li"></li>';
@@ -49,14 +52,13 @@ function head_menu_inject_registration_countdown($items) {
 add_filter('wp_nav_menu_items', 'head_menu_inject_registration_countdown');
 
 function is_registration_enabled() {
-	global $_registration_ctr_enabled;
 	global $_registration_start_date;
+        global $_registration_ip_whitelist;
+        
 	$now = new DateTime("now");
 	//if now is greater or equal startdate then registration is enabled
-	if( $_registration_start_date <= $now 
-			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31'
-			|| $_SERVER['REMOTE_ADDR'] == '194.208.180.31'
-			|| $_SERVER['REMOTE_ADDR'] == '127.0.0.1') {
+	if($_registration_start_date <= $now 
+            || in_array($_SERVER['REMOTE_ADDR'], $_registration_ip_whitelist)) {
 		return true;
 	}
 	return false;
@@ -88,9 +90,16 @@ function filter_the_content( $content ) {
 	|| is_page( 'sam-quad-online-anmeldung' )
 	|| is_page( 'inter-sam-online-anmeldung' )
 	|| is_page( 'sjmcc-meisterschaftslauf-online-anmeldung' ) ) {
-		if( is_registration_enabled() === false )
+		if( is_registration_enabled() === false ) {
 			return "Zur Zeit sind keine Rennanmeldungen m&ouml;glich.";
+                }
 	}
+        if(is_page('rennfahreranmeldung')) {
+            if(is_registration_enabled() === false) {
+                $now = new DateTime('now');
+                return "Rennfahreranmeldungen für ".$now->format('Y')." sind noch nicht m&ouml;glich.";
+            }
+        }
 	return $content;
 }
 
