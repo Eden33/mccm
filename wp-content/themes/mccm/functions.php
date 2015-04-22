@@ -42,7 +42,7 @@ add_action('wp_head', 'wp_head_event');
 $_registration_start_date = new DateTime('2015-05-01 23:00');
 $_registration_ctr_enabled = true;
 $_registration_ip_whitelist = array(
-    '77.101.135.7'
+    '77.101.135.76'
 );
 
 function head_menu_inject_registration_countdown($items) {
