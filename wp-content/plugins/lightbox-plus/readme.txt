@@ -3,8 +3,8 @@ Contributors: dzappone
 Donate link: http://www.23systems.net/plugins/donate/
 Tags: lightbox, photo, photos, image, images, video, ajax, gallery, colorbox, lightview, picture, overlay
 Requires at least: 3.6
-Tested up to: 3.9.1
-Stable tag: 2.7
+Tested up to: 4.1.1
+Stable tag: 2.7.1
 License: GPLv2 and (components under MIT License)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -197,6 +197,13 @@ Note: Some of these conflicts were with very old versions of Lightbox Plus Color
 6. Lightbox Plus Colorbox - Style Examples
 
 == Change Log ==
+
+= 2.7.1 =
+* Validated against WordPress 4.0-4.1.x
+* Fixed minified files not being minified
+* Temporary update prior to release of newly re-written version
+* NOTE: some issue still persist in this version most obvious among them:
+ * Initial setting no set up and must be manually entered and saved before plugin will display lightbox
 
 = 2.7 =
 * Initial release of version 2.7

@@ -6,7 +6,7 @@
     * @author Dan Zappone / 23Systems
     * @version 2.7
     * @$Id: lightbox.admin.php 937945 2014-06-24 17:11:13Z dzappone $
-    * @$URL: http://plugins.svn.wordpress.org/lightbox-plus/tags/2.7/admin/lightbox.admin.php $
+    * @$URL: http://plugins.svn.wordpress.org/lightbox-plus/tags/2.7.1/admin/lightbox.admin.php $
     */
     if ( !empty( $this->lightboxOptions )) { $lightboxPlusOptions = $this->getAdminOptions( $this->lightboxOptionsName ); }
     global $g_lbp_global_style_url;

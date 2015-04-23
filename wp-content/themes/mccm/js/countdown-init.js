@@ -24,10 +24,10 @@ jQuery(function ($) {
               nowDate = new Date();
               timerDate = new Date(ts.start);
               if(nowDate.getTime() >= timerDate.getTime()) {
-                $('#counter-li').html('<a href="#" onclick="javascript:register(); return false;">Das ist nur ein Test: Hier geht es zu den Anmeldungen</a>'); 
+                $('#counter-li').html('<a href="#" onclick="javascript:register(); return false;">Hier geht es zu den Anmeldungen</a>'); 
                 window.clearInterval(timerId);
               } else {
-                $('#counter-li').html('<span>Das ist nur ein Test: ' + ts.toLocaleString() + '</span>');
+                $('#counter-li').html('<span>Rennanmeldungen m&ouml;glich in: ' + ts.toLocaleString() + '</span>');
               }
             },
             countdown.DAYS | countdown.HOURS|countdown.MINUTES|countdown.SECONDS);
