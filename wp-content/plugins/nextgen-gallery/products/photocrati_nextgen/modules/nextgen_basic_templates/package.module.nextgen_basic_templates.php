@@ -74,6 +74,7 @@ class A_NextGen_Basic_Template_Form extends Mixin
         $gallery_map = C_Gallery_Mapper::get_instance();
         $image_key = $image_map->get_primary_key_column();
         $gallery_key = $gallery_map->get_primary_key_column();
+        $gallery_id = $displayed_gallery->id();
         $pid = $this->object->param('pid');
         // because picture_list implements ArrayAccess any array-specific actions must be taken on
         // $picture_list->container or they won't do anything
@@ -119,11 +120,6 @@ class A_NextGen_Basic_Template_Form extends Mixin
         $gallery->title = stripslashes($orig_gallery->title);
         $gallery->description = html_entity_decode(stripslashes($orig_gallery->galdesc));
         $gallery->pageid = $orig_gallery->pageid;
-        if (!empty($displayed_gallery->display_settings['ajax_pagination'])) {
-            $gallery_id = $displayed_gallery->transient_id;
-        } else {
-            $gallery_id = $displayed_gallery->id();
-        }
         $gallery->anchor = 'ngg-gallery-' . $gallery_id . '-' . $current_page;
         $gallery->displayed_gallery =& $displayed_gallery;
         $gallery->columns = @intval($displayed_gallery->display_settings['number_of_columns']);
@@ -157,8 +153,8 @@ class A_NextGen_Basic_Template_Form extends Mixin
     }
     public function enqueue_static_resources()
     {
-        wp_enqueue_style('ngg_template_settings', $this->get_static_url('photocrati-nextgen_basic_templates#ngg_template_settings.css'));
-        wp_enqueue_script('ngg_template_settings', $this->get_static_url('photocrati-nextgen_basic_templates#ngg_template_settings.js'), array('select2'), $this->module_version, TRUE);
+        wp_enqueue_style('ngg_template_settings', $this->get_static_url('photocrati-nextgen_basic_templates#ngg_template_settings.css'), FALSE, NGG_SCRIPT_VERSION);
+        wp_enqueue_script('ngg_template_settings', $this->get_static_url('photocrati-nextgen_basic_templates#ngg_template_settings.js'), array('ngg_select2'), NGG_SCRIPT_VERSION, TRUE);
         wp_localize_script('ngg_template_settings', 'ngg_template_settings', array('placeholder_text' => __('No template selected')));
         $atp = C_Attach_Controller::get_instance();
         if ($atp != null) {
@@ -199,7 +195,7 @@ class Mixin_Legacy_Template_Locator extends Mixin
      */
     public function get_template_directories()
     {
-        return array('Child Theme' => get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR, 'Parent Theme' => get_template_directory() . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR, 'NextGEN' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR);
+        return apply_filters('ngg_legacy_template_directories', array('Child Theme' => get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR, 'Parent Theme' => get_template_directory() . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR, 'NextGEN Legacy' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR, 'NextGEN Overrides' => implode(DIRECTORY_SEPARATOR, array(WP_CONTENT_DIR, 'ngg', 'legacy', 'templates'))));
     }
     /**
      * Returns an array of all available template files

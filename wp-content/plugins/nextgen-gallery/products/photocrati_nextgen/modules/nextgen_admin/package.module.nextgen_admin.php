@@ -155,7 +155,7 @@ class C_Admin_Notification_Manager
     {
         if ($this->has_displayed_notice()) {
             $router = C_Router::get_instance();
-            wp_enqueue_script('ngg_admin_notices', $router->get_static_url('photocrati-nextgen_admin#admin_notices.js'), array(), FALSE, TRUE);
+            wp_enqueue_script('ngg_admin_notices', $router->get_static_url('photocrati-nextgen_admin#admin_notices.js'), FALSE, NGG_SCRIPT_VERSION, TRUE);
             wp_localize_script('ngg_admin_notices', 'ngg_dismiss_url', $this->_dismiss_url);
         }
     }
@@ -315,7 +315,7 @@ class Mixin_Form_Field_Generators extends Mixin
     {
         $hidden = !(isset($display_type->settings['override_thumbnail_settings']) ? $display_type->settings['override_thumbnail_settings'] : FALSE);
         $override_field = $this->_render_radio_field($display_type, 'override_thumbnail_settings', __('Override thumbnail settings', 'nggallery'), isset($display_type->settings['override_thumbnail_settings']) ? $display_type->settings['override_thumbnail_settings'] : FALSE, __('This does not affect existing thumbnails; overriding the thumbnail settings will create an additional set of thumbnails. To change the size of existing thumbnails please visit \'Manage Galleries\' and choose \'Create new thumbnails\' for all images in the gallery.', 'nggallery'));
-        $dimensions_field = $this->object->render_partial('photocrati-nextgen_admin#field_generator/thumbnail_settings', array('display_type_name' => $display_type->name, 'name' => 'thumbnail_dimensions', 'label' => __('Thumbnail dimensions', 'nggallery'), 'thumbnail_width' => isset($display_type->settings['thumbnail_width']) ? $display_type->settings['thumbnail_width'] : 0, 'thumbnail_height' => isset($display_type->settings['thumbnail_height']) ? $display_type->settings['thumbnail_height'] : 0, 'hidden' => $hidden ? 'hidden' : '', 'text' => ''), TRUE);
+        $dimensions_field = $this->object->render_partial('photocrati-nextgen_admin#field_generator/thumbnail_settings', array('display_type_name' => $display_type->name, 'name' => 'thumbnail_dimensions', 'label' => __('Thumbnail dimensions', 'nggallery'), 'thumbnail_width' => isset($display_type->settings['thumbnail_width']) ? intval($display_type->settings['thumbnail_width']) : 0, 'thumbnail_height' => isset($display_type->settings['thumbnail_height']) ? intval($display_type->settings['thumbnail_height']) : 0, 'hidden' => $hidden ? 'hidden' : '', 'text' => ''), TRUE);
         /*
         $qualities = array();
         for ($i = 100; $i > 40; $i -= 5) { $qualities[$i] = "{$i}%"; }
@@ -628,20 +628,20 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
         $this->object->enqueue_jquery_ui_theme();
         wp_enqueue_script('photocrati_ajax');
         wp_enqueue_script('jquery-ui-accordion');
-        wp_enqueue_script('nextgen_display_settings_page_placeholder_stub', $this->get_static_url('photocrati-nextgen_admin#jquery.placeholder.min.js'), array('jquery'), '2.0.7', TRUE);
-        wp_register_script('iris', $this->get_router()->get_url('/wp-admin/js/iris.min.js', FALSE, TRUE), array('jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch'));
-        wp_register_script('wp-color-picker', $this->get_router()->get_url('/wp-admin/js/color-picker.js', FALSE, TRUE), array('iris'));
+        wp_enqueue_script('nextgen_display_settings_page_placeholder_stub', $this->get_static_url('photocrati-nextgen_admin#jquery.placeholder.min.js'), array('jquery'), NGG_SCRIPT_VERSION, TRUE);
+        wp_register_script('iris', $this->get_router()->get_url('/wp-admin/js/iris.min.js', FALSE, TRUE), array('jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch'), NGG_SCRIPT_VERSION);
+        wp_register_script('wp-color-picker', $this->get_router()->get_url('/wp-admin/js/color-picker.js', FALSE, TRUE), array('iris'), NGG_SCRIPT_VERSION);
         wp_localize_script('wp-color-picker', 'wpColorPickerL10n', array('clear' => __('Clear', 'nggallery'), 'defaultString' => __('Default', 'nggallery'), 'pick' => __('Select Color', 'nggallery'), 'current' => __('Current Color', 'nggallery')));
-        wp_enqueue_script('nextgen_admin_page', $this->get_static_url('photocrati-nextgen_admin#nextgen_admin_page.js'), array('wp-color-picker'));
-        wp_enqueue_style('nextgen_admin_page', $this->get_static_url('photocrati-nextgen_admin#nextgen_admin_page.css'), array('wp-color-picker'));
+        wp_enqueue_script('nextgen_admin_page', $this->get_static_url('photocrati-nextgen_admin#nextgen_admin_page.js'), array('wp-color-picker'), NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_admin_page', $this->get_static_url('photocrati-nextgen_admin#nextgen_admin_page.css'), array('wp-color-picker'), NGG_SCRIPT_VERSION);
         // Ensure select2
-        wp_enqueue_style('select2');
-        wp_enqueue_script('select2');
+        wp_enqueue_style('ngg_select2');
+        wp_enqueue_script('ngg_select2');
     }
     public function enqueue_jquery_ui_theme()
     {
         $settings = C_NextGen_Settings::get_instance();
-        wp_enqueue_style($settings->jquery_ui_theme, is_ssl() ? str_replace('http:', 'https:', $settings->jquery_ui_theme_url) : $settings->jquery_ui_theme_url, NULL, $settings->jquery_ui_theme_version);
+        wp_enqueue_style($settings->jquery_ui_theme, is_ssl() ? str_replace('http:', 'https:', $settings->jquery_ui_theme_url) : $settings->jquery_ui_theme_url, FALSE, $settings->jquery_ui_theme_version);
     }
     /**
      * Returns the page title
@@ -710,6 +710,14 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
     {
         return 'photocrati-nextgen_admin#nextgen_admin_page';
     }
+    /**
+     * Returns a list of parameters to include when rendering the view
+     * @return array
+     */
+    public function get_index_params()
+    {
+        return array();
+    }
     public function show_save_button()
     {
         return TRUE;
@@ -736,7 +744,6 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
             if ($this->object->is_post_request() && $this->has_method($action)) {
                 $this->object->{$action}($this->object->param($this->context));
             }
-            // Display and process all forms
             foreach ($this->object->get_forms() as $form) {
                 $form->page = $this->object;
                 $form->enqueue_static_resources();
@@ -756,7 +763,9 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
                 }
             }
             // Render the view
-            $this->render_partial($this->object->index_template(), array('page_heading' => $this->object->get_page_heading(), 'tabs' => $tabs, 'errors' => $errors, 'success' => $success, 'form_header' => $token->get_form_html(), 'show_save_button' => $this->object->show_save_button(), 'model' => $this->object->has_method('get_model') ? $this->get_model() : NULL));
+            $index_params = array('page_heading' => $this->object->get_page_heading(), 'tabs' => $tabs, 'errors' => $errors, 'success' => $success, 'form_header' => $token->get_form_html(), 'show_save_button' => $this->object->show_save_button(), 'model' => $this->object->has_method('get_model') ? $this->get_model() : NULL);
+            $index_params = array_merge($index_params, $this->object->get_index_params());
+            $this->render_partial($this->object->index_template(), $index_params);
         } else {
             $this->render_view('photocrati-nextgen_admin#not_authorized', array('name' => $this->object->name, 'title' => $this->object->get_page_title()));
         }

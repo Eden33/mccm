@@ -45,14 +45,6 @@ class nggdb
     var $paged = false;
 
     /**
-     * PHP4 compatibility layer for calling the PHP5 constructor.
-     *
-     */
-    function nggdb() {
-        return $this->__construct();
-    }
-
-    /**
      * Init the Database Abstraction layer for NextGEN Gallery
      *
      */
@@ -65,7 +57,6 @@ class nggdb
         $this->paged     = array();
 
         register_shutdown_function(array(&$this, '__destruct'));
-
     }
 
     /**
@@ -653,7 +644,7 @@ class nggdb
      * @deprecated
      * @return
      */
-    static function find_last_images($page = 0, $limit = 30, $exclude = true, $galleryId = 0, $orderby = "id") {
+    static function find_last_images($page = 0, $limit = 30, $exclude = true, $galleryId = 0, $orderby = "pid") {
 	    // Determine ordering
 	    $order_field        = $orderby;
 	    $order_direction    = 'DESC';
@@ -683,10 +674,10 @@ class nggdb
 	    if ($offset && $limit) $mapper->limit($limit, $offset);
 
 	    // Add exclusion clause
-	    if ($exclude) $mapper->where(array("exclude = %d"), 1);
+	    if ($exclude) $mapper->where(array("exclude = %d", 0));
 
 	    // Add gallery clause
-	    if ($galleryId) $mapper->where(array("galleryid = %d"), $galleryId);
+	    if ($galleryId) $mapper->where(array("galleryid = %d", $galleryId));
 
 		return $mapper->run_query();
     }
@@ -771,8 +762,9 @@ class nggdb
             return false;
 
         // build the final query
-        $query = "SELECT t.*, tt.* FROM $wpdb->nggallery AS t INNER JOIN $wpdb->nggpictures AS tt ON t.gid = tt.galleryid WHERE 1=1 $search ORDER BY tt.pid ASC $limit_by";
-        $result = $wpdb->get_results($query);
+        $query = "SELECT `tt`.`pid` FROM `{$wpdb->nggallery}` AS `t` INNER JOIN `{$wpdb->nggpictures}` AS `tt` ON `t`.`gid` = `tt`.`galleryid` WHERE 1=1 {$search} ORDER BY `tt`.`pid` ASC {$limit_by}";
+
+        $result = $wpdb->get_col($query);
 
         // TODO: Currently we didn't support a proper pagination
         $this->paged['total_objects'] = $this->paged['objects_per_page'] = intval ( $wpdb->get_var( "SELECT FOUND_ROWS()" ) );
@@ -780,8 +772,10 @@ class nggdb
 
         // Return the object from the query result
         if ($result) {
-            foreach ($result as $image) {
-                $images[] = new nggImage( $image );
+            $images = array();
+            $mapper = C_Image_Mapper::get_instance();
+            foreach ($result as $image_id) {
+                $images[] = $mapper->find($image_id);
             }
             return $images;
         }
@@ -955,7 +949,7 @@ class nggdb
         $query = array();
         $query[] = "SELECT {$field}, SUBSTR({$field}, %d) AS 'i' FROM {$table}";
         $query[] = "WHERE ({$field} LIKE '{$slug}-%%' AND CONVERT(SUBSTR({$field}, %d), SIGNED) BETWEEN 1 AND %d) OR {$field} = %s";
-        $query[] = "ORDER BY i DESC LIMIT 1";
+        $query[] = "ORDER BY CAST(i AS SIGNED INTEGER) DESC LIMIT 1";
         $query = $wpdb->prepare(implode(" ", $query), strlen("{$slug}-")+1, strlen("{$slug}-")+1, PHP_INT_MAX, $slug);
 
         // If the above query returns a result, it means that the slug is already taken

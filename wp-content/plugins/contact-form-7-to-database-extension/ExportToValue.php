@@ -25,6 +25,11 @@ require_once('CFDBShortCodeContentParser.php');
 
 class ExportToValue extends ExportBase implements CFDBExport {
 
+    /**
+     * @param string $formName
+     * @param null $options
+     * @return void|String
+     */
     public function export($formName, $options = null) {
 
         // Allow for multiple form name inputs, comma-delimited
@@ -79,6 +84,7 @@ class ExportToValue extends ExportBase implements CFDBExport {
 
         // Get the data
         $this->setDataIterator($formName);
+        //$this->clearAllOutputBuffers();
 
         // count function or coming from cfdb-count shortcode
         if (count($this->showColumns) == 0 &&

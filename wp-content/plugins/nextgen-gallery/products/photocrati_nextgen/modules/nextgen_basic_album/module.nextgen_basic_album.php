@@ -53,8 +53,8 @@ class M_NextGen_Basic_Album extends C_Base_Module
 			'A_NextGen_Basic_Album'
 		);
 
-
-        if (!is_admin()) {
+        if (apply_filters('ngg_load_frontend_logic', TRUE, $this->module_id))
+        {
             // Add a controller for displaying albums on the front-end
             $this->get_registry()->add_adapter(
                 'I_Display_Type_Controller',
@@ -71,6 +71,8 @@ class M_NextGen_Basic_Album extends C_Base_Module
                 'I_Displayed_Gallery_Renderer',
                 'A_NextGen_Basic_Album_Routes'
             );
+
+            $this->get_registry()->add_adapter('I_MVC_View', 'A_NextGen_Album_Breadcrumbs');
         }
 
 
@@ -104,13 +106,30 @@ class M_NextGen_Basic_Album extends C_Base_Module
 
 	function _register_hooks()
 	{
-        if (!is_admin()) {
-            if (!defined('NGG_DISABLE_LEGACY_SHORTCODES') || !NGG_DISABLE_LEGACY_SHORTCODES) {
-                C_NextGen_Shortcode_Manager::add('album', array(&$this, 'ngglegacy_shortcode'));
-                C_NextGen_Shortcode_Manager::add('nggalbum', array(&$this, 'ngglegacy_shortcode'));
-            }
+        if (apply_filters('ngg_load_frontend_logic', TRUE, $this->module_id)
+        && (!defined('NGG_DISABLE_LEGACY_SHORTCODES') || !NGG_DISABLE_LEGACY_SHORTCODES))
+        {
+            C_NextGen_Shortcode_Manager::add('album', array(&$this, 'ngglegacy_shortcode'));
+            C_NextGen_Shortcode_Manager::add('nggalbum', array(&$this, 'ngglegacy_shortcode'));
         }
-	}
+
+        add_filter('ngg_atp_show_display_type', array($this, 'atp_show_basic_albums'), 10, 2);
+    }
+
+    /**
+     * ATP filters display types by not displaying those whose name attribute isn't an active POPE module. This
+     * is a workaround/hack to compensate for basic albums sharing a module.
+     *
+     * @param bool $available
+     * @param C_Display_Type $display_type
+     * @return bool
+     */
+    function atp_show_basic_albums($available, $display_type)
+    {
+        if (in_array($display_type->name, array(NGG_BASIC_COMPACT_ALBUM, NGG_BASIC_EXTENDED_ALBUM)))
+            $available = TRUE;
+        return $available;
+    }
 
     /**
      * Gets a value from the parameter array, and if not available, uses the default value
@@ -146,6 +165,7 @@ class M_NextGen_Basic_Album extends C_Base_Module
     function get_type_list()
     {
         return array(
+            'A_NextGen_Album_Breadcrumbs' => 'adapter.nextgen_album_breadcrumbs.php',
             'A_Nextgen_Basic_Album' => 'adapter.nextgen_basic_album.php',
             'A_Nextgen_Basic_Album_Controller' => 'adapter.nextgen_basic_album_controller.php',
             'A_Nextgen_Basic_Album_Mapper' => 'adapter.nextgen_basic_album_mapper.php',

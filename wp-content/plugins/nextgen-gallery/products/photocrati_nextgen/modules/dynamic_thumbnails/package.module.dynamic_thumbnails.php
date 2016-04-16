@@ -173,7 +173,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
     {
         $params = $this->object->_get_params_sanitized($params);
         $image = isset($params['image']) ? $params['image'] : null;
-        $image_id = is_scalar($image) ? (int) $image : $image->pid;
+        $image_id = is_scalar($image) || is_null($image) ? (int) $image : $image->pid;
         $image_width = isset($params['width']) ? $params['width'] : null;
         $image_height = isset($params['height']) ? $params['height'] : null;
         $image_quality = isset($params['quality']) ? $params['quality'] : null;
@@ -183,7 +183,6 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
         $image_rotation = isset($params['rotation']) ? $params['rotation'] : null;
         $image_flip = isset($params['flip']) ? $params['flip'] : null;
         $image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
-        $router = C_Router::get_instance();
         $uri = null;
         $uri .= '/';
         $uri .= $this->object->get_route_name() . '/';
@@ -225,8 +224,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
     }
     public function get_image_url($image, $params)
     {
-        $router = C_Router::get_instance();
-        return $router->get_url($this->object->get_image_uri($image, $params), FALSE);
+        return C_Router::get_instance()->get_url($this->object->get_image_uri($image, $params), FALSE, 'root');
     }
     public function get_params_from_uri($uri)
     {

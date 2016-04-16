@@ -76,7 +76,7 @@ class CF7DBOptionsManager {
      * Cleanup: remove all options from the DB
      * @return void
      */
-    protected function deleteSavedOptions() {
+    public function deleteSavedOptions() {
         $optionMetaData = $this->getOptionMetaData();
         if (is_array($optionMetaData)) {
             foreach ($optionMetaData as $aOptionKey => $aOptionMeta) {
@@ -114,7 +114,7 @@ class CF7DBOptionsManager {
      * @param  $name string
      * @return string $optionName without the prefix.
      */
-    public function &unPrefix($name) {
+    public function unPrefix($name) {
         $optionNamePrefix = $this->getOptionNamePrefix();
         if (strpos($name, $optionNamePrefix) === 0) {
             return substr($name, strlen($optionNamePrefix));
@@ -127,14 +127,19 @@ class CF7DBOptionsManager {
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
      * @param $optionName string defined in settings.php and set as keys of $this->optionMetaData
      * @param $default string default value to return if the option is not set
+     * @param $saveDefault boolean indicates whether to save the default value if no value was found.
+     * this helps prevents calls to the DB b/c the option does not exist and so cannot be cached by WP
      * @return string the value from delegated call to get_option(), or optional default value
      * if option is not set.
      */
-    public function getOption($optionName, $default = null) {
+    public function getOption($optionName, $default = null, $saveDefault = false) {
         $prefixedOptionName = $this->prefix($optionName); // how it is stored in DB
         $retVal = get_option($prefixedOptionName);
         if (!$retVal && $default) {
             $retVal = $default;
+            if ($saveDefault) {
+                add_option($prefixedOptionName, $default);
+            }
         }
         return $retVal;
     }
@@ -155,7 +160,7 @@ class CF7DBOptionsManager {
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
      * @param  $optionName string defined in settings.php and set as keys of $this->optionMetaData
      * @param  $value mixed the new value
-     * @return null from delegated call to delete_option()
+     * @return bool from delegated call to add_option()
      */
     public function addOption($optionName, $value) {
         $prefixedOptionName = $this->prefix($optionName); // how it is stored in DB
@@ -163,11 +168,11 @@ class CF7DBOptionsManager {
     }
 
     /**
-     * A wrapper function delegating to WP add_option() but it prefixes the input $optionName
+     * A wrapper function delegating to WP update_option() but it prefixes the input $optionName
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
      * @param  $optionName string defined in settings.php and set as keys of $this->optionMetaData
      * @param  $value mixed the new value
-     * @return null from delegated call to delete_option()
+     * @return bool from delegated call to update_option()
      */
     public function updateOption($optionName, $value) {
         $prefixedOptionName = $this->prefix($optionName); // how it is stored in DB
@@ -198,7 +203,7 @@ class CF7DBOptionsManager {
      * @param  $roleName
      * @return string a WP capability or '' if unknown input role
      */
-    protected function roleToCapability($roleName) {
+    public function roleToCapability($roleName) {
         switch ($roleName) {
             case 'Super Admin':
                 return 'manage_options';
@@ -295,27 +300,43 @@ class CF7DBOptionsManager {
         // HTML for the page
         $settingsGroup = get_class($this) . '-settings-group';
         ?>
+            <style type="text/css">
+                table.cfdb-options-table {width: 100%}
+                table.cfdb-options-table tr:nth-child(even) {background: #f9f9f9}
+                table.cfdb-options-table tr:nth-child(odd) {background: #FFF}
+                table.cfdb-options-table td {width: 350px}
+                table.cfdb-options-table td+td {width: auto}
+            </style>
         <div class="wrap">
-            <h2><?php _e('System Settings', 'contact-form-7-to-database-extension'); ?></h2>
-            <table class="form-table"><tbody>
-            <tr><td><?php _e('System', 'contact-form-7-to-database-extension'); ?></td><td><?php echo php_uname(); ?></td></tr>
-            <tr><td><?php _e('PHP Version', 'contact-form-7-to-database-extension'); ?></td>
+            <h2><?php echo htmlspecialchars(__('System Settings', 'contact-form-7-to-database-extension')); ?></h2>
+            <table><tbody>
+                <?php
+                if (function_exists('php_uname')) {
+                    try { ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars(__('System', 'contact-form-7-to-database-extension')); ?></td>
+                            <td><?php echo php_uname(); ?></td>
+                        </tr>
+                    <?php
+                    } catch (Exception $ex) {}
+                }?>
+            <tr><td><?php echo htmlspecialchars(__('PHP Version', 'contact-form-7-to-database-extension')); ?></td>
                 <td><?php echo phpversion(); ?>
                 <?php
                 if (version_compare('5.2', phpversion()) > 0) {
                     echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
-                    _e('(WARNING: This plugin may not work properly with versions earlier than PHP 5.2)', 'contact-form-7-to-database-extension');
+                    echo htmlspecialchars(__('(WARNING: This plugin may not work properly with versions earlier than PHP 5.2)', 'contact-form-7-to-database-extension'));
                     echo '</span>';
                 }
                 ?>
                 </td>
             </tr>
-            <tr><td><?php _e('MySQL Version', 'contact-form-7-to-database-extension'); ?></td>
+            <tr><td><?php echo htmlspecialchars(__('MySQL Version', 'contact-form-7-to-database-extension')); ?></td>
                 <td><?php echo $this->getMySqlVersion() ?>
                     <?php
                     echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
                     if (version_compare('5.0', $this->getMySqlVersion()) > 0) {
-                        _e('(WARNING: This plugin may not work properly with versions earlier than MySQL 5.0)', 'contact-form-7-to-database-extension');
+                        echo htmlspecialchars(__('(WARNING: This plugin may not work properly with versions earlier than MySQL 5.0)', 'contact-form-7-to-database-extension'));
                     }
                     echo '</span>';
                     ?>
@@ -324,11 +345,11 @@ class CF7DBOptionsManager {
             </tbody></table>
 
             <h2><img src="<?php echo $this->getPluginFileUrl('img/icon-50x50.png') ?>" alt=""/>
-                <?php _e('Settings', 'contact-form-7-to-database-extension'); ?></h2>
+                <?php echo htmlspecialchars(__('Settings', 'contact-form-7-to-database-extension')); ?></h2>
 
             <form method="post" action="">
             <?php settings_fields($settingsGroup); ?>
-                <table class="form-table"><tbody>
+                <table class="cfdb-options-table"><tbody>
                 <?php
         if ($optionMetaData != null) {
                     foreach ($optionMetaData as $aOptionKey => $aOptionMeta) {
@@ -336,7 +357,7 @@ class CF7DBOptionsManager {
                         $displayText = __($displayText, 'contact-form-7-to-database-extension');
                         ?>
                             <tr valign="top">
-                                <th scope="row"><p><label for="<?php echo $aOptionKey ?>"><?php echo $displayText ?></label></p></th>
+                                <td><p><label for="<?php echo $aOptionKey ?>"><?php echo $displayText ?></label></p></td>
                                 <td>
                                 <?php $this->createFormControl($aOptionKey, $aOptionMeta, $this->getOption($aOptionKey)); ?>
                                 </td>
@@ -349,7 +370,7 @@ class CF7DBOptionsManager {
                 </tbody></table>
                 <p class="submit">
                     <input type="submit" class="button-primary"
-                           value="<?php _e('Save Changes', 'contact-form-7-to-database-extension') ?>"/>
+                           value="<?php echo htmlspecialchars(__('Save Changes', 'contact-form-7-to-database-extension')); ?>"/>
                 </p>
 
             </form>
@@ -406,7 +427,7 @@ class CF7DBOptionsManager {
      * @param  $optionValue string
      * @return string __($optionValue) if it is listed in this method, otherwise just returns $optionValue
      */
-    protected function getOptionValueI18nString($optionValue) {
+    public function getOptionValueI18nString($optionValue) {
         switch ($optionValue) {
             case 'true': return __('true', 'contact-form-7-to-database-extension');
             case 'false': return __('false', 'contact-form-7-to-database-extension');

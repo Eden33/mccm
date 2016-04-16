@@ -256,7 +256,7 @@ class Mixin_Display_Type_Controller extends Mixin
         // This script provides common JavaScript among all display types
         wp_enqueue_script('ngg_common');
         // Enqueue the display type library
-        wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery));
+        wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery), FALSE, NGG_SCRIPT_VERSION);
         // Add "galleries = {};"
         $this->object->_add_script_data('ngg_common', 'galleries', new stdClass(), TRUE, FALSE);
         // Add "galleries.gallery_1 = {};"
@@ -271,7 +271,7 @@ class Mixin_Display_Type_Controller extends Mixin
     {
         $settings = C_NextGen_Settings::get_instance();
         if ((!is_multisite() || is_multisite() && $settings->wpmuStyle) && $settings->activateCSS) {
-            wp_enqueue_style('nggallery', C_NextGen_Style_Manager::get_instance()->get_selected_stylesheet_url());
+            wp_enqueue_style('nggallery', C_NextGen_Style_Manager::get_instance()->get_selected_stylesheet_url(), FALSE, NGG_SCRIPT_VERSION);
         }
     }
     public function get_render_mode()
@@ -616,7 +616,8 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
             }
             // If no maximum_entity_count has been given, then set a maximum
             if (!isset($this->object->maximum_entity_count)) {
-                $this->object->maximum_entity_count = C_Photocrati_Settings_Manager::get('maximum_entity_count', 500);
+                $settings = C_NextGen_Settings::get_instance();
+                $this->object->maximum_entity_count = $settings->get('maximum_entity_count', 500);
             }
         } else {
             $this->object->add_error('Invalid display type', 'display_type');
@@ -998,7 +999,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
             $retval = array_reverse($retval);
         }
         // Limit the entities
-        if ($limit && $offset) {
+        if ($limit) {
             $retval = array_slice($retval, $offset, $limit);
         }
         return $retval;
@@ -1245,10 +1246,11 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
      */
     public function to_transient()
     {
-        $group = 'displayed_galleries';
-        $key = C_Photocrati_Cache::generate_key($this->object->get_entity(), $group);
-        if (is_null(C_Photocrati_Cache::get($key, NULL, $group))) {
-            C_Photocrati_Cache::set($key, $this->object->get_entity(), $group, NGG_DISPLAYED_GALLERY_CACHE_TTL);
+        $params = $this->object->get_entity();
+        unset($params->transient_id);
+        $key = C_Photocrati_Transient_Manager::create_key('displayed_galleries', $params);
+        if (is_null(C_Photocrati_Transient_Manager::fetch($key, NULL))) {
+            C_Photocrati_Transient_Manager::update($key, $params, NGG_DISPLAYED_GALLERY_CACHE_TTL);
         }
         $this->object->transient_id = $key;
         if (!$this->object->id()) {
@@ -1266,8 +1268,19 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
         if (!$transient_id && isset($this->object->transient_id)) {
             $transient_id = $this->object->transient_id;
         }
-        if ($transient_id && ($transient = C_Photocrati_Cache::get($transient_id, FALSE, 'displayed_galleries'))) {
+        if ($transient_id && ($transient = C_Photocrati_Transient_Manager::fetch($transient_id, FALSE))) {
+            // Ensure that the transient is an object, not array
+            if (is_array($transient)) {
+                $obj = new stdClass();
+                foreach ($transient as $key => $value) {
+                    $obj->{$key} = $value;
+                }
+                $transient = $obj;
+            }
             $this->object->_stdObject = $transient;
+            // Ensure that the display settings are an array
+            $this->object->display_settings = $this->_object_to_array($this->object->display_settings);
+            // Ensure that we have the most accurate transient id
             $this->object->transient_id = $transient_id;
             if (!$this->object->id()) {
                 $this->object->id($transient_id);
@@ -1277,6 +1290,21 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
             unset($this->object->transient_id);
             unset($this->object->_stdObject->transient_id);
             $this->object->to_transient();
+        }
+        return $retval;
+    }
+    public function _object_to_array($object)
+    {
+        $retval = $object;
+        if (is_object($retval)) {
+            $retval = get_object_vars($object);
+        }
+        if (is_array($retval)) {
+            foreach ($retval as $key => $val) {
+                if (is_object($val)) {
+                    $retval[$key] = $this->_object_to_array($val);
+                }
+            }
         }
         return $retval;
     }
@@ -1507,8 +1535,6 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         // Validate the displayed gallery
         if ($displayed_gallery) {
             if ($displayed_gallery->validate()) {
-                // Set a temporary id
-                $displayed_gallery->id($displayed_gallery->to_transient());
                 // Display!
                 return $this->object->render($displayed_gallery, TRUE, $mode);
             } else {
@@ -1547,19 +1573,24 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
     {
         $retval = '';
         $lookup = TRUE;
-        $cache = C_Photocrati_Cache::get_instance('displayed_gallery_rendering');
         // Simply throwing our rendered gallery into a feed will most likely not work correctly.
         // The MediaRSS option in NextGEN is available as an alternative.
         if (!C_NextGen_Settings::get_instance()->galleries_in_feeds && is_feed()) {
-            return '';
+            return sprintf(__(' [<a href="%s">See image gallery at %s</a>] ', 'nggallery'), esc_url(apply_filters('the_permalink_rss', get_permalink())), $_SERVER['SERVER_NAME']);
         }
         if ($mode == null) {
             $mode = 'normal';
         }
-        // Save the displayed gallery as a transient if it hasn't already. Allows for ajax operations
-        // to add or modify the gallery without losing a retrievable ID
-        if (!$displayed_gallery->apply_transient()) {
-            $displayed_gallery->to_transient();
+        if (apply_filters('ngg_cache_displayed_galleries', FALSE)) {
+            // Save the displayed gallery as a transient if it hasn't already. Allows for ajax operations
+            // to add or modify the gallery without losing a retrievable ID
+            if (!$displayed_gallery->apply_transient()) {
+                $displayed_gallery->to_transient();
+            }
+        } else {
+            if (is_null($displayed_gallery->id())) {
+                $displayed_gallery->id(md5(json_encode($displayed_gallery->get_entity())));
+            }
         }
         // Get the display type controller
         $controller = $this->get_registry()->get_utility('I_Display_Type_Controller', $displayed_gallery->display_type);
@@ -1574,6 +1605,8 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         } elseif ($controller->param('show')) {
             $lookup = FALSE;
         } elseif ($controller->is_cachable() === FALSE) {
+            $lookup = FALSE;
+        } elseif (!NGG_RENDERING_CACHE_ENABLED) {
             $lookup = FALSE;
         }
         // Enqueue any necessary static resources
@@ -1600,10 +1633,8 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
                 $key_params[] = get_option('permalink_structure');
             }
             // Try getting the rendered HTML from the cache
-            $key = $cache->generate_key($key_params);
-            if (NGG_RENDERING_CACHE_ENABLED) {
-                $html = $cache->lookup($key, FALSE);
-            }
+            $key = C_Photocrati_Transient_Manager::create_key('displayed_gallery_rendering', $key_params);
+            $html = C_Photocrati_Transient_Manager::fetch($key, FALSE);
             // Output debug messages
             if ($html) {
                 $retval .= $this->debug_msg('HIT!');
@@ -1626,11 +1657,10 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             $retval .= $this->debug_msg('Rendering displayed gallery');
             $current_mode = $controller->get_render_mode();
             $controller->set_render_mode($mode);
-            $html = $controller->index_action($displayed_gallery, TRUE);
+            $html = apply_filters('ngg_displayed_gallery_rendering', $controller->index_action($displayed_gallery, TRUE), $displayed_gallery);
             if ($key != null) {
-                $cache->update($key, $html, NGG_RENDERING_CACHE_TTL);
+                C_Photocrati_Transient_Manager::update($key, $html, NGG_RENDERING_CACHE_TTL);
             }
-            $controller->set_render_mode($current_mode);
         }
         $retval .= $html;
         if (!$return) {

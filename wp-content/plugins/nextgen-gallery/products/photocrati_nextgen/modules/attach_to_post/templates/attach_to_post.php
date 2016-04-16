@@ -20,10 +20,11 @@
 			<?php endforeach ?>
 			</ul>
 			<?php reset($tabs); foreach ($tabs as $id => $tab_params): ?>
-			<div class="main_menu_tab" id="<?php esc_attr_e($id) ?>"><?php echo $tab_params['content'] ?></div>
+			<div class="main_menu_tab" id="<?php echo esc_attr($id) ?>"><?php echo $tab_params['content'] ?></div>
 			<?php endforeach ?>
 		</div>
 
+        <div id="adminmenu" style="display:none;" data-wp-responsive="true"></div>
 		<?php wp_print_footer_scripts() ?>
 	</body>
 </html>

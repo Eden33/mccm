@@ -44,7 +44,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         $tableName = $plugin->getSubmitsTableName();
         $rows = $wpdb->get_results("select distinct `form_name` from `$tableName` order by `form_name`");
         //        if ($rows == null || count($rows) == 0) {
-        //            _e('No form submissions in the database', 'contact-form-7-to-database-extension');
+        //            echo htmlspecialchars(__('No form submissions in the database', 'contact-form-7-to-database-extension'));
         //            return;
         //        }
 
@@ -57,6 +57,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         $postedHide = $this->getRequestParam('hide');
         $postedRole = $this->getRequestParam('role');
         $postedPermissionmsg = $this->getRequestParam('permissionmsg');
+        $postedEdit = $this->getRequestParam('edit');
         $postedSearch = $this->getRequestParam('search');
         $postedFilter = $this->getRequestParam('filter');
         $postedTSearch = $this->getRequestParam('tsearch');
@@ -91,6 +92,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         $postedStyle = $this->getRequestParam('style');
         $postedEdit = $this->getRequestParam('edit');
         $postedDtOptions = $this->getRequestParam('dt_options');
+        $postedEditcolumns = $this->getRequestParam('editcolumns');
         $postedVar = $this->getRequestParam('var');
         $postedFormat = $this->getRequestParam('format');
         $postedFunction = $this->getRequestParam('function');
@@ -127,13 +129,14 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         function showHideOptionDivs() {
             var shortcode = jQuery('#shortcode_ctrl').val();
             jQuery('#doc_url_tag').attr('href', shortCodeDocUrls[shortcode]);
-            jQuery('#doc_url_tag').html(shortcode + " <?php _e('Documentation', 'contact-form-7-to-database-extension'); ?>");
+            jQuery('#doc_url_tag').html(shortcode + " <?php echo htmlspecialchars(__('Documentation', 'contact-form-7-to-database-extension')); ?>");
             switch (shortcode) {
                 case "[cfdb-html]":
                     jQuery('#show_hide_div').show();
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').show();
@@ -145,6 +148,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').show();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -155,7 +159,13 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#show_hide_div').show();
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').show();
+                    <?php
+                    if (!$plugin->isEditorActive()) { ?>
+                    jQuery('#edit_mode_cntl').attr('disabled', 'disabled'); <?php
+                    }
+                    ?>
                     jQuery('#dt_options_div').show();
+                    jQuery('#editcolumns_div').show();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -167,6 +177,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').show();
                     jQuery('#template_div').hide();
@@ -178,6 +189,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').hide();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -189,6 +201,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').show();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -200,6 +213,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -211,6 +225,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     jQuery('#limitorder_div').show();
                     jQuery('#html_format_div').hide();
                     jQuery('#dt_options_div').hide();
+                    jQuery('#editcolumns_div').hide();
                     jQuery('#json_div').hide();
                     jQuery('#value_div').hide();
                     jQuery('#template_div').hide();
@@ -226,6 +241,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
             if (exportSelected) {
                 if (exportSelected == 'RSS') {
                     jQuery('#itemtitle_span').show();
+                    jQuery('#csvdelim_span').hide();
                 }
                 else {
                     jQuery('#itemtitle_span').hide();
@@ -243,9 +259,17 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     else {
                         jQuery('#json_div').hide();
                     }
+
+                    if (['CSVUTF8BOM', 'CSVUTF8', 'CSVSJIS'].indexOf(exportSelected) > -1) {
+                        jQuery('#csvdelim_span').show();
+                    }
+                    else {
+                        jQuery('#csvdelim_span').hide();
+                    }
                 }
             } else {
                 jQuery('#itemtitle_span').hide();
+                jQuery('#csvdelim_span').hide();
                 jQuery('#userpass_span_msg').show();
                 jQuery('#gld_userpass_span_msg').hide();
                 jQuery('#label_gld_script').hide();
@@ -255,9 +279,9 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         function getValue(attr, value, errors) {
             if (value) {
                 if (errors && value.indexOf('"') > -1) {
-                    errors.push('<?php _e('Error: "', 'contact-form-7-to-database-extension'); ?>'
+                    errors.push('<?php echo htmlspecialchars(__('Error: "', 'contact-form-7-to-database-extension')); ?>'
                                         + attr +
-                                        '<?php _e('" should not contain double-quotes (")', 'contact-form-7-to-database-extension'); ?>');
+                                        '<?php echo htmlspecialchars(__('" should not contain double-quotes (")', 'contact-form-7-to-database-extension')); ?>');
                     value = value.replace('"', "'");
                 }
                 return attr + '="' + value + '"';
@@ -268,9 +292,9 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         function pushNameValue(attr, value, array, errors) {
             if (value) {
                 if (errors && value.indexOf('"') > -1) {
-                    errors.push('<?php _e('Error: "', 'contact-form-7-to-database-extension'); ?>'
+                    errors.push('<?php echo htmlspecialchars(__('Error: "', 'contact-form-7-to-database-extension')); ?>'
                             + attr +
-                            '<?php _e('" should not contain double-quotes (")', 'contact-form-7-to-database-extension'); ?>');
+                            '<?php echo htmlspecialchars(__('" should not contain double-quotes (")', 'contact-form-7-to-database-extension')); ?>');
                     value = value.replace('"', "'");
                 }
                 array.push(attr);
@@ -331,7 +355,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
             var formName = jQuery('#form_name_cntl').val();
             var errMsg;
             if (!formName) {
-                errMsg = '<?php _e('Error: no form is chosen', 'contact-form-7-to-database-extension') ?>';
+                errMsg = '<?php echo htmlspecialchars(__('Error: no form is chosen', 'contact-form-7-to-database-extension')) ?>';
                 jQuery('#form_validations_text').html(errMsg);
                 pushErrorMessagesToAll(errMsg);
             }
@@ -378,7 +402,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 if (filter) {
                     pushValueToAll(filterName, filter);
                     if (search) {
-                        var errMsg = '<?php _e('Warning: "search" field ignored because FIELD is used (use one but not both)', 'contact-form-7-to-database-extension'); ?>'.replace('FIELD', filterName);
+                        var errMsg = '<?php echo htmlspecialchars(__('Warning: "search" field ignored because FIELD is used (use one but not both)', 'contact-form-7-to-database-extension')); ?>'.replace('FIELD', filterName);
                         pushErrorMessagesToAll(errMsg);
                     }
                 }
@@ -399,12 +423,12 @@ class CFDBViewShortCodeBuilder extends CFDBView {
 
                 var handleLimit = function (limitName, limitRows, limitStart) {
                     if (limitStart && !limitRows) {
-                        errMsg = '<?php _e('Error: "FIELD": if you provide a value for "Start Row" then you must also provide a value for "Num Rows"', 'contact-form-7-to-database-extension'); ?>'.replace('FIELD', limitName);
+                        errMsg = '<?php echo htmlspecialchars(__('Error: "FIELD": if you provide a value for "Start Row" then you must also provide a value for "Num Rows"', 'contact-form-7-to-database-extension')); ?>'.replace('FIELD', limitName);
                         pushErrorMessagesToAll(errMsg);
                     }
                     if (limitRows) {
                         if (!/^\d+$/.test(limitRows)) {
-                            errMsg = '<?php _e('Error: "FIELD": "Num Rows" must be a positive integer', 'contact-form-7-to-database-extension'); ?>'.replace('FIELD', limitName);
+                            errMsg = '<?php echo htmlspecialchars(__('Error: "FIELD": "Num Rows" must be a positive integer', 'contact-form-7-to-database-extension')); ?>'.replace('FIELD', limitName);
                             pushErrorMessagesToAll(errMsg);
                         }
                         else {
@@ -412,7 +436,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                             var limitOptionUrl = limitName + '=';
                             if (limitStart) {
                                 if (!/^\d+$/.test(limitStart)) {
-                                    errMsg = '<?php _e('Error: "FIELD": "Start Row" must be a positive integer', 'contact-form-7-to-database-extension'); ?>'.replace('FIELD', limitName);
+                                    errMsg = '<?php echo htmlspecialchars(__('Error: "FIELD": "Start Row" must be a positive integer', 'contact-form-7-to-database-extension')); ?>'.replace('FIELD', limitName);
                                     pushErrorMessagesToAll(errMsg);
                                 }
                                 else {
@@ -507,7 +531,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                             content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') +
                             '[/cfdb-html]';
                     if (template == "") {
-                        scValidationErrors.push('<?php _e('Error: [cfdb-html] has empty Template. It will not output anything. ', 'contact-form-7-to-database-extension'); ?>');
+                        scValidationErrors.push('<?php echo htmlspecialchars(__('Error: [cfdb-html] has empty Template. It will not output anything. ', 'contact-form-7-to-database-extension')); ?>');
                         jQuery('#content_cntl').addClass('validation'); // highlight template area
                     }
                     else {
@@ -563,6 +587,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     val = jQuery('#headers_cntl').val();
                     scElements.push(getValue('headers', val, scValidationErrors));
                     scUrlElements.push(getValueUrl('headers', val));
+                    var hadHeaders = val != '';
 
                     val = jQuery('#id_cntl').val();
                     scElements.push(getValue('id', val, scValidationErrors));
@@ -576,14 +601,20 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     scElements.push(getValue('style', val, scValidationErrors));
                     scUrlElements.push(getValueUrl('style', val));
 
-                    if (jQuery('#edit_mode_cntl').attr('checked')) {
-                        scElements.push('edit="true"');
-                        scUrlElements.push('edit=true');
+                    val = jQuery('#edit_mode_cntl').val();
+                    scElements.push(getValue('edit', val, scValidationErrors));
+                    scUrlElements.push(getValueUrl('edit', val));
+                    if (hadHeaders && val == 'true') {
+                        scValidationErrors.push('<?php echo htmlspecialchars(__('Error: "edit=true" will not work properly when setting "headers" ', 'contact-form-7-to-database-extension')); ?>');
                     }
 
                     val = jQuery('#dt_options_cntl').val();
                     scElements.push(getValue('dt_options', val, scValidationErrors));
                     scUrlElements.push(getValueUrl('dt_options', val));
+
+                    val = jQuery('#editcolumns_cntl').val();
+                    scElements.push(getValue('editcolumns', val, scValidationErrors));
+                    scUrlElements.push(getValueUrl('editcolumns', val));
 
                     var contentBefore = jQuery('#before_cntl').val();
                     var contentAfter = jQuery('#after_cntl').val();
@@ -690,9 +721,18 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     }
                     break;
                 case '[cfdb-export-link]':
-                    val = jQuery('#enc_cntl').val();
-                    scElements.push(getValue('enc', val, scValidationErrors));
-                    scUrlElements.push(getValueUrl('enc', val));
+                    enc = jQuery('#enc_cntl').val();
+                    scElements.push(getValue('enc', enc, scValidationErrors));
+                    scUrlElements.push(getValueUrl('enc', enc));
+
+                    if (['CSVUTF8BOM', 'CSVUTF8', 'CSVSJIS'].indexOf(enc) > -1) {
+                        delim = jQuery('#export_link_csv_delim').val();
+                        if (delim != ',') {
+                            scElements.push(getValue('delimiter', delim, scValidationErrors));
+                            scUrlElements.push(getValueUrl('delimiter', delim));
+                        }
+                    }
+
                     scElements.push(getValue('urlonly', jQuery('#urlonly_cntl').val(), scValidationErrors));
                     scElements.push(getValue('linktext', jQuery('#linktext_cntl').val(), scValidationErrors));
 
@@ -711,7 +751,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     break;
             }
 
-            var urlBase = '<?php echo admin_url('admin-ajax.php') ?>?action=cfdb-export&';
+            var urlBase = '<?php echo $plugin->getAdminUrlPrefix('admin-ajax.php') ?>action=cfdb-export&';
 
             if (shortcode) {
                 // Output short code text
@@ -746,6 +786,13 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                     exportUrlElements.push(getValueUrl('format', jQuery('#format_cntl').val(), scValidationErrors));
                 }
 
+                if (['CSVUTF8BOM', 'CSVUTF8', 'CSVSJIS'].indexOf(exportSelection) > -1) {
+                    delim = jQuery('#csv_delim').val();
+                    if (delim != ',') {
+                        exportUrlElements.push(getValueUrl("delimiter", delim));
+                    }
+                }
+
                 var user = jQuery("#gld_user").val();
                 var pass = jQuery("#gld_pass").val();
                 var obfuscate = jQuery('#obfuscate_cntl').is(':checked')
@@ -754,21 +801,21 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                         var key = 'kx82XcPjq8q8S!xafx%$&7p6';
                         exportUrlElements.push("l=" + encodeURI(printHex(des(key, user + "/" + pass, 1))));
                     } else {
-                        exportUrlElements.push("user_login=" + encodeURI(user));
-                        exportUrlElements.push("user_password=" + encodeURI(pass));
+                        exportUrlElements.push("username=" + encodeURI(user));
+                        exportUrlElements.push("password=" + encodeURI(pass));
                     }
-                    urlBase = '<?php echo admin_url('admin-ajax.php') ?>?action=cfdb-login&cfdb-action=cfdb-export&';
-                    exportValidationErrors.push("<?php _e('Warning: the function includes your WP login information. Avoid sharing it.') ?>");
+                    urlBase = '<?php echo $plugin->getAdminUrlPrefix('admin-ajax.php') ?>action=cfdb-login&cfdb-action=cfdb-export&';
+                    exportValidationErrors.push("<?php echo htmlspecialchars(__('Warning: the function includes your WP login information. Avoid sharing it.', 'contact-form-7-to-database-extension')) ?>");
                 }
 
                 // Output
                 var exportUrl = urlBase + join(exportUrlElements, '&');
                 if (exportSelection == 'GLD') {
                     if (!user || !pass) {
-                        exportValidationErrors.push("<?php _e('Error: WP User and Password are required for the Google Spreadsheet to pull data from your WordPress site.') ?>");
+                        exportValidationErrors.push("<?php echo htmlspecialchars(__('Error: WP User and Password are required for the Google Spreadsheet to pull data from your WordPress site.', 'contact-form-7-to-database-extension')) ?>");
                     }
                     if (exportUrl.length > 255) {
-                        exportValidationErrors.push("<?php _e('Because the generated URL would be too long, you must use this alternative function and add its script to your Google Spreadsheet') ?>");
+                        exportValidationErrors.push("<?php echo htmlspecialchars(__('Because the generated URL would be too long, you must use this alternative function and add its script to your Google Spreadsheet', 'contact-form-7-to-database-extension')) ?>");
                         jQuery('#label_gld_script').show();
                         jQuery('#label_gld_function').hide();
                         jQuery('#export_result_text').html(formName ?
@@ -912,6 +959,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
             // Export File
             jQuery('#export_cntl').val(<?php echo json_encode($postedEnc) ?>);
             jQuery('#add_itemtitle').val(<?php echo json_encode($postedItemtitle) ?>);
+            jQuery('#csv_delim').val(<?php echo json_encode(",") ?>);
 
             // Short Code
             jQuery('#shortcode_ctrl').val(<?php echo json_encode($postedSC) ?>);
@@ -935,8 +983,9 @@ class CFDBViewShortCodeBuilder extends CFDBView {
             jQuery('#id_cntl').val(<?php echo json_encode($postedId) ?>);
             jQuery('#class_cntl').val(<?php echo json_encode($postedClass) ?>);
             jQuery('#style_cntl').val(<?php echo json_encode($postedStyle) ?>);
-            jQuery('#edit_mode_cntl').prop('checked', <?php echo $postedEdit == 'true' ? 'true' : 'false' ?>); // default = false
+            jQuery('#edit_mode_cntl').val(<?php echo json_encode($postedEdit) ?>);
             jQuery('#dt_options_cntl').val(<?php echo json_encode($postedDtOptions) ?>);
+            jQuery('#editcolumns_cntl').val(<?php echo json_encode($postedEditcolumns) ?>);
             jQuery('#var_cntl').val(<?php echo json_encode($postedVar) ?>);
             jQuery('#format_cntl').val(<?php echo json_encode($postedFormat) ?>);
             jQuery('#function_cntl').val(<?php echo json_encode($postedFunction) ?>);
@@ -993,7 +1042,24 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 addFieldToContent();
                 createShortCodeAndExportLink();
             });
-            jQuery('#enc_cntl').click(createShortCodeAndExportLink);
+            jQuery('#btn_editcolumns').click(function () {
+                addFieldToOrderBy('editcolumns');
+            });
+
+            var showHideExportLinkDelimiter = function() {
+                var enc = jQuery('#enc_cntl').val();
+                if (['CSVUTF8BOM', 'CSVUTF8', 'CSVSJIS'].indexOf(enc) > -1) {
+                    jQuery('#export_link_csvdelim_span').show();
+                }
+                else {
+                    jQuery('#export_link_csvdelim_span').hide();
+                }
+            };
+            jQuery('#enc_cntl').change(function() {
+                showHideExportLinkDelimiter();
+                createShortCodeAndExportLink();
+            });
+            showHideExportLinkDelimiter();
             jQuery('#urlonly_cntl').click(createShortCodeAndExportLink);
             jQuery('#reset_button').click(reset);
             jQuery('#btn_validate_submit_time').click(validateSubmitTime);
@@ -1005,6 +1071,8 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 createShortCodeAndExportLink();
             });
             jQuery('#add_itemtitle').change(createShortCodeAndExportLink);
+            jQuery('#csv_delim').keyup(createShortCodeAndExportLink);
+            jQuery('#export_link_csv_delim').keyup(createShortCodeAndExportLink);
             jQuery('#gld_user').change(createShortCodeAndExportLink);
             jQuery('#gld_user').keyup(createShortCodeAndExportLink);
             jQuery('#gld_pass').change(createShortCodeAndExportLink);
@@ -1015,7 +1083,8 @@ class CFDBViewShortCodeBuilder extends CFDBView {
 
 
     </script>
-    <style type="text/css">
+    <!--suppress CssInvalidPropertyValue -->
+        <style type="text/css">
         div.shortcodeoptions {
             border: #ccccff groove;
             margin-bottom: 10px;
@@ -1062,12 +1131,12 @@ class CFDBViewShortCodeBuilder extends CFDBView {
         }
     </style>
 
-        <h2><?php _e('Export and Short Code Builder', 'contact-form-7-to-database-extension') ?></h2>
+        <h2><?php echo htmlspecialchars(__('Export and Short Code Builder', 'contact-form-7-to-database-extension')) ?></h2>
     <?php // FORM  ?>
     <div class="shortcodeoptions" style="margin-top:10px;">
-        <div class="label_box"><label for="form_name_cntl"><?php _e('form', 'contact-form-7-to-database-extension') ?></label></div>
+        <div class="label_box"><label for="form_name_cntl"><?php echo htmlspecialchars(__('form', 'contact-form-7-to-database-extension')) ?></label></div>
         <select name="form_name_cntl" id="form_name_cntl">
-            <option value=""><?php _e('* Select a form *', 'contact-form-7-to-database-extension') ?></option>
+            <option value=""><?php echo htmlspecialchars(__('* Select a form *', 'contact-form-7-to-database-extension')) ?></option>
             <?php foreach ($rows as $aRow) {
             $formName = $aRow->form_name;
             ?>
@@ -1077,7 +1146,7 @@ class CFDBViewShortCodeBuilder extends CFDBView {
 
         <?php // RESET  ?>
         <span style="margin-left:10px">
-            <button id="reset_button"><?php _e('Reset', 'contact-form-7-to-database-extension') ?></button>
+            <button id="reset_button"><?php echo htmlspecialchars(__('Reset', 'contact-form-7-to-database-extension')) ?></button>
         </span>
 
         <div id="form_validations_text" class="validation"></div>
@@ -1085,66 +1154,76 @@ class CFDBViewShortCodeBuilder extends CFDBView {
 
     <?php // EXPORT  ?>
     <div class="shortcodeoptions">
-        <label for="export_cntl"><?php _e('Export File', 'contact-form-7-to-database-extension') ?></label>
+        <label for="export_cntl"><?php echo htmlspecialchars(__('Export File', 'contact-form-7-to-database-extension')); ?></label>
         <select id="export_cntl" name="export_cntl">
             <option value=""></option>
+            <option value="xlsx">
+                <?php echo htmlspecialchars(__('Excel .xlsx', 'contact-form-7-to-database-extension')); ?>
+            </option>
+            <option value="ods">
+                <?php echo htmlspecialchars(__('OpenDocument .ods', 'contact-form-7-to-database-extension')); ?>
+            </option>
             <option value="CSVUTF8BOM">
-                <?php _e('Excel CSV (UTF8-BOM)', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Excel CSV (UTF8-BOM)', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="TSVUTF16LEBOM">
-                <?php _e('Excel TSV (UTF16LE-BOM)', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Excel TSV (UTF16LE-BOM)', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="CSVUTF8">
-                <?php _e('Plain CSV (UTF-8)', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Plain CSV (UTF-8)', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="CSVSJIS">
-                <?php _e('Excel CSV for Japanese (Shift-JIS)', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Excel CSV for Japanese (Shift-JIS)', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="IQY">
-                <?php _e('Excel Internet Query', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Excel Internet Query', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="GLD">
-                <?php _e('Google Spreadsheet Live Data', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Google Spreadsheet Live Data', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="RSS">
-                <?php _e('RSS', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('RSS', 'contact-form-7-to-database-extension')); ?>
             </option>
             <option value="JSON">
-                <?php _e('JSON', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('JSON', 'contact-form-7-to-database-extension')); ?>
             </option>
         </select>
-        <span  id="itemtitle_span">
-            <label for="add_itemtitle"><?php _e('Item Title', 'contact-form-7-to-database-extension') ?></label>
+        <span id="csvdelim_span">
+            <label for="csv_delim"><?php echo htmlspecialchars(__('CSV Delimiter', 'contact-form-7-to-database-extension')); ?></label>
+            <input id="csv_delim" type="text" size="2" value="<?php echo htmlspecialchars(','); ?>"/>
+        </span>
+        <span id="itemtitle_span">
+            <label for="add_itemtitle"><?php echo htmlspecialchars(__('Item Title', 'contact-form-7-to-database-extension')); ?></label>
             <select name="add_itemtitle" id="add_itemtitle"></select>
         </span>
         <span id="userpass_span">
             <br/>
             <span id="gld_userpass_span_msg">
-            <?php _e('Provide a WP login for the Google Spreadsheet to use to connect to your WP site', 'contact-form-7-to-database-extension'); ?>
+            <?php echo htmlspecialchars(__('Provide a WP login for the Google Spreadsheet to use to connect to your WP site', 'contact-form-7-to-database-extension')); ?>
             </span>
             <span id="userpass_span_msg" style="display: none">
-            <?php _e('Optional: provide a WP login for the link to work without being already logged in', 'contact-form-7-to-database-extension'); ?>
+            <?php echo htmlspecialchars(__('Optional: provide a WP login for the link to work without being already logged in', 'contact-form-7-to-database-extension')); ?>
             </span>
             <br/>
-            <label for="gld_user"><?php _e('WP User', 'contact-form-7-to-database-extension') ?></label>
-            <input id="gld_user" type="text" value="<?php echo $userName; ?>"/>
-            <label for="gld_pass"><?php _e('WP Password', 'contact-form-7-to-database-extension') ?></label>
+            <label for="gld_user"><?php echo htmlspecialchars(__('WP User', 'contact-form-7-to-database-extension')); ?></label>
+            <input id="gld_user" type="text" value="<?php echo htmlspecialchars($userName); ?>"/>
+            <label for="gld_pass"><?php echo htmlspecialchars(__('WP Password', 'contact-form-7-to-database-extension')); ?></label>
             <input id="gld_pass" type="password" value=""/>
-            <input id="obfuscate_cntl" type="checkbox" checked/><?php _e('Hide Credentials', 'contact-form-7-to-database-extension') ?>
+            <input id="obfuscate_cntl" type="checkbox" checked/><?php echo htmlspecialchars(__('Hide Credentials', 'contact-form-7-to-database-extension')); ?>
         </span>
 
         <div id="export_result_div">
-            <span id="label_export_link"><?php _e('Generated Export Link:', 'contact-form-7-to-database-extension'); ?></span>
+            <span id="label_export_link"><?php echo htmlspecialchars(__('Generated Export Link:', 'contact-form-7-to-database-extension')); ?></span>
             <span id="label_gld_function" style="display:none">
-                <?php _e('Enter this function into a cell in your Google Spreadsheet:', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Enter this function into a cell in your Google Spreadsheet:', 'contact-form-7-to-database-extension')); ?>
             </span>
             <span id="label_gld_script" style="display:none">
-                <?php _e('Generated Google Spreadsheet Function:', 'contact-form-7-to-database-extension'); ?>
+                <?php echo htmlspecialchars(__('Generated Google Spreadsheet Function:', 'contact-form-7-to-database-extension')); ?>
                 <?php _e('Replace <strong>&lt;password&gt;</strong> with your <em>WordPress</em> password', 'contact-form-7-to-database-extension'); ?>
                 <br/>
-                <?php _e('Requires code installed in your Google Spreadsheet script editor.'); ?>
-                <a target="code" href="<?php echo $siteUrl ?>/wp-content/plugins/contact-form-7-to-database-extension/CFDBGoogleSSLiveData.php"><?php _e('Get code'); ?></a>.
-                <a target="instructions" href="<?php echo $siteUrl ?>/wp-admin/admin-ajax.php?action=cfdb-export&enc=GLD&form=<?php echo urlencode($postedForm) ?>"><?php _e('See instructions.'); ?></a>
+                <?php echo htmlspecialchars(__('Requires code installed in your Google Spreadsheet script editor.')); ?>
+                <a target="code" href="<?php echo $siteUrl ?>/wp-content/plugins/contact-form-7-to-database-extension/CFDBGoogleSSLiveData.php"><?php echo htmlspecialchars(__('Get code', 'contact-form-7-to-database-extension')); ?></a>.
+                <a target="instructions" href="<?php echo $siteUrl ?>/wp-admin/admin-ajax.php?action=cfdb-export&enc=GLD&form=<?php echo urlencode($postedForm) ?>"><?php echo htmlspecialchars(__('See instructions.', 'contact-form-7-to-database-extension')); ?></a>
           </span>
             <br/><div class="generated" id="export_result_text"></div>
         </div>
@@ -1156,10 +1235,10 @@ class CFDBViewShortCodeBuilder extends CFDBView {
     <div class="shortcodeoptions">
         <div style="margin-bottom:10px">
             <div class="label_box"><label
-                    for="shortcode_ctrl"><?php _e('Short Code', 'contact-form-7-to-database-extension') ?></label>
+                    for="shortcode_ctrl"><?php echo htmlspecialchars(__('Short Code', 'contact-form-7-to-database-extension')); ?></label>
             </div>
             <select name="shortcode_ctrl" id="shortcode_ctrl">
-                <option value=""><?php _e('* Select a short code *', 'contact-form-7-to-database-extension') ?></option>
+                <option value=""><?php echo htmlspecialchars(__('* Select a short code *', 'contact-form-7-to-database-extension')); ?></option>
                 <option value="[cfdb-html]">[cfdb-html]</option>
                 <option value="[cfdb-table]">[cfdb-table]</option>
                 <option value="[cfdb-datatable]">[cfdb-datatable]</option>
@@ -1169,83 +1248,84 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 <option value="[cfdb-export-link]">[cfdb-export-link]</option>
             </select>
             <a id="doc_url_tag" target="_docs"
-               href="http://cfdbplugin.com/?page_id=89"><?php _e('Documentation', 'contact-form-7-to-database-extension'); ?></a>
+               href="http://cfdbplugin.com/?page_id=89"><?php echo htmlspecialchars(__('Documentation', 'contact-form-7-to-database-extension')); ?></a>
             <br/>
         </div>
 
 
         <div id="shortcode_result_div">
-            <?php _e('Generated Short Code:', 'contact-form-7-to-database-extension'); ?>
+            <?php echo htmlspecialchars(__('Generated Short Code:', 'contact-form-7-to-database-extension')); ?>
             <br/><div class="generated" id="shortcode_result_text"></div>
         </div>
         <div id="shortcode_validations_text" class="validation"></div>
         <span style="font-size: x-small;">
             <a target="_docs"
-               href="http://cfdbplugin.com/?page_id=444"><?php _e('(Did you know: you can create your own short code)', 'contact-form-7-to-database-extension'); ?></a>
+               href="http://cfdbplugin.com/?page_id=444"><?php echo htmlspecialchars(__('(Did you know: you can create your own short code)', 'contact-form-7-to-database-extension')); ?></a>
         </span>
 
     </div>
 
-    <div id="security_div" class="shortcodeoptions">
-        <?php _e('Security', 'contact-form-7-to-database-extension'); ?>
+        <?php // SECURITY ?>
+        <div id="security_div" class="shortcodeoptions">
+        <?php echo htmlspecialchars(__('Security', 'contact-form-7-to-database-extension')); ?>
         <div>
             <div class="label_box">
-                <label for="role_cntl"><?php _e('role', 'contact-form-7-to-database-extension') ?></label>
+                <label for="role_cntl"><?php echo htmlspecialchars(__('role', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#role"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="role_cntl" name="role_cntl">
                 <option value=""></option>
-                <option value="Administrator"><?php _e('Administrator', 'contact-form-7-to-database-extension') ?></option>
-                <option value="Editor"><?php _e('Editor', 'contact-form-7-to-database-extension') ?></option>
-                <option value="Author"><?php _e('Author', 'contact-form-7-to-database-extension') ?></option>
-                <option value="Contributor"><?php _e('Contributor', 'contact-form-7-to-database-extension') ?></option>
-                <option value="Subscriber"><?php _e('Subscriber', 'contact-form-7-to-database-extension') ?></option>
-                <option value="Anyone"><?php _e('Anyone', 'contact-form-7-to-database-extension') ?></option>
+                <option value="Administrator"><?php echo htmlspecialchars(__('Administrator', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="Editor"><?php echo htmlspecialchars(__('Editor', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="Author"><?php echo htmlspecialchars(__('Author', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="Contributor"><?php echo htmlspecialchars(__('Contributor', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="Subscriber"><?php echo htmlspecialchars(__('Subscriber', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="Anyone"><?php echo htmlspecialchars(__('Anyone', 'contact-form-7-to-database-extension')); ?></option>
             </select>
             <div class="label_box">
-                <label for="permissionmsg_cntl"><?php _e('permissionmsg', 'contact-form-7-to-database-extension') ?></label>
+                <label for="permissionmsg_cntl"><?php echo htmlspecialchars(__('permissionmsg', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#permissionmsg"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="permissionmsg_cntl" name="permissionmsg_cntl">
                 <option value=""></option>
-                <option value="true"><?php _e('true', 'contact-form-7-to-database-extension') ?></option>
-                <option value="false"><?php _e('false', 'contact-form-7-to-database-extension') ?></option>
+                <option value="true"><?php echo htmlspecialchars(__('true', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="false"><?php echo htmlspecialchars(__('false', 'contact-form-7-to-database-extension')); ?></option>
             </select>
         </div>
     </div>
     <?php // SHOW HIDE ?>
     <div id="show_hide_div" class="shortcodeoptions">
-        <?php _e('Which fields/columns do you want to display?', 'contact-form-7-to-database-extension'); ?>
+        <?php echo htmlspecialchars(__('Which fields/columns do you want to display?', 'contact-form-7-to-database-extension')); ?>
         <div>
             <div class="label_box">
-                <label for="show_cntl"><?php _e('show', 'contact-form-7-to-database-extension') ?></label>
+                <label for="show_cntl"><?php echo htmlspecialchars(__('show', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#show"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="add_show" id="add_show"></select><button id="btn_show">&raquo;</button>
-            <input name="show_cntl" id="show_cntl" type="text" size="100" placeholder="<?php _e('field1,field2,field3', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="show_cntl" id="show_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('field1,field2,field3', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="hide_cntl"><?php _e('hide', 'contact-form-7-to-database-extension') ?></label>
+                <label for="hide_cntl"><?php echo htmlspecialchars(__('hide', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#hide"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="add_hide" id="add_hide"></select><button id="btn_hide">&raquo;</button>
-            <input name="hide_cntl" id="hide_cntl" type="text" size="100" placeholder="<?php _e('field1,field2,field3', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="hide_cntl" id="hide_cntl" type="text" size="100" placeholder="<?php htmlspecialchars(__('field1,field2,field3', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
     </div>
     <?php // SEARCH FILTER  ?>
     <div id="filter_div" class="shortcodeoptions">
-        <div><?php _e('Which rows/submissions do you want to display?', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('Which rows/submissions do you want to display?', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="search_cntl"><?php _e('search', 'contact-form-7-to-database-extension') ?></label>
+                <label for="search_cntl"><?php echo htmlspecialchars(__('search', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#search"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="search_cntl" id="search_cntl" type="text" size="30" placeholder="<?php _e('search text', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="search_cntl" id="search_cntl" type="text" size="30" placeholder="<?php echo htmlspecialchars(__('search text', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="filter_cntl"><?php _e('filter', 'contact-form-7-to-database-extension') ?></label>
+                <label for="filter_cntl"><?php echo htmlspecialchars(__('filter', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#filter"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="filter_bool" id="filter_bool">
@@ -1264,162 +1344,174 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 <option value="!==">!==</option>
                 <option value="~~">~~</option>
             </select>
-            <input name="filter_val" id="filter_val" type="text" size="20" placeholder="<?php _e('value', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="filter_val" id="filter_val" type="text" size="20" placeholder="<?php echo htmlspecialchars(__('value', 'contact-form-7-to-database-extension')) ?>"/>
             <button id="btn_filter">&raquo;</button>
             <span id="span_validate_submit_time" style="display:none;">
-                <button id="btn_validate_submit_time"><?php _e('Validate submit_time', 'contact-form-7-to-database-extension'); ?></button>
-                <a target="_blank" href="http://cfdbplugin.com/?page_id=553"><?php _e('Formats', 'contact-form-7-to-database-extension'); ?></a>
+                <button id="btn_validate_submit_time"><?php echo htmlspecialchars(__('Validate submit_time', 'contact-form-7-to-database-extension')); ?></button>
+                <a target="_blank" href="http://cfdbplugin.com/?page_id=553"><?php echo htmlspecialchars(__('Formats', 'contact-form-7-to-database-extension')); ?></a>
             </span>
             <br/>
-            <input name="filter_cntl" id="filter_cntl" type="text" size="100" placeholder="<?php _e('filter expression', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="filter_cntl" id="filter_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('filter expression', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
     </div>
     <?php // LIMIT, ORDER BY, RANDOM ?>
     <div id="limitorder_div" class="shortcodeoptions">
         <div>
             <div class="label_box">
-                <label for="limit_rows_cntl"><?php _e('limit', 'contact-form-7-to-database-extension') ?></label>
+                <label for="limit_rows_cntl"><?php echo htmlspecialchars(__('limit', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#limit"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <?php _e('Num Rows', 'contact-form-7-to-database-extension') ?> <input name="limit_rows_cntl" id="limit_rows_cntl" type="text" size="10" placeholder="<?php _e('number', 'contact-form-7-to-database-extension') ?>"/>
-            <?php _e('Start Row (0)', 'contact-form-7-to-database-extension') ?> <input name="limit_start_cntl" id="limit_start_cntl" type="text" size="10" placeholder="<?php _e('number', 'contact-form-7-to-database-extension') ?>"/>
+            <?php echo htmlspecialchars(__('Num Rows', 'contact-form-7-to-database-extension')); ?> <input name="limit_rows_cntl" id="limit_rows_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('number', 'contact-form-7-to-database-extension')); ?>"/>
+            <?php echo htmlspecialchars(__('Start Row (0)', 'contact-form-7-to-database-extension')); ?> <input name="limit_start_cntl" id="limit_start_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('number', 'contact-form-7-to-database-extension')); ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="unbuffered_cntl"><?php _e('unbuffered', 'contact-form-7-to-database-extension') ?></label>
+                <label for="unbuffered_cntl"><?php echo htmlspecialchars(__('unbuffered', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?p=696"><img alt="?" src="<?php echo $infoImg ?>"/></a>
                 <input id="unbuffered_cntl" type="checkbox" <?php echo $postedUnbuffered == 'true' ? 'checked' : ''?>/>
             </div>
         </div>
         <div>
             <div class="label_box">
-                <label for="random_cntl"><?php _e('random', 'contact-form-7-to-database-extension') ?></label>
+                <label for="random_cntl"><?php echo htmlspecialchars(__('random', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#random"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="random_cntl" id="random_cntl" type="text" size="10" placeholder="<?php _e('number', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="random_cntl" id="random_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('number', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div id="orderby_div">
             <div class="label_box">
-                <label for="orderby_cntl"><?php _e('orderby', 'contact-form-7-to-database-extension') ?></label>
+                <label for="orderby_cntl"><?php echo htmlspecialchars(__('orderby', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=89#orderby"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <select name="add_orderby" id="add_orderby"></select><button id="btn_orderby" placeholder="<?php _e('field', 'contact-form-7-to-database-extension') ?>">&raquo;</button>
-            <input name="orderby_cntl" id="orderby_cntl" type="text" size="100" placeholder="<?php _e('field1,field2,field3', 'contact-form-7-to-database-extension') ?>"/>
+            <select name="add_orderby" id="add_orderby"></select><button id="btn_orderby" placeholder="<?php echo htmlspecialchars(__('field', 'contact-form-7-to-database-extension')) ?>">&raquo;</button>
+            <input name="orderby_cntl" id="orderby_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('field1,field2,field3', 'contact-form-7-to-database-extension')) ?>"/>
             <select id="orderbydir_cntl" name="orderbydir_cntl">
                 <option value=""></option>
-                <option value="ASC"><?php _e('ASC', 'contact-form-7-to-database-extension') ?></option>
-                <option value="DESC"><?php _e('DESC', 'contact-form-7-to-database-extension') ?></option>
+                <option value="ASC"><?php echo htmlspecialchars(__('ASC', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="DESC"><?php echo htmlspecialchars(__('DESC', 'contact-form-7-to-database-extension')) ?></option>
             </select>
         </div>
     </div>
     <?php // HEADERS  ?>
     <div id="headers_div" class="shortcodeoptions">
-        <div><?php _e('Table Headers', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('Table Headers', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
                 <input id="header_cntl" type="checkbox" checked/>
-                <label for="header_cntl"><?php _e('Include Header Row', 'contact-form-7-to-database-extension') ?></label>
+                <label for="header_cntl"><?php echo htmlspecialchars(__('Include Header Row', 'contact-form-7-to-database-extension')); ?></label>
             </div>
         </div>
         <div>
             <div class="label_box">
-                <label for="headers_cntl"><?php _e('headers', 'contact-form-7-to-database-extension') ?></label>
+                <label for="headers_cntl"><?php echo htmlspecialchars(__('headers', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=93#headers"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="add_headers" id="add_headers"></select>
-            <?php _e('display as', 'contact-form-7-to-database-extension') ?>
-            <input name="headers_val" id="headers_val" type="text" size="20" placeholder="<?php _e('display value', 'contact-form-7-to-database-extension') ?>"/>
+            <?php echo htmlspecialchars(__('display as', 'contact-form-7-to-database-extension')); ?>
+            <input name="headers_val" id="headers_val" type="text" size="20" placeholder="<?php echo htmlspecialchars(__('display value', 'contact-form-7-to-database-extension')); ?>"/>
             <button id="btn_headers">&raquo;</button>
             <br/>
-            <input name="headers_cntl" id="headers_cntl" type="text" size="100" placeholder="<?php _e('field1=Display Name 1,field2=Display Name 2', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="headers_cntl" id="headers_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('field1=Display Name 1,field2=Display Name 2', 'contact-form-7-to-database-extension')); ?>"/>
         </div>
     </div>
     <?php // ID, CLASS, STYLE  ?>
     <div id="html_format_div" class="shortcodeoptions">
-        <div><?php _e('HTML Table Formatting', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('HTML Table Formatting', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="id_cntl"><?php _e('id', 'contact-form-7-to-database-extension') ?></label>
+                <label for="id_cntl"><?php echo htmlspecialchars(__('id', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=93#id"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="id_cntl" id="id_cntl" type="text" size="10" placeholder="<?php _e('HTML id', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="id_cntl" id="id_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('HTML id', 'contact-form-7-to-database-extension')); ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="class_cntl"><?php _e('class', 'contact-form-7-to-database-extension') ?></label>
+                <label for="class_cntl"><?php echo htmlspecialchars(__('class', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=93#class"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="class_cntl" id="class_cntl" type="text" size="10" placeholder="<?php _e('HTML class', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="class_cntl" id="class_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('HTML class', 'contact-form-7-to-database-extension')); ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="style_cntl"><?php _e('style', 'contact-form-7-to-database-extension') ?></label>
+                <label for="style_cntl"><?php echo htmlspecialchars(__('style', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=93#style"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="style_cntl" id="style_cntl" type="text" size="100" placeholder="<?php _e('CSS style', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="style_cntl" id="style_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('CSS style', 'contact-form-7-to-database-extension')); ?>"/>
         </div>
     </div>
     <?php // DT_OPTIONS  ?>
     <div id="dt_options_div" class="shortcodeoptions">
-        <div><?php _e('[cfdb-datatable] Options', 'contact-form-7-to-database-extension'); ?></div>
-        <div>
+        <div><?php echo htmlspecialchars(__('[cfdb-datatable] Options', 'contact-form-7-to-database-extension')); ?></div>
+        <div id="edit_mode_div">
             <div class="label_box">
-                <label for="edit_mode_cntl"><?php _e('edit', 'contact-form-7-to-database-extension') ?></label>
+                <label for="edit_mode_cntl"><?php echo htmlspecialchars(__('edit', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=91#edit"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input type="checkbox" id="edit_mode_cntl" name="edit_mode_cntl" />
+            <select id="edit_mode_cntl" name="edit_mode_cntl">
+                <option value=""></option>
+                <option value="true"><?php echo htmlspecialchars(__('true', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="cells"><?php echo htmlspecialchars(__('cells', 'contact-form-7-to-database-extension')); ?></option>
+            </select>
+        </div>
+        <div>
+            <div class="label_box" id="editcolumns">
+                <label for="editcolumns_cntl"><?php echo htmlspecialchars(__('editcolumns', 'contact-form-7-to-database-extension')) ?></label>
+                <a target="_docs" href="http://cfdbplugin.com/?page_id=91#editcolumns"><img alt="?" src="<?php echo $infoImg ?>"/></a>
+            </div>
+            <select name="add_editcolumns" id="add_editcolumns"></select><button id="btn_editcolumns" placeholder="<?php echo htmlspecialchars(__('field', 'contact-form-7-to-database-extension')) ?>">&raquo;</button>
+            <input name="editcolumns_cntl" id="editcolumns_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('field1,field2,field3', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="dt_options_cntl"><?php _e('dt_options', 'contact-form-7-to-database-extension') ?></label>
+                <label for="dt_options_cntl"><?php echo htmlspecialchars(__('dt_options', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=91#dt_options"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="dt_options_cntl" id="dt_options_cntl" type="text" size="100" placeholder="<?php _e('datatable options (JSON)', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="dt_options_cntl" id="dt_options_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('datatable options (JSON)', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
     </div>
     <?php // JSON VAR, FORMAT  ?>
     <div id="json_div" class="shortcodeoptions">
-        <div><?php _e('[cfdb-json] Options', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('[cfdb-json] Options', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="var_cntl"><?php _e('var', 'contact-form-7-to-database-extension') ?></label>
+                <label for="var_cntl"><?php echo htmlspecialchars(__('var', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=96#var"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="var_cntl" id="var_cntl" type="text" size="10" placeholder="<?php _e('JS var name', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="var_cntl" id="var_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('JS var name', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="format_cntl"><?php _e('format', 'contact-form-7-to-database-extension') ?></label>
+                <label for="format_cntl"><?php echo htmlspecialchars(__('format', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=96#format"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="format_cntl" name="format_cntl">
                 <option value=""></option>
-                <option value="map"><?php _e('map', 'contact-form-7-to-database-extension') ?></option>
-                <option value="array"><?php _e('array', 'contact-form-7-to-database-extension') ?></option>
-                <option value="arraynoheader"><?php _e('arraynoheader', 'contact-form-7-to-database-extension') ?></option>
+                <option value="map"><?php echo htmlspecialchars(__('map', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="array"><?php echo htmlspecialchars(__('array', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="arraynoheader"><?php echo htmlspecialchars(__('arraynoheader', 'contact-form-7-to-database-extension')) ?></option>
             </select>
         </div>
     </div>
     <?php // VALUE FUNCTION, DELIMITER  ?>
     <div id="value_div" class="shortcodeoptions">
-        <div><?php _e('[cfdb-value] Options', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('[cfdb-value] Options', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="function_cntl"><?php _e('function', 'contact-form-7-to-database-extension') ?></label>
+                <label for="function_cntl"><?php echo htmlspecialchars(__('function', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=98#function"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="function_cntl" name="function_cntl">
                 <option value=""></option>
-                <option value="min"><?php _e('min', 'contact-form-7-to-database-extension') ?></option>
-                <option value="max"><?php _e('max', 'contact-form-7-to-database-extension') ?></option>
-                <option value="sum"><?php _e('sum', 'contact-form-7-to-database-extension') ?></option>
-                <option value="mean"><?php _e('mean', 'contact-form-7-to-database-extension') ?></option>
-                <option value="percent"><?php _e('percent', 'contact-form-7-to-database-extension') ?></option>
+                <option value="min"><?php echo htmlspecialchars(__('min', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="max"><?php echo htmlspecialchars(__('max', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="sum"><?php echo htmlspecialchars(__('sum', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="mean"><?php echo htmlspecialchars(__('mean', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="percent"><?php echo htmlspecialchars(__('percent', 'contact-form-7-to-database-extension')) ?></option>
             </select>
         </div>
         <div>
             <div class="label_box">
-                <label for="delimiter_cntl"><?php _e('delimiter', 'contact-form-7-to-database-extension') ?></label>
+                <label for="delimiter_cntl"><?php echo htmlspecialchars(__('delimiter', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=98#delimiter"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <input name="delimiter_cntl" id="delimiter_cntl" type="text" size="10"/>
@@ -1427,88 +1519,98 @@ class CFDBViewShortCodeBuilder extends CFDBView {
     </div>
     <?php // HTML TEMPLATE  ?>
     <div id="template_div" class="shortcodeoptions">
-        <div><?php _e('[cfdb-html] Options', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('[cfdb-html] Options', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="filelinks_cntl"><?php _e('filelinks', 'contact-form-7-to-database-extension') ?></label>
+                <label for="filelinks_cntl"><?php echo htmlspecialchars(__('filelinks', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#filelinks"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="filelinks_cntl" name="filelinks_cntl">
                 <option value=""></option>
-                <option value="url"><?php _e('url', 'contact-form-7-to-database-extension') ?></option>
-                <option value="name"><?php _e('name', 'contact-form-7-to-database-extension') ?></option>
-                <option value="link"><?php _e('link', 'contact-form-7-to-database-extension') ?></option>
-                <option value="img"><?php _e('img', 'contact-form-7-to-database-extension') ?></option>
+                <option value="url"><?php echo htmlspecialchars(__('url', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="name"><?php echo htmlspecialchars(__('name', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="link"><?php echo htmlspecialchars(__('link', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="img"><?php echo htmlspecialchars(__('img', 'contact-form-7-to-database-extension')) ?></option>
             </select>
             <div class="label_box">
-                <label for="stripbr_cntl"><?php _e('stripbr', 'contact-form-7-to-database-extension') ?></label>
+                <label for="stripbr_cntl"><?php echo htmlspecialchars(__('stripbr', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#stripbr"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="stripbr_cntl" name="stripbr_cntl">
                 <option value=""></option>
-                <option value="false"><?php _e('false', 'contact-form-7-to-database-extension') ?></option>
-                <option value="true"><?php _e('true', 'contact-form-7-to-database-extension') ?></option>
+                <option value="false"><?php echo htmlspecialchars(__('false', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="true"><?php echo htmlspecialchars(__('true', 'contact-form-7-to-database-extension')) ?></option>
             </select>
             <div class="label_box">
-                <label for="wpautop_cntl" style="text-decoration:line-through;"><?php _e('wpautop', 'contact-form-7-to-database-extension') ?></label>
+                <label for="wpautop_cntl" style="text-decoration:line-through;"><?php echo htmlspecialchars(__('wpautop', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#wpautop"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="wpautop_cntl" name="wpautop_cntl">
                 <option value=""></option>
-                <option value="false"><?php _e('false', 'contact-form-7-to-database-extension') ?></option>
-                <option value="true"><?php _e('true', 'contact-form-7-to-database-extension') ?></option>
+                <option value="false"><?php echo htmlspecialchars(__('false', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="true"><?php echo htmlspecialchars(__('true', 'contact-form-7-to-database-extension')) ?></option>
             </select>
         </div>
         <div>
             <div class="label_box">
-                <label for="content_cntl"><?php _e('Template', 'contact-form-7-to-database-extension') ?></label>
+                <label for="content_cntl"><?php echo htmlspecialchars(__('Template', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#template"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="add_content" id="add_content"></select><button id="btn_content">&raquo;</button><br/>
-            <textarea name="content_cntl" id="content_cntl" cols="100" rows="10" placeholder="<?php _e('Per-entry HTML using ${field name} variables', 'contact-form-7-to-database-extension') ?>"></textarea>
+            <textarea name="content_cntl" id="content_cntl" cols="100" rows="10" placeholder="<?php echo htmlspecialchars(__('Per-entry HTML using ${field name} variables', 'contact-form-7-to-database-extension')); ?>"></textarea>
         </div>
     </div>
     <?php // URL ENC, URL_ONLY LINK_TEXT      ?>
     <div id="url_link_div" class="shortcodeoptions">
-        <div><?php _e('[cfdb-export-link] Options', 'contact-form-7-to-database-extension'); ?></div>
+        <div><?php echo htmlspecialchars(__('[cfdb-export-link] Options', 'contact-form-7-to-database-extension')); ?></div>
         <div>
             <div class="label_box">
-                <label for="enc_cntl"><?php _e('enc', 'contact-form-7-to-database-extension') ?></label>
+                <label for="enc_cntl"><?php echo htmlspecialchars(__('enc', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=419"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="enc_cntl" name="enc_cntl">
                 <option value=""></option>
+                <option id="xlsx" value="xlsx">
+                    <?php echo htmlspecialchars(__('Excel .xlsx', 'contact-form-7-to-database-extension')); ?>
+                </option>
+                <option id="ods" value="ods">
+                    <?php echo htmlspecialchars(__('OpenDocument .ods', 'contact-form-7-to-database-extension')); ?>
+                </option>
                 <option id="CSVUTF8BOM" value="CSVUTF8BOM">
-                    <?php _e('Excel CSV (UTF8-BOM)', 'contact-form-7-to-database-extension'); ?>
+                    <?php echo htmlspecialchars(__('Excel CSV (UTF8-BOM)', 'contact-form-7-to-database-extension'));; ?>
                 </option>
                 <option id="TSVUTF16LEBOM" value="TSVUTF16LEBOM">
-                    <?php _e('Excel TSV (UTF16LE-BOM)', 'contact-form-7-to-database-extension'); ?>
+                    <?php echo htmlspecialchars(__('Excel TSV (UTF16LE-BOM)', 'contact-form-7-to-database-extension')); ?>
                 </option>
                 <option id="CSVUTF8" value="CSVUTF8">
-                    <?php _e('Plain CSV (UTF-8)', 'contact-form-7-to-database-extension'); ?>
+                    <?php echo htmlspecialchars(__('Plain CSV (UTF-8)', 'contact-form-7-to-database-extension')); ?>
                 </option>
                 <option value="CSVSJIS">
-                    <?php _e('Excel CSV for Japanese (Shift-JIS)', 'contact-form-7-to-database-extension'); ?>
+                    <?php echo htmlspecialchars(__('Excel CSV for Japanese (Shift-JIS)', 'contact-form-7-to-database-extension')); ?>
                 </option>
                 <option id="IQY" value="IQY">
-                    <?php _e('Excel Internet Query', 'contact-form-7-to-database-extension'); ?>
+                    <?php echo htmlspecialchars(__('Excel Internet Query', 'contact-form-7-to-database-extension')); ?>
                 </option>
             </select>
+            <span id="export_link_csvdelim_span" style="display:none">
+                <label for="export_link_csv_delim"><?php echo htmlspecialchars(__('CSV Delimiter', 'contact-form-7-to-database-extension')); ?></label>
+                <input id="export_link_csv_delim" type="text" size="2" value="<?php echo htmlspecialchars(','); ?>"/>
+            </span>
         </div>
         <div>
             <div class="label_box">
-                <label for="urlonly_cntl"><?php _e('urlonly', 'contact-form-7-to-database-extension') ?></label>
+                <label for="urlonly_cntl"><?php echo htmlspecialchars(__('urlonly', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=419#urlonly"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select id="urlonly_cntl" name="urlonly_cntl">
                 <option value=""></option>
-                <option value="true"><?php _e('true', 'contact-form-7-to-database-extension') ?></option>
-                <option value="false"><?php _e('false', 'contact-form-7-to-database-extension') ?></option>
+                <option value="true"><?php echo htmlspecialchars(__('true', 'contact-form-7-to-database-extension')); ?></option>
+                <option value="false"><?php echo htmlspecialchars(__('false', 'contact-form-7-to-database-extension')); ?></option>
             </select>
         </div>
         <div>
             <div class="label_box">
-                <label for="linktext_cntl"><?php _e('linktext', 'contact-form-7-to-database-extension') ?></label>
+                <label for="linktext_cntl"><?php echo htmlspecialchars(__('linktext', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=419#linktext"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <input name="linktext_cntl" id="linktext_cntl" type="text" size="30"/>
@@ -1518,45 +1620,45 @@ class CFDBViewShortCodeBuilder extends CFDBView {
     <div id="beforeafter_div" class="shortcodeoptions">
         <div>
             <div class="label_box">
-                <label for="before_cntl"><?php _e('Before', 'contact-form-7-to-database-extension') ?></label>
+                <label for="before_cntl"><?php echo htmlspecialchars(__('Before', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#before"><img alt="?" src="<?php echo $infoImg ?>"/></a><br/>
             </div>
             <br/>
-            <textarea name="before_cntl" id="before_cntl" cols="100" rows="5" placeholder="<?php _e('Optional HTML/Javascript before the short code output', 'contact-form-7-to-database-extension') ?>"></textarea>
+            <textarea name="before_cntl" id="before_cntl" cols="100" rows="5" placeholder="<?php echo htmlspecialchars(__('Optional HTML/Javascript before the short code output', 'contact-form-7-to-database-extension')); ?>"></textarea>
         </div>
         <div>
             <div class="label_box">
-                <label for="after_cntl"><?php _e('After', 'contact-form-7-to-database-extension') ?></label>
+                <label for="after_cntl"><?php echo htmlspecialchars(__('After', 'contact-form-7-to-database-extension')); ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=284#after"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <br/>
-            <textarea name="after_cntl" id="after_cntl" cols="100" rows="5" placeholder="<?php _e('Optional HTML/Javascript after the short code output', 'contact-form-7-to-database-extension') ?>"></textarea>
+            <textarea name="after_cntl" id="after_cntl" cols="100" rows="5" placeholder="<?php echo htmlspecialchars(__('Optional HTML/Javascript after the short code output', 'contact-form-7-to-database-extension')); ?>"></textarea>
         </div>
     </div>
     <?php // TRANS ?>
     <div id="trans_div" class="shortcodeoptions">
-        <?php _e('Transform', 'contact-form-7-to-database-extension'); ?>
+        <?php echo htmlspecialchars(__('Transform', 'contact-form-7-to-database-extension')); ?>
         <div>
             <div class="label_box">
-                <label for="trans_cntl"><?php _e('trans', 'contact-form-7-to-database-extension') ?></label>
+                <label for="trans_cntl"><?php echo htmlspecialchars(__('trans', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=1118#trans"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="add_trans" id="add_trans"></select>
-            <input name="trans_val" id="trans_val" type="text" size="20" placeholder="<?php _e('PHP function or class', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="trans_val" id="trans_val" type="text" size="20" placeholder="<?php echo htmlspecialchars(__('PHP function or class', 'contact-form-7-to-database-extension')) ?>"/>
             <button id="btn_trans">&raquo;</button>
             <br/>
-            <input name="trans_cntl" id="trans_cntl" type="text" size="100" placeholder="<?php _e('transform expression', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="trans_cntl" id="trans_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('transform expression', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="tsearch_cntl"><?php _e('tsearch', 'contact-form-7-to-database-extension') ?></label>
+                <label for="tsearch_cntl"><?php echo htmlspecialchars(__('tsearch', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=1118#tsearch"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <input name="tsearch_cntl" id="tsearch_cntl" type="text" size="30" placeholder="<?php _e('search text', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="tsearch_cntl" id="tsearch_cntl" type="text" size="30" placeholder="<?php echo htmlspecialchars(__('search text', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="tfilter_cntl"><?php _e('tfilter', 'contact-form-7-to-database-extension') ?></label>
+                <label for="tfilter_cntl"><?php echo htmlspecialchars(__('tfilter', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=1118#tfilter"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
             <select name="tfilter_bool" id="tfilter_bool">
@@ -1575,34 +1677,34 @@ class CFDBViewShortCodeBuilder extends CFDBView {
                 <option value="!==">!==</option>
                 <option value="~~">~~</option>
             </select>
-            <input name="tfilter_val" id="tfilter_val" type="text" size="20" placeholder="<?php _e('value', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="tfilter_val" id="tfilter_val" type="text" size="20" placeholder="<?php echo htmlspecialchars(__('value', 'contact-form-7-to-database-extension')) ?>"/>
             <button id="btn_tfilter">&raquo;</button>
             <span id="span_validate_submit_time" style="display:none;">
-                <button id="btn_validate_submit_time"><?php _e('Validate submit_time', 'contact-form-7-to-database-extension'); ?></button>
-                <a target="_blank" href="http://cfdbplugin.com/?page_id=553"><?php _e('Formats', 'contact-form-7-to-database-extension'); ?></a>
+                <button id="btn_validate_submit_time"><?php echo htmlspecialchars(__('Validate submit_time', 'contact-form-7-to-database-extension')); ?></button>
+                <a target="_blank" href="http://cfdbplugin.com/?page_id=553"><?php echo htmlspecialchars(__('Formats', 'contact-form-7-to-database-extension')); ?></a>
             </span>
             <br/>
-            <input name="tfilter_cntl" id="tfilter_cntl" type="text" size="100" placeholder="<?php _e('filter expression', 'contact-form-7-to-database-extension') ?>"/>
+            <input name="tfilter_cntl" id="tfilter_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('filter expression', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div>
             <div class="label_box">
-                <label for="tlimit_rows_cntl"><?php _e('tlimit', 'contact-form-7-to-database-extension') ?></label>
+                <label for="tlimit_rows_cntl"><?php echo htmlspecialchars(__('tlimit', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=1118#tlimit"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <?php _e('Num Rows', 'contact-form-7-to-database-extension') ?> <input name="tlimit_rows_cntl" id="tlimit_rows_cntl" type="text" size="10" placeholder="<?php _e('number', 'contact-form-7-to-database-extension') ?>"/>
-            <?php _e('Start Row (0)', 'contact-form-7-to-database-extension') ?> <input name="tlimit_start_cntl" id="tlimit_start_cntl" type="text" size="10" placeholder="<?php _e('number', 'contact-form-7-to-database-extension') ?>"/>
+            <?php echo htmlspecialchars(__('Num Rows', 'contact-form-7-to-database-extension')) ?> <input name="tlimit_rows_cntl" id="tlimit_rows_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('number', 'contact-form-7-to-database-extension')) ?>"/>
+            <?php echo htmlspecialchars(__('Start Row (0)', 'contact-form-7-to-database-extension')) ?> <input name="tlimit_start_cntl" id="tlimit_start_cntl" type="text" size="10" placeholder="<?php echo htmlspecialchars(__('number', 'contact-form-7-to-database-extension')) ?>"/>
         </div>
         <div id="torderby_div">
             <div class="label_box">
-                <label for="torderby_cntl"><?php _e('torderby', 'contact-form-7-to-database-extension') ?></label>
+                <label for="torderby_cntl"><?php echo htmlspecialchars(__('torderby', 'contact-form-7-to-database-extension')) ?></label>
                 <a target="_docs" href="http://cfdbplugin.com/?page_id=1118#torderby"><img alt="?" src="<?php echo $infoImg ?>"/></a>
             </div>
-            <select name="add_torderby" id="add_torderby"></select><button id="btn_torderby" placeholder="<?php _e('field', 'contact-form-7-to-database-extension') ?>">&raquo;</button>
-            <input name="torderby_cntl" id="torderby_cntl" type="text" size="100" placeholder="<?php _e('field1,field2,field3', 'contact-form-7-to-database-extension') ?>"/>
+            <select name="add_torderby" id="add_torderby"></select><button id="btn_torderby" placeholder="<?php echo htmlspecialchars(__('field', 'contact-form-7-to-database-extension')) ?>">&raquo;</button>
+            <input name="torderby_cntl" id="torderby_cntl" type="text" size="100" placeholder="<?php echo htmlspecialchars(__('field1,field2,field3', 'contact-form-7-to-database-extension')) ?>"/>
             <select id="torderbydir_cntl" name="torderbydir_cntl">
                 <option value=""></option>
-                <option value="ASC"><?php _e('ASC', 'contact-form-7-to-database-extension') ?></option>
-                <option value="DESC"><?php _e('DESC', 'contact-form-7-to-database-extension') ?></option>
+                <option value="ASC"><?php echo htmlspecialchars(__('ASC', 'contact-form-7-to-database-extension')) ?></option>
+                <option value="DESC"><?php echo htmlspecialchars(__('DESC', 'contact-form-7-to-database-extension')) ?></option>
             </select>
         </div>
     </div>

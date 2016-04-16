@@ -69,7 +69,11 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
     {
         if ($max) {
             $this->object->_query_args['paged'] = TRUE;
-            $this->object->_query_args['offset'] = $offset;
+            if ($offset) {
+                $this->object->_query_args['offset'] = $offset;
+            } else {
+                unset($this->object->_query_args['offset']);
+            }
             $this->object->_query_args['posts_per_page'] = $max;
         }
         return $this->object;
@@ -356,8 +360,10 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
         // final release.
         if ($post_id = @wp_insert_post($post)) {
             $new_entity = $this->object->find($post_id, TRUE);
-            foreach ($new_entity->get_entity() as $key => $value) {
-                $entity->{$key} = $value;
+            if ($new_entity) {
+                foreach ($new_entity->get_entity() as $key => $value) {
+                    $entity->{$key} = $value;
+                }
             }
             // Save properties as post meta
             $this->object->_flush_and_update_postmeta($post_id, $entity instanceof stdClass ? $entity : $entity->get_entity());
@@ -471,7 +477,14 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
         $sql = $this->_wpdb()->prepare("SELECT COUNT(*) FROM {$table_name} WHERE post_type = %s", $object_name);
         $count = $this->_wpdb()->get_var($sql);
         $offset = $count - 1;
-        $results = $this->select()->where_and($conditions)->limit(1, $offset)->run_query();
+        $this->select();
+        if ($conditions) {
+            $this->where_and($conditions);
+        }
+        if ($offset) {
+            $this->limit(1, $offset);
+        }
+        $results = $this->run_query();
         if ($results) {
             $retval = $model ? $this->object->convert_to_model($results[0]) : $results[0];
         }
@@ -545,18 +558,24 @@ class C_DataMapper_Driver_Base extends C_Component
     public function get_table_name()
     {
         global $table_prefix;
-        return $table_prefix . $this->_object_name;
+        return apply_filters('ngg_datamapper_table_name', $table_prefix . $this->_object_name, $this->_object_name);
     }
     /**
      * Looks up using SQL the columns existing in the database
      */
     public function lookup_columns()
     {
-        global $wpdb;
-        $this->_table_columns = array();
-        $sql = "SHOW COLUMNS FROM `{$this->get_table_name()}`";
-        foreach ($wpdb->get_results($sql) as $row) {
-            $this->_table_columns[] = $row->Field;
+        // Avoid doing multiple SHOW COLUMNS if we can help it
+        $key = C_Photocrati_Transient_Manager::create_key('col_in_' . $this->get_table_name(), 'columns');
+        $this->_table_columns = C_Photocrati_Transient_Manager::fetch($key, FALSE);
+        if (!$this->_table_columns) {
+            global $wpdb;
+            $this->_table_columns = array();
+            $sql = "SHOW COLUMNS FROM `{$this->get_table_name()}`";
+            foreach ($wpdb->get_results($sql) as $row) {
+                $this->_table_columns[] = $row->Field;
+            }
+            C_Photocrati_Transient_Manager::update($key, $this->_table_columns);
         }
         return $this->_table_columns;
     }
@@ -955,10 +974,11 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
     {
         $retval = NULL;
         // Get row number for the last row
-        $table_name = $this->object->_clean_column($this->object->get_table_name());
-        $count = $this->_wpdb()->get_var("SELECT COUNT(*) FROM `{$table_name}`");
-        $offset = $count - 1;
-        $results = $this->select()->where_and($conditions)->limit(1, $offset)->run_query();
+        $this->select()->limit(1)->order_by('date', 'DESC');
+        if ($conditions) {
+            $this->where_and($conditions);
+        }
+        $results = $this->run_query();
         if ($results) {
             $retval = $model ? $this->object->convert_to_model($results[0]) : $results[0];
         }
@@ -1561,6 +1581,10 @@ class Mixin_DataMapper_Driver_Base extends Mixin
     public function define_column($name, $type, $default_value = NULL)
     {
         $this->object->_columns[$name] = array('type' => $type, 'default_value' => $default_value);
+    }
+    public function get_defined_column_names()
+    {
+        return array_keys($this->object->_columns);
     }
     public function has_defined_column($name)
     {

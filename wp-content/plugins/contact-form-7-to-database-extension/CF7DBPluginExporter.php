@@ -20,6 +20,7 @@
 */
 
 require_once('CFDBDeobfuscate.php');
+require_once('DereferenceShortcodeVars.php');
 
 class CF7DBPluginExporter {
 
@@ -28,11 +29,12 @@ class CF7DBPluginExporter {
         // Consolidate GET and POST parameters. Allow GET to override POST.
         $params = array_merge($_POST, $_GET);
 
-        if (array_key_exists('content', $params)) {
-            $params['content'] = stripslashes($params['content']);
+//        print_r($params);
+        foreach ($params as $key => $value) {
+            if (is_string($value)) {
+                $params[$key] = stripslashes($value);
+            }
         }
-
-        //print_r($params);
 
         // Assumes coming from CF7DBPlugin::whatsInTheDBPage()
         $key = '3fde789a'; //substr($_COOKIE['PHPSESSID'], - 5); // session_id() doesn't work
@@ -46,13 +48,17 @@ class CF7DBPluginExporter {
         if (!isset($params['enc'])) {
             $params['enc'] = 'CSVUTF8';
         }
-        if (!isset($params['form'])) {
-            $params['form'] = '';
+
+        $formName = '';
+        if (isset($params['form'])) {
+            $deref = new DereferenceShortcodeVars;
+            $formName = $deref->convert($params['form']);
         }
+
         CF7DBPluginExporter::export(
-            $params['form'],
-            $params['enc'],
-            $params);
+                $formName,
+                $params['enc'],
+                $params);
     }
 
     static function export($formName, $encoding, $options) {
@@ -154,6 +160,17 @@ class CF7DBPluginExporter {
             case 'ENTRY':
                 require_once('ExportEntry.php');
                 $exporter = new ExportEntry();
+                $exporter->export($formName, $options);
+                break;
+            case 'xlsx' :
+                require_once('ExportToExcel.php');
+                $exporter = new ExportToExcel();
+                $exporter->export($formName, $options);
+                break;
+            case 'ods' :
+                require_once('ExportToExcel.php');
+                $exporter = new ExportToExcel();
+                $options['format'] = 'ods';
                 $exporter->export($formName, $options);
                 break;
             case 'CSVUTF8':

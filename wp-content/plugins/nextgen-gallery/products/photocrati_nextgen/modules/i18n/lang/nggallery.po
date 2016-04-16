@@ -422,7 +422,7 @@ msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/import_folder.php:56
 #, php-format
-msgid "Done! Successfully imported %s images"
+msgid "Done! Successfully imported %s images. <a href=\"%s\" target=\"_blank\">Manage gallery</a>"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/attach_to_post/templates/attach_to_post.php:12
@@ -448,7 +448,7 @@ msgid "Create a new gallery"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/upload_images.php:13
-msgid "You browser doesn't have Flash, Silverlight, HTML5, or HTML4 support."
+msgid "Your browser doesn't have Flash, Silverlight, HTML5, or HTML4 support."
 msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/upload_images.php:114
@@ -457,11 +457,11 @@ msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/upload_images.php:164
 #, php-format
-msgid "%s images were uploaded successfully"
+msgid "%s images were uploaded successfully. <a href=\"%s\" target=\"_blank\">Manage gallery</a>"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/upload_images.php:167
-msgid "1 image was uploaded successfully"
+msgid "1 image was uploaded successfully. <a href=\"%s\" target=\"_blank\">Manage gallery</a>"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_addgallery_page/templates/upload_images.php:170
@@ -817,6 +817,10 @@ msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_basic_tagcloud/adapter.nextgen_basic_tagcloud_form.php:49
 msgid "The display type that the tagcloud will point its results to"
+msgstr ""
+
+#: products/photocrati_nextgen/modules/nextgen_basic_tagcloud/class.taxonomy_controller.php:114
+msgid "Images tagged &quot;%s&quot;"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/nextgen_basic_tagcloud/module.nextgen_basic_tagcloud.php:163
@@ -1720,6 +1724,10 @@ msgstr ""
 msgid "Page Link to"
 msgstr ""
 
+#: products/photocrati_nextgen/modules/ngglegacy/admin/album.php:616
+msgid "There are no pages to link to"
+msgstr ""
+
 #: products/photocrati_nextgen/modules/ngglegacy/admin/album.php:611
 #: products/photocrati_nextgen/modules/ngglegacy/admin/manage-galleries.php:336
 #: products/photocrati_nextgen/modules/ngglegacy/admin/manage-galleries.php:365
@@ -2410,7 +2418,7 @@ msgid "Server Settings"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/ngglegacy/admin/overview.php:97
-msgid "NextGEN Gallery is one of the most popular WordPress plugins of all time with over 12 million downloads."
+msgid "NextGEN Gallery is one of the most popular WordPress plugins of all time with over 14 million downloads."
 msgstr ""
 
 #: products/photocrati_nextgen/modules/ngglegacy/admin/overview.php:97
@@ -2627,10 +2635,6 @@ msgstr ""
 
 #: products/photocrati_nextgen/modules/ngglegacy/admin/roles.php:26
 msgid "Select the lowest role which should be able to access the following capabilities. NextGEN Gallery supports the standard roles from WordPress."
-msgstr ""
-
-#: products/photocrati_nextgen/modules/ngglegacy/admin/roles.php:27
-msgid "For a more flexible user management you can use the"
 msgstr ""
 
 #: products/photocrati_nextgen/modules/ngglegacy/admin/roles.php:31
@@ -3199,7 +3203,7 @@ msgid "http://www.nextgen-gallery.com"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "The most popular gallery plugin for WordPress and one of the most popular plugins of all time with over 12 million downloads."
+msgid "The most popular gallery plugin for WordPress and one of the most popular plugins of all time with over 14 million downloads."
 msgstr ""
 
 #. Author of the plugin/theme
