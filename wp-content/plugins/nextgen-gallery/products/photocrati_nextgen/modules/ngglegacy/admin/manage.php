@@ -39,10 +39,12 @@ class nggManageGallery {
 		// Should be called via a publish dialog
 		if ( isset($_POST['page']) && $_POST['page'] == 'publish-post' )
 			$this->publish_post();
+
 		//Look for other POST process
 		if ( !empty($_POST) || !empty($_GET) )
 			$this->processor();
 
+        M_NextGen_Admin::emit_do_notices_action();
 	}
 
 	function controller() {
@@ -77,13 +79,13 @@ class nggManageGallery {
 			check_admin_referer('ngg_delpicture');
 			$image = $nggdb->find_image( $this->pid );
 			if ($image) {
+				do_action('ngg_delete_picture', $this->pid, $image);
 				if ($ngg->options['deleteImg']) {
                     $storage = $storage  = C_Gallery_Storage::get_instance();
                     $storage->delete_image($this->pid);
 				}
 				$mapper = C_Image_Mapper::get_instance();
 				$result = $mapper->destroy($this->pid);
-				do_action('ngg_delete_picture', $this->pid);
 
                 if ($result)
                     nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
@@ -238,7 +240,9 @@ class nggManageGallery {
 
 	function render_image_column_6($output='', $picture=array())
 	{
-		$tags = wp_get_object_terms($picture->pid, 'ngg_tag', 'fields=names');
+        global $wp_version;
+        $fields = version_compare($wp_version, '4.6', '<=') ? 'fields=names' : array('fields' => 'names');
+        $tags = wp_get_object_terms($picture->pid, 'ngg_tag', $fields);
 		if (is_array($tags)) $tags = implode(', ', $tags);
 		$tags = esc_html($tags);
 
@@ -680,11 +684,11 @@ class nggManageGallery {
 						foreach ( $_POST['doaction'] as $imageID ) {
 							$image = $nggdb->find_image( $imageID );
 							if ($image) {
+								do_action('ngg_delete_picture', $image->pid, $image);
 								if ($ngg->options['deleteImg']) {
                                     $storage = C_Gallery_Storage::get_instance();
                                     $storage->delete_image($image->pid);
 								}
-                                do_action('ngg_delete_picture', $image->pid);
 								$delete_pic = C_Image_Mapper::get_instance()->destroy($image->pid);
 							}
 						}
@@ -797,16 +801,16 @@ class nggManageGallery {
 			if ( nggGallery::current_user_can( 'NextGEN Edit gallery options' )  && !isset ($_GET['s']) ) {
                 $tags = array('<a>', '<abbr>', '<acronym>', '<address>', '<b>', '<base>', '<basefont>', '<big>', '<blockquote>', '<br>', '<br/>', '<caption>', '<center>', '<cite>', '<code>', '<col>', '<colgroup>', '<dd>', '<del>', '<dfn>', '<dir>', '<div>', '<dl>', '<dt>', '<em>', '<fieldset>', '<font>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>', '<hr>', '<i>', '<img>', '<ins>', '<label>', '<legend>', '<li>', '<menu>', '<noframes>', '<noscript>', '<ol>', '<optgroup>', '<option>', '<p>', '<pre>', '<q>', '<s>', '<samp>', '<select>', '<small>', '<span>', '<strike>', '<strong>', '<sub>', '<sup>', '<table>', '<tbody>', '<td>', '<tfoot>', '<th>', '<thead>', '<tr>', '<tt>', '<u>', '<ul>');
 				$fields = array('title', 'galdesc');
-
+				
 				// Sanitize fields
 				foreach ($fields as $field) {
-					$html = $_POST[$field];
+					$html = stripslashes($_POST[$field]);
 					$html = preg_replace('/\\s+on\\w+=(["\']).*?\\1/i', '', $html);
 					$html = preg_replace('/(<\/[^>]+?>)(<[^>\/][^>]*?>)/', '$1 $2', $html);
 					$html = strip_tags($html, implode('', $tags));
 					$_POST[$field] = $html;
 				}
-
+				
 				// Update the gallery
 				$mapper = C_Gallery_Mapper::get_instance();
 				if ($entity = $mapper->find($this->gid)) {
