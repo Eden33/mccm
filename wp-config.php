@@ -86,9 +86,9 @@ define('WP_DEBUG_LOG',     true);  // Turn logging to wp-content/debug.log ON
 
 
 //next three lines added by edi
-@ini_set('log_errors','On');
+//@ini_set('log_errors','On');
 @ini_set('display_errors','Off');
-@ini_set('error_log','c:/wamp/logs/php_error.log');
+//@ini_set('error_log','c:/wamp/logs/php_error.log');
 //@ini_set('error_log','./error.log');
 
 
