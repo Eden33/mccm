@@ -1,9 +1,10 @@
 <?php
-/**
+/** 
+ * Template Name: Direct Subpages list
+ * Template Post Type: page
+ * 
  * Template for displaying direct sub pages in list form.
  * Used at the moment from "Verein", "Rennen" and "Archiv" page.
- * 
- * Template Name: Direct Subpages list
  */
 ?>
 
