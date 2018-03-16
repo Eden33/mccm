@@ -1,3 +1,7 @@
 # ignore wordpress readme
 /liesmich.html
 /readme.html
+
+# ignore image directories
+/wp-content/gallery
+/wp-content/uploads
