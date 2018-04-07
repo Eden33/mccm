@@ -5,3 +5,9 @@
 # ignore image directories
 /wp-content/gallery
 /wp-content/uploads
+
+# ignore eclipse specific directories/files
+/.settings
+.buildpath
+.project
+

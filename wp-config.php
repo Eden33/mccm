@@ -23,10 +23,10 @@ define('DB_HOST', 'localhost');*/
 //***REMOVED***
 //***REMOVED***
 
-define('DB_NAME', '***REMOVED***');
-define('DB_USER', '***REMOVED***');
-define('DB_PASSWORD', '***REMOVED***');
-define('DB_HOST', '***REMOVED***');
+define('DB_NAME', 'mccm');
+define('DB_USER', 'mccm');
+define('DB_PASSWORD', 'mccm');
+define('DB_HOST', '127.0.0.1');
 
 
 /** Database Charset to use in creating database tables. */
