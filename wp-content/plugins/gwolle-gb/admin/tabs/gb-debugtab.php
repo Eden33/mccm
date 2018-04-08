@@ -14,7 +14,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_page_settingstab_debug( $debug_test ) {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
-		die(__('Cheatin&#8217; uh?', 'gwolle-gb'));
+		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	} ?>
 
 	<input type="hidden" id="gwolle_gb_tab" name="gwolle_gb_tab" value="gwolle_gb_debug" />
@@ -32,7 +32,7 @@ function gwolle_gb_page_settingstab_debug( $debug_test ) {
 		<tr valign="top">
 			<td scope="row" colspan="2">
 				<p>
-					<?php _e('Please provide this information when posting a support message on the support forum.', 'gwolle-gb'); ?>
+					<?php esc_html_e('Please provide this information when posting a support message on the support forum.', 'gwolle-gb'); ?>
 				</p>
 			</td>
 		</tr>
@@ -44,26 +44,26 @@ function gwolle_gb_page_settingstab_debug( $debug_test ) {
 			?>
 
 			<tr>
-				<th><?php _e('Standard test:', 'gwolle-gb'); ?></th>
+				<th><?php esc_html_e('Standard test:', 'gwolle-gb'); ?></th>
 				<td><?php
 					if ( $entry_id == 0 ) {
 						echo '👎 ';
-						_e('Failed.', 'gwolle-gb');
+						esc_html_e('Failed.', 'gwolle-gb');
 					} else {
 						echo '👍 ';
-						_e('Succeeded.', 'gwolle-gb');
+						esc_html_e('Succeeded.', 'gwolle-gb');
 					} ?>
 				</td>
 			</tr>
 			<tr>
-				<th><?php _e('Emoji test:', 'gwolle-gb'); ?></th>
+				<th><?php esc_html_e('Emoji test:', 'gwolle-gb'); ?></th>
 				<td><?php
 					if ( $entry_id_emoji == 0 ) {
 						echo '👎 ';
-						_e('Failed.', 'gwolle-gb');
+						esc_html_e('Failed.', 'gwolle-gb');
 					} else {
 						echo '👍 ';
-						_e('Succeeded.', 'gwolle-gb');
+						esc_html_e('Succeeded.', 'gwolle-gb');
 					} ?>
 				</td>
 			</tr>
@@ -72,10 +72,10 @@ function gwolle_gb_page_settingstab_debug( $debug_test ) {
 		?>
 
 		<tr valign="top">
-			<th scope="row"><label for="blogdescription"><?php _e('Test', 'gwolle-gb'); ?></label></th>
+			<th scope="row"><label for="blogdescription"><?php esc_html_e('Test', 'gwolle-gb'); ?></label></th>
 			<td>
 				<p>
-				<?php _e('This test will attempt to save two test entries, one with standard text and one with Emoji.', 'gwolle-gb'); ?>
+				<?php esc_html_e('This test will attempt to save two test entries, one with standard text and one with Emoji.', 'gwolle-gb'); ?>
 				</p>
 				<p>
 					<input type="submit" name="gwolle_gb_debug" id="gwolle_gb_debug" class="button button-primary" value="<?php esc_attr_e('Run test', 'gwolle-gb'); ?>" />

@@ -43,13 +43,11 @@ function gwolle_gb_akismet( $entry, $action ) {
 		return false;
 	}
 
-
 	if ( is_callable( array( 'Akismet', 'get_api_key' ) ) ) { // Akismet v3.0+
 		$api_key = (bool) Akismet::get_api_key();
 	} else if ( function_exists( 'akismet_get_key' ) ) {
 		$api_key = (bool) akismet_get_key();
 	}
-
 
 	if ( !$api_key ) {
 		// No api key, no glory
@@ -60,7 +58,6 @@ function gwolle_gb_akismet( $entry, $action ) {
 		// No object, no fuss
 		return false;
 	}
-
 
 	$comment = array();
 
@@ -96,7 +93,6 @@ function gwolle_gb_akismet( $entry, $action ) {
 		if ( ! in_array( $key, (array) $ignore ) )
 			$comment["$key"] = $value;
 	}
-
 
 	// Send the thing to the Akismet service
 	return gwolle_gb_akismet_entry_check( $comment, $action );

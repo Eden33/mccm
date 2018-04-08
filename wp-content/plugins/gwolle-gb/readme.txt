@@ -1,9 +1,9 @@
 === Gwolle Guestbook ===
 Contributors: Gwolle, mpol
-Tags: guestbook, guest book, comments, feedback, antispam, review, gastenboek, livre d'or, Gästebuch, libro de visitas, livro de visitas
+Tags: guestbook, guest book, livre d'or, Gästebuch, libro de visitas
 Requires at least: 3.7
-Tested up to: 4.7
-Stable tag: 2.1.4
+Tested up to: 4.9
+Stable tag: 2.4.2
 License: GPLv2 or later
 
 Gwolle Guestbook is the WordPress guestbook you've just been looking for. Beautiful and easy.
@@ -12,9 +12,7 @@ Gwolle Guestbook is the WordPress guestbook you've just been looking for. Beauti
 == Description ==
 
 Gwolle Guestbook is the WordPress guestbook you've just been looking for. Beautiful and easy.
-Gwolle Guestbook is not just another guestbook for WordPress. The goal is to provide an easy and slim way to integrate
-a guestbook into your WordPress powered site. Don't use your 'comment' section the wrong way - install Gwolle Guestbook and
-have a real guestbook.
+Gwolle Guestbook is not just another guestbook for WordPress. The goal is to provide an easy and slim way to integrate a guestbook into your WordPress powered site. Don't use your 'comment' section the wrong way - install Gwolle Guestbook and have a real guestbook.
 
 
 Current features include:
@@ -27,7 +25,7 @@ Current features include:
 * Easy Import from other guestbooks into Gwolle Guestbook.
 * Notification by mail when a new entry has been posted.
 * Moderation, so that you can check an entry before it is visible in your guestbook (optional).
-* 5 anti-spam features, like Honeypot, Nonce, Akismet, Custom Quiz Question and CAPTCHA.
+* 6 anti-spam features, like Honeypot, Nonce, Akismet, Stop Forum Spam, Custom Quiz Question and CAPTCHA.
 * Simple Form Builder to select which form-fields you want to use.
 * Simple Entry Builder with the parts of each entry that you want to show.
 * Multiple guestbooks are possible.
@@ -63,13 +61,38 @@ If you send me an email, I will not reply. Please use the support forum.
 = Translations =
 
 Translations can be added very easily through [GlotPress](https://translate.wordpress.org/projects/wp-plugins/gwolle-gb).
-You can start translating strings there for your locale. They need to be validated though, so if there's no validator yet,
-and you want to apply for being validator (PTE), please post it on the support forum. I will make a request on make/polyglots to
-have you added as validator for this plugin/locale.
+You can start translating strings there for your locale. They need to be validated though, so if there's no validator yet, and you want to apply for being validator (PTE), please post it on the support forum.
+I will make a request on make/polyglots to have you added as validator for this plugin/locale.
 
 = Demo =
 
-Check out the demo at [http://demo.zenoweb.nl](http://demo.zenoweb.nl/wordpress-plugins/gwolle-gb/)
+Check out the demo at [http://demo.zenoweb.nl](http://demo.zenoweb.nl/wordpress-plugins/gwolle-gb/).
+
+= Add-On =
+
+Gwolle Guestbook: The Add-On is the add-on for Gwolle Guestbook that gives extra functionality for your guestbook.
+
+Current features include:
+
+* Meta Fields. Add any field you want; company, phone number, you name it.
+* Social Media Sharing (optional).
+* Star Ratings, with voting and display and Rich Snippets for SEO (optional).
+* Average star rating per guestbook.
+* Preview for the frontend form.
+* Preview for the admin editor form.
+* Admin reply on the frontend with AJAX.
+* Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want.
+* Delete button in each entry for the moderator and author (optional).
+* Permalink button in each entry for easy access (optional).
+* Email button to contact each author (optional).
+* Sitemap support for popular SEO/Sitemap plugins.
+
+You can buy the Add-On at [Mojo Marketplace](http://www.mojomarketplace.com/item/gwolle-gb-add-on) for only $ 9.
+
+= Demo with Add-On =
+
+Check out the demo with the Add-On enabled at [http://demo.zenoweb.nl](http://demo.zenoweb.nl/wordpress-plugins/gwolle-guestbook-the-add-on/).
+
 
 == Installation ==
 
@@ -154,7 +177,9 @@ The header needs to look like this:
 		'isspam',
 		'ischecked',
 		'istrash',
-		'admin_reply'
+		'admin_reply',
+		'book_id',
+		'meta_fields'
 	)
 	?>
 
@@ -163,7 +188,7 @@ The next lines are made up of the content.
 There are some gotchas:
 
 * Date needs to be a UNIX timestamp. For manually creating a timestamp, look at
-the [timestamp generator](http://www.timestampgenerator.com/). When using a formatted date, the plugin will try to read it correctly. If it fails it will use todays date.
+the [timestamp generator](http://www.timestampgenerator.com/). When using a formatted date, the plugin will try to read it correctly. If it fails it will use today's date.
 * Use commas for field separators. If you use Office software like Excel (which is hell) or LibreOffice Calc, set this correctly.
 * Use double quotes around each field. When no quotes are used the import process can break when having quotes or commas inside the content of the entry.
 * The file should be encoded as UTF-8 without BOM to correctly enter special characters.
@@ -212,8 +237,15 @@ If you still have problems there are more options:
 * Honeypot feature: Hidden input field that only spambots would fill in.
 * Nonce: Will verify if you really loaded the page with the form first, before posting an entry. Spambots will just submit the form without having a Nonce.
 * Akismet: Third party spamfilter by Automattic. Works really well, but not everybody likes to use a third party service.
+* Stop Forum Spam: Third party spamfilter. Again, works really well, but not everybody likes to use a third party service.
 * Custom Anti-Spam question: Use a simple quiz question to test if you are human.
 * CAPTCHA: Fill in numbers and letters from an image. This should be your last resort, since it has bad usability and will scare off some visitors.
+
+= I already use WP-SpamShield =
+
+WP-SpamShield is a general plugin for anti-spam that supports the general WordPress forms and many plugins.
+Activating WP-SpamShield will disable the anti-spam features in Gwolle Guestbook and all anti-spam will be handled by WP-SpamShield.
+If you don’t want to use WP-SpamShield’s protection for Gwolle Guestbook, then all you need to do is disable Anti-Spam for Miscellaneous Forms in WP-SpamShield settings.
 
 = I enabled the CAPTCHA, but I don't see it in the form. =
 
@@ -243,6 +275,12 @@ You can set the book_id automatically to the post_id with this shortcode:
 
 	[gwolle_gb book_id="post_id"]
 
+= I only want to show one entry. =
+
+You can use a shortcode parameter for showing just one entry:
+
+	[gwolle_gb_read entry_id="213"]
+
 = I don't see the labels in the form. =
 
 This plugin doesn't apply any CSS to the label elements. It is possible that your label elements have a white color on a white background.
@@ -265,7 +303,7 @@ If it still doesn't work, request the maillog at your hosting provider, or ask i
 There are different shortcodes that you can use. Instead of the '[gwolle_gb]' shortcode, you can use '[gwolle_gb_write]' for just the form,
 and '[gwolle_gb_read]' for the list of entries.
 
-There is also a widget that can display the latest entries in a widget area, that has many options. Alternatively you can use the shortcode '[gwolle_gb_widget] to display the latest entries in widget layout. Parameters are:
+There is also a widget that can display the latest entries in a widget area, that has many options. Alternatively you can use the shortcode '[gwolle_gb_widget]' to display the latest entries in widget layout. Parameters are:
 
 * book_id, int with an ID.
 * num_entries, int with the shown number of messages.
@@ -302,6 +340,8 @@ There are 2 settings that you need to pay attention to. If you saved the setting
 empty header and notice text. It will fill in the default there after saving, but that is okay.
 As long as you saved an empty option, or it is still not-saved, then it will show the translated text from your MO file.
 
+Also, you will want to use the book_id parameter of the shortcode for multiple guestbook.
+
 = I use a theme with AJAX =
 
 Using a theme with AJAX navigation can give issues. Only on the guestbook page is the JavaScript and CSS loaded.
@@ -314,6 +354,12 @@ So you would need to load it on every page to have it available for the guestboo
 	}
 	add_action('wp_enqueue_scripts', 'my_gwolle_gb_register', 20);
 	?>
+
+= I use the Autoptimize plugin =
+
+The frontend scripts will only be loaded on the Guestbook page, so they won't be added to autoptimize.
+You can add 'gwolle_gb_frontend' to both the comma-separated JS and CSS autoptimization exclusion list. That way it will still be loaded right.
+On the autoptimize settings page, you might have to click on "show advanced settings"-button top-right first. More info on troubleshooting in AO's FAQ.
 
 = What capabilities are needed? =
 
@@ -336,7 +382,7 @@ First, this plugin is a guestbook. If you want to use it for a different usecase
 Take a look at the previous question about hooks.
 You are probably wanting to use the hooks for 'gwolle_gb_write' and 'gwolle_gb_button'.
 
-This question gets asked a lot. You can also take a look at the [support forum](https://wordpress.org/support/topic/change-button-text-20/).
+This question gets asked a lot. You can also take a look at the [support forum](https://wordpress.org/support/topic/change-button-text-20/). Also, the add-on has options for text changes.
 
 = Should I really not use WordPress comments for a guestbook? =
 
@@ -357,6 +403,138 @@ But if you don't use standard comments, you can just as easily use the comment s
 
 
 == Changelog ==
+
+= 2.4.2 =
+* 2018-03-30
+* Close div element correctly.
+
+= 2.4.1 =
+* 2018-03-28
+* Improve features for anti-spam.
+* Add readmore link to admin reply excerpt.
+* More improvements to mobile CSS for the form.
+* Fix warning when sending mail to moderator.
+
+= 2.4.0 =
+* 2018-03-25
+* Add checkbox for privacy policy for GDPR compliance.
+* Add option to store or not store IP Address and hostname.
+* Add export for user based on ID or email.
+* Add search on entries page for user based on ID or email.
+* Support meta fields from the add-on in export/import (needs add-on > 1.1.0 ).
+* Fix CSS for mobile form and form in widget.
+* Remove book_id meta key when only one entry is shown.
+* Fix warning on entries page when no entries.
+* Add function 'gwolle_gb_get_postid_biggest_book'.
+* Add function 'gwolle_gb_get_books'.
+* Add hook 'gwolle_gb_delete_entry' when permanently deleting an entry.
+* Delete log entries in that hook.
+* Use correct URL in RSS feed.
+* Add filters for email body.
+* Fix docs for filters for email subject.
+* Drop support for Shortcake feature plugin.
+* Rephrase Cheating messages like WP Core.
+
+= 2.3.10 =
+* 2018-02-10
+* Small CSS update for login form.
+* Small CSS update for .gb-entry.
+* Small CSS update for Twenty Fifteen.
+* Update strings for add-on 1.0.7.
+
+= 2.3.9 =
+* 2018-01-26
+* Support book_id for export and import (thanks therab).
+
+= 2.3.8 =
+* 2018-01-18
+* Editor.php: Heading for City should really be City.
+* Improve and add translator comments.
+
+= 2.3.7 =
+* 2017-11-29
+* Rename header field in settingsform for compatibility.
+* Improve some text strings (thanks dedotombo).
+* Update strings for add-on 1.0.5.
+
+= 2.3.6 =
+* 2017-11-06
+* Update strings for add-on 1.0.4.
+
+= 2.3.5 =
+* 2017-11-04
+* Add classes with dashes.
+* Small text updates.
+
+= 2.3.4 =
+* 2017-10-19
+* When editing date, show new date after saving the date.
+* Add translations for Add-On to GlotPress of gwolle-gb.
+
+= 2.3.3 =
+* 2017-10-06
+* Use more of esc_html function in translatable strings.
+* Add advertisement page for Add-On.
+
+= 2.3.2 =
+* 2017-09-06
+* Editor: also save when no change was made.
+* Add total counter to frontend list.
+
+= 2.3.1 =
+* 2017-08-29
+* Use correct class for menu-counters.
+
+= 2.3.0 =
+* 2017-08-28
+* Add Stop Forum Spam service for anti-spam.
+* GET parameter entry_id with single view is back (back from the dead).
+* Set admin styling to off by default.
+* Remove "display:inline" for span elements, it is default.
+* Don't use 'strip_tags' anymore.
+* Add Metabox on frontend for more action links.
+* Move Edit link and add Ajax icon to metabox in new file gb-metabox.php.
+* Attach event listener to frontend metabox after posting with AJAX.
+* Add option for Admin Avatar (thanks roots84).
+* Add more filters to frontend form.
+* Add filter 'gwolle_gb_entry_read_add_content_before'.
+* Add filter 'gwolle_gb_entries_list_before'.
+* Add action 'gwolle_gb_notsaved_entry_frontend'.
+* Add filter 'gwolle_gb_get_emoji'.
+* Add function 'gwolle_gb_get_entry_ids'.
+* Add callbacks for infinite scroll and AJAX post.
+* Set border between entries to solid instead of dotted.
+* Fix counters on entries.php page.
+* Admin Editor.php uses less globals now.
+* Use esc_html functions for translatable strings.
+* Store entry total for frontend pagination in a transient.
+* Store counter for admin menu in a transient.
+* Add gwolle_gb_is_author function.
+* Small refactor of AJAX JS code.
+* Move functions for settings, user/author, cache and shortcake to their own files.
+
+= 2.2.1 =
+* 2017-05-24
+* Fix jQuery incompatibility in Super Simple Slider (for widget).
+
+= 2.2.0 =
+* 2017-05-03
+* Add setting to refuse spam entries.
+* Update counter in admin menu and toolbar after check of entry.
+* Add translator comments for Trash (in Trash / to Trash).
+* Add CSS text-color to pagination.
+* Add filter 'gwolle_gb_entries_list_class'.
+* Add filter 'gwolle_gb_entry_class'.
+* Add filter 'gwolle_gb_widget_list_class'.
+* Add filter 'gwolle_gb_widget_item_class'.
+* Add filter 'gwolle_gb_author_link_rel'.
+* Add filter 'gwolle_gb_bbcode_link_rel'.
+* Use wp_kses_post function for sanitizing content and admin_reply.
+* Use sanitize_text_field function for sanitizing other fields.
+* Better testing for 'post_id' in shortcodes.
+* Some better explanations at the Settingspage for anti-spam.
+* Do not concatenate strings, but use sprintf on about page.
+* Move functions for post-meta to own file.
 
 = 2.1.5 =
 * 2017-02-13

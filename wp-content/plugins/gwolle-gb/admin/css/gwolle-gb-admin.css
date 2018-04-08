@@ -73,6 +73,14 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 	overflow: auto;
 }
 
+/* Preview */
+#gwolle_gb_editor_postbox_preview .gb-entry.gb-entry-count_0 {
+	border-width: 0px;
+}
+#gwolle_gb_editor_postbox_preview .gb-metabox {
+	border-top: 1px #ddd solid;
+}
+
 
 /* Entries.php */
 
@@ -302,4 +310,32 @@ span.gwolle_gb_ajax {
 	bottom: 0;
 	left: 150px;
 
+}
+
+
+/* Add-On admin page */
+#gwolle-gb-addon-screenshot {
+	background-image: url("../gfx/screenshot-entry-with-metabox-open.png");
+	width: 100%;
+	height: 240px;
+	background-size: cover;
+}
+
+
+/* Add-On */
+form.gwolle_gb_options.gwolle_gb_social img {
+	margin-bottom: -8px;
+}
+form.gwolle_gb_options.gwolle_gb_strings td {
+	padding-left: 0px;
+}
+
+.gb-form-top-add-new,
+.gb-form-name-add-new,
+.gb-form-city-add-new,
+.gb-form-email-add-new,
+.gb-form-website-add-new,
+.gb-form-message-add-new,
+.gb-string-add-new {
+	cursor: pointer;
 }

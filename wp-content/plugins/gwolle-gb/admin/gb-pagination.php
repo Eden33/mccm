@@ -43,8 +43,8 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 	$highDotsMade = false;
 	$pages_done = array();
 
-	$pagination .= '<span class="displaying-num">' . __('Showing:', 'gwolle-gb') .
-		' ' . $firstentry . ' &#8211; ' . $lastentry . ' ' . __('of', 'gwolle-gb') . ' ' . $count . '</span>
+	$pagination .= '<span class="displaying-num">' . esc_html__('Showing:', 'gwolle-gb') .
+		' ' . $firstentry . ' &#8211; ' . $lastentry . ' ' . esc_html__('of', 'gwolle-gb') . ' ' . $count . '</span>
 		';
 
 

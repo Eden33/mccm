@@ -63,8 +63,8 @@ function gwolle_gb_get_messages() {
 	$gwolle_gb_error_fields = gwolle_gb_get_error_fields();
 	if ( is_array( $gwolle_gb_error_fields ) && !empty( $gwolle_gb_error_fields ) ) {
 		// There was no data filled in, even though that was mandatory.
-		$returned_messages[] = '<p class="error_fields"><strong>' . __('There were errors submitting your guestbook entry.', 'gwolle-gb') . '</strong></p>';
-		$returned_messages[] = '<p class="error_fields" style="display: none;">' . print_r( $gwolle_gb_error_fields, true ) . '</p>';
+		$returned_messages[] = '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There were errors submitting your guestbook entry.', 'gwolle-gb') . '</strong></p>';
+		$returned_messages[] = '<p class="error_fields gb-error-fields" style="display: none;">' . print_r( $gwolle_gb_error_fields, true ) . '</p>';
 	}
 	foreach ( $gwolle_gb_messages as $message ) {
 		$returned_messages[] = $message;

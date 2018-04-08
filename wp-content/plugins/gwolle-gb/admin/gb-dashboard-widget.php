@@ -108,35 +108,35 @@ function gwolle_gb_dashboard() {
 					?>
 					<p class="row-actions" id="entry-actions-<?php echo $entry->get_id(); ?>">
 						<span class="gwolle_gb_edit">
-							<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/editor.php&entry_id=<?php echo $entry->get_id(); ?>" title="<?php _e('Edit entry', 'gwolle-gb'); ?>"><?php _e('Edit', 'gwolle-gb'); ?></a>
+							<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/editor.php&entry_id=<?php echo $entry->get_id(); ?>" title="<?php esc_attr_e('Edit entry', 'gwolle-gb'); ?>"><?php esc_html_e('Edit', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_check">
 							&nbsp;|&nbsp;
-							<a id="check_<?php echo $entry->get_id(); ?>" href="#" class="vim-a" title="<?php _e('Check entry', 'gwolle-gb'); ?>"><?php _e('Check', 'gwolle-gb'); ?></a>
+							<a id="check_<?php echo $entry->get_id(); ?>" href="#" class="vim-a" title="<?php esc_attr_e('Check entry', 'gwolle-gb'); ?>"><?php esc_html_e('Check', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_uncheck">
 							&nbsp;|&nbsp;
-							<a id="uncheck_<?php echo $entry->get_id(); ?>" href="#" class="vim-u" title="<?php _e('Uncheck entry', 'gwolle-gb'); ?>"><?php _e('Uncheck', 'gwolle-gb'); ?></a>
+							<a id="uncheck_<?php echo $entry->get_id(); ?>" href="#" class="vim-u" title="<?php esc_attr_e('Uncheck entry', 'gwolle-gb'); ?>"><?php esc_html_e('Uncheck', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_spam">
 							&nbsp;|&nbsp;
-							<a id="spam_<?php echo $entry->get_id(); ?>" href="#" class="vim-s vim-destructive" title="<?php _e('Mark entry as spam.', 'gwolle-gb'); ?>"><?php _e('Spam', 'gwolle-gb'); ?></a>
+							<a id="spam_<?php echo $entry->get_id(); ?>" href="#" class="vim-s vim-destructive" title="<?php esc_attr_e('Mark entry as spam.', 'gwolle-gb'); ?>"><?php esc_html_e('Spam', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_unspam">
 							&nbsp;|&nbsp;
-							<a id="unspam_<?php echo $entry->get_id(); ?>" href="#" class="vim-a" title="<?php _e('Mark entry as not-spam.', 'gwolle-gb'); ?>"><?php _e('Not spam', 'gwolle-gb'); ?></a>
+							<a id="unspam_<?php echo $entry->get_id(); ?>" href="#" class="vim-a" title="<?php esc_attr_e('Mark entry as not-spam.', 'gwolle-gb'); ?>"><?php esc_html_e('Not spam', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_trash">
 							&nbsp;|&nbsp;
-							<a id="trash_<?php echo $entry->get_id(); ?>" href="#" class="vim-d vim-destructive" title="<?php _e('Move entry to trash.', 'gwolle-gb'); ?>"><?php _e('Trash', 'gwolle-gb'); ?></a>
+							<a id="trash_<?php echo $entry->get_id(); ?>" href="#" class="vim-d vim-destructive" title="<?php esc_attr_e('Move entry to trash.', 'gwolle-gb'); ?>"><?php /* translators: Move to Trashcan */ esc_html_e('Trash', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_untrash">
 							&nbsp;|&nbsp;
-							<a id="untrash_<?php echo $entry->get_id(); ?>" href="#" class="vim-d" title="<?php _e('Recover entry from trash.', 'gwolle-gb'); ?>"><?php _e('Untrash', 'gwolle-gb'); ?></a>
+							<a id="untrash_<?php echo $entry->get_id(); ?>" href="#" class="vim-d" title="<?php esc_attr_e('Recover entry from trash.', 'gwolle-gb'); ?>"><?php esc_html_e('Untrash', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_ajax">
 							&nbsp;|&nbsp;
-							<a id="ajax_<?php echo $entry->get_id(); ?>" href="#" class="ajax vim-d vim-destructive" title="<?php _e('Please wait...', 'gwolle-gb'); ?>"><?php _e('Wait...', 'gwolle-gb'); ?></a>
+							<a id="ajax_<?php echo $entry->get_id(); ?>" href="#" class="ajax vim-d vim-destructive" title="<?php esc_attr_e('Please wait...', 'gwolle-gb'); ?>"><?php esc_html_e('Wait...', 'gwolle-gb'); ?></a>
 						</span>
 					</p>
 				</div>
@@ -147,12 +147,12 @@ function gwolle_gb_dashboard() {
 
 		</div>
 		<p class="textright">
-			<a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="button"><?php _e('Refresh', 'gwolle-gb'); ?></a>
-			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=all" class="button button-primary"><?php _e('View all', 'gwolle-gb'); ?></a>
-			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked" class="button button-primary"><?php _e('View new', 'gwolle-gb'); ?></a>
+			<a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="button"><?php esc_html_e('Refresh', 'gwolle-gb'); ?></a>
+			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=all" class="button button-primary"><?php esc_html_e('View all', 'gwolle-gb'); ?></a>
+			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked" class="button button-primary"><?php esc_html_e('View new', 'gwolle-gb'); ?></a>
 		</p><?php
 	} else {
-		echo '<p>' . __('No new and unchecked guestbook entries.', 'gwolle-gb') . '</p>';
+		echo '<p>' . esc_html__('No new and unchecked guestbook entries.', 'gwolle-gb') . '</p>';
 	}
 }
 
@@ -164,6 +164,6 @@ function gwolle_gb_dashboard_setup() {
 		return;
 	}
 
-	wp_add_dashboard_widget('gwolle_gb_dashboard', __('Guestbook (new entries)', 'gwolle-gb'), 'gwolle_gb_dashboard');
+	wp_add_dashboard_widget('gwolle_gb_dashboard', esc_html__('Guestbook (new entries)', 'gwolle-gb'), 'gwolle_gb_dashboard');
 }
 add_action('wp_dashboard_setup', 'gwolle_gb_dashboard_setup');

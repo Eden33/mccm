@@ -83,7 +83,7 @@ $.fn.sss = function(options) {
 	next = slider.find('.sssnext'),
 	prev = slider.find('.sssprev');
 
-	$(window).load(function() {
+	$(window).on('load', function() {
 
 	slider.css({paddingBottom: get_height(target)}).click(function(e) {
 	clicked = $(e.target);
@@ -109,7 +109,7 @@ $.fn.sss = function(options) {
 
 
 //jQuery(document).ready(function($) {
-	jQuery('.gwolle_gb_widget_slider').sss({
+	jQuery('.gwolle-gb-widget-slider').sss({
 		slideShow  : true,  // Set to false to prevent SSS from automatically animating.
 		startOn    : 0,     // Slide to display first. Uses array notation (0 = first slide).
 		transition : 600,   // Length (in milliseconds) of the fade transition.

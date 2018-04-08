@@ -13,15 +13,16 @@ function gwolle_gb_page_editor() {
 	global $entry;
 
 	if ( function_exists('current_user_can') && !current_user_can('moderate_comments') ) {
-		die(__('Cheatin&#8217; uh?', 'gwolle-gb'));
+		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
 	gwolle_gb_admin_enqueue();
+	gwolle_gb_register();
 
 	$gwolle_gb_errors = '';
 	$gwolle_gb_messages = '';
 
-	$sectionHeading = __('Edit guestbook entry', 'gwolle-gb');
+	$sectionHeading = esc_html__('Edit guestbook entry', 'gwolle-gb');
 
 	// Always fetch the requested entry, so we can compare the $entry and the $_POST.
 	$entry = new gwolle_gb_entry();
@@ -33,13 +34,13 @@ function gwolle_gb_page_editor() {
 	}
 	if ( isset($entry_id) && $entry_id > 0 ) {
 		$result = $entry->load( $entry_id );
-		if ( !$result ) {
-			$gwolle_gb_messages .= '<p class="error">' . __('Entry could not be found.', 'gwolle-gb') . '</p>';
+		if ( ! $result ) {
+			$gwolle_gb_messages .= '<p class="error">' . esc_html__('Entry could not be found.', 'gwolle-gb') . '</p>';
 			$gwolle_gb_errors = 'error';
-			$sectionHeading = __('Guestbook entry (error)', 'gwolle-gb');
+			$sectionHeading = esc_html__('Guestbook entry (error)', 'gwolle-gb');
 		}
 	} else {
-		$sectionHeading = __('New guestbook entry', 'gwolle-gb');
+		$sectionHeading = esc_html__('New guestbook entry', 'gwolle-gb');
 	}
 
 
@@ -56,21 +57,15 @@ function gwolle_gb_page_editor() {
 				$continue_on_nonce_checked = true;
 			} else {
 				// Nonce is invalid, so considered spam
-				$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+				$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 				$gwolle_gb_errors = 'error';
 			}
 		}
 
 		if ( !isset($_POST['entry_id']) || $_POST['entry_id'] != $entry->get_id() ) {
-			$gwolle_gb_messages .= '<p class="error">' . __('Something strange happened.', 'gwolle-gb') . '</p>';
+			$gwolle_gb_messages .= '<p class="error">' . esc_html__('Something strange happened.', 'gwolle-gb') . '</p>';
 			$gwolle_gb_errors = 'error';
 		} else if ( $_POST['entry_id'] > 0 && $entry->get_id() > 0 && $continue_on_nonce_checked ) {
-
-			/*
-			 * Check for changes, and update accordingly. This is on an Existing Entry!
-			 */
-
-			$changed = false;
 
 			/* Set as checked or unchecked, and by whom */
 			if ( isset($_POST['ischecked']) && $_POST['ischecked'] == 'on' ) {
@@ -80,12 +75,10 @@ function gwolle_gb_page_editor() {
 					$entry->set_checkedby( $user_id );
 					gwolle_gb_add_log_entry( $entry->get_id(), 'entry-checked' );
 					gwolle_gb_clear_cache( $entry );
-					$changed = true;
 				}
 			} else if ( $entry->get_ischecked() == 1 ) {
 				$entry->set_ischecked( false );
 				gwolle_gb_add_log_entry( $entry->get_id(), 'entry-unchecked' );
-				$changed = true;
 			}
 
 			/* Set as spam or not, and submit as ham or spam to Akismet service */
@@ -94,19 +87,17 @@ function gwolle_gb_page_editor() {
 					$entry->set_isspam( true );
 					$result = gwolle_gb_akismet( $entry, 'submit-spam' );
 					if ( $result ) {
-						$gwolle_gb_messages .= '<p>' . __('Submitted as Spam to the Akismet service.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Submitted as Spam to the Akismet service.', 'gwolle-gb') . '</p>';
 					}
 					gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-spam' );
-					$changed = true;
 				}
 			} else if ( $entry->get_isspam() == 1 ) {
 				$entry->set_isspam( false );
 				$result = gwolle_gb_akismet( $entry, 'submit-ham' );
 				if ( $result ) {
-					$gwolle_gb_messages .= '<p>' . __('Submitted as Ham to the Akismet service.', 'gwolle-gb') . '</p>';
+					$gwolle_gb_messages .= '<p>' . esc_html__('Submitted as Ham to the Akismet service.', 'gwolle-gb') . '</p>';
 				}
 				gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
-				$changed = true;
 			}
 
 			/* Set as trash or not */
@@ -114,12 +105,10 @@ function gwolle_gb_page_editor() {
 				if ( $_POST['istrash'] == 'on' && $entry->get_istrash() == 0 ) {
 					$entry->set_istrash( true );
 					gwolle_gb_add_log_entry( $entry->get_id(), 'entry-trashed' );
-					$changed = true;
 				}
 			} else if ( $entry->get_istrash() == 1 ) {
 				$entry->set_istrash( false );
 				gwolle_gb_add_log_entry( $entry->get_id(), 'entry-untrashed' );
-				$changed = true;
 			}
 
 			/* Check if the content changed, and update accordingly */
@@ -127,7 +116,6 @@ function gwolle_gb_page_editor() {
 				if ( trim($_POST['gwolle_gb_content']) != $entry->get_content() ) {
 					$entry_content = gwolle_gb_maybe_encode_emoji( $_POST['gwolle_gb_content'], 'content' );
 					$entry->set_content( $entry_content );
-					$changed = true;
 				}
 			}
 
@@ -139,7 +127,6 @@ function gwolle_gb_page_editor() {
 			}
 			if ( $website != $entry->get_author_website() ) {
 				$entry->set_author_website( $website );
-				$changed = true;
 			}
 
 			/* Check if the author_origin changed, and update accordingly */
@@ -147,7 +134,6 @@ function gwolle_gb_page_editor() {
 				if ( $_POST['gwolle_gb_author_origin'] != $entry->get_author_origin() ) {
 					$entry_origin = gwolle_gb_maybe_encode_emoji( $_POST['gwolle_gb_author_origin'], 'author_origin' );
 					$entry->set_author_origin( $entry_origin );
-					$changed = true;
 				}
 			}
 
@@ -165,7 +151,6 @@ function gwolle_gb_page_editor() {
 						gwolle_gb_add_log_entry( $entry->get_id(), 'admin-reply-updated' );
 					}
 					$entry->set_admin_reply( $gwolle_gb_admin_reply );
-					$changed = true;
 				}
 			}
 
@@ -181,7 +166,6 @@ function gwolle_gb_page_editor() {
 				if ( $_POST['gwolle_gb_author_name'] != $entry->get_author_name() ) {
 					$entry_name = gwolle_gb_maybe_encode_emoji( $_POST['gwolle_gb_author_name'], 'author_name' );
 					$entry->set_author_name( $entry_name );
-					$changed = true;
 				}
 			}
 
@@ -189,7 +173,6 @@ function gwolle_gb_page_editor() {
 			if ( isset($_POST['gwolle_gb_timestamp']) && is_numeric($_POST['gwolle_gb_timestamp']) ) {
 				if ( $_POST['gwolle_gb_timestamp'] != $entry->get_datetime() ) {
 					$entry->set_datetime( (int) $_POST['gwolle_gb_timestamp'] );
-					$changed = true;
 				}
 			}
 
@@ -197,24 +180,20 @@ function gwolle_gb_page_editor() {
 			if ( isset($_POST['gwolle_gb_book_id']) && is_numeric($_POST['gwolle_gb_book_id']) ) {
 				if ( $_POST['gwolle_gb_book_id'] != $entry->get_book_id() ) {
 					$entry->set_book_id( (int) $_POST['gwolle_gb_book_id'] );
-					$changed = true;
 				}
 			}
 
 			/* Save the entry */
-			if ( $changed ) {
-				$result = $entry->save();
-				if ($result ) {
-					gwolle_gb_add_log_entry( $entry->get_id(), 'entry-edited' );
-					$gwolle_gb_messages .= '<p>' . __('Changes saved.', 'gwolle-gb') . '</p>';
-					do_action( 'gwolle_gb_save_entry_admin', $entry );
-				} else {
-					$gwolle_gb_messages .= '<p>' . __('Error happened during saving.', 'gwolle-gb') . '</p>';
-					$gwolle_gb_errors = 'error';
-				}
+			$result = $entry->save();
+			if ($result ) {
+				gwolle_gb_add_log_entry( $entry->get_id(), 'entry-edited' );
+				$gwolle_gb_messages .= '<p>' . esc_html__('Changes saved.', 'gwolle-gb') . '</p>';
+				do_action( 'gwolle_gb_save_entry_admin', $entry );
 			} else {
-				$gwolle_gb_messages .= '<p>' . __('Entry was not changed.', 'gwolle-gb') . '</p>';
+				$gwolle_gb_messages .= '<p>' . esc_html__('Error happened during saving.', 'gwolle-gb') . '</p>';
+				$gwolle_gb_errors = 'error';
 			}
+
 
 			/* Remove permanently */
 			if ( isset($_POST['istrash']) && $_POST['istrash'] == 'on' && isset($_POST['remove']) && $_POST['remove'] == 'on' ) {
@@ -223,7 +202,7 @@ function gwolle_gb_page_editor() {
 					$entry->set_id(0);
 					$changed = true;
 					// Overwrite any other message, only removal is relevant.
-					$gwolle_gb_messages = '<p>' . __('Entry removed.', 'gwolle-gb') . '</p>';
+					$gwolle_gb_messages = '<p>' . esc_html__('Entry removed.', 'gwolle-gb') . '</p>';
 					$entry = new gwolle_gb_entry();
 				}
 			}
@@ -272,7 +251,7 @@ function gwolle_gb_page_editor() {
 			} else {
 				$form_setting = gwolle_gb_get_setting( 'form' );
 				if ( isset($form_setting['form_message_enabled']) && $form_setting['form_message_enabled']  === 'true' && isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory']  === 'true' ) {
-					$gwolle_gb_messages .= '<p>' . __('Entry has no content, even though that is mandatory.', 'gwolle-gb') . '</p>';
+					$gwolle_gb_messages .= '<p>' . esc_html__('Entry has no content, even though that is mandatory.', 'gwolle-gb') . '</p>';
 					$gwolle_gb_errors = 'error';
 				} else {
 					$data['content'] = '';
@@ -313,7 +292,8 @@ function gwolle_gb_page_editor() {
 
 			/* Network Information */
 			$set_author_ip = apply_filters( 'gwolle_gb_set_author_ip', true );
-			if ( $set_author_ip ) {
+			$set_author_ip2 = get_option('gwolle_gb-store_ip', 'true');
+			if ( $set_author_ip && ($set_author_ip2 == 'true') ) {
 				$entry->set_author_ip( $_SERVER['REMOTE_ADDR'] );
 				$entry->set_author_host( gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) );
 			}
@@ -322,15 +302,15 @@ function gwolle_gb_page_editor() {
 			if ( $saved ) {
 				$result2 = $entry->save();
 				if ( $result1 && $result2 ) {
-					$gwolle_gb_messages .= '<p>' . __('Entry saved.', 'gwolle-gb') . '</p>';
+					$gwolle_gb_messages .= '<p>' . esc_html__('Entry saved.', 'gwolle-gb') . '</p>';
 					gwolle_gb_clear_cache( $entry );
 					do_action( 'gwolle_gb_save_entry_admin', $entry );
 				} else {
-					$gwolle_gb_messages .= '<p>' . __('Error happened during saving.', 'gwolle-gb') . '</p>';
+					$gwolle_gb_messages .= '<p>' . esc_html__('Error happened during saving.', 'gwolle-gb') . '</p>';
 					$gwolle_gb_errors = 'error';
 				}
 			} else {
-				$gwolle_gb_messages .= '<p>' . __('Entry was not saved.', 'gwolle-gb') . '</p>';
+				$gwolle_gb_messages .= '<p>' . esc_html__('Entry was not saved.', 'gwolle-gb') . '</p>';
 			}
 
 		}
@@ -368,22 +348,31 @@ function gwolle_gb_page_editor() {
 				<div id="post-body" class="metabox-holder columns-2">
 					<div id="post-body-content">
 						<?php
-						add_meta_box('gwolle_gb_editor_postbox_content', __('Guestbook entry','gwolle-gb'), 'gwolle_gb_editor_postbox_content', 'gwolle_gb_editor', 'normal');
-						add_meta_box('gwolle_gb_editor_postbox_website', __('Website', 'gwolle-gb'), 'gwolle_gb_editor_postbox_website', 'gwolle_gb_editor', 'normal');
-						add_meta_box('gwolle_gb_editor_postbox_author', __('Author', 'gwolle-gb'), 'gwolle_gb_editor_postbox_author', 'gwolle_gb_editor', 'normal');
-						add_meta_box('gwolle_gb_editor_postbox_admin_reply', __('Admin Reply', 'gwolle-gb'), 'gwolle_gb_editor_postbox_admin_reply', 'gwolle_gb_editor', 'normal');
+						add_meta_box('gwolle_gb_editor_postbox_content', esc_html__('Guestbook entry','gwolle-gb'), 'gwolle_gb_editor_postbox_content', 'gwolle_gb_editor', 'normal');
+						add_meta_box('gwolle_gb_editor_postbox_website', esc_html__('Website', 'gwolle-gb'), 'gwolle_gb_editor_postbox_website', 'gwolle_gb_editor', 'normal');
+						add_meta_box('gwolle_gb_editor_postbox_author', esc_html__('City', 'gwolle-gb'), 'gwolle_gb_editor_postbox_author_origin', 'gwolle_gb_editor', 'normal');
+						add_meta_box('gwolle_gb_editor_postbox_admin_reply', esc_html__('Admin Reply', 'gwolle-gb'), 'gwolle_gb_editor_postbox_admin_reply', 'gwolle_gb_editor', 'normal');
 
-						do_meta_boxes( 'gwolle_gb_editor', 'normal', '' );
+						$active = is_plugin_active( 'gwolle-gb-addon/gwolle-gb-addon.php' ); // true or false
+						$entry_id = $entry->get_id();
+						if ( $active && function_exists( 'gwolle_gb_addon_editor_postbox_preview' ) && $entry_id > 0 ) {
+							add_meta_box('gwolle_gb_editor_postbox_preview', esc_html__('Preview','gwolle-gb'), 'gwolle_gb_addon_editor_postbox_preview', 'gwolle_gb_editor', 'normal');
+						}
+						if ( $active && function_exists( 'gwolle_gb_addon_editor_metabox_meta' ) ) {
+							add_meta_box('gwolle_gb_addon_editor_metabox_meta', esc_html__('Meta Fields','gwolle-gb'), 'gwolle_gb_addon_editor_metabox_meta', 'gwolle_gb_editor', 'normal');
+						}
+
+						do_meta_boxes( 'gwolle_gb_editor', 'normal', $entry );
 						?>
 					</div>
 					<div id="postbox-container-1" class="postbox-container">
 						<?php
-						add_meta_box('gwolle_gb_editor_postbox_icons', __('Visibility', 'gwolle-gb'), 'gwolle_gb_editor_postbox_icons', 'gwolle_gb_editor', 'side');
-						add_meta_box('gwolle_gb_editor_postbox_actions', __('Actions', 'gwolle-gb'), 'gwolle_gb_editor_postbox_actions', 'gwolle_gb_editor', 'side');
-						add_meta_box('gwolle_gb_editor_postbox_details', __('Details','gwolle-gb'), 'gwolle_gb_editor_postbox_details', 'gwolle_gb_editor', 'side');
-						add_meta_box('gwolle_gb_editor_postbox_logs', __('Log','gwolle-gb'), 'gwolle_gb_editor_postbox_logs', 'gwolle_gb_editor', 'side');
+						add_meta_box('gwolle_gb_editor_postbox_icons', esc_html__('Visibility', 'gwolle-gb'), 'gwolle_gb_editor_postbox_icons', 'gwolle_gb_editor', 'side');
+						add_meta_box('gwolle_gb_editor_postbox_actions', esc_html__('Actions', 'gwolle-gb'), 'gwolle_gb_editor_postbox_actions', 'gwolle_gb_editor', 'side');
+						add_meta_box('gwolle_gb_editor_postbox_details', esc_html__('Details','gwolle-gb'), 'gwolle_gb_editor_postbox_details', 'gwolle_gb_editor', 'side');
+						add_meta_box('gwolle_gb_editor_postbox_logs', esc_html__('Log','gwolle-gb'), 'gwolle_gb_editor_postbox_logs', 'gwolle_gb_editor', 'side');
 
-						do_meta_boxes( 'gwolle_gb_editor', 'side', '' );
+						do_meta_boxes( 'gwolle_gb_editor', 'side', $entry );
 						?>
 					</div>
 				</div>
@@ -394,13 +383,13 @@ function gwolle_gb_page_editor() {
 }
 
 
-function gwolle_gb_editor_postbox_content() {
-	global $entry;
+function gwolle_gb_editor_postbox_content( $entry ) {
 	?>
-	<textarea rows="10" name="gwolle_gb_content" id="gwolle_gb_content" class="wp-exclude-emoji" tabindex="1" placeholder="<?php _e('Message', 'gwolle-gb'); ?>"><?php echo gwolle_gb_sanitize_output( $entry->get_content() ); ?></textarea>
+	<textarea rows="10" name="gwolle_gb_content" id="gwolle_gb_content" class="wp-exclude-emoji" tabindex="1" placeholder="<?php esc_html_e('Message', 'gwolle-gb'); ?>"><?php echo gwolle_gb_sanitize_output( $entry->get_content(), 'content' ); ?></textarea>
 	<?php
 	if (get_option('gwolle_gb-showLineBreaks', 'false') == 'false') {
-		echo '<p>' . sprintf( __('Line breaks will not be visible to the visitors due to your <a href="%s">settings</a>.', 'gwolle-gb'), 'admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php' ) . '</p>';
+		/* translators: %s is a link */
+		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %ssettings%s.', 'gwolle-gb'), '<a href="admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php">', '</a>' ) . '</p>';
 	}
 	$form_setting = gwolle_gb_get_setting( 'form' );
 
@@ -410,16 +399,16 @@ function gwolle_gb_editor_postbox_content() {
 		wp_enqueue_style('gwolle_gb_markitup_css', plugins_url('../frontend/markitup/style.css', __FILE__), false, GWOLLE_GB_VER,  'screen');
 
 		$dataToBePassed = array(
-			'bold'      => /* translators: MarkItUp menu item */ __('Bold', 'gwolle-gb' ),
-			'italic'    => /* translators: MarkItUp menu item */ __('Italic', 'gwolle-gb' ),
-			'bullet'    => /* translators: MarkItUp menu item */ __('Bulleted List', 'gwolle-gb' ),
-			'numeric'   => /* translators: MarkItUp menu item */ __('Numeric List', 'gwolle-gb' ),
-			'picture'   => /* translators: MarkItUp menu item */ __('Picture', 'gwolle-gb' ),
-			'source'    => /* translators: MarkItUp menu item */ __('Source', 'gwolle-gb' ),
-			'link'      => /* translators: MarkItUp menu item */ __('Link', 'gwolle-gb' ),
-			'linktext'  => /* translators: MarkItUp menu item */ __('Your text to link...', 'gwolle-gb' ),
-			'clean'     => /* translators: MarkItUp menu item */ __('Clean', 'gwolle-gb' ),
-			'emoji'     => /* translators: MarkItUp menu item */ __('Emoji', 'gwolle-gb' )
+			'bold'      => /* translators: MarkItUp menu item */ esc_html__('Bold', 'gwolle-gb' ),
+			'italic'    => /* translators: MarkItUp menu item */ esc_html__('Italic', 'gwolle-gb' ),
+			'bullet'    => /* translators: MarkItUp menu item */ esc_html__('Bulleted List', 'gwolle-gb' ),
+			'numeric'   => /* translators: MarkItUp menu item */ esc_html__('Numeric List', 'gwolle-gb' ),
+			'picture'   => /* translators: MarkItUp menu item */ esc_html__('Picture', 'gwolle-gb' ),
+			'source'    => /* translators: MarkItUp menu item */ esc_html__('Source', 'gwolle-gb' ),
+			'link'      => /* translators: MarkItUp menu item */ esc_html__('Link', 'gwolle-gb' ),
+			'linktext'  => /* translators: MarkItUp menu item */ esc_html__('Your text to link...', 'gwolle-gb' ),
+			'clean'     => /* translators: MarkItUp menu item */ esc_html__('Clean', 'gwolle-gb' ),
+			'emoji'     => /* translators: MarkItUp menu item */ esc_html__('Emoji', 'gwolle-gb' )
 		);
 		wp_localize_script( 'markitup_set', 'gwolle_gb_localize', $dataToBePassed );
 
@@ -436,29 +425,29 @@ function gwolle_gb_editor_postbox_content() {
 }
 
 
-function gwolle_gb_editor_postbox_website() {
-	global $entry;
+function gwolle_gb_editor_postbox_website( $entry ) {
 	?>
-	<input type="url" name="gwolle_gb_author_website" tabindex="2" value="<?php echo gwolle_gb_sanitize_output( $entry->get_author_website() ); ?>" id="author_website" placeholder="<?php _e('Website', 'gwolle-gb'); ?>" />
-	<p><?php _e("Example: <code>http://www.example.com/</code>", 'gwolle-gb'); ?></p>
+	<input type="url" name="gwolle_gb_author_website" tabindex="2" value="<?php echo gwolle_gb_sanitize_output( $entry->get_author_website() ); ?>" id="author_website" placeholder="<?php esc_attr_e('Website', 'gwolle-gb'); ?>" />
+	<p><?php
+		/* translators: %s is a code element */
+		echo sprintf( esc_html__('Example: %shttp://www.example.com/%s', 'gwolle-gb'), '<code>', '</code>' ); ?>
+	</p>
 	<?php
 }
 
 
-function gwolle_gb_editor_postbox_author() {
-	global $entry;
+function gwolle_gb_editor_postbox_author_origin( $entry ) {
 	?>
-	<input type="text" name="gwolle_gb_author_origin" tabindex="3" class="wp-exclude-emoji" placeholder="<?php _e('City', 'gwolle-gb'); ?>" value="<?php echo gwolle_gb_sanitize_output( $entry->get_author_origin() ); ?>" id="author_origin" />
+	<input type="text" name="gwolle_gb_author_origin" tabindex="3" class="wp-exclude-emoji" placeholder="<?php esc_attr_e('City', 'gwolle-gb'); ?>" value="<?php echo gwolle_gb_sanitize_output( $entry->get_author_origin() ); ?>" id="author_origin" />
 	<?php
 }
 
 
-function gwolle_gb_editor_postbox_admin_reply() {
-	global $entry;
+function gwolle_gb_editor_postbox_admin_reply( $entry ) {
 	$form_setting = gwolle_gb_get_setting( 'form' );
 	?>
 
-	<textarea rows="10" name="gwolle_gb_admin_reply" id="gwolle_gb_admin_reply" class="wp-exclude-emoji" tabindex="4" placeholder="<?php _e('Admin Reply', 'gwolle-gb'); ?>"><?php echo gwolle_gb_sanitize_output( $entry->get_admin_reply() ); ?></textarea>
+	<textarea rows="10" name="gwolle_gb_admin_reply" id="gwolle_gb_admin_reply" class="wp-exclude-emoji" tabindex="4" placeholder="<?php esc_attr_e('Admin Reply', 'gwolle-gb'); ?>"><?php echo gwolle_gb_sanitize_output( $entry->get_admin_reply(), 'admin_reply' ); ?></textarea>
 
 	<?php
 	if ( isset($form_setting['form_bbcode_enabled']) && $form_setting['form_bbcode_enabled']  === 'true' ) {
@@ -477,7 +466,7 @@ function gwolle_gb_editor_postbox_admin_reply() {
 	$admin_reply_name = gwolle_gb_is_moderator( $entry->get_admin_reply_uid() );
 	if ( $admin_reply_name ) { ?>
 		<p class="gb-admin_reply_uid"><?php
-			$admin_reply_header = '<em>' . __('Admin Reply by:', 'gwolle-gb') . ' ' . $admin_reply_name . '</em>';
+			$admin_reply_header = '<em>' . esc_html__('Admin Reply by:', 'gwolle-gb') . ' ' . $admin_reply_name . '</em>';
 			echo apply_filters( 'gwolle_gb_admin_reply_header', $admin_reply_header, $entry );
 			?>
 		</p><?php
@@ -486,19 +475,20 @@ function gwolle_gb_editor_postbox_admin_reply() {
 	<p>
 		<input type="checkbox" name="gwolle_gb_admin_reply_mail_author" id="gwolle_gb_admin_reply_mail_author">
 		<label for="gwolle_gb_admin_reply_mail_author">
-		<?php _e('Mail the author a notification about this reply.', 'gwolle-gb'); ?>
+		<?php esc_html_e('Mail the author a notification about this reply.', 'gwolle-gb'); ?>
 		</label>
 	</p>
 
 	<?php
 	if (get_option('gwolle_gb-showLineBreaks', 'false') == 'false') {
-		echo '<p>' . sprintf( __('Line breaks will not be visible to the visitors due to your <a href="%s">settings</a>.', 'gwolle-gb'), 'admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php' ) . '</p>';
+		/* translators: %s is a link */
+		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %ssettings%s.', 'gwolle-gb'), '<a href="admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php">', '</a>' ) . '</p>';
 	}
 }
 
 
-function gwolle_gb_editor_postbox_icons() {
-	global $entry, $class;
+function gwolle_gb_editor_postbox_icons( $entry ) {
+	global $class;
 
 	$class = '';
 	// Attach 'spam' to class if the entry is spam
@@ -549,32 +539,32 @@ function gwolle_gb_editor_postbox_icons() {
 	// Optional Icon column where CSS is being used to show them or not
 	if ( get_option('gwolle_gb-showEntryIcons', 'true') === 'true' ) { ?>
 		<span class="entry-icons <?php echo $class; ?>">
-			<span class="visible-icon" title="<?php _e('Visible', 'gwolle-gb'); ?>"></span>
-			<span class="invisible-icon" title="<?php _e('Invisible', 'gwolle-gb'); ?>"></span>
-			<span class="spam-icon" title="<?php _e('Spam', 'gwolle-gb'); ?>"></span>
-			<span class="trash-icon" title="<?php _e('Trash', 'gwolle-gb'); ?>"></span>
+			<span class="visible-icon" title="<?php esc_attr_e('Visible', 'gwolle-gb'); ?>"></span>
+			<span class="invisible-icon" title="<?php esc_attr_e('Invisible', 'gwolle-gb'); ?>"></span>
+			<span class="spam-icon" title="<?php esc_attr_e('Spam', 'gwolle-gb'); ?>"></span>
+			<span class="trash-icon" title="<?php /* translators: Is in Trashcan */ esc_attr_e('In Trash', 'gwolle-gb'); ?>"></span>
 			<?php
-			$admin_reply = gwolle_gb_sanitize_output( $entry->get_admin_reply() );
+			$admin_reply = gwolle_gb_sanitize_output( $entry->get_admin_reply(), 'admin_reply' );
 			if ( strlen( trim($admin_reply) ) > 0 ) { ?>
-				<span class="admin_reply-icon" title="<?php _e('Admin Replied', 'gwolle-gb'); ?>"></span><?php
+				<span class="admin_reply-icon" title="<?php esc_attr_e('Admin Replied', 'gwolle-gb'); ?>"></span><?php
 			} ?>
-			<span class="gwolle_gb_ajax" title="<?php _e('Wait...', 'gwolle-gb'); ?>"></span>
+			<span class="gwolle_gb_ajax" title="<?php esc_attr_e('Wait...', 'gwolle-gb'); ?>"></span>
 		</span>
 		<?php
 	}
 
 	if ( $entry->get_id() == 0 ) {
-		echo '<h3 class="h3_invisible">' . __('This entry is not yet visible.', 'gwolle-gb') . '</h3>';
+		echo '<h3 class="h3_invisible">' . esc_html__('This entry is not yet visible.', 'gwolle-gb') . '</h3>';
 	} else {
 		if ($entry->get_ischecked() == 1 && $entry->get_isspam() == 0 && $entry->get_istrash() == 0 ) {
 			echo '
-				<h3 class="h3_visible">' . __('This entry is Visible.', 'gwolle-gb') . '</h3>
-				<h3 class="h3_invisible" style="display:none;">' . __('This entry is Not Visible.', 'gwolle-gb') . '</h3>
+				<h3 class="h3_visible">' . esc_html__('This entry is Visible.', 'gwolle-gb') . '</h3>
+				<h3 class="h3_invisible" style="display:none;">' . esc_html__('This entry is Not Visible.', 'gwolle-gb') . '</h3>
 				';
 		} else {
 			echo '
-				<h3 class="h3_visible" style="display:none;">' . __('This entry is Visible.', 'gwolle-gb') . '</h3>
-				<h3 class="h3_invisible">' . __('This entry is Not Visible.', 'gwolle-gb') . '</h3>
+				<h3 class="h3_visible" style="display:none;">' . esc_html__('This entry is Visible.', 'gwolle-gb') . '</h3>
+				<h3 class="h3_invisible">' . esc_html__('This entry is Not Visible.', 'gwolle-gb') . '</h3>
 				';
 		} ?>
 
@@ -584,7 +574,7 @@ function gwolle_gb_editor_postbox_icons() {
 					echo 'checked="checked"';
 				}
 				?> />
-			<?php _e('Checked', 'gwolle-gb'); ?>
+			<?php esc_html_e('Checked', 'gwolle-gb'); ?>
 		</label>
 
 		<br />
@@ -594,7 +584,7 @@ function gwolle_gb_editor_postbox_icons() {
 					echo 'checked="checked"';
 				}
 				?> />
-			<?php _e('Spam', 'gwolle-gb'); ?>
+			<?php esc_html_e('Spam', 'gwolle-gb'); ?>
 		</label>
 
 		<br />
@@ -604,7 +594,7 @@ function gwolle_gb_editor_postbox_icons() {
 					echo 'checked="checked"';
 				}
 				?> />
-			<?php _e('Trash', 'gwolle-gb'); ?>
+			<?php /* translators: Is in Trashcan */ esc_html_e('In Trash', 'gwolle-gb'); ?>
 		</label>
 
 		<?php
@@ -613,7 +603,7 @@ function gwolle_gb_editor_postbox_icons() {
 		<br />
 		<label for="remove" class="selectit gwolle_gb_remove <?php echo $trashclass; ?>">
 			<input id="remove" name="remove" type="checkbox" />
-			<?php _e('Remove this entry Permanently.', 'gwolle-gb'); ?>
+			<?php esc_html_e('Remove this entry Permanently.', 'gwolle-gb'); ?>
 		</label>
 		<?php
 	} ?>
@@ -626,31 +616,31 @@ function gwolle_gb_editor_postbox_icons() {
 }
 
 
-function gwolle_gb_editor_postbox_actions() {
-	global $entry, $class;
+function gwolle_gb_editor_postbox_actions( $entry ) {
+	global $class;
 	if ( $entry->get_id() > 0 ) {
 		echo '
 		<p class="gwolle_gb_actions ' . $class . '">
 			<span class="gwolle_gb_check">
-				<a id="check_' . $entry->get_id() . '" href="#" class="vim-a" title="' . __('Check entry', 'gwolle-gb') . '">' . __('Check', 'gwolle-gb') . '</a>
+				<a id="check_' . $entry->get_id() . '" href="#" class="vim-a" title="' . esc_attr__('Check entry', 'gwolle-gb') . '">' . esc_html__('Check', 'gwolle-gb') . '</a>
 			</span>
 			<span class="gwolle_gb_uncheck">
-				<a id="uncheck_' . $entry->get_id() . '" href="#" class="vim-u" title="' . __('Uncheck entry', 'gwolle-gb') . '">' . __('Uncheck', 'gwolle-gb') . '</a>
+				<a id="uncheck_' . $entry->get_id() . '" href="#" class="vim-u" title="' . esc_attr__('Uncheck entry', 'gwolle-gb') . '">' . esc_html__('Uncheck', 'gwolle-gb') . '</a>
 			</span>
 			<span class="gwolle_gb_spam">&nbsp;|&nbsp;
-				<a id="spam_' . $entry->get_id() . '" href="#" class="vim-s vim-destructive" title="' . __('Mark entry as spam.', 'gwolle-gb') . '">' . __('Spam', 'gwolle-gb') . '</a>
+				<a id="spam_' . $entry->get_id() . '" href="#" class="vim-s vim-destructive" title="' . esc_attr__('Mark entry as spam.', 'gwolle-gb') . '">' . esc_html__('Spam', 'gwolle-gb') . '</a>
 			</span>
 			<span class="gwolle_gb_unspam">&nbsp;|&nbsp;
-				<a id="unspam_' . $entry->get_id() . '" href="#" class="vim-a" title="' . __('Mark entry as not-spam.', 'gwolle-gb') . '">' . __('Not spam', 'gwolle-gb') . '</a>
+				<a id="unspam_' . $entry->get_id() . '" href="#" class="vim-a" title="' . esc_attr__('Mark entry as not-spam.', 'gwolle-gb') . '">' . esc_html__('Not spam', 'gwolle-gb') . '</a>
 			</span>
 			<span class="gwolle_gb_trash">&nbsp;|&nbsp;
-				<a id="trash_' . $entry->get_id() . '" href="#" class="vim-d vim-destructive" title="' . __('Move entry to trash.', 'gwolle-gb') . '">' . __('Trash', 'gwolle-gb') . '</a>
+				<a id="trash_' . $entry->get_id() . '" href="#" class="vim-d vim-destructive" title="' . esc_attr__('Move entry to trash.', 'gwolle-gb') . '">' . /* translators: Move to Trashcan */ esc_html__('Trash', 'gwolle-gb') . '</a>
 			</span>
 			<span class="gwolle_gb_untrash">&nbsp;|&nbsp;
-				<a id="untrash_' . $entry->get_id() . '" href="#" class="vim-d" title="' . __('Recover entry from trash.', 'gwolle-gb') . '">' . __('Untrash', 'gwolle-gb') . '</a>
+				<a id="untrash_' . $entry->get_id() . '" href="#" class="vim-d" title="' . esc_attr__('Recover entry from trash.', 'gwolle-gb') . '">' . esc_html__('Untrash', 'gwolle-gb') . '</a>
 			</span><br />
 			<span class="gwolle_gb_ajax">
-				<a id="ajax_' . $entry->get_id() . '" href="#" class="ajax vim-d vim-destructive" title="' . __('Please wait...', 'gwolle-gb') . '">' . __('Wait...', 'gwolle-gb') . '</a>
+				<a id="ajax_' . $entry->get_id() . '" href="#" class="ajax vim-d vim-destructive" title="' . esc_attr__('Please wait...', 'gwolle-gb') . '">' . esc_html__('Wait...', 'gwolle-gb') . '</a>
 			</span><br />
 		</p>
 		';
@@ -658,74 +648,72 @@ function gwolle_gb_editor_postbox_actions() {
 }
 
 
-function gwolle_gb_editor_postbox_details() {
-	global $entry;
+function gwolle_gb_editor_postbox_details( $entry ) {
 	?>
 	<p>
-		<?php _e('Author', 'gwolle-gb'); ?>: <span><?php
+		<?php esc_html_e('Author', 'gwolle-gb'); ?>: <span><?php
 			if ( $entry->get_author_name() ) {
 				echo gwolle_gb_sanitize_output( $entry->get_author_name() );
 			} else {
-				echo '<i>(' . __('Unknown', 'gwolle-gb') . ')</i>';
+				echo '<i>(' . esc_html__('Unknown', 'gwolle-gb') . ')</i>';
 			} ?>
 		</span><br />
-		<?php _e('Email', 'gwolle-gb'); ?>: <span><?php
+		<?php esc_html_e('Email', 'gwolle-gb'); ?>: <span><?php
 			if (strlen(str_replace( ' ', '', $entry->get_author_email() )) > 0) {
 				echo gwolle_gb_sanitize_output( $entry->get_author_email() );
 			} else {
-				echo '<i>(' . __('Unknown', 'gwolle-gb') . ')</i>';
+				echo '<i>(' . esc_html__('Unknown', 'gwolle-gb') . ')</i>';
 			} ?>
 		</span><br />
-		<?php _e('Date and time', 'gwolle-gb'); ?>: <span><?php
+		<?php esc_html_e('Date and time', 'gwolle-gb'); ?>: <span class="gb-datetime"><?php
 			if ( $entry->get_datetime() > 0 ) {
 				echo date_i18n( get_option('date_format'), $entry->get_datetime() ) . ', ';
 				echo date_i18n( get_option('time_format'), $entry->get_datetime() );
 			} else {
-				echo '(' . __('Not yet', 'gwolle-gb') . ')';
+				echo '(' . esc_html__('Not yet', 'gwolle-gb') . ')';
 			} ?>
 		</span><br />
-		<?php _e("Author's IP-address", 'gwolle-gb'); ?>: <span><?php
+		<?php esc_html_e("Author's IP-address", 'gwolle-gb'); ?>: <span><?php
 			if (strlen( $entry->get_author_ip() ) > 0) {
 				echo '<a href="http://www.db.ripe.net/whois?form_type=simple&searchtext=' . $entry->get_author_ip() . '"
-						title="' . __('Whois search for this IP', 'gwolle-gb') . '" target="_blank">
+						title="' . esc_attr__('Whois search for this IP', 'gwolle-gb') . '" target="_blank">
 							' . $entry->get_author_ip() . '
 						</a>';
 			} else {
-				echo '<i>(' . __('Unknown', 'gwolle-gb') . ')</i>';
+				echo '<i>(' . esc_html__('Unknown', 'gwolle-gb') . ')</i>';
 			} ?>
 		</span><br />
-		<?php _e('Host', 'gwolle-gb'); ?>: <span><?php
+		<?php esc_html_e('Host', 'gwolle-gb'); ?>: <span><?php
 			if (strlen( $entry->get_author_host() ) > 0) {
 				echo $entry->get_author_host();
 			} else {
-				echo '<i>(' . __('Unknown', 'gwolle-gb') . ')</i>';
+				echo '<i>(' . esc_html__('Unknown', 'gwolle-gb') . ')</i>';
 			} ?>
 		</span><br />
-		<?php _e('Book', 'gwolle-gb'); ?>: <span><?php echo $entry->get_book_id(); ?>
+		<?php esc_html_e('Book', 'gwolle-gb'); ?>: <span><?php echo $entry->get_book_id(); ?>
 		</span><br />
 		<span class="gwolle_gb_edit_meta">
-			<a href="#" title="<?php _e('Edit metadata', 'gwolle-gb'); ?>"><?php _e('Edit', 'gwolle-gb'); ?></a>
+			<a href="#" title="<?php esc_attr_e('Edit metadata', 'gwolle-gb'); ?>"><?php esc_html_e('Edit', 'gwolle-gb'); ?></a>
 		</span>
 	</p>
 
 	<div class="gwolle_gb_edit_meta_inputs">
-		<label for="gwolle_gb_author_name"><?php _e('Author', 'gwolle-gb'); ?>: </label><br />
+		<label for="gwolle_gb_author_name"><?php esc_html_e('Author', 'gwolle-gb'); ?>: </label><br />
 		<input type="text" name="gwolle_gb_author_name" size="24" value="<?php echo gwolle_gb_sanitize_output( $entry->get_author_name() ); ?>" id="gwolle_gb_author_name" class="wp-exclude-emoji" /><br />
 
-		<span><?php _e('Date and time', 'gwolle-gb'); ?>: </span><br />
+		<span><?php esc_html_e('Date and time', 'gwolle-gb'); ?>: </span><br />
 		<div class="gwolle_gb_date"><?php
 			gwolle_gb_touch_time( $entry ); ?>
 		</div>
 
-		<label for="gwolle_gb_book_id"><?php _e('Book ID', 'gwolle-gb'); ?>: </label><br />
+		<label for="gwolle_gb_book_id"><?php esc_html_e('Book ID', 'gwolle-gb'); ?>: </label><br />
 		<input type="text" name="gwolle_gb_book_id" size="4" value="<?php echo (int) $entry->get_book_id(); ?>" id="gwolle_gb_book_id" />
 	</div>
 
 	<?php
 }
 
-function gwolle_gb_editor_postbox_logs() {
-	global $entry;
+function gwolle_gb_editor_postbox_logs( $entry ) {
 	?>
 	<ul>
 		<?php
@@ -733,7 +721,7 @@ function gwolle_gb_editor_postbox_logs() {
 			echo '<li>';
 			echo date_i18n( get_option('date_format'), $entry->get_datetime() ) . ', ';
 			echo date_i18n( get_option('time_format'), $entry->get_datetime() );
-			echo ': ' . /* translators: Log on Editor */ __('Written', 'gwolle-gb') . '</li>';
+			echo ': ' . /* translators: Log on Editor */ esc_html__('Written', 'gwolle-gb') . '</li>';
 
 			$log_entries = gwolle_gb_get_log_entries( $entry->get_id() );
 			if ( is_array($log_entries) && !empty($log_entries) ) {
@@ -742,7 +730,7 @@ function gwolle_gb_editor_postbox_logs() {
 				}
 			}
 		} else {
-			echo '<li>(' . __('No log yet.', 'gwolle-gb') . ')</li>';
+			echo '<li>(' . esc_html__('No log yet.', 'gwolle-gb') . ')</li>';
 		}
 		?>
 	</ul>

@@ -24,19 +24,24 @@ function gwolle_gb_adminmenu() {
 	 */
 
 	// Counter
-	$count_unchecked = gwolle_gb_get_entry_count(
-		array(
-			'checked' => 'unchecked',
-			'trash'   => 'notrash',
-			'spam'    => 'nospam'
-		)
-	);
+	$count_unchecked = get_transient( 'gwolle_gb_menu_counter' );
+	if ( false === $count_unchecked ) {
+		$count_unchecked = (int) gwolle_gb_get_entry_count(
+			array(
+				'checked' => 'unchecked',
+				'trash'   => 'notrash',
+				'spam'    => 'nospam'
+			)
+		);
+		set_transient( 'gwolle_gb_menu_counter', $count_unchecked, DAY_IN_SECONDS );
+	}
 
 	// Main navigation entry
 	// Admin page: admin/welcome.php
+	$menu_text = esc_html__('Guestbook', 'gwolle-gb') . '<span class="awaiting-mod count-' . $count_unchecked . '"><span>' . $count_unchecked . '</span></span>';
 	add_menu_page(
-		__('Guestbook', 'gwolle-gb'), /* translators: Menu entry */
-		__('Guestbook', 'gwolle-gb') . "<span class='update-plugins count-" . $count_unchecked . "'><span class='theme-count'>" . $count_unchecked . "</span></span>",
+		esc_html__('Guestbook', 'gwolle-gb'), /* translators: Menu entry */
+		$menu_text,
 		'moderate_comments',
 		GWOLLE_GB_FOLDER . '/gwolle-gb.php',
 		'gwolle_gb_welcome',
@@ -44,26 +49,27 @@ function gwolle_gb_adminmenu() {
 	);
 
 	// Admin page: admin/entries.php
+	$menu_text = esc_html__('Entries', 'gwolle-gb') . '<span class="awaiting-mod count-' . $count_unchecked . '"><span>' . $count_unchecked . '</span></span>';
 	add_submenu_page(
 		GWOLLE_GB_FOLDER . '/gwolle-gb.php',
-		__('Entries', 'gwolle-gb'), /* translators: Menu entry */
-		__('Entries', 'gwolle-gb') . "<span class='update-plugins count-" . $count_unchecked . "'><span class='theme-count'>" . $count_unchecked . "</span></span>",
+		esc_html__('Entries', 'gwolle-gb'), /* translators: Menu entry */
+		$menu_text,
 		'moderate_comments',
 		GWOLLE_GB_FOLDER . '/entries.php',
 		'gwolle_gb_page_entries'
 	);
 
 	// Admin page: admin/editor.php
-	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', __('Entry editor', 'gwolle-gb'), /* translators: Menu entry */ __('Add/Edit entry', 'gwolle-gb'), 'moderate_comments', GWOLLE_GB_FOLDER . '/editor.php', 'gwolle_gb_page_editor' );
+	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Entry editor', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Add/Edit entry', 'gwolle-gb'), 'moderate_comments', GWOLLE_GB_FOLDER . '/editor.php', 'gwolle_gb_page_editor' );
 
 	// Admin page: admin/settings.php
-	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', __('Settings', 'gwolle-gb'), /* translators: Menu entry */ __('Settings', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/settings.php', 'gwolle_gb_page_settings' );
+	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Settings', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Settings', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/settings.php', 'gwolle_gb_page_settings' );
 
 	// Admin page: admin/import.php
-	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', __('Import', 'gwolle-gb'), /* translators: Menu entry */ __('Import', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/import.php', 'gwolle_gb_page_import' );
+	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Import', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Import', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/import.php', 'gwolle_gb_page_import' );
 
 	// Admin page: admin/export.php
-	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', __('Export', 'gwolle-gb'), /* translators: Menu entry */ __('Export', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/export.php', 'gwolle_gb_page_export' );
+	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Export', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Export', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/export.php', 'gwolle_gb_page_export' );
 }
 add_action('admin_menu', 'gwolle_gb_adminmenu');
 
@@ -97,60 +103,6 @@ function gwolle_gb_links( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_action_links', 'gwolle_gb_links', 10, 2 );
-
-
-/*
- * Handle the $_POST for the Frontend on a new entry.
- * Use this action, since $post is populated and we can use get_the_ID().
- */
-function gwolle_gb_handle_post() {
-	if ( !is_admin() ) {
-		// Frontend Handling of $_POST, only one form
-		if ( isset($_POST['gwolle_gb_function']) && $_POST['gwolle_gb_function'] == 'add_entry' ) {
-			gwolle_gb_frontend_posthandling();
-		}
-	}
-}
-add_action('wp', 'gwolle_gb_handle_post');
-
-
-/*
- * Register Settings
- */
-function gwolle_gb_register_settings() {
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-admin_style',       'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-adminMailContent',  'strval' ); // empty by default
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-akismet-active',    'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-antispam-question', 'strval' ); // empty string
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-antispam-answer',   'strval' ); // empty string
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-authorMailContent', 'strval' ); // empty by default
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-entries_per_page',  'intval' ); // 20
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-entriesPerPage',    'intval' ); // 20
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-excerpt_length',    'intval' ); // 0
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-form',              'strval' ); // serialized Array, but initially empty
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-form_ajax',         'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-header',            'strval' ); // string, but initially empty
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-honeypot',          'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-labels_float',      'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-linkAuthorWebsite', 'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-longtext',          'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-mail-from',         'strval' ); // empty string
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-mail_admin_replyContent', 'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-mail_author',       'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-moderate-entries',  'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-navigation',        'intval' ); // 0 or 1, default is 0
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-nonce',             'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-notifyByMail',      'strval' ); // array, but initially empty
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-notice',            'strval' ); // string, but initially empty
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-paginate_all',      'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-read',              'strval' ); // serialized Array, but initially empty
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-require_login',     'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-showEntryIcons',    'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-showLineBreaks',    'strval' ); // 'false'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb-showSmilies',       'strval' ); // 'true'
-	register_setting( 'gwolle_gb_options', 'gwolle_gb_version',           'strval' ); // string, mind the underscore
-}
-add_action( 'admin_init', 'gwolle_gb_register_settings' );
 
 
 /*
@@ -235,8 +187,8 @@ function gwolle_gb_register() {
 	wp_register_script( 'gwolle_gb_frontend_js', plugins_url('frontend/js/gwolle-gb-frontend.js', __FILE__), 'jquery', GWOLLE_GB_VER, true );
 	$dataToBePassed = array(
 		'ajax_url'     => admin_url('admin-ajax.php'),
-		'load_message' => /* translators: Infinite Scroll */ __('Loading more...', 'gwolle-gb'),
-		'end_message'  => /* translators: Infinite Scroll */ __('No more entries.', 'gwolle-gb')
+		'load_message' => /* translators: Infinite Scroll */ esc_html__('Loading more...', 'gwolle-gb'),
+		'end_message'  => /* translators: Infinite Scroll */ esc_html__('No more entries.', 'gwolle-gb')
 	);
 	wp_localize_script( 'gwolle_gb_frontend_js', 'gwolle_gb_frontend_script', $dataToBePassed );
 
@@ -254,92 +206,6 @@ function gwolle_gb_load_lang() {
 	load_plugin_textdomain( 'gwolle-gb', false, GWOLLE_GB_FOLDER . '/lang' );
 }
 add_action('plugins_loaded', 'gwolle_gb_load_lang');
-
-
-/*
- * Add the RSS link to the html head.
- * There is no post_content yet, but we do have get_the_ID().
- */
-function gwolle_gb_rss_head() {
-	if ( is_singular() && function_exists('has_shortcode') ) {
-		$post = get_post( get_the_ID() );
-		if ( has_shortcode( $post->post_content, 'gwolle_gb' ) || has_shortcode( $post->post_content, 'gwolle_gb_read' ) ) {
-
-			// Remove standard RSS links.
-			remove_action( 'wp_head', 'feed_links', 2 );
-			remove_action( 'wp_head', 'feed_links_extra', 3 );
-
-			// And add our own RSS link.
-			global $wp_rewrite;
-			$permalinks = $wp_rewrite->permalink_structure;
-			if ( $permalinks ) {
-				?>
-				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e("Guestbook Feed", 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/feed/gwolle_gb" />
-				<?php
-			} else {
-				?>
-				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e("Guestbook Feed", 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/?feed=gwolle_gb" />
-				<?php
-			}
-		}
-	}
-}
-add_action('wp_head', 'gwolle_gb_rss_head', 1);
-
-
-/*
- * Set meta_keys so we can find the post with the shortcode back.
- */
-function gwolle_gb_save_post($id) {
-
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		return;
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX )
-		return;
-	if ( defined( 'DOING_CRON' ) && DOING_CRON )
-		return;
-
-	if ( function_exists('has_shortcode') ) {
-		$post = get_post( $id );
-
-		if ( has_shortcode( $post->post_content, 'gwolle_gb' ) || has_shortcode( $post->post_content, 'gwolle_gb_read' ) ) {
-			// Set a meta_key so we can find the post with the shortcode back.
-			$meta_value = get_post_meta( $id, 'gwolle_gb_read', true );
-			if ( $meta_value != 'true' ) {
-				update_post_meta( $id, 'gwolle_gb_read', 'true' );
-			}
-		} else {
-			// Remove the meta_key in case it is set.
-			delete_post_meta( $id, 'gwolle_gb_read' );
-		}
-
-		if ( has_shortcode( $post->post_content, 'gwolle_gb' ) || has_shortcode( $post->post_content, 'gwolle_gb_read' ) || has_shortcode( $post->post_content, 'gwolle_gb_write' ) ) {
-			// Nothing to do
-		} else {
-			delete_post_meta( $id, 'gwolle_gb_book_id' );
-		}
-	}
-}
-add_action('save_post', 'gwolle_gb_save_post');
-
-
-/*
- * Make our meta fields protected, so they are not in the custom fields metabox.
- */
-function gwolle_gb_is_protected_meta( $protected, $meta_key, $meta_type ) {
-
-	switch ($meta_key) {
-		case 'gwolle_gb_read':
-			return true;
-			break;
-		case 'gwolle_gb_book_id':
-			return true;
-			break;
-	}
-
-	return $protected;
-}
-add_filter( 'is_protected_meta', 'gwolle_gb_is_protected_meta', 10, 3 );
 
 
 /*

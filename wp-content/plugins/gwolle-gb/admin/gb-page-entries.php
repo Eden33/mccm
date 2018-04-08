@@ -13,13 +13,14 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_page_entries() {
 
 	if ( function_exists('current_user_can') && !current_user_can('moderate_comments') ) {
-		die(__('Cheatin&#8217; uh?', 'gwolle-gb'));
+		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
 	gwolle_gb_admin_enqueue();
 
 	$gwolle_gb_errors = '';
 	$gwolle_gb_messages = '';
+	$show = (isset($_REQUEST['show']) && in_array($_REQUEST['show'], array( 'checked', 'unchecked', 'spam', 'trash', 'user' ))) ? $_REQUEST['show'] : 'all';
 
 	if ( isset($_POST['gwolle_gb_page']) && $_POST['gwolle_gb_page'] == 'entries' ) {
 		$action = '';
@@ -53,8 +54,11 @@ function gwolle_gb_page_entries() {
 		}
 		if ( $entries_checked < ( $num_entries + 1 ) ) {
 			$continue_on_entries_checked = true;
+		} else if ( $show == 'user' ) {
+			// special case for mass edit all entries from user.
+			$continue_on_entries_checked = true;
 		} else {
-			$gwolle_gb_messages .= '<p>' . /* translators: Someone seems to be abusing the website in strange ways. */ __('It seems you checked more entries then were even listed on the page.', 'gwolle-gb') . '</p>';
+			$gwolle_gb_messages .= '<p>' . /* translators: Someone seems to be abusing the website in strange ways. */ esc_html__('It seems you checked more entries then were even listed on the page.', 'gwolle-gb') . '</p>';
 			$gwolle_gb_errors = 'error';
 		}
 
@@ -66,7 +70,7 @@ function gwolle_gb_page_entries() {
 				$continue_on_nonce_checked = true;
 			} else {
 				// Nonce is invalid, so considered spam
-				$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+				$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 				$gwolle_gb_errors = 'error';
 			}
 		}
@@ -243,31 +247,42 @@ function gwolle_gb_page_entries() {
 
 			/* Construct Message */
 			if ( $action == 'check' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry checked.','%s entries checked.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'uncheck' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry unchecked.','%s entries unchecked.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'spam' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry marked as spam and submitted to Akismet as spam (if Akismet was enabled).','%s entries marked as spam and submitted to Akismet as spam (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'no-spam' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry marked as not spam and submitted to Akismet as ham (if Akismet was enabled).','%s entries marked as not spam and submitted to Akismet as ham (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'akismet' ) {
 				if ( $akismet_spam > 0 ) {
+					/* translators: %s is the number of entries */
 					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry considered spam and marked as such.','%s entries considered spam and marked as such.', $akismet_spam, 'gwolle-gb'), $akismet_spam ). '</p>';
 				}
 				if ( $akismet_not_spam > 0 ) {
+					/* translators: %s is the number of entries */
 					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry considered not spam and marked as such.','%s entries considered not spam and marked as such.', $akismet_not_spam, 'gwolle-gb'), $akismet_not_spam ). '</p>';
 				}
 				if ( $akismet_already_spam > 0 ) {
+					/* translators: %s is the number of entries */
 					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry already considered spam and not changed.','%s entries already considered spam and not changed.', $akismet_already_spam, 'gwolle-gb'), $akismet_already_spam ). '</p>';
 				}
 				if ( $akismet_already_not_spam > 0 ) {
+					/* translators: %s is the number of entries */
 					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry already considered not spam and not changed.','%s entries already considered not spam and not changed.', $akismet_already_not_spam, 'gwolle-gb'), $akismet_already_not_spam ). '</p>';
 				}
 			} else if ( $action == 'trash' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry moved to trash.','%s entries moved to trash.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'untrash' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry recovered from trash.','%s entries recovered from trash.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			} else if ( $action == 'remove' ) {
+				/* translators: %s is the number of entries */
 				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
 			}
 		}
@@ -278,6 +293,7 @@ function gwolle_gb_page_entries() {
 				if ( isset($_POST['show']) && in_array($_POST['show'], array('spam', 'trash')) ) {
 					$delstatus = $_POST['show'];
 					$deleted = gwolle_gb_del_entries( $delstatus );
+					/* translators: %s is the number of entries */
 					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $deleted, 'gwolle-gb'), $deleted ). '</p>';
 				}
 			}
@@ -300,9 +316,7 @@ function gwolle_gb_page_entries() {
 	$count['spam']  = gwolle_gb_get_entry_count(array( 'spam' => 'spam'  ));
 	$count['trash'] = gwolle_gb_get_entry_count(array( 'trash'=> 'trash' ));
 	$count['all']   = gwolle_gb_get_entry_count(array( 'all'  => 'all'   ));
-
-
-	$show = (isset($_REQUEST['show']) && in_array($_REQUEST['show'], array('checked', 'unchecked', 'spam', 'trash'))) ? $_REQUEST['show'] : 'all';
+	$count['user']  = 0; // dummy data, there is no pagination here.
 
 	$num_entries = get_option('gwolle_gb-entries_per_page', 20);
 
@@ -381,6 +395,28 @@ function gwolle_gb_page_entries() {
 			'trash'   => 'trash',
 			'book_id' => $book_id
 		));
+	} else if ( $show == 'user' ) {
+		$entries = array();
+		if ( isset( $_POST['gwolle_gb_user_id']) && ( (int) $_POST['gwolle_gb_user_id'] > 0 ) ) {
+			$user_id = (int) $_POST['gwolle_gb_user_id'];
+			$entries = gwolle_gb_get_entries(array(
+					'author_id'   => $user_id,
+					'num_entries' => -1,
+					'all'         => 'all'
+				));
+		} else if ( isset( $_POST['gwolle_gb_user_email']) && strlen($_POST['gwolle_gb_user_email']) > 0 ) {
+			$user_email = $_POST['gwolle_gb_user_email'];
+			$entries = gwolle_gb_get_entries(array(
+					'email'       => $user_email,
+					'num_entries' => -1,
+					'all'         => 'all'
+				));
+		}
+		if ( empty( $entries ) ) {
+			$count_entries = 0;
+		} else {
+			$count_entries = count($entries); // all on one page
+		}
 	} else {
 		$entries = gwolle_gb_get_entries(array(
 			'num_entries' => $num_entries,
@@ -394,11 +430,18 @@ function gwolle_gb_page_entries() {
 		));
 	}
 	$count_entrypages = ceil( $count_entries / $num_entries );
+
+
+	if ( empty( $entries ) ) {
+		$entries_on_page = 0;
+	} else {
+		$entries_on_page = count($entries);
+	}
 	?>
 
 	<div class="wrap gwolle_gb">
 		<div id="icon-gwolle-gb"><br /></div>
-		<h1><?php _e('Guestbook entries', 'gwolle-gb'); ?></h1>
+		<h1><?php esc_html_e('Guestbook entries', 'gwolle-gb'); ?></h1>
 
 		<?php
 		if ( $gwolle_gb_messages ) {
@@ -413,7 +456,7 @@ function gwolle_gb_page_entries() {
 			<input type="hidden" name="gwolle_gb_page" value="entries" />
 			<!-- the following fields give us some information used for processing the mass edit -->
 			<input type="hidden" name="pageNum" value="<?php echo $pageNum; ?>">
-			<input type="hidden" name="entriesOnThisPage" value="<?php echo count($entries); ?>">
+			<input type="hidden" name="entriesOnThisPage" value="<?php echo $entries_on_page; ?>">
 			<input type="hidden" name="show" value="<?php echo $show; ?>">
 
 			<?php
@@ -426,53 +469,73 @@ function gwolle_gb_page_entries() {
 				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php' <?php
 					if ($show == 'all') { echo 'class="current"'; }
 					?>>
-					<?php _e('All', 'gwolle-gb'); ?> <span class="count">(<?php echo $count['all']; ?>)</span></a> |
+					<?php esc_html_e('All', 'gwolle-gb'); ?> <span class="count gwolle_gb_all">(<?php echo $count['all']; ?>)</span></a> |
 				</li>
 				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=checked' <?php
 					if ($show == 'checked') { echo 'class="current"'; }
 					?>>
-					<?php _e('Unlocked', 'gwolle-gb'); ?> <span class="count">(<?php echo $count['checked']; ?>)</span></a> |
+					<?php esc_html_e('Unlocked', 'gwolle-gb'); ?> <span class="count gwolle_gb_unlocked">(<?php echo $count['checked']; ?>)</span></a> |
 				</li>
 				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked' <?php
 					if ($show == 'unchecked') { echo 'class="current"'; }
-					?>><?php _e('New', 'gwolle-gb'); ?> <span class="count">(<?php echo $count['unchecked']; ?>)</span></a> |
+					?>><?php esc_html_e('New', 'gwolle-gb'); ?> <span class="count gwolle_gb_new">(<?php echo $count['unchecked']; ?>)</span></a> |
 				</li>
 				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=spam' <?php
 					if ($show == 'spam') { echo 'class="current"'; }
-					?>><?php _e('Spam', 'gwolle-gb'); ?> <span class="count">(<?php echo $count['spam']; ?>)</span></a> |
+					?>><?php esc_html_e('Spam', 'gwolle-gb'); ?> <span class="count gwolle_gb_spam_">(<?php echo $count['spam']; ?>)</span></a> |
 				</li>
 				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=trash' <?php
 					if ($show == 'trash') { echo 'class="current"'; }
-					?>><?php _e('Trash', 'gwolle-gb'); ?> <span class="count">(<?php echo $count['trash']; ?>)</span></a>
+					?>><?php /* translators: Is in Trashcan */ esc_html_e('In Trash', 'gwolle-gb'); ?> <span class="count gwolle_gb_trash_">(<?php echo $count['trash']; ?>)</span></a> |
+				</li>
+				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=user' <?php
+					if ($show == 'user') { echo 'class="current"'; }
+					?>><?php esc_html_e('Author', 'gwolle-gb'); ?></a>
 				</li>
 			</ul>
 
 			<div class="tablenav">
+				<?php if ( $show == 'user' ) {
+					if ( empty( $user_id ) ) { $user_id = ''; }
+					if ( empty( $user_email ) ) { $user_email = ''; }
+					?>
+					<h3><?php esc_html_e('Select one option below, either User ID or Email address', 'gwolle-gb'); ?></h3>
+					<p>
+						<label for="gwolle_gb_user_id" class="text-info"><?php esc_html_e('User ID', 'gwolle-gb'); ?>:<br />
+							<input type="text" name="gwolle_gb_user_id" value="<?php echo $user_id; ?>" placeholder="<?php esc_html_e('User ID', 'gwolle-gb'); ?>" />
+						</label><br />
+						<label for="gwolle_gb_user_email" class="text-info"><?php esc_html_e('User Email', 'gwolle-gb'); ?>:<br />
+							<input type="text" name="gwolle_gb_user_email" value="<?php echo $user_email; ?>" placeholder="<?php esc_html_e('User Email', 'gwolle-gb'); ?>" />
+						</label><br />
+						<input type="submit" name="gb_search_user" id="gb_search_user" class="button button-primary" value="<?php esc_attr_e('Search entries', 'gwolle-gb'); ?>"  />
+					</p><?php
+				} ?>
+
 				<div class="alignleft actions">
 					<?php
 					$massEditControls_select = '<select name="massEditAction1">';
-					$massEditControls = '<option value="-1" selected="selected">' . __('Mass edit actions', 'gwolle-gb') . '</option>';
+					$massEditControls = '<option value="-1" selected="selected">' . esc_html__('Mass edit actions', 'gwolle-gb') . '</option>';
 					if ($show == 'trash') {
 						$massEditControls .= '
-							<option value="untrash">' . __('Recover from trash', 'gwolle-gb') . '</option>
-							<option value="remove">' . __('Remove permanently', 'gwolle-gb') . '</option>';
+							<option value="untrash">' . esc_html__('Recover from trash', 'gwolle-gb') . '</option>
+							<option value="remove">' . esc_html__('Remove permanently', 'gwolle-gb') . '</option>';
 					} else {
 						if ($show != 'checked') {
-							$massEditControls .= '<option value="check">' . __('Mark as checked', 'gwolle-gb') . '</option>';
+							$massEditControls .= '<option value="check">' . esc_html__('Mark as checked', 'gwolle-gb') . '</option>';
 						}
 						if ($show != 'unchecked') {
-							$massEditControls .= '<option value="uncheck">' . __('Mark as not checked', 'gwolle-gb') . '</option>';
+							$massEditControls .= '<option value="uncheck">' . esc_html__('Mark as not checked', 'gwolle-gb') . '</option>';
 						}
 						if ($show != 'spam') {
-							$massEditControls .= '<option value="spam">' . __('Mark as spam', 'gwolle-gb') . '</option>';
+							$massEditControls .= '<option value="spam">' . esc_html__('Mark as spam', 'gwolle-gb') . '</option>';
 						}
-						$massEditControls .= '<option value="no-spam">' . __('Mark as not spam', 'gwolle-gb') . '</option>';
+						$massEditControls .= '<option value="no-spam">' . esc_html__('Mark as not spam', 'gwolle-gb') . '</option>';
 						if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
-							$massEditControls .= '<option value="akismet">' . __('Check with Akismet', 'gwolle-gb') . '</option>';
+							$massEditControls .= '<option value="akismet">' . esc_html__('Check with Akismet', 'gwolle-gb') . '</option>';
 						}
-						$massEditControls .= '<option value="trash">' . __('Move to trash', 'gwolle-gb') . '</option>';
+						$massEditControls .= '<option value="trash">' . esc_html__('Move to trash', 'gwolle-gb') . '</option>';
 						if ( $show == 'spam' ) {
-							$massEditControls .= '<option value="remove">' . __('Remove permanently', 'gwolle-gb') . '</option>';
+							$massEditControls .= '<option value="remove">' . esc_html__('Remove permanently', 'gwolle-gb') . '</option>';
 						}
 
 					}
@@ -492,8 +555,15 @@ function gwolle_gb_page_entries() {
 				</div>
 
 				<?php
-				$pagination = gwolle_gb_pagination_admin( $pageNum, $count_entrypages, $count_entries, $show );
-				echo $pagination;
+				if ( $show == 'user' ) {
+					echo '<div class="tablenav-pages">
+						<span class="displaying-num">' . esc_html__('Showing:', 'gwolle-gb') . ' ' . $count_entries . '</span>
+					</div>';
+
+				} else {
+					$pagination = gwolle_gb_pagination_admin( $pageNum, $count_entrypages, $count_entries, $show );
+					echo $pagination;
+				}
 				?>
 			</div>
 
@@ -502,34 +572,34 @@ function gwolle_gb_page_entries() {
 					<thead>
 						<tr>
 							<th scope="col" class="manage-column column-cb check-column"><input name="check-all-top" id="check-all-top" type="checkbox"></th>
-							<th scope="col"><?php _e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
-							<th scope="col"><?php _e('ID', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
+							<th scope="col"><?php esc_html_e('ID', 'gwolle-gb'); ?></th>
 							<?php
 							if (get_option('gwolle_gb-showEntryIcons', 'true') === 'true') { ?>
-								<th scope="col"><?php _e('Status', 'gwolle-gb'); ?></th><!-- this is the icon-column -->
+								<th scope="col"><?php esc_html_e('Status', 'gwolle-gb'); ?></th><!-- this is the icon-column -->
 							<?php
 							} ?>
-							<th scope="col"><?php _e('Date', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Author', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Entry (excerpt)', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Action', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Date', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Author', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Entry (excerpt)', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Action', 'gwolle-gb'); ?></th>
 						</tr>
 					</thead>
 
 					<tfoot>
 						<tr>
 							<th scope="col" class="manage-column column-cb check-column"><input name="check-all-bottom" id="check-all-bottom" type="checkbox"></th>
-							<th scope="col"><?php _e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
-							<th scope="col"><?php _e('ID', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
+							<th scope="col"><?php esc_html_e('ID', 'gwolle-gb'); ?></th>
 							<?php
 							if (get_option('gwolle_gb-showEntryIcons', 'true') === 'true') { ?>
-								<th scope="col"><?php _e('Status', 'gwolle-gb'); ?></th><!-- this is the icon-column -->
+								<th scope="col"><?php esc_html_e('Status', 'gwolle-gb'); ?></th><!-- this is the icon-column -->
 							<?php
 							} ?>
-							<th scope="col"><?php _e('Date', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Author', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Entry (excerpt)', 'gwolle-gb'); ?></th>
-							<th scope="col"><?php _e('Action', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Date', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Author', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Entry (excerpt)', 'gwolle-gb'); ?></th>
+							<th scope="col"><?php esc_html_e('Action', 'gwolle-gb'); ?></th>
 						</tr>
 					</tfoot>
 
@@ -544,7 +614,7 @@ function gwolle_gb_page_entries() {
 							$html_output .= '
 								<tr>
 									<td colspan="' . $colspan . '" align="center">
-										<strong>' . __('No entries found.', 'gwolle-gb') . '</strong>
+										<strong>' . esc_html__('No entries found.', 'gwolle-gb') . '</strong>
 									</td>
 								</tr>';
 						} else {
@@ -601,9 +671,9 @@ function gwolle_gb_page_entries() {
 											<input name="check-' . $entry->get_id() . '" id="check-' . $entry->get_id() . '" type="checkbox">
 										</td>
 										<td class="book">
-											<span class="book-icon" title="' . __('Book ID', 'gwolle-gb') . ' ' . $entry->get_book_id()  . '">
+											<span class="book-icon" title="' . esc_html__('Book ID', 'gwolle-gb') . ' ' . $entry->get_book_id()  . '">
 												<a href="' . add_query_arg( 'book_id', $entry->get_book_id(), $request_uri ) . '"
-													title="' . __('Book ID', 'gwolle-gb') . ' ' . $entry->get_book_id()  . '">
+													title="' . esc_html__('Book ID', 'gwolle-gb') . ' ' . $entry->get_book_id()  . '">
 													' . $entry->get_book_id()  . '
 												</a>
 											</span>
@@ -614,17 +684,17 @@ function gwolle_gb_page_entries() {
 								if ( get_option('gwolle_gb-showEntryIcons', 'true') === 'true' ) {
 									$html_output .= '
 										<td class="entry-icons">
-											<span class="visible-icon" title="' . __('Visible', 'gwolle-gb') . '"></span>
-											<span class="invisible-icon" title="' . __('Invisible', 'gwolle-gb') . '"></span>
-											<span class="spam-icon" title="' . __('Spam', 'gwolle-gb') . '"></span>
-											<span class="trash-icon" title="' . __('Trash', 'gwolle-gb') . '""></span>';
-									$admin_reply = gwolle_gb_sanitize_output( $entry->get_admin_reply() );
+											<span class="visible-icon" title="' . esc_html__('Visible', 'gwolle-gb') . '"></span>
+											<span class="invisible-icon" title="' . esc_html__('Invisible', 'gwolle-gb') . '"></span>
+											<span class="spam-icon" title="' . esc_html__('Spam', 'gwolle-gb') . '"></span>
+											<span class="trash-icon" title="' . /* translators: Is in Trashcan */ esc_html__('In Trash', 'gwolle-gb') . '""></span>';
+									$admin_reply = gwolle_gb_sanitize_output( $entry->get_admin_reply(), 'admin_reply' );
 									if ( strlen( trim($admin_reply) ) > 0 ) {
 										$html_output .= '
-											<span class="admin_reply-icon" title="' . __('Admin Replied', 'gwolle-gb') . '"></span>';
+											<span class="admin_reply-icon" title="' . esc_html__('Admin Replied', 'gwolle-gb') . '"></span>';
 									}
 									$html_output .= '
-											<span class="gwolle_gb_ajax" title="' . __('Wait...', 'gwolle-gb') . '"></span>
+											<span class="gwolle_gb_ajax" title="' . esc_html__('Wait...', 'gwolle-gb') . '"></span>
 										</td>';
 								}
 
@@ -656,28 +726,28 @@ function gwolle_gb_page_entries() {
 								$html_output .= '
 									<td class="gwolle_gb_actions">
 										<span class="gwolle_gb_edit">
-											<a href="admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() . '" title="' . __('Edit entry', 'gwolle-gb') . '">' . __('Edit', 'gwolle-gb') . '</a>
+											<a href="admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_check">&nbsp;|&nbsp;
-											<a id="check_' . $entry->get_id() . '" href="#" class="vim-a" title="' . __('Check entry', 'gwolle-gb') . '">' . __('Check', 'gwolle-gb') . '</a>
+											<a id="check_' . $entry->get_id() . '" href="#" class="vim-a" title="' . esc_attr__('Check entry', 'gwolle-gb') . '">' . esc_html__('Check', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_uncheck">&nbsp;|&nbsp;
-											<a id="uncheck_' . $entry->get_id() . '" href="#" class="vim-u" title="' . __('Uncheck entry', 'gwolle-gb') . '">' . __('Uncheck', 'gwolle-gb') . '</a>
+											<a id="uncheck_' . $entry->get_id() . '" href="#" class="vim-u" title="' . esc_attr__('Uncheck entry', 'gwolle-gb') . '">' . esc_html__('Uncheck', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_spam">&nbsp;|&nbsp;
-											<a id="spam_' . $entry->get_id() . '" href="#" class="vim-s vim-destructive" title="' . __('Mark entry as spam.', 'gwolle-gb') . '">' . __('Spam', 'gwolle-gb') . '</a>
+											<a id="spam_' . $entry->get_id() . '" href="#" class="vim-s vim-destructive" title="' . esc_attr__('Mark entry as spam.', 'gwolle-gb') . '">' . esc_html__('Spam', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_unspam">&nbsp;|&nbsp;
-											<a id="unspam_' . $entry->get_id() . '" href="#" class="vim-a" title="' . __('Mark entry as not-spam.', 'gwolle-gb') . '">' . __('Not spam', 'gwolle-gb') . '</a>
+											<a id="unspam_' . $entry->get_id() . '" href="#" class="vim-a" title="' . esc_attr__('Mark entry as not-spam.', 'gwolle-gb') . '">' . esc_html__('Not spam', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_trash">&nbsp;|&nbsp;
-											<a id="trash_' . $entry->get_id() . '" href="#" class="vim-d vim-destructive" title="' . __('Move entry to trash.', 'gwolle-gb') . '">' . __('Trash', 'gwolle-gb') . '</a>
+											<a id="trash_' . $entry->get_id() . '" href="#" class="vim-d vim-destructive" title="' . esc_attr__('Move entry to trash.', 'gwolle-gb') . '">' . /* translators: Move to Trashcan */ esc_html__('Trash', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_untrash">&nbsp;|&nbsp;
-											<a id="untrash_' . $entry->get_id() . '" href="#" class="vim-d" title="' . __('Recover entry from trash.', 'gwolle-gb') . '">' . __('Untrash', 'gwolle-gb') . '</a>
+											<a id="untrash_' . $entry->get_id() . '" href="#" class="vim-d" title="' . esc_attr__('Recover entry from trash.', 'gwolle-gb') . '">' . esc_html__('Untrash', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_ajax">&nbsp;|&nbsp;
-											<a id="ajax_' . $entry->get_id() . '" href="#" class="ajax vim-d vim-destructive" title="' . __('Please wait...', 'gwolle-gb') . '">' . __('Wait...', 'gwolle-gb') . '</a>
+											<a id="ajax_' . $entry->get_id() . '" href="#" class="ajax vim-d vim-destructive" title="' . esc_attr__('Please wait...', 'gwolle-gb') . '">' . esc_html__('Wait...', 'gwolle-gb') . '</a>
 										</span>
 									</td>
 								</tr>';
@@ -705,7 +775,10 @@ function gwolle_gb_page_entries() {
 						echo $massEditControls_select . $massEditControls . $empty_button;
 					} ?>
 				</div>
-				<?php echo $pagination; ?>
+				<?php
+				if ( $show != 'user' ) {
+					echo $pagination;
+				} ?>
 			</div>
 
 		</form>

@@ -72,8 +72,20 @@ function gwolle_gb_ajax_javascript() {
 				// Set classes accordingly
 				if ( response == setter ) { // We got what we wanted
 
+					// Countdown counter in admin menu, toolbar and top menu
+					if ( jQuery( 'tr#entry_' + entry_id ).hasClass('unchecked') && jQuery( 'tr#entry_' + entry_id ).hasClass('nospam') && jQuery( 'tr#entry_' + entry_id ).hasClass('notrash') ) {
+						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
+						var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+						var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter - 1;
+						var new_gwolle_gb_menu_counter_str = new_gwolle_gb_menu_counter.toString();
+
+						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
+						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
+						jQuery('ul.subsubsub span.count.gwolle_gb_new').text( '(' + new_gwolle_gb_menu_counter_str + ')' );
+					}
+
 					switch ( response ) {
-						// possible classes: nospam notrash checked visible spam trash unchecked invisible
+						// Possible classes: nospam notrash checked visible spam trash unchecked invisible
 						case 'uncheck':
 							jQuery( 'tr#entry_' + entry_id ).addClass('unchecked').removeClass('checked');
 							break;
@@ -99,6 +111,18 @@ function gwolle_gb_ajax_javascript() {
 						jQuery( 'tr#entry_' + entry_id ).addClass('visible').removeClass('invisible');
 					} else {
 						jQuery( 'tr#entry_' + entry_id ).addClass('invisible').removeClass('visible');
+					}
+
+					// Countup counter in admin menu, toolbar and top menu
+					if ( jQuery( 'tr#entry_' + entry_id ).hasClass('unchecked') && jQuery( 'tr#entry_' + entry_id ).hasClass('nospam') && jQuery( 'tr#entry_' + entry_id ).hasClass('notrash') ) {
+						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
+						var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+						var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter + 1;
+						var new_gwolle_gb_menu_counter_str = new_gwolle_gb_menu_counter.toString();
+
+						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
+						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
+						jQuery('ul.subsubsub span.count.gwolle_gb_new').text( '(' + new_gwolle_gb_menu_counter_str + ')' );
 					}
 
 				} else {
@@ -157,8 +181,18 @@ function gwolle_gb_ajax_javascript() {
 				// Set classes accordingly
 				if ( response == setter ) { // We got what we wanted
 
+					// Countdown counter in admin menu, toolbar
+					if ( jQuery( '.gwolle_gb_actions' ).hasClass('unchecked') && jQuery( '.gwolle_gb_actions' ).hasClass('nospam') && jQuery( '.gwolle_gb_actions' ).hasClass('notrash') ) {
+						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
+                        var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+                        var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter - 1;
+
+						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
+						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
+					}
+
 					switch ( response ) {
-						// possible classes: nospam notrash checked visible spam trash unchecked invisible
+						// Possible classes: nospam notrash checked visible spam trash unchecked invisible
 						case 'uncheck':
 							jQuery( '.entry-icons' ).addClass('unchecked').removeClass('checked');
 							jQuery( '.gwolle_gb_actions' ).addClass('unchecked').removeClass('checked');
@@ -207,6 +241,16 @@ function gwolle_gb_ajax_javascript() {
 						jQuery( '.gwolle_gb_actions' ).addClass('invisible').removeClass('visible');
 						jQuery( '.h3_visible' ).css('display', 'none');
 						jQuery( '.h3_invisible' ).css('display', 'block');
+					}
+
+					// Countup counter in admin menu, toolbar
+					if ( jQuery( '.gwolle_gb_actions' ).hasClass('unchecked') && jQuery( '.gwolle_gb_actions' ).hasClass('nospam') && jQuery( '.gwolle_gb_actions' ).hasClass('notrash') ) {
+						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
+                        var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+                        var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter + 1;
+
+						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
+						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
 					}
 
 				} else {

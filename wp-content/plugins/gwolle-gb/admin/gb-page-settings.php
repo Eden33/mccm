@@ -12,7 +12,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_page_settings() {
 
 	if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
-		die(__('Cheatin&#8217; uh?', 'gwolle-gb'));
+		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
 	gwolle_gb_admin_enqueue();
@@ -39,7 +39,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -61,11 +61,11 @@ function gwolle_gb_page_settings() {
 					}
 
 					// Always save it, even when empty, for MultiLingual plugins.
-					$header = gwolle_gb_sanitize_input( $_POST['header'] );
+					$header = gwolle_gb_sanitize_input( $_POST['gb_header'] );
 					update_option('gwolle_gb-header', $header);
 					$saved = true;
 
-					$notice = gwolle_gb_sanitize_input( $_POST['notice'] );
+					$notice = gwolle_gb_sanitize_input( $_POST['notice'], 'setting_textarea' );
 					update_option('gwolle_gb-notice', $notice);
 					$saved = true;
 
@@ -74,6 +74,14 @@ function gwolle_gb_page_settings() {
 						$saved = true;
 					} else {
 						update_option('gwolle_gb-form_ajax', 'false');
+						$saved = true;
+					}
+
+					if (isset($_POST['store_ip']) && $_POST['store_ip'] == 'on') {
+						update_option('gwolle_gb-store_ip', 'true');
+						$saved = true;
+					} else {
+						update_option('gwolle_gb-store_ip', 'false');
 						$saved = true;
 					}
 
@@ -90,7 +98,8 @@ function gwolle_gb_page_settings() {
 						'form_message_mandatory',
 						'form_bbcode_enabled',
 						'form_antispam_enabled',
-						'form_recaptcha_enabled'
+						'form_recaptcha_enabled',
+						'form_privacy_enabled'
 						);
 					$form_setting = Array();
 					foreach ( $list as $item ) {
@@ -114,7 +123,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -184,6 +193,7 @@ function gwolle_gb_page_settings() {
 						'read_datetime',
 						'read_date',
 						'read_content',
+						'read_aavatar',
 						'read_editlink'
 						);
 					$read_setting = Array();
@@ -208,7 +218,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -237,7 +247,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -247,6 +257,14 @@ function gwolle_gb_page_settings() {
 						$saved = true;
 					} else {
 						update_option('gwolle_gb-moderate-entries', 'false');
+						$saved = true;
+					}
+
+					if (isset($_POST['refuse-spam']) && $_POST['refuse-spam'] == 'on') {
+						update_option('gwolle_gb-refuse-spam', 'true');
+						$saved = true;
+					} else {
+						update_option('gwolle_gb-refuse-spam', 'false');
 						$saved = true;
 					}
 
@@ -282,6 +300,14 @@ function gwolle_gb_page_settings() {
 						$saved = true;
 					}
 
+					if (isset($_POST['gwolle_gb_sfs']) && $_POST['gwolle_gb_sfs'] == 'on') {
+						update_option('gwolle_gb-sfs', 'true');
+						$saved = true;
+					} else {
+						update_option('gwolle_gb-sfs', 'false');
+						$saved = true;
+					}
+
 					if ( isset($_POST['antispam-question']) ) {
 						update_option('gwolle_gb-antispam-question', gwolle_gb_sanitize_input($_POST['antispam-question']));
 						$saved = true;
@@ -302,7 +328,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -362,7 +388,7 @@ function gwolle_gb_page_settings() {
 					}
 
 					if ( isset($_POST['adminMailContent']) ) {
-						$mail_content = gwolle_gb_sanitize_input( $_POST['adminMailContent'] );
+						$mail_content = gwolle_gb_sanitize_input( $_POST['adminMailContent'], 'setting_textarea' );
 						update_option('gwolle_gb-adminMailContent', $mail_content);
 						$saved = true;
 					}
@@ -376,13 +402,13 @@ function gwolle_gb_page_settings() {
 					}
 
 					if ( isset($_POST['authorMailContent']) ) {
-						$mail_content = gwolle_gb_sanitize_input( $_POST['authorMailContent'] );
+						$mail_content = gwolle_gb_sanitize_input( $_POST['authorMailContent'], 'setting_textarea' );
 						update_option('gwolle_gb-authorMailContent', $mail_content);
 						$saved = true;
 					}
 
 					if ( isset($_POST['gwolle_gb-mail_admin_replyContent']) ) {
-						$mail_content = gwolle_gb_sanitize_input( $_POST['gwolle_gb-mail_admin_replyContent'] );
+						$mail_content = gwolle_gb_sanitize_input( $_POST['gwolle_gb-mail_admin_replyContent'], 'setting_textarea' );
 						update_option('gwolle_gb-mail_admin_replyContent', $mail_content);
 						$saved = true;
 					}
@@ -398,7 +424,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -421,7 +447,7 @@ function gwolle_gb_page_settings() {
 					}
 					if ( $verified == false ) {
 						// Nonce is invalid.
-						$gwolle_gb_messages .= '<p>' . __('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
+						$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
 						$gwolle_gb_errors = 'error';
 						break;
 					}
@@ -439,7 +465,7 @@ function gwolle_gb_page_settings() {
 					break;
 				default:
 					/* Just load the first tab */
-					$active_tab = "gwolle_gb_forms";
+					$active_tab = 'gwolle_gb_forms';
 			}
 		}
 	} ?>
@@ -447,13 +473,13 @@ function gwolle_gb_page_settings() {
 	<div class="wrap gwolle_gb">
 
 		<div id="icon-gwolle-gb"><br /></div>
-		<h1><?php _e('Settings', 'gwolle-gb'); ?></h1>
+		<h1><?php esc_html_e('Settings', 'gwolle-gb'); ?></h1>
 
 		<?php
 		if ( $saved ) {
 			echo '
 				<div id="message" class="updated fade notice is-dismissible">
-					<p>' . __('Changes saved.', 'gwolle-gb') . '</p>
+					<p>' . esc_html__('Changes saved.', 'gwolle-gb') . '</p>
 				</div>';
 		} else if ( $gwolle_gb_messages ) {
 			echo '
@@ -464,14 +490,14 @@ function gwolle_gb_page_settings() {
 
 		/* The rel attribute will be the form that becomes active */ ?>
 		<h2 class="nav-tab-wrapper gwolle-nav-tab-wrapper">
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_forms')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_forms"><?php /* translators: Settings page tab */ _e('Form', 'gwolle-gb'); ?></a>
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_reading')   { echo "nav-tab-active";} ?>" rel="gwolle_gb_reading"><?php /* translators: Settings page tab */ _e('Reading', 'gwolle-gb'); ?></a>
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_admin')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_admin"><?php /* translators: Settings page tab */ _e('Admin', 'gwolle-gb'); ?></a>
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_antispam')  { echo "nav-tab-active";} ?>" rel="gwolle_gb_antispam"><?php /* translators: Settings page tab */ _e('Anti-spam', 'gwolle-gb'); ?></a>
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_mail')      { echo "nav-tab-active";} ?>" rel="gwolle_gb_mail"><?php /* translators: Settings page tab */ _e('Notifications', 'gwolle-gb'); ?></a>
-			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_debug')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_debug"><?php /* translators: Settings page tab */ _e('Debug', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_forms')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_forms"><?php /* translators: Settings page tab */ esc_html_e('Form', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_reading')   { echo "nav-tab-active";} ?>" rel="gwolle_gb_reading"><?php /* translators: Settings page tab */ esc_html_e('Reading', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_admin')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_admin"><?php /* translators: Settings page tab */ esc_html_e('Admin', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_antispam')  { echo "nav-tab-active";} ?>" rel="gwolle_gb_antispam"><?php /* translators: Settings page tab */ esc_html_e('Anti-spam', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_mail')      { echo "nav-tab-active";} ?>" rel="gwolle_gb_mail"><?php /* translators: Settings page tab */ esc_html_e('Notifications', 'gwolle-gb'); ?></a>
+			<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_debug')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_debug"><?php /* translators: Settings page tab */ esc_html_e('Debug', 'gwolle-gb'); ?></a>
 			<?php if ( function_exists('is_multisite') && ! is_multisite() ) { ?>
-				<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_uninstall') { echo "nav-tab-active";} ?>" rel="gwolle_gb_uninstall"><?php /* translators: Settings page tab */ _e('Uninstall', 'gwolle-gb'); ?></a>
+				<a href="#" class="nav-tab <?php if ($active_tab == 'gwolle_gb_uninstall') { echo "nav-tab-active";} ?>" rel="gwolle_gb_uninstall"><?php /* translators: Settings page tab */ esc_html_e('Uninstall', 'gwolle-gb'); ?></a>
 			<?php } ?>
 		</h2>
 

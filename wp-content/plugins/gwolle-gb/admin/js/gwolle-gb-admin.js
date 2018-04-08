@@ -7,6 +7,8 @@
  * Postbox on every admin page of this plugin.
  */
 jQuery(document).ready(function($) {
+	jQuery('#gwolle_gb_editor_postbox_preview').addClass('closed');
+
 	jQuery('.gwolle_gb .postbox button.handlediv').click( function() {
 		jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
 	});
@@ -69,10 +71,26 @@ jQuery(document).ready(function($) {
 		var timestamp = Math.round( gwolle_date.getTime() / 1000 ) + date_offset;
 		jQuery("#gwolle_gb_timestamp").val(timestamp);
 
+		var readable_time = gb_timeconverter( timestamp );
+		jQuery( 'span.gb-datetime' ).text( readable_time );
+
 		jQuery('.gwolle_gb_edit_meta_inputs').toggle();
 		return false;
 	});
 });
+
+/* Convert Unix timestamp to readable time. */
+function gb_timeconverter( timestamp ) {
+	var datetime = new Date( timestamp * 1000 );
+	var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	var year = datetime.getFullYear();
+	var month = months[datetime.getMonth()];
+	var date = datetime.getDate();
+	var hour = datetime.getHours();
+	var min = datetime.getMinutes();
+	var readable_time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
+	return readable_time;
+}
 
 
 /*
@@ -159,7 +177,7 @@ jQuery(document).ready(function($) {
 
 
 /*
- * Export Page
+ * Export Page for all entries.
  */
 jQuery(document).ready(function($) {
 
@@ -222,5 +240,49 @@ jQuery(document).ready(function($) {
 			}, ( timeout )
 		);
 	}
+
+});
+
+
+/*
+ * Export Page for user ID / Email.
+ */
+jQuery(document).ready(function($) {
+
+	/* Checking checkbox will enable the submit button */
+	jQuery("input#start_export_user_enable").prop("checked", false); // init
+
+	jQuery("input#start_export_user_enable").change(function() {
+		var checked = jQuery( "input#start_export_user_enable" ).prop('checked');
+		if ( checked == true ) {
+			jQuery("#gwolle_gb_start_export_user").addClass( 'button-primary' );
+			jQuery("#gwolle_gb_start_export_user").removeAttr('disabled');
+		} else {
+			jQuery("#gwolle_gb_start_export_user").removeClass( 'button-primary' );
+			jQuery("#gwolle_gb_start_export_user").attr('disabled', true);
+		}
+	});
+
+
+	/* Click Event, submit the form through AJAX and receive a CSV-file.
+	 * Will request multi part files, every 5 seconds to be easy on the webserver.
+	 */
+	jQuery( 'input#gwolle_gb_start_export_user' ).click(function(event) {
+
+		if ( jQuery("#gwolle_gb_start_export_user").attr('disabled') ) {
+			// Not sure if this block is needed... Just in case.
+			return;
+		}
+
+		var form = jQuery('form#gwolle_gb_export_user');
+		form.submit();
+
+		// Reset for to initial state.
+		jQuery( "#gwolle_gb_start_export_user" ).removeClass( 'button-primary' );
+		jQuery( "#gwolle_gb_start_export_user" ).attr( 'disabled', true );
+		jQuery( "input#start_export_user_enable" ).prop( 'checked', false );
+
+		event.preventDefault();
+	});
 
 });

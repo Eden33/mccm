@@ -39,11 +39,12 @@ function get_gwolle_gb( $atts ) {
 	$shortcode = 'gwolle_gb';
 
 	$shortcode_atts = shortcode_atts( array(
-		'book_id' => 1,
-		'button'  => 'true', // default when main shortcode is used.
+		'book_id'  => 1,
+		'entry_id' => 0,
+		'button'   => 'true', // default when main shortcode is used.
 	), $atts );
 
-	if ( $shortcode_atts['book_id'] == 'post_id' ) {
+	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 
@@ -80,11 +81,12 @@ function get_gwolle_gb_write( $atts ) {
 	$shortcode = 'gwolle_gb_write';
 
 	$shortcode_atts = shortcode_atts( array(
-		'book_id' => 1,
-		'button'  => 'false', // default when only the write shortcode is used.
+		'book_id'  => 1,
+		'entry_id' => 0,
+		'button'   => 'false', // default when only the write shortcode is used.
 	), $atts );
 
-	if ( $shortcode_atts['book_id'] == 'post_id' ) {
+	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 
@@ -116,10 +118,11 @@ function get_gwolle_gb_read( $atts ) {
 	$shortcode = 'gwolle_gb_read';
 
 	$shortcode_atts = shortcode_atts( array(
-		'book_id' => 1,
+		'book_id'  => 1,
+		'entry_id' => 0,
 	), $atts );
 
-	if ( $shortcode_atts['book_id'] == 'post_id' ) {
+	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 

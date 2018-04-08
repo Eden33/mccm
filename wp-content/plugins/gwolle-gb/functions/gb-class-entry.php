@@ -321,11 +321,12 @@ class gwolle_gb_entry {
 		}
 
 
-		if ($result > 0) {
-			return $this->get_id();
+		if ( $result === false ) {
+			// result = 0 when no change was made. We still want to return the ID.
+			return false;
 		}
 
-		return false;
+		return $this->get_id();
 	}
 
 
@@ -477,7 +478,7 @@ class gwolle_gb_entry {
 	}
 	public function set_content($content) {
 		// User input
-		$content = gwolle_gb_sanitize_input($content);
+		$content = gwolle_gb_sanitize_input($content, 'content');
 		if ( strlen($content) > 0 ) {
 			$this->content = $content;
 		}
@@ -516,7 +517,7 @@ class gwolle_gb_entry {
 	}
 	public function set_admin_reply($admin_reply) {
 		// User input
-		$admin_reply = gwolle_gb_sanitize_input($admin_reply);
+		$admin_reply = gwolle_gb_sanitize_input($admin_reply, 'admin_reply');
 		$this->admin_reply = $admin_reply;
 	}
 	public function set_admin_reply_uid($admin_reply_uid) {
@@ -557,7 +558,7 @@ class gwolle_gb_entry {
 		return $this->author_host;
 	}
 	public function get_content() {
-		return gwolle_gb_sanitize_output($this->content);
+		return gwolle_gb_sanitize_output($this->content, 'content');
 	}
 	public function get_date() {
 		_deprecated_function( __FUNCTION__, ' 1.4.2', 'get_datetime()' );
@@ -579,7 +580,7 @@ class gwolle_gb_entry {
 		return $this->isspam;
 	}
 	public function get_admin_reply() {
-		return gwolle_gb_sanitize_output($this->admin_reply);
+		return gwolle_gb_sanitize_output($this->admin_reply, 'admin_reply');
 	}
 	public function get_admin_reply_uid() {
 		return $this->admin_reply_uid;
@@ -626,8 +627,8 @@ class gwolle_gb_entry {
 
 
 		if ($result == 1) {
-			// Also remove the log entries
-			gwolle_gb_del_log_entries( $id );
+			// Also remove the log entries and possibly meta fields.
+			do_action( 'gwolle_gb_delete_entry', $id );
 
 			return true;
 		}

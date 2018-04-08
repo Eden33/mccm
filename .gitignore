@@ -10,3 +10,6 @@
 /.settings
 .buildpath
 .project
+
+# ignore php info file if any
+phpinfo.html

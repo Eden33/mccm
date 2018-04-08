@@ -133,7 +133,7 @@ if(false)
     $info = ob_get_contents();
     ob_end_clean();
     
-    $fp = fopen("phpinfo.txt", "w+");
+    $fp = fopen("phpinfo.html", "w+");
     fwrite($fp, $info);
     fclose($fp);
 }

@@ -25,8 +25,10 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * Return:
  * - Array of objects of gwolle_gb_entry
  * - false if no entries found.
+ *
+ * @since 1.0.0
+ *
  */
-
 function gwolle_gb_get_entries($args = array()) {
 	global $wpdb;
 
@@ -193,7 +195,7 @@ function gwolle_gb_get_entries($args = array()) {
 	}
 
 
-	if ( is_array($datalist) && !empty($datalist) ) {
+	if ( is_array($datalist) && ! empty($datalist) ) {
 		$entries = array();
 
 		foreach ( $datalist as $data ) {
@@ -233,6 +235,150 @@ function gwolle_gb_get_entries($args = array()) {
 
 
 /*
+ * gwolle_gb_get_entry_ids
+ * Function to get guestbook entry IDs from the database.
+ *
+ * Parameter $args is an Array:
+ * - checked       string: 'checked' or 'unchecked', List the entries that are checked or unchecked.
+ * - trash         string: 'trash' or 'notrash', List the entries that are in trash or not in trash.
+ * - spam          string: 'spam' or 'nospam', List the entries marked as spam or as no spam.
+ * - author_id     string: All entries associated with this author_id (since 1.5.0).
+ * - email         string: All entries associated with this emailaddress.
+ * - no_moderators string: 'true', Only entries not written by a moderator (might be expensive with many users) (since 1.5.0).
+ * - book_id       int: Only entries from this book. Default in the shortcode is 1 (since 1.5.1).
+ *
+ * Return:
+ * - Array of ids of gwolle_gb_entry
+ * - false if no entries found.
+ *
+ * @since 2.3.0
+ *
+ */
+function gwolle_gb_get_entry_ids($args = array()) {
+	global $wpdb;
+
+	$where = " 1 = %d";
+	$values = Array(1);
+
+	if ( !is_array($args) ) {
+		return false;
+	}
+
+	if ( isset($args['checked']) ) {
+		if ( $args['checked'] == 'checked' || $args['checked'] == 'unchecked' ) {
+			$where .= "
+				AND
+				ischecked = %d";
+			if ( $args['checked'] == 'checked' ) {
+				$values[] = 1;
+			} else if ( $args['checked'] == 'unchecked' ) {
+				$values[] = 0;
+			}
+		}
+	}
+	if ( isset($args['spam']) ) {
+		if ( $args['spam'] == 'spam' || $args['spam'] == 'nospam' ) {
+			$where .= "
+				AND
+				isspam = %d";
+			if ( $args['spam'] == 'spam' ) {
+				$values[] = 1;
+			} else if ( $args['spam'] == 'nospam' ) {
+				$values[] = 0;
+			}
+		}
+	}
+	if ( isset($args['trash']) ) {
+		if ( $args['trash'] == 'trash' || $args['trash'] == 'notrash' ) {
+			$where .= "
+				AND
+				istrash = %d";
+			if ( $args['trash'] == 'trash' ) {
+				$values[] = 1;
+			} else if ( $args['trash'] == 'notrash' ) {
+				$values[] = 0;
+			}
+		}
+	}
+	if ( isset( $args['author_id']) ) {
+		$where .= "
+			AND
+			author_id = %d";
+		$values[] = (int) $args['author_id'];
+	}
+	if ( isset($args['email']) ) {
+		$where .= "
+			AND
+			author_email = %s";
+		$values[] = $args['email'];
+	}
+	if ( isset($args['no_moderators']) ) {
+		$no_moderators = $args['no_moderators'];
+		if ( $no_moderators === 'true' ) {
+			$users = gwolle_gb_get_moderators();
+			if ( is_array($users) && !empty($users) ) {
+				foreach ( $users as $user_info ) {
+					$where .= "
+						AND
+						author_id != %d";
+					$values[] = $user_info->ID;
+				}
+			}
+		}
+	}
+	if ( isset( $args['book_id']) && ((int) $args['book_id']) > 0 ) {
+		$where .= "
+			AND
+			book_id = %d";
+		$values[] = (int) $args['book_id'];
+	}
+
+	$limit = ' LIMIT 999999999999999 ';
+	$offset = ' OFFSET 0 ';
+
+
+	$tablename = $wpdb->prefix . "gwolle_gb_entries";
+
+	$sql_nonprepared = "
+			SELECT
+				`id`
+			FROM
+				" . $tablename . "
+			WHERE
+				" . $where . "
+			ORDER BY
+				datetime DESC
+			" . $limit . " " . $offset . "
+			;";
+
+	$sql = $wpdb->prepare( $sql_nonprepared, $values );
+
+	/*
+	 * Make sure to use wpdb->prepare in your function, avoid SQL injection attacks.
+	 * - $sql is the value with the prepared sql query.
+	 * - $sql_nonprepared is the sql query with placeholders still.
+	 * - $values is an array with values that will replace those placeholders
+	 * - $args are the additional arguments that were passed to this function.
+	 */
+	$sql = apply_filters( 'gwolle_gb_get_entries_sql', $sql, $sql_nonprepared, $values, $args );
+
+	$entry_ids = $wpdb->get_results( $sql, ARRAY_N );
+
+	// $wpdb->print_error();
+	// echo "number of rows: " . $wpdb->num_rows;
+
+	if ( is_array($entry_ids) && ! empty($entry_ids) ) {
+		$_entry_ids = array();
+		foreach ( $entry_ids as $entry_id ) {
+			$_entry_ids[] = (int) $entry_id[0];
+		}
+		return $_entry_ids;
+	}
+	return false;
+}
+
+
+/*
  * Function to delete guestbook entries from the database.
  * Removes the log entries as well.
  *
@@ -243,8 +389,10 @@ function gwolle_gb_get_entries($args = array()) {
  * Return:
  * - int: Number of deleted entries
  * - bool: false if no entries found.
+ *
+ * @since 1.0.0
+ *
  */
-
 function gwolle_gb_del_entries( $status ) {
 	global $wpdb;
 
@@ -277,7 +425,7 @@ function gwolle_gb_del_entries( $status ) {
 
 	$datalist = $wpdb->get_results( $sql, ARRAY_A );
 
-	if ( is_array($datalist) && !empty($datalist) ) {
+	if ( is_array($datalist) && ! empty($datalist) ) {
 
 		$sql = "
 			DELETE

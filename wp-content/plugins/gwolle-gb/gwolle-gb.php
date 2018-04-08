@@ -3,7 +3,7 @@
 Plugin Name: Gwolle Guestbook
 Plugin URI: http://zenoweb.nl
 Description: Gwolle Guestbook is not just another guestbook for WordPress. The goal is to provide an easy and slim way to integrate a guestbook into your WordPress powered site. Don't use your 'comment' section the wrong way - install Gwolle Guestbook and have a real guestbook.
-Version: 2.1.5
+Version: 2.4.2
 Author: Marcel Pol
 Author URI: http://zenoweb.nl
 License: GPLv2 or later
@@ -12,8 +12,8 @@ Domain Path: /lang/
 */
 
 /*
-	Copyright 2009         Wolfgang Timme  (email: gwolle@wolfgangtimme.de)
-	Copyright 2014 - 2017  Marcel Pol      (email: marcel@timelord.nl)
+	Copyright 2009 - 2010  Wolfgang Timme  (email: gwolle@wolfgangtimme.de)
+	Copyright 2014 - 2018  Marcel Pol      (email: marcel@timelord.nl)
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -32,27 +32,37 @@ Domain Path: /lang/
 
 
 // Plugin Version
-define('GWOLLE_GB_VER', '2.1.5');
+define('GWOLLE_GB_VER', '2.4.2');
 
 
 /*
+ * Todo for 3.0:
+ *
+ * - All CSS classes use dashes, not underscores.
+ *
+ *
  * Todo List:
  *
  * - Entries Admin page, make columns sortable, add order parameters to get* functions.
  * - On Page editor, have a postbox with link to the guestbook admin entries.
- * - Admin Reply form on frontend with AJAX.
- * - Add Searchbox to admin entries page.
  * - BBcode: have sublists work.
- * - On admin pages, have separate functions for $_POST. (editor, entries)
+ * - BBcode: add width and height to images.
+ * - On admin pages, have separate functions for $_POST update. (editor, entries)
  * - Localize admin ajax script.
- * - Convert db to INNO.
- * - When saving new date in editor, change date in postbox too.
- * - Add option to discard spam messages automatically.
- * - Consider a preview function when using BBcode.
+ * - Add Filter for get_entry_count SQL, like get_entries.
+ * - Add filters similar to pre_get_posts.
+ * - Add datetime WHERE clause in get_functions? Support filter for the function parameters inside the function?
+ * - Think about a cancel button for the form:
+ *   https://wordpress.org/support/topic/missing-cancel-button-in-new-entry-from/
+ *   Consider makeing the messages and the expanded form dismissible with an 'x' and a jQuery.slideUp().
+ * - Better support for aria attributes.
+ * - Add proper docblocks to filters in the code.
+ * - Use GWOLLE_GB_URL where appropriate.
+ * - Consider a functions/list-view.php refactoring.
+ * - Really switch to InnoDB.
+ * - Consider SQL IN when emptying spam/trash.
+ * - Support mark-as-spam and mark-as-ham for Stop Forum Spam.
  *
- * Add-ons:
- * - Meta Fields / Extra Fields
- * - Improved Multi Guestbooks
  */
 
 
@@ -61,6 +71,7 @@ define('GWOLLE_GB_VER', '2.1.5');
  */
 define('GWOLLE_GB_FOLDER', plugin_basename(dirname(__FILE__)));
 define('GWOLLE_GB_DIR', WP_PLUGIN_DIR . '/' . GWOLLE_GB_FOLDER);
+define('GWOLLE_GB_URL', plugins_url( '/', __FILE__ ));
 
 
 global $wpdb;
@@ -84,11 +95,13 @@ include_once( GWOLLE_GB_DIR . '/frontend/gb-shortcodes.php' );
 include_once( GWOLLE_GB_DIR . '/frontend/gb-pagination.php' );
 include_once( GWOLLE_GB_DIR . '/frontend/gb-read.php' );
 include_once( GWOLLE_GB_DIR . '/frontend/gb-rss.php' );
+include_once( GWOLLE_GB_DIR . '/frontend/gb-total.php' );
 include_once( GWOLLE_GB_DIR . '/frontend/gb-widget.php' );
 
 // Functions and pages for the backend
 include_once( GWOLLE_GB_DIR . '/admin/gb-ajax-management.php' );
 include_once( GWOLLE_GB_DIR . '/admin/gb-dashboard-widget.php' );
+include_once( GWOLLE_GB_DIR . '/admin/gb-page-add-on.php' );
 include_once( GWOLLE_GB_DIR . '/admin/gb-page-editor.php' );
 include_once( GWOLLE_GB_DIR . '/admin/gb-page-entries.php' );
 include_once( GWOLLE_GB_DIR . '/admin/gb-page-export.php' );
@@ -110,7 +123,7 @@ include_once( GWOLLE_GB_DIR . '/admin/tabs/gb-uninstalltab.php' );
 // General Functions
 include_once( GWOLLE_GB_DIR . '/functions/gb-akismet.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-bbcode_emoji.php' );
-include_once( GWOLLE_GB_DIR . '/functions/gb-compatibility.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-cache.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-debug.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-formatting.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-get_entries.php' );
@@ -118,7 +131,13 @@ include_once( GWOLLE_GB_DIR . '/functions/gb-get_entry_count.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-log.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-mail.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-messages.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-metabox.php' );
 include_once( GWOLLE_GB_DIR . '/functions/gb-misc.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-post-meta.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-settings.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-single-view.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-stop-forum-spam.php' );
+include_once( GWOLLE_GB_DIR . '/functions/gb-user.php' );
 
 // General Hooks
 include_once( GWOLLE_GB_DIR . '/gwolle-gb-hooks.php' );

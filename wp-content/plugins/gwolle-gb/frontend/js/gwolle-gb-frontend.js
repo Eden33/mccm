@@ -19,24 +19,57 @@ jQuery(document).ready(function($) {
  * Event for clicking the readmore, and getting the full content of that entry visible.
  */
 jQuery(document).ready(function($) {
-	jQuery( ".gwolle_gb_readmore" ).click(function() {
+	gwolle_gb_readmore();
+	gwolle_gb_scroll_callback.add( gwolle_gb_readmore );
+	gwolle_gb_ajax_callback.add( gwolle_gb_readmore );
+});
+function gwolle_gb_readmore() {
+	jQuery(".gb-entry-content .gwolle-gb-readmore").off('click');
+	jQuery(".gb-entry-content .gwolle-gb-readmore").on('click', function() {
 		var content_div = jQuery(this).parent().parent();
 		jQuery( content_div ).find('.gb-entry-excerpt').css( 'display', 'none' );
 		jQuery( content_div ).find('.gb-entry-full_content').slideDown(500);
 		return false;
 	});
+
+	jQuery(".gb-entry-admin_reply .gwolle-gb-readmore").off('click');
+	jQuery(".gb-entry-admin_reply .gwolle-gb-readmore").on('click', function() {
+		var content_div = jQuery(this).parent().parent();
+		jQuery( content_div ).find('.gb-admin_reply-excerpt').css( 'display', 'none' );
+		jQuery( content_div ).find('.gb-admin_reply-full-content').slideDown(500);
+		return false;
+	});
+}
+
+
+/*
+ * Event for the metabox, toggle on and off.
+ */
+jQuery(document).ready(function($) {
+	gwolle_gb_metabox_handle();
+	gwolle_gb_scroll_callback.add( gwolle_gb_metabox_handle );
+	gwolle_gb_ajax_callback.add( gwolle_gb_metabox_handle );
 });
+function gwolle_gb_metabox_handle() {
+	jQuery('div.gb-metabox-handle').off('click');
+	jQuery('div.gb-metabox-handle').on('click', function() {
+		var metabox_parent = jQuery(this).parent();
+		jQuery( metabox_parent ).find('div.gb-metabox').toggleClass( 'gwolle_gb_invisible' );
+		return false;
+	});
+	return false;
+}
 
 
 /*
  * Event for Infinite Scroll. Get more pages when you are at the bottom.
  */
-
 var gwolle_gb_scroll_on = true; // The end has not been reached yet. We still get entries back.
 var gwolle_gb_scroll_busy = false; // Handle async well. Only one request at a time.
+var gwolle_gb_scroll_callback = jQuery.Callbacks(); // Callback function to be fired after AJAX request.
 
 jQuery(document).ready(function($) {
-	if ( jQuery( "#gwolle_gb_entries" ).hasClass( 'gwolle_gb_infinite' ) ) {
+	if ( jQuery( "#gwolle_gb_entries" ).hasClass( 'gwolle-gb-infinite' ) ) {
 		var gwolle_gb_scroll_count = 2; // We already have page 1 listed.
 
 		var gwolle_gb_load_message = '<div class="gb-entry gwolle_gb_load_message">' + gwolle_gb_frontend_script.load_message + '</div>' ;
@@ -61,6 +94,7 @@ jQuery(document).ready(function($) {
 		var data = {
 			action:  'gwolle_gb_infinite_scroll',
 			pageNum: page,
+			permalink: window.location.href,
 			book_id: jQuery( "#gwolle_gb_entries" ).attr( "data-book_id" )
 		};
 
@@ -73,6 +107,26 @@ jQuery(document).ready(function($) {
 			} else {
 				jQuery( "#gwolle_gb_entries" ).append( response );
 			}
+
+			/*
+			 * Add callback for after infinite scroll event. Used for metabox-handle for new entries.
+			 *
+			 * @since 2.3.0
+			 *
+			 * Example code for using the callback:
+			 *
+			 * jQuery(document).ready(function($) {
+			 *     gwolle_gb_scroll_callback.add( my_callback_function );
+			 * });
+			 *
+			 * function my_callback_function() {
+			 *     console.log('This is the callback');
+			 *     return false;
+			 * }
+			 *
+			 */
+			gwolle_gb_scroll_callback.fire();
+
 			gwolle_gb_scroll_busy = false;
 
 		});
@@ -85,29 +139,36 @@ jQuery(document).ready(function($) {
 /*
  * AJAX Submit for Gwolle Guestbook Frontend.
  */
+var gwolle_gb_ajax_data = {};
+gwolle_gb_ajax_data['permalink'] = window.location.href;
+
+var gwolle_gb_ajax_callback = jQuery.Callbacks(); // Callback function to be fired after AJAX request.
+
 jQuery(document).ready(function($) {
 	jQuery( '.gwolle_gb_form_ajax #gwolle_gb_submit' ).click( function( submit_button ) {
 
 		jQuery( '#gwolle_gb .gwolle_gb_submit_ajax_icon' ).css( 'display', 'inline' );
 
-		var data = {
-			action:                    'gwolle_gb_form_ajax',
-			gwolle_gb_function:        jQuery( '#gwolle_gb_function' ).val(),
-			gwolle_gb_book_id:         jQuery( '#gwolle_gb_book_id' ).val(),
-			gwolle_gb_author_name:     jQuery( '#gwolle_gb_author_name' ).val(),
-			gwolle_gb_author_origin:   jQuery( '#gwolle_gb_author_origin' ).val(),
-			gwolle_gb_author_email:    jQuery( '#gwolle_gb_author_email' ).val(),
-			gwolle_gb_author_website:  jQuery( '#gwolle_gb_author_website' ).val(),
-			gwolle_gb_subject:         jQuery( '#gwolle_gb_subject' ).val(),
-			gwolle_gb_content:         jQuery( '#gwolle_gb_content' ).val(),
-			gwolle_gb_antispam_answer: jQuery( '#gwolle_gb_antispam_answer' ).val(),
-			gwolle_gb_captcha_code:    jQuery( '#gwolle_gb_captcha_code' ).val(),
-			gwolle_gb_captcha_prefix:  jQuery( '#gwolle_gb_captcha_prefix' ).val(),
-			gwolle_gb_wpnonce:         jQuery( '#gwolle_gb_wpnonce' ).val(),
-			gwolle_gb_submit:          jQuery( '#gwolle_gb_submit' ).val()
-		};
+		jQuery('.gwolle_gb_form_ajax input').each(function( index, value ) {
+			var val = jQuery( value ).val();
+			var id = jQuery( value ).attr('id');
+			if ( id == 'gwolle_gb_privacy' ) {
+				var checked = jQuery('.gwolle_gb_form_ajax input#gwolle_gb_privacy').prop('checked');
+				if ( checked == true ) {
+					gwolle_gb_ajax_data[id] = 'on';
+				}
+			} else {
+				gwolle_gb_ajax_data[id] = val;
+			}
+		});
+		jQuery('.gwolle_gb_form_ajax textarea').each(function( index, value ) {
+			var val = jQuery( value ).val();
+			var id = jQuery( value ).attr('id');
+			gwolle_gb_ajax_data[id] = val;
+		});
+		gwolle_gb_ajax_data['action'] = 'gwolle_gb_form_ajax';
 
-		jQuery.post( gwolle_gb_frontend_script.ajax_url, data, function( response ) {
+		jQuery.post( gwolle_gb_frontend_script.ajax_url, gwolle_gb_ajax_data, function( response ) {
 
 			if ( gwolle_gb_is_json( response ) ) {
 				data = JSON.parse( response );
@@ -156,6 +217,25 @@ jQuery(document).ready(function($) {
 
 						jQuery( '#gwolle_gb .gwolle_gb_submit_ajax_icon' ).css( 'display', 'none' );
 
+						/*
+						 * Add callback for after AJAX request. Used for metabox-handle for new entries.
+						 *
+						 * @since 2.3.0
+						 *
+						 * Example code for using the callback:
+						 *
+						 * jQuery(document).ready(function($) {
+						 *     gwolle_gb_ajax_callback.add( my_callback_function );
+						 * });
+						 *
+						 * function my_callback_function() {
+						 *     console.log('This is the callback');
+						 *     return false;
+						 * }
+						 *
+						 */
+						gwolle_gb_ajax_callback.fire();
+
 					} else {
 						// Not saved...
 
@@ -167,7 +247,7 @@ jQuery(document).ready(function($) {
 						jQuery( '#gwolle_gb_new_entry input' ).removeClass( 'error' );
 						jQuery( '#gwolle_gb_new_entry textarea' ).removeClass( 'error' );
 						jQuery.each( gwolle_gb_error_fields, function( index, value ) {
-							jQuery( '#gwolle_gb_' + value ).addClass( 'error' );
+							jQuery( '#' + value ).addClass( 'error' );
 						});
 
 						jQuery( '#gwolle_gb .gwolle_gb_submit_ajax_icon' ).css( 'display', 'none' );

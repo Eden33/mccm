@@ -33,6 +33,7 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 		'marked-by-honeypot',
 		'marked-by-nonce',
 		'marked-by-akismet',
+		'marked-by-sfs',
 		'marked-by-longtext',
 		'entry-edited',
 		'imported-from-dmsguestbook',
@@ -105,24 +106,25 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 
 	// Message to strings
 	$log_messages = array(
-		'entry-unchecked'             => /* translators: Log message */ __('Entry has been locked.',    'gwolle-gb'),
-		'entry-checked'               => /* translators: Log message */ __('Entry has been checked.',   'gwolle-gb'),
-		'marked-as-spam'              => /* translators: Log message */ __('Entry marked as spam.',     'gwolle-gb'),
-		'marked-as-not-spam'          => /* translators: Log message */ __('Entry marked as not spam.', 'gwolle-gb'),
-		'marked-by-honeypot'          => /* translators: Log message */ __('Entry marked by the Honeypot.', 'gwolle-gb'),
-		'marked-by-nonce'             => /* translators: Log message */ __('Entry marked by invalid Nonce.', 'gwolle-gb'),
-		'marked-by-akismet'           => /* translators: Log message */ __('Entry marked by Akismet.', 'gwolle-gb'),
-		'marked-by-longtext'          => /* translators: Log message */ __('Entry marked for too long text.', 'gwolle-gb'),
-		'entry-edited'                => /* translators: Log message */ __('Entry has been edited.',    'gwolle-gb'),
-		'imported-from-dmsguestbook'  => /* translators: Log message */ __('Imported from DMSGuestbook', 'gwolle-gb'),
-		'imported-from-wp'            => /* translators: Log message */ __('Imported from WordPress comments', 'gwolle-gb'),
-		'imported-from-gwolle'        => /* translators: Log message */ __('Imported from Gwolle-GB', 'gwolle-gb'),
-		'exported-to-csv'             => /* translators: Log message */ __('Exported to CSV file', 'gwolle-gb'),
-		'entry-trashed'               => /* translators: Log message */ __('Entry has been trashed.',   'gwolle-gb'),
-		'entry-untrashed'             => /* translators: Log message */ __('Entry has been untrashed.', 'gwolle-gb'),
-		'admin-reply-added'           => /* translators: Log message */ __('Admin reply has been added.', 'gwolle-gb'),
-		'admin-reply-updated'         => /* translators: Log message */ __('Admin reply has been updated.', 'gwolle-gb'),
-		'admin-reply-removed'         => /* translators: Log message */ __('Admin reply has been removed.', 'gwolle-gb')
+		'entry-unchecked'             => /* translators: Log message */ esc_html__('Entry has been locked.',    'gwolle-gb'),
+		'entry-checked'               => /* translators: Log message */ esc_html__('Entry has been checked.',   'gwolle-gb'),
+		'marked-as-spam'              => /* translators: Log message */ esc_html__('Entry marked as spam.',     'gwolle-gb'),
+		'marked-as-not-spam'          => /* translators: Log message */ esc_html__('Entry marked as not spam.', 'gwolle-gb'),
+		'marked-by-honeypot'          => /* translators: Log message */ esc_html__('Entry marked by the Honeypot.', 'gwolle-gb'),
+		'marked-by-nonce'             => /* translators: Log message */ esc_html__('Entry marked by invalid Nonce.', 'gwolle-gb'),
+		'marked-by-akismet'           => /* translators: Log message */ esc_html__('Entry marked by Akismet.', 'gwolle-gb'),
+		'marked-by-sfs'               => /* translators: Log message */ esc_html__('Entry marked by Stop Forum Spam.', 'gwolle-gb'),
+		'marked-by-longtext'          => /* translators: Log message */ esc_html__('Entry marked for too long text.', 'gwolle-gb'),
+		'entry-edited'                => /* translators: Log message */ esc_html__('Entry has been edited.',    'gwolle-gb'),
+		'imported-from-dmsguestbook'  => /* translators: Log message */ esc_html__('Imported from DMSGuestbook', 'gwolle-gb'),
+		'imported-from-wp'            => /* translators: Log message */ esc_html__('Imported from WordPress comments', 'gwolle-gb'),
+		'imported-from-gwolle'        => /* translators: Log message */ esc_html__('Imported from Gwolle-GB', 'gwolle-gb'),
+		'exported-to-csv'             => /* translators: Log message */ esc_html__('Exported to CSV file', 'gwolle-gb'),
+		'entry-trashed'               => /* translators: Log message */ esc_html__('Entry has been trashed.',   'gwolle-gb'),
+		'entry-untrashed'             => /* translators: Log message */ esc_html__('Entry has been untrashed.', 'gwolle-gb'),
+		'admin-reply-added'           => /* translators: Log message */ esc_html__('Admin reply has been added.', 'gwolle-gb'),
+		'admin-reply-updated'         => /* translators: Log message */ esc_html__('Admin reply has been updated.', 'gwolle-gb'),
+		'admin-reply-removed'         => /* translators: Log message */ esc_html__('Admin reply has been removed.', 'gwolle-gb')
 	);
 
 	$where = " 1 = %d";
@@ -182,7 +184,7 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 					$log_entry['author_login'] = $userdata->user_login;
 				}
 			} else {
-				$log_entry['author_login'] = '<i>' . __('Unknown', 'gwolle-gb') . '</i>';
+				$log_entry['author_login'] = '<i>' . esc_html__('Unknown', 'gwolle-gb') . '</i>';
 			}
 
 			// Construct the message in HTML
@@ -191,7 +193,7 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 			$log_entry['msg_html'] .= ': ' . $log_entry['msg'];
 
 			if ( $log_entry['author_id'] == get_current_user_id() ) {
-				$log_entry['msg_html'] .= ' (<strong>' . __('You', 'gwolle-gb') . '</strong>)';
+				$log_entry['msg_html'] .= ' (<strong>' . esc_html__('You', 'gwolle-gb') . '</strong>)';
 			} else {
 				$log_entry['msg_html'] .= ' (' . $log_entry['author_login'] . ')';
 			}
@@ -244,5 +246,5 @@ function gwolle_gb_del_log_entries( $entry_id ) {
 			return true;
 		}
 		return false;
-
 }
+add_action( 'gwolle_gb_delete_entry', 'gwolle_gb_del_log_entries' );

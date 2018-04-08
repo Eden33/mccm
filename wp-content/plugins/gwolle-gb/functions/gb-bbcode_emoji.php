@@ -26,7 +26,8 @@ function gwolle_gb_bbcode_parse( $str ){
 	$str = preg_replace($bb, $html, $str);
 
 	$pattern="#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
-	$replace='<a href="\\1" target="_blank" rel="nofollow">\\2</a>';
+	$bbcode_link_rel = apply_filters( 'gwolle_gb_bbcode_link_rel', 'nofollow' );
+	$replace='<a href="\\1" target="_blank" rel="' . $bbcode_link_rel . '">\\2</a>';
 	$str=preg_replace($pattern, $replace, $str);
 
 	$pattern="#\[img\]([^\[]*)\[/img\]#i";
@@ -149,6 +150,17 @@ function gwolle_gb_get_emoji() {
 		<a title="🌈" class="gwolle_gb_emoji_64 noslimstat">🌈</a>
 		<a title="🏝" class="gwolle_gb_emoji_65 noslimstat">🏝</a>
 		';
+	/*
+	 * Filters the list of emoji shown on textarea/bbcode/emoji at the frontend form.
+	 *
+	 * Returning the altered string is the recommended way use this filter.
+	 * You can add emoji characters or replace them with str_replace.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string $emoji The list of Emoji.
+	 */
+	$emoji = apply_filters( 'gwolle_gb_get_emoji', $emoji );
 	return $emoji;
 }
 

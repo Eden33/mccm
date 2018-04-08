@@ -18,7 +18,7 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 
 function my_gwolle_gb_mail_moderators_subject( $subject ) {
 	// this is the default;
-	$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . __('New Guestbook Entry', 'gwolle-gb');
+	$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . esc_html__('New Guestbook Entry', 'gwolle-gb');
 	return $subject;
 }
 add_filter( 'gwolle_gb_mail_moderators_subject', 'my_gwolle_gb_mail_moderators_subject', 10,1 );

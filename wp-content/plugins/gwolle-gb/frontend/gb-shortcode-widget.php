@@ -33,14 +33,14 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 		'num_words'   => 10,
 	), $atts );
 
-	if ( $shortcode_atts['book_id'] == 'post_id' ) {
+	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 
 	// Load Frontend CSS in Footer, only when it's active.
 	wp_enqueue_style('gwolle_gb_frontend_css');
 
-	$widget_title = __('Guestbook', 'gwolle-gb');
+	$widget_title = esc_html__('Guestbook', 'gwolle-gb');
 	$book_id      = $shortcode_atts['book_id'];
 	$num_entries  = $shortcode_atts['num_entries'];
 	$num_words    = $shortcode_atts['num_words'];
@@ -48,12 +48,18 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 
 	$html5 = current_theme_supports( 'html5' );
 
+	$widget_class = 'gwolle_gb_widget gwolle-gb-widget';
+	$widget_class = apply_filters( 'gwolle_gb_widget_list_class', $widget_class );
+	$widget_item_class = 'gwolle_gb_widget gwolle-gb-widget';
+	$widget_item_class = apply_filters( 'gwolle_gb_widget_item_class', $widget_item_class );
+
+
 	$widget_html = '
-				<div class="gwolle_gb_widget">';
+				<div class="gwolle_gb_widget gwolle-gb-widget">';
 	$widget_html .= apply_filters('widget_title', $widget_title);
 
 	$widget_html .= '
-					<ul class="gwolle_gb_widget">';
+					<ul class="' . $widget_class . '">';
 
 	// Get the latest $num_entries guestbook entries
 	$entries = gwolle_gb_get_entries(
@@ -65,10 +71,11 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 			'book_id'       => $book_id,
 			)
 		);
+
 	if ( is_array( $entries ) && ! empty( $entries ) ) {
 		foreach( $entries as $entry ) {
 			$widget_html .= '
-						<li class="gwolle_gb_widget">';
+						<li class="' . $widget_item_class . '">';
 
 			if ( $html5 ) {
 				$widget_html .= '

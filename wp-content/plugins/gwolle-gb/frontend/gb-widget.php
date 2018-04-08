@@ -16,8 +16,8 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 
 		/* Constructor */
 		function __construct() {
-			$widget_ops = array( 'classname' => 'gwolle_gb', 'description' => __('Displays the recent guestbook entries.','gwolle-gb') );
-			parent::__construct('gwolle_gb', __('Gwolle Guestbook', 'gwolle-gb'), $widget_ops);
+			$widget_ops = array( 'classname' => 'gwolle_gb', 'description' => esc_html__('Displays the recent guestbook entries.','gwolle-gb') );
+			parent::__construct('gwolle_gb', esc_html__('Gwolle Guestbook', 'gwolle-gb'), $widget_ops);
 			$this->alt_option_name = 'gwolle_gb';
 		}
 
@@ -26,7 +26,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			extract($args);
 
 			$default_value = array(
-					'title'       => __('Guestbook', 'gwolle-gb'),
+					'title'       => esc_html__('Guestbook', 'gwolle-gb'),
 					'num_entries' => 5,
 					'best'        => '',
 					'no_mod'      => 0,
@@ -35,7 +35,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 					'slider'      => 0,
 					'num_words'   => 10,
 					'book_id'     => 0,
-					'link_text'   => __('Visit guestbook', 'gwolle-gb'),
+					'link_text'   => esc_html__('Visit guestbook', 'gwolle-gb'),
 					'postid'      => 0
 				);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
@@ -57,19 +57,22 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			$html5 = current_theme_supports( 'html5' );
 
 			// Prepare for SSS Slider. Registers Script with WordPress to wp_footer().
-			$slider_class = '';
+			$widget_class = 'gwolle_gb_widget';
 			if ( $slider ) {
 				wp_register_script( 'gwolle_gb_widget_sss', plugins_url( '/js/sss/sss.js', __FILE__ ), 'jquery', GWOLLE_GB_VER, true );
 				wp_enqueue_script( 'gwolle_gb_widget_sss' );
-				$slider_class = 'gwolle_gb_widget_slider';
+				$widget_class .= ' gwolle_gb_widget_slider gwolle-gb-widget-slider';
 			}
+			$widget_class = apply_filters( 'gwolle_gb_widget_list_class', $widget_class );
+			$widget_item_class = 'gwolle_gb_widget gwolle-gb-widget';
+			$widget_item_class = apply_filters( 'gwolle_gb_widget_item_class', $widget_item_class );
 
 			// Init
 			$widget_html = '';
 
 			$widget_html .= $before_widget;
 			$widget_html .= '
-				<div class="gwolle_gb_widget">';
+				<div class="gwolle_gb_widget gwolle-gb-widget">';
 
 			if ($widget_title !== FALSE) {
 				$widget_html .= $before_title . apply_filters('widget_title', $widget_title) . $after_title;
@@ -79,11 +82,11 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			if ( (int) $postid > 0 ) {
 				$permalink = get_permalink( $postid );
 				$raquo = '
-									<a href="' . $permalink . '" title="' . __('Click here to get to the guestbook.', 'gwolle-gb') . '">&raquo;</a>';
+							<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">&raquo;</a>';
 			}
 
 			$widget_html .= '
-					<ul class="gwolle_gb_widget ' . $slider_class . '">';
+					<ul class="' . $widget_class . '">';
 			$counter = 0;
 
 			// Get the best entries first
@@ -100,7 +103,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 						}
 						// Main Content
 						$widget_html .= '
-						<li class="gwolle_gb_widget">';
+						<li class="' . $widget_item_class . '">';
 
 						if ( $html5 ) {
 							$widget_html .= '
@@ -171,7 +174,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 						if ( is_array( $best) && in_array( $entry->get_id(), $best ) ) { continue; } // already listed
 						// Main Content
 						$widget_html .= '
-						<li class="gwolle_gb_widget">';
+						<li class="' . $widget_item_class . '">';
 
 						if ( $html5 ) {
 							$widget_html .= '
@@ -230,8 +233,8 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			// Post the link to the Guestbook.
 			if ( (int) $postid > 0 ) {
 				$widget_html .= '
-					<p class="gwolle_gb_link">
-						<a href="' . $permalink . '" title="' . __('Click here to get to the guestbook.', 'gwolle-gb') . '">' . $link_text . ' &raquo;</a>
+					<p class="gwolle_gb_link gwolle-gb-link">
+						<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">' . $link_text . ' &raquo;</a>
 					</p>';
 			}
 			$widget_html .= '
@@ -288,7 +291,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 		function form($instance) {
 
 			$default_value = array(
-					'title'       => __('Guestbook', 'gwolle-gb'),
+					'title'       => esc_html__('Guestbook', 'gwolle-gb'),
 					'num_entries' => 5,
 					'best'        => '',
 					'no_mod'      => 0,
@@ -297,7 +300,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 					'slider'      => 0,
 					'num_words'   => 10,
 					'book_id'     => 0,
-					'link_text'   => __('Visit guestbook', 'gwolle-gb'),
+					'link_text'   => esc_html__('Visit guestbook', 'gwolle-gb'),
 					'postid'      => 0
 				);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
@@ -316,13 +319,13 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			?>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('title'); ?>" /><?php _e('Title:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('title'); ?>" /><?php esc_html_e('Title:', 'gwolle-gb'); ?></label>
 				<br />
 				<input type="text" id="<?php echo $this->get_field_id('title'); ?>" value="<?php echo $title; ?>" name="<?php echo $this->get_field_name('title'); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('num_entries'); ?>" /><?php _e('Number of entries:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('num_entries'); ?>" /><?php esc_html_e('Number of entries:', 'gwolle-gb'); ?></label>
 				<br />
 				<select id="<?php echo $this->get_field_id('num_entries'); ?>" name="<?php echo $this->get_field_name('num_entries'); ?>">
 					<?php
@@ -338,37 +341,37 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('best'); ?>" /><?php _e('Best entries to show:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('best'); ?>" /><?php esc_html_e('Best entries to show:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('best'); ?>" value="<?php echo $best; ?>" name="<?php echo $this->get_field_name('best'); ?>" placeholder="<?php _e('List of entry_id\'s, comma-separated', 'gwolle-gb'); ?>" />
+				<input type="text" id="<?php echo $this->get_field_id('best'); ?>" value="<?php echo $best; ?>" name="<?php echo $this->get_field_name('best'); ?>" placeholder="<?php esc_attr_e('List of entry_id\'s, comma-separated', 'gwolle-gb'); ?>" />
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id('no_mod'); ?>">
 				<input type="checkbox" id="<?php echo $this->get_field_id('no_mod'); ?>" <?php checked(1, $no_mod ); ?> name="<?php echo $this->get_field_name('no_mod'); ?>" value="1" />
-				<?php _e('Do not show admin entries.', 'gwolle-gb'); ?></label>
+				<?php esc_html_e('Do not show admin entries.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id('name'); ?>">
 				<input type="checkbox" id="<?php echo $this->get_field_id('name'); ?>" <?php checked(1, $name ); ?> name="<?php echo $this->get_field_name('name'); ?>" value="1" />
-				<?php _e('Show name of author.', 'gwolle-gb'); ?></label>
+				<?php esc_html_e('Show name of author.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id('date'); ?>">
 				<input type="checkbox" id="<?php echo $this->get_field_id('date'); ?>" <?php checked(1, $date ); ?> name="<?php echo $this->get_field_name('date'); ?>" value="1" />
-				<?php _e('Show date of entry.', 'gwolle-gb'); ?></label>
+				<?php esc_html_e('Show date of entry.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id('slider'); ?>">
 				<input type="checkbox" id="<?php echo $this->get_field_id('slider'); ?>" <?php checked(1, $slider ); ?> name="<?php echo $this->get_field_name('slider'); ?>" value="1" />
-				<?php _e('Use Slider View.', 'gwolle-gb'); ?></label>
+				<?php esc_html_e('Use Slider View.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('num_words'); ?>" /><?php _e('Number of words for each entry:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('num_words'); ?>" /><?php esc_html_e('Number of words for each entry:', 'gwolle-gb'); ?></label>
 				<br />
 				<select id="<?php echo $this->get_field_id('num_words'); ?>" name="<?php echo $this->get_field_name('num_words'); ?>">
 					<?php
@@ -384,29 +387,29 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('book_id'); ?>" /><?php _e('Book ID:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('book_id'); ?>" /><?php esc_html_e('Book ID:', 'gwolle-gb'); ?></label>
 				<br />
 				<input type="text" id="<?php echo $this->get_field_id('book_id'); ?>" value="<?php echo $book_id; ?>" name="<?php echo $this->get_field_name('book_id'); ?>" /><br />
-				<?php _e('0 means all.', 'gwolle-gb'); ?>
+				<?php esc_html_e('0 means all.', 'gwolle-gb'); ?>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('link_text'); ?>" /><?php _e('Link text:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('link_text'); ?>" /><?php esc_html_e('Link text:', 'gwolle-gb'); ?></label>
 				<br />
 				<input type="text" id="<?php echo $this->get_field_id('link_text'); ?>" value="<?php echo $link_text; ?>" name="<?php echo $this->get_field_name('link_text'); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('postid'); ?>"><?php _e('Select the page of the guestbook:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo $this->get_field_id('postid'); ?>"><?php esc_html_e('Select the page of the guestbook:', 'gwolle-gb'); ?></label>
 				<br />
 				<select id="<?php echo $this->get_field_id('postid'); ?>" name="<?php echo $this->get_field_name('postid'); ?>">
-					<option value="0"><?php _e('Select page', 'gwolle-gb'); ?></option>
+					<option value="0"><?php esc_html_e('Select page', 'gwolle-gb'); ?></option>
 					<?php
 					$args = array(
-						'post_type'              => 'any',
-						'orderby'                => 'title',
-						'order'                  => 'ASC',
-						'posts_per_page'         => 500,
+						'post_type'           => 'any',
+						'orderby'             => 'title',
+						'order'               => 'ASC',
+						'posts_per_page'      => 500,
 						'meta_query'          => array(
 							array(
 								'key'   => 'gwolle_gb_read',
