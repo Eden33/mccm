@@ -26,17 +26,14 @@ function wp_head_event()
 <?php
 	}
 ?>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-            ga('create', 'UA-53925452-1', 'auto');
-            ga('set', 'forceSSL', true);
-            ga('set', 'anonymizeIp', true);
-            ga('send', 'pageview');
-        </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53925452-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-53925452-1');
+    </script>
 <?php
 }
 
@@ -53,10 +50,6 @@ add_action('wp_head', 'wp_head_event');
 $_registration_start_date = new DateTime('2020-09-01 22:00');
 $_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
-    /*
-    '81.189.26.58',
-    '188.21.52.126'
-     */
 );
 
 function head_menu_inject_registration_countdown($items) 
@@ -94,7 +87,8 @@ function filter_the_content( $content )
 	|| is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'inter-sam-online-anmeldung' )
         || is_page( 'sam-masters-online-anmeldung')
-	|| is_page( 'sam-junioren-open-online-anmeldung' ) ) 
+	|| is_page( 'sam-junioren-open-online-anmeldung' )
+	|| is_page('sjmcc-online-anmeldung')) 
         {
 		if( is_registration_enabled() === false ) 
                 {
