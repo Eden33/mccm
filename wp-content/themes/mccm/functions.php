@@ -47,8 +47,8 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2020-09-01 22:00');
-$_registration_ctr_enabled = false;
+$_registration_start_date = new DateTime('2018-05-02 22:00');
+$_registration_ctr_enabled = true;
 $_registration_ip_whitelist = array(
 );
 
@@ -83,7 +83,7 @@ add_filter('the_content', 'filter_the_content');
 
 function filter_the_content( $content ) 
 {
-	if(is_page( 'omc-oldtimer-online-anmeldung' ) 
+	if(is_page( 'oldtimer-seitenwagen-online-anmeldung' ) 
 	|| is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'inter-sam-online-anmeldung' )
         || is_page( 'sam-masters-online-anmeldung')
