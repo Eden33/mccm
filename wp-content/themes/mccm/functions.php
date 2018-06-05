@@ -47,8 +47,8 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2018-05-02 22:00');
-$_registration_ctr_enabled = true;
+$_registration_start_date = new DateTime('2020-05-02 22:00');
+$_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
 );
 
