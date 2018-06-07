@@ -455,6 +455,12 @@ span.wpcf7-not-valid-tip {
 	min-height: 130px;
 }
 
+@media screen and (max-width: 900px) {
+	/* hide main menu sub-menu items */
+	#access li {
+		position: inherit;
+	}
+}
 @media screen and (max-width: 767px) {
 	.entry-title {
 		font-size: 24px !important;
