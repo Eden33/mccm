@@ -457,9 +457,7 @@ span.wpcf7-not-valid-tip {
 
 @media screen and (max-width: 900px) {
 	/* hide main menu sub-menu items */
-	#access li {
-		position: inherit;
-	}
+	#access ul li:hover > ul { display: none; }
 }
 @media screen and (max-width: 767px) {
 	.entry-title {
