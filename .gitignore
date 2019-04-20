@@ -13,3 +13,6 @@
 
 # ignore php info file if any
 phpinfo.html
+
+# ignore wp-config
+wp-config.php
