@@ -315,6 +315,12 @@ span.wpcf7-not-valid-tip {
 	height: 50px;
 }
 
+#link-endurocross {
+	background: url(../../uploads/2019/04/endurocross.png) no-repeat;
+	background-position: right;
+	height: 50px;	
+}
+
 #link-mft {
 	background: url(../../uploads/2012/02/mft.gif) no-repeat;
 	background-position: right;
