@@ -1,0 +1,2842 @@
+# Translation of Plugins - Gwolle Guestbook - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Gwolle Guestbook - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-03-25 15:50:11+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Gwolle Guestbook - Stable (latest release)\n"
+
+#: admin/gb-page-export.php:91
+msgid "Meta Fields (if the add-on is active)"
+msgstr "Meta-Felder (wenn das Add-On aktiv ist)"
+
+#: admin/gb-page-entries.php:510
+msgid "Search entries"
+msgstr "Einträge suchen"
+
+#: frontend/gb-form.php:453
+msgid "Accept Privacy Policy"
+msgstr "Datenschutzbestimmung akzeptieren"
+
+#: frontend/gb-form-posthandling.php:207
+msgid "You did not accept the privacy policy, even though it is mandatory."
+msgstr "Du hast nicht die Datenschutzbestimmung akzeptiert, obwohl dies verpflichtend ist."
+
+#: admin/tabs/gb-formtab.php:288
+msgid "Privacy checkbox"
+msgstr "Privatsphäre-Checkbox"
+
+#: admin/gb-page-export.php:266
+msgid "Export user entries from this website."
+msgstr "Benutzer-Einträge dieser Website exportieren."
+
+#: admin/gb-page-entries.php:507 admin/gb-page-entries.php:508
+#: admin/gb-page-export.php:258 admin/gb-page-export.php:259
+msgid "User Email"
+msgstr "Benutzer-E-Mail"
+
+#: admin/gb-page-entries.php:502 admin/gb-page-export.php:253
+msgid "Select one option below, either User ID or Email address"
+msgstr "Wähle folgende Option - entweder Benutzer-ID oder E-Mail-Adresse"
+
+#: admin/gb-page-export.php:34
+msgid "Export guestbook entries for a user"
+msgstr "Gästebuch-Einträge eines Benutzers exportieren"
+
+#. translators: The GDPR law often has a country specific name
+#: admin/tabs/gb-formtab.php:125
+msgid "Since May 2018 there is a GDPR law in the EU about privacy and personal information that is being stored."
+msgstr "Seit Mai 2018 gibt es in der EU ein GDPR-Gesetz über die Privatsphäre und persönliche Informationen, die gespeichert werden."
+
+#: admin/tabs/gb-formtab.php:122
+msgid "Store IP Address and hostname for each entry."
+msgstr "IP-Adresse und Hostname für jeden Eintrag speichern."
+
+#: admin/tabs/gb-formtab.php:115
+msgid "Store IP Address"
+msgstr "IP-Adresse speichern"
+
+#: admin/gb-page-add-on.php:80
+msgid "Sitemap support for popular SEO/Sitemap plugins."
+msgstr "Sitemap-Unterstützung für beliebte SEO/Sitemap-Plugins."
+
+#: admin/gb-page-add-on.php:23 admin/gb-page-editor.php:16
+#: admin/gb-page-entries.php:16 admin/gb-page-export.php:17
+#: admin/gb-page-gwolle-gb.php:16 admin/gb-page-import.php:22
+#: admin/gb-page-settings.php:15 admin/tabs/gb-admintab.php:15
+#: admin/tabs/gb-antispamtab.php:15 admin/tabs/gb-debugtab.php:17
+#: admin/tabs/gb-emailtab.php:15 admin/tabs/gb-formtab.php:15
+#: admin/tabs/gb-readingtab.php:15 admin/tabs/gb-uninstalltab.php:18
+msgid "You need a higher level of permission."
+msgstr "Du benötigst mehr Berechtigungen."
+
+#: admin/tabs/gb-formtab.php:126
+msgid "Disabling this option will still add the IP Address to notification emails and it will be used for spamfiltering in Akismet and Stop Forum Spam."
+msgstr "Bei Deaktivierung dieser Option wird trotzdem die IP-Adresse zu Benachrichtigungs-E-Mails hinzugefügt und diese zum Filtern von Spam in Akismet und Stop Forum Spam genutzt."
+
+#. translators: Commercial Add-On. Location of the display.
+#: add-on/gb-add-on.php:145
+msgid "Location for display"
+msgstr "Position der Anzeige"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:28
+msgid "Miscellaneous"
+msgstr "Verschiedenes"
+
+#: admin/gb-page-add-on.php:72
+msgid "Average star rating per guestbook, including a widget."
+msgstr "Durchschnittliche Sterne-Bewertung pro Gästebuch, einschließlich eines Widgets."
+
+#: admin/gb-page-add-on.php:79
+msgid "Email button to contact each author (optional)."
+msgstr "E-Mail-Funktion, um jeden Autor zu kontaktieren (optional)."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:109
+msgid "The email address of the author will be added to the metabox."
+msgstr "Die E-Mail-Adresse des Autors wird zur Metabox hinzugefügt."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:107
+msgid "Show author email in Metabox."
+msgstr "E-Mail-Adresse des Autors in der Metabox anzeigen."
+
+#. translators: Commercial Add-On Widget
+#: add-on/gb-add-on.php:62
+msgid "Gwolle GB: Average Star Rating"
+msgstr "Gwolle GB: Durchschnittliche Sterne-Bewertung"
+
+#. translators: Commercial Add-On Widget
+#: add-on/gb-add-on.php:64
+msgid "Average Star Rating"
+msgstr "Durchschnittliche Sterne-Bewertung"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:105
+msgid "Author Email"
+msgstr "E-Mail-Adresse des Autors"
+
+#. translators: Commercial Add-On Widget
+#: add-on/gb-add-on.php:60
+msgid "Displays the average star rating of a guestbook."
+msgstr "Durchschnittliche Sterne-Bewertung eines Gästebuchs anzeigen."
+
+#. translators: Commercial Add-On metabox line
+#: add-on/gb-add-on.php:52
+msgid "Email author"
+msgstr "E-Mail an den Autor schreiben"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:92
+msgid "Delete this meta field?"
+msgstr "Dieses Meta-Feld löschen?"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:94
+msgid "Delete this string row?"
+msgstr "Diese Zeichenfolgen-Reihe löschen?"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:133
+msgid "There are no Meta Fields saved yet. Please go to the Form tab, enter a field and save it."
+msgstr "Noch keine Meta-Felder gespeichert. Bitte gehe zum Formular-Tab, gib ein Feld ein und speichere es."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:117
+msgid "Show delete link in Metabox for author."
+msgstr "Zeige Lösch-Verknüpfung in der Metabox für den Autor."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:115
+msgid "Show delete link in Metabox for moderators."
+msgstr "Zeige Lösch-Verknüpfung in der Metabox für Moderatoren."
+
+#. translators: Commercial Add-On. %s is a link.
+#: add-on/gb-add-on.php:74
+msgid "Please place them on the %ssupport forum%s. I will see what I can do."
+msgstr "Bitte platziere sie im %sSupport-Forum%s. Ich werde sehen, was ich tun kann."
+
+#: admin/gb-page-add-on.php:122
+msgid "It is just a hobby for me and even if it is not about the money, I still enjoy seeing some money in return for my work."
+msgstr "Ich mache das als Hobby. Selbst wenn es mir dabei nicht ums Geld geht, freue ich mich trotzdem, wenn etwas Geld für meine Arbeit zurückkommt."
+
+#. translators: Commercial Add-On description
+#: add-on/gb-add-on.php:11
+msgid "Gwolle Guestbook: The Add-On is the add-on for Gwolle Guestbook that gives extra functionality for your guestbook. Meta Fields, Star ratings, Social Sharing and much more."
+msgstr "Gwolle Guestbook: Dieses Add-On ist eine Erweiterung für Gwolle Guestbook, das deinem Gästebuch zusätzliche Funktionen  bereitstellt. Meta-Felder, Sterne-Bewertungen, Social Sharing und vieles mehr."
+
+#: admin/gb-page-add-on.php:33
+msgid "Development"
+msgstr "Entwicklung"
+
+#. translators: Commercial Add-On. %s is the value/number of votes.
+#: add-on/gb-add-on.php:175
+msgid "Average Rating: <strong>%s out of %s</strong> (%s votes)"
+msgstr "Durchschnittliche Bewertung: <strong>%s von %s</strong> (%s Stimmen)"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:165
+msgid "Example: Guestbook"
+msgstr "Beispiel: Gästebuch"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:131
+msgid "None."
+msgstr "Keine."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:167
+msgid "New String"
+msgstr "Neue Zeichenfolge"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:159
+msgid "String Replacement"
+msgstr "Zeichenfolgen-Ersetzung"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:90
+msgid "+ Add new field."
+msgstr "+ Neues Feld hinzufügen."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:88
+msgid "Name:"
+msgstr "Name:"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:86
+msgid "Slug:"
+msgstr "Titelform:"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:56
+msgid "Rating"
+msgstr "Bewertung"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:44
+msgid "Delete"
+msgstr "Löschen"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:42
+msgid "Delete entry"
+msgstr "Eintrag löschen"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:36
+msgid "Add admin reply"
+msgstr "Admin-Antwort hinzufügen"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:32
+msgid "Ideas?"
+msgstr "Ideen?"
+
+#: admin/gb-page-add-on.php:121
+msgid "Over the last few years I put about 1000+ hours into this Guestbook plugin in development and support."
+msgstr "In den letzten Jahren habe ich mehr als 1000 Stunden für die Entwicklung und den Support dieses Gästebuch-Plugins investiert."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:153
+msgid "Show Average Star Rating"
+msgstr "Durchschnittliche Sterne-Bewertung anzeigen"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:151
+msgid "Show Average"
+msgstr "Durchschnitt anzeigen"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:141
+msgid "Sharing Services"
+msgstr "Sharing-Dienste"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:171
+msgid "+ Add new string."
+msgstr "+ Neue Zeichenfolge hinzufügen."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:163
+msgid "Old String"
+msgstr "Alte Zeichenfolge"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:143
+msgid "Select the Social Media services you want enabled for sharing."
+msgstr "Social-Media-Dienste auswählen, die du zum Teilen nutzen möchtest."
+
+#. translators: Commercial Add-On. %s is a link.
+#: add-on/gb-add-on.php:68
+msgid "Gwolle Guestbook: The Add-On requires Gwolle Guestbook. Go to your %sPlugins%s page to install or activate Gwolle Guestbook."
+msgstr "Gwolle Guestbook: Diese Erweiterung benötigt Gwolle Guestbook. Gehe auf deine %sPlugins%s-Seite, um Gwolle Guestbook zu installieren oder zu aktivieren."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:155
+msgid "The average will be shown above the list of entries."
+msgstr "Der Durchschnitt wird über der Eintragsliste angezeigt."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:139
+msgid "Show share icons for Social Media in the metabox. Below you can select which ones and their order."
+msgstr "Teilen-Symbole für Social Media in der Metabox anzeigen. Darunter kannst du sie auswählen und ihre Reihenfolge festlegen."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:137
+msgid "Share on Social Media"
+msgstr "In Social Media teilen"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:129
+msgid "In metabox."
+msgstr "In der Metabox."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:127
+msgid "Under content."
+msgstr "Unter dem Inhalt."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:125
+msgid "Above content."
+msgstr "Über dem Inhalt."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:123
+msgid "Configure where you want the extra fields displayed."
+msgstr "Einstellen, wo die zusätzlichen Felder angezeigt werden sollen."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:113
+msgid "Show delete link in Metabox."
+msgstr "Lösch-Funktion in der Metabox anzeigen."
+
+#. translators: Settings page, option for delete link
+#: add-on/gb-add-on.php:111
+msgid "Delete link"
+msgstr "Lösch-Funktion"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:119
+msgid "A link to delete the entry will be added to the metabox. Only visible for moderators and the author."
+msgstr "Der Metabox einen Link zum Löschen des Eintrags hinzufügen. Nur sichtbar für Moderatoren und den Autor."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:101
+msgid "Show permalink in Metabox."
+msgstr "Permalink in der Metabox anzeigen."
+
+#. translators: Settings page, option for permalink
+#: add-on/gb-add-on.php:99
+msgid "Permalink"
+msgstr "Permalink"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:161
+msgid "Here you can replace text strings throughout the frontend form, the list of entries, and the messages that get displayed for the form."
+msgstr "Hier kannst du Zeichenfolgen im Frontend, in der Eintragsliste und in den Nachrichten ersetzen, die für das Formular angezeigt werden."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:82
+msgid "The name of the field is what you will see in the label and placeholder in the form."
+msgstr "Der Name des Feldes wird in der Bezeichnung und dem Platzhalter des Formulars angezeigt."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:80
+msgid "The slug of the field is where your data is attached to. Only change the slug if you know what you are doing."
+msgstr "Die Titelform des Feldes bestimmt, wo deine Daten angehängt werden. Ändere die Titelform nur, wenn du weißt, was du tust."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:78
+msgid "Configure the extra fields that you want."
+msgstr "Konfiguriere die zusätzlichen Felder, die du haben möchtest."
+
+#. translators: Commercial Add-On. %s is a version number.
+#: add-on/gb-add-on.php:70
+msgid "Gwolle Guestbook: The Add-On requires Gwolle Guestbook version %s. You have version %s. Go to your %sPlugins%s page to update Gwolle Guestbook."
+msgstr "Gwolle Guestbook: Das Add-On benötigt Gwolle Guestbook Version %s. Du hast Version %s. Gehe zu deiner %sPlugins%s-Seite, um Gwolle Guestbook zu aktualisieren."
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:30
+msgid "Strings"
+msgstr "Zeichenfolgen"
+
+#. translators: Commercial Add-On: Settings page tab (typo in 1.0.4)
+#: add-on/gb-add-on.php:26
+msgid "Miscellanious"
+msgstr "Verschiedenes"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:24
+msgid "Star Rating"
+msgstr "Sterne-Bewertung"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:22
+msgid "Social Media"
+msgstr "Social Media"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:15
+msgid "Add-On Settings"
+msgstr "Add-On Einstellungen"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:18
+msgid "Form Fields"
+msgstr "Formular-Felder"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:169
+msgid "Example: Review"
+msgstr "Beispiel: Bewertung"
+
+#. translators: Commercial Add-On: Post it on Social Media
+#: add-on/gb-add-on.php:48
+msgid "Post on"
+msgstr "Veröffentlichen auf"
+
+#. translators: Commercial Add-On. At the top of the form.
+#: add-on/gb-add-on.php:84
+msgid "Top"
+msgstr "Oben"
+
+#. translators: Commercial Add-On: Settings page tab
+#: add-on/gb-add-on.php:20
+msgid "Reading Fields"
+msgstr "Lesen-Felder"
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:103
+msgid "A link to the single entry will be added to the metabox."
+msgstr "Der Metabox einen Link zum einzelnen Eintrag hinzufügen."
+
+#: admin/gb-page-add-on.php:123
+msgid "If you buy this Add-On, that will encourage me and does add motivation to keep maintaining and supporting this guestbook software. It is a good way to support me and my work."
+msgstr "Der Kauf dieser Erweiterung ermutigt und motiviert mich, diese Gästebuch-Software weiter zu pflegen und zu unterstützen. Es ist ein guter Weg, um mich und meine Arbeit zu fördern."
+
+#. translators: Commercial Add-On
+#: add-on/gb-add-on.php:149
+msgid "Use star rating so visitors can give a star rating for your website or post."
+msgstr "Sterne-Bewertung verwenden, so dass Besucher deiner Website oder deinem Beitrag eine Bewertung geben können."
+
+#. translators: %s is a link
+#: admin/tabs/gb-antispamtab.php:222
+msgid "For the CAPTCHA you need the plugin %sReally Simple CAPTCHA%s installed and activated."
+msgstr "Für das CAPTCHA muss das Plugin %sReally Simple CAPTCHA%s installiert und aktiviert werden."
+
+#. translators: %s is a link
+#: admin/tabs/gb-antispamtab.php:189
+msgid "If you want to know more about Stop Forum Spam and how it works, please read about it on their %swebsite%s."
+msgstr "Um mehr über Stop Forum Spam und seine Funktionsweise zu erfahren, lies bitte auf deren %sWebsite%s weiter."
+
+#. translators: First 2 %s are a strong element. Second %s is for a link.
+#: admin/tabs/gb-antispamtab.php:153
+msgid "Sorry, wasn't able to locate your %sWordPress API key%s. You can enter it at the %sAkismet configuration page%s."
+msgstr "Sorry, dein %sWordpress API Schlüssel%s wurde nicht gefunden. Du kannst ihn auf der %sAkismet Einstellungsseite%s eingeben."
+
+#. translators: %s is a link
+#: admin/tabs/gb-antispamtab.php:102
+msgid "If you want to know more about what a Nonce is and how it works, please read about it on the %sWordPress Codex%s."
+msgstr "Um mehr über einen Nonce und seine Funktionsweise zu erfahren, lies darüber bitte auf dem %sWordPress Codex%s."
+
+#: admin/gb-page-add-on.php:32
+msgid "Demo"
+msgstr "Demo"
+
+#: admin/gb-page-add-on.php:31
+msgid "Buy Now"
+msgstr "Jetzt kaufen"
+
+#: admin/gb-page-add-on.php:29
+msgid "Features"
+msgstr "Eigenschaften"
+
+#: admin/gb-page-add-on.php:28 admin/gb-page-add-on.php:38
+msgid "Gwolle Guestbook: The Add-On"
+msgstr "Gwolle Guestbook: Das Add-On"
+
+#. translators: %s is a link
+#: admin/gb-page-add-on.php:92
+msgid "You can buy this add-on at the %sMOJO Marketplace%s for only $ 9."
+msgstr "Du kannst diese Erweiterung bei %sMOJO Marketplace%s für nur $9 kaufen."
+
+#: admin/gb-page-add-on.php:88
+msgid "Buy the Add-On."
+msgstr "Die Erweiterung kaufen."
+
+#. translators: %s is a link
+#: admin/gb-page-gwolle-gb.php:325
+msgid "If this plugin has any value to you, then please leave a review at %sthe plugin page%s at wordpress.org."
+msgstr "Wenn dir das Plugin gefällt, dann hinterlasse doch bitte eine Bewertung auf der %sPlugin-Seite%s auf wordpress.org."
+
+#. translators: %s is a link
+#: admin/gb-page-gwolle-gb.php:313
+msgid "I will make a request on %smake/polyglots%s to have you added as validator for this plugin/locale."
+msgstr "Ich werde eine Anfrage auf %smake/polyglots%s starten, um dich als Validator für dieses Plugin in dieser Sprache hinzuzufügen."
+
+#. translators: %s is a link
+#: admin/gb-page-gwolle-gb.php:309
+msgid "Translations can be added very easily through %sGlotPress%s."
+msgstr "Übersetzungen können sehr einfach mit %sGlotPress%s hinzugefügt werden."
+
+#. translators: %s is a link
+#: admin/gb-page-gwolle-gb.php:300
+msgid "If you have a problem or a feature request, please post it on the %ssupport forum at wordpress.org%s."
+msgstr "Bei Problemen oder Verbesserungsvorschlägen poste dies bitte im %sSupport-Forum auf wordpress.org%s."
+
+#. translators: %s is for the code element
+#: admin/gb-page-gwolle-gb.php:196
+msgid "Sorry, but the function %smail()%s required to notify you by mail is not enabled in your PHP configuration. You might want to install a WordPress plugin that uses SMTP instead of %smail()%s. Or you can contact your hosting provider."
+msgstr "Sorry, aber die Funktion %smail()%s, die dich per E-Mail benachrichtigen soll, ist in deiner PHP-Konfiguration nicht aktiviert. Du könntest ein WordPress Plugin installieren, das SMTP statt %smail()%s verwendet, oder deinen Hosting-Anbieter kontaktieren."
+
+#. translators: %s is a code element
+#: admin/gb-page-editor.php:433
+msgid "Example: %shttp://www.example.com/%s"
+msgstr "Beispiel: %shttp://www.example.com/%s"
+
+#. translators: %s is a link
+#: admin/gb-page-editor.php:392 admin/gb-page-editor.php:485
+msgid "Line breaks will not be visible to the visitors due to your %ssettings%s."
+msgstr "Zeilenumbrüche sind aufgrund deiner %sEinstellungen%s für Besucher nicht sichtbar."
+
+#. translators: %s is a link
+#: admin/gb-page-add-on.php:112
+msgid "For comparison you can also see the %sdemo site without the add-on%s enabled."
+msgstr "Zum Vergleich kannst du dir auch die %sDemo-Seite ohne aktiviertes Add-On%s ansehen."
+
+#. translators: %s is a link
+#: admin/gb-page-add-on.php:105
+msgid "The demo site of this plugin is available with the add-on enabled at %sthe demo site%s."
+msgstr "Eine Demo dieses Plugins mit aktiviertem Add-On ist auf der %sDemo-Seite%s zu finden."
+
+#: admin/gb-page-add-on.php:101
+msgid "Demo with the Add-On."
+msgstr "Demo mit Add-On."
+
+#: admin/gb-page-add-on.php:108
+msgid "Demo without the Add-On."
+msgstr "Demo ohne Add-On."
+
+#: admin/gb-page-add-on.php:67
+msgid "Current features include:"
+msgstr "Aktueller Funktionsumfang:"
+
+#: admin/gb-page-add-on.php:58
+msgid "Gwolle Guestbook: The Add-On is a commercial add-on for Gwolle Guestbook that gives extra functionality for your guestbook."
+msgstr "Gwolle Guestbook: Das Add-On ist eine kommerzielle Erweiterung für Gwolle Guestbook, die deinem Gästebuch zusätzliche Funktionen zur Verfügung stellt."
+
+#: admin/gb-page-add-on.php:93
+msgid "Support for the add-on is also at the MOJO Marketplace website."
+msgstr "Unterstützung für das Add-On gibt es auch auf der MOJO Marketplace Website."
+
+#: admin/gb-page-add-on.php:77
+msgid "Delete button in each entry for the moderator and author (optional)."
+msgstr "Lösch-Funktion in jedem Eintrag für den Moderator und Autor (optional)."
+
+#: admin/gb-page-add-on.php:75
+msgid "Admin reply on the frontend with AJAX."
+msgstr "Admin-Antwort im Frontend mit AJAX."
+
+#: admin/gb-page-add-on.php:74
+msgid "Preview for the admin editor form."
+msgstr "Vorschau für das Admin-Editor-Formular."
+
+#: admin/gb-page-add-on.php:73
+msgid "Preview for the frontend form."
+msgstr "Vorschau für das Frontend-Formular."
+
+#: admin/gb-page-add-on.php:71
+msgid "Star Ratings, with voting and display and Rich Snippets for SEO (optional)."
+msgstr "Sterne-Bewertungen mit Abstimmung und Anzeige sowie Rich Snippets für SEO (optional)."
+
+#: admin/gb-page-add-on.php:70
+msgid "Social Media Sharing (optional)."
+msgstr "Social Media Sharing (optional)."
+
+#: admin/gb-page-add-on.php:69
+msgid "Meta Fields. Add any field you want; company, phone number, you name it."
+msgstr "Meta-Felder. Füge beliebige Felder hinzu: Firma, Telefonnummer, ... was immer du willst."
+
+#: admin/gb-page-add-on.php:76
+msgid "Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want."
+msgstr "Leichtes Ersetzen der Standard-Texte, damit dieses Gästebuch als Bewertungsseite (oder was immer du willst) genutzt werden kann."
+
+#. translators: Menu entry
+#: admin/gb-page-add-on.php:13
+msgid "The Add-On"
+msgstr "Das Add-On"
+
+#: admin/gb-page-add-on.php:78
+msgid "Permalink button in each entry for easy access (optional)."
+msgstr "Permalink-Funktion in jedem Eintrag für leichten Zugang (optional)."
+
+#. translators: Reviews on the plugin page at WordPress.org
+#: admin/gb-page-gwolle-gb.php:33
+msgid "Review"
+msgstr "Bewertung"
+
+#: frontend/gb-total.php:37
+msgid "%d entry."
+msgid_plural "%d entries."
+msgstr[0] "%d Eintrag"
+msgstr[1] "%d Einträge"
+
+#: admin/gb-page-editor.php:359
+msgid "Preview"
+msgstr "Vorschau"
+
+#: admin/gb-page-editor.php:362
+msgid "Meta Fields"
+msgstr "Meta-Felder"
+
+#: admin/tabs/gb-readingtab.php:251
+msgid "Admin Avatar"
+msgstr "Admin Avatar"
+
+#: admin/tabs/gb-antispamtab.php:139
+msgid "What's Akismet?"
+msgstr "Was ist Akismet?"
+
+#: admin/tabs/gb-antispamtab.php:181
+msgid "Use Stop Forum Spam."
+msgstr "Stop Forum Spam nutzen."
+
+#: admin/gb-page-gwolle-gb.php:263 admin/tabs/gb-antispamtab.php:173
+msgid "Stop Forum Spam"
+msgstr "Stop Forum Spam"
+
+#: frontend/gwolle_gb-entry.php:226
+msgid "..."
+msgstr "..."
+
+#. translators: Log message
+#: functions/gb-log.php:116
+msgid "Entry marked by Stop Forum Spam."
+msgstr "Eintrag markiert von Stop Forum Spam."
+
+#: frontend/gb-read.php:32 frontend/gb-read.php:35 frontend/gb-read.php:38
+msgid "Sorry, but this entry does not seem to exist."
+msgstr "Sorry, dieser Eintrag scheint nicht zu existieren."
+
+#: admin/tabs/gb-antispamtab.php:185
+msgid "Stop Forum Spam is an external service that acts as a spamfilter for guestbook entries."
+msgstr "Stop Forum Spam ist ein externer Dienst, der als Spamfilter für Gästebuch-Einträge dient."
+
+#. translators: Is in Trashcan
+#: admin/gb-page-editor.php:545 admin/gb-page-editor.php:597
+#: admin/gb-page-entries.php:489 admin/gb-page-entries.php:690
+msgid "In Trash"
+msgstr "Im Papierkorb"
+
+#. translators: Settings page, option for refusing spam
+#: admin/tabs/gb-antispamtab.php:50
+msgid "Refuse Spam"
+msgstr "Spam ablehnen"
+
+#: frontend/gb-form-posthandling.php:242 frontend/gb-form-posthandling.php:258
+#: frontend/gb-form-posthandling.php:274 frontend/gb-form-posthandling.php:291
+msgid "Your entry was marked as spam. Please try again."
+msgstr "Dein Eintrag wurde als Spam markiert. Bitte probiere es nochmal."
+
+#: admin/tabs/gb-antispamtab.php:58
+msgid "Refuse spam when recognized."
+msgstr "Erkannten Spam ablehnen."
+
+#: admin/tabs/gb-antispamtab.php:61
+msgid "Entries that are marked as spam will be placed in your spam folder by default."
+msgstr "Als Spam markierte Einträge landen standardmäßig im Spam-Ordner."
+
+#: admin/tabs/gb-antispamtab.php:63
+msgid "This option will refuse to accept entries marked by Honeypot, Nonce, Akismet and Stop Forum Spam. Users will see the form again after submit, with an error stating that it is recognized as spam."
+msgstr "Diese Option wird Einträge ablehnen, die von Honeypot, Nonce, Akismet und Stop Forum Spam gekennzeichnet wurden. Benutzer werden nach dem Absenden wieder zum Formular geleitet - mit der Fehlermeldung, dass ihr Eintrag als Spam erkannt wurde."
+
+#: admin/gb-page-entries.php:579 admin/gb-page-entries.php:596
+msgid "Status"
+msgstr "Status"
+
+#: admin/gb-page-import.php:501
+msgid "Invalid file format. Mime-type:"
+msgstr "Ungültiges Dateiformat. Mime-type:"
+
+#: admin/gb-page-import.php:486
+msgid "Please check if your PHP installation has the Fileinfo extension. You can also contact your hosting provider about this and request for that extension to be installed."
+msgstr "Bitte überprüfe, ob deine PHP Installation über die Fileinfo-Erweiterung verfügt. Du kannst auch deinen Hosting-Anbieter kontaktieren und ihn bitten, diese Erweiterung zu installieren."
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:497
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+#. translators: Setting for SMTP mail from header
+#: admin/tabs/gb-emailtab.php:103
+msgid "Send from address"
+msgstr "Über diese Adresse senden"
+
+#. translators: %s is the number of characters
+#: admin/tabs/gb-antispamtab.php:126
+msgid "The content has a limit set to %s characters, the author name to %s characters."
+msgstr "Der Inhalt ist auf %s Zeichen begrenzt, der Autor-Name %s Zeichen."
+
+#: admin/gb-page-gwolle-gb.php:32
+msgid "Support and Translations"
+msgstr "Support und Übersetzungen"
+
+#: admin/gb-page-gwolle-gb.php:296
+msgid "Support."
+msgstr "Support."
+
+#: admin/gb-page-gwolle-gb.php:301
+msgid "I will do my best to respond as soon as possible."
+msgstr "Ich werde mein Bestes tun, um so bald wie möglich zu antworten."
+
+#: admin/gb-page-gwolle-gb.php:302
+msgid "If you send me an email, I will not reply. Please use the support forum."
+msgstr "Falls Du mir eine E-Mail sendest, werde ich nicht antworten. Bitte benutze das Support-Forum."
+
+#: admin/gb-page-gwolle-gb.php:305
+msgid "Translations."
+msgstr "Übersetzungen."
+
+#: admin/gb-ajax-management.php:349 admin/gb-page-export.php:138
+#: admin/gb-page-export.php:303
+msgid "Nonce check failed. Please go back and try again."
+msgstr "Nonce-Überprüfung fehlgeschlagen. Bitte gehe zurück und versuche es erneut."
+
+#: admin/gb-page-editor.php:60 admin/gb-page-entries.php:73
+#: admin/gb-page-gwolle-gb.php:339 admin/gb-page-import.php:306
+#: admin/gb-page-import.php:387 admin/gb-page-import.php:467
+#: admin/gb-page-settings.php:42 admin/gb-page-settings.php:126
+#: admin/gb-page-settings.php:221 admin/gb-page-settings.php:250
+#: admin/gb-page-settings.php:331 admin/gb-page-settings.php:427
+#: admin/gb-page-settings.php:450
+msgid "Nonce check failed. Please try again."
+msgstr "Nonce-Überprüfung fehlgeschlagen. Bitte versuche es erneut."
+
+#: admin/gb-page-import.php:455
+msgid "No comments found. Please try again."
+msgstr "Keine Kommentare gefunden. Bitte versuche es erneut."
+
+#. translators: Someone seems to be abusing the website in strange ways.
+#: admin/gb-page-entries.php:61
+msgid "It seems you checked more entries then were even listed on the page."
+msgstr "Es sieht so aus, dass du mehr Einträge ausgewählt hast, als auf der Seite aufgelistet sind."
+
+#: admin/gb-page-gwolle-gb.php:310
+msgid "You can start translating strings there for your locale. They need to be validated though, so if there's no validator yet, and you want to apply for being validator (PTE), please post it on the %ssupport forum%s."
+msgstr "Du kannst anfangen, Texte in deine Sprache zu übersetzen. Diese müssen jedoch noch validiert werden. Falls es noch keinen Validator für deine Sprache gibt und du ein Validator (PTE) werden möchtest, erstelle bitte eine entsprechende Anfrage im %sSupport-Forum%s."
+
+#: admin/tabs/gb-antispamtab.php:111
+msgid "Long Text"
+msgstr "Langer Text"
+
+#: admin/tabs/gb-antispamtab.php:123
+msgid "This will scan entries for long words, which can be considered abusive. If there is a word with long text found, it will be automatically set to unchecked and you will need to moderate it manually."
+msgstr "Dies sucht in Einträge nach langen Wörtern, die als missbräuchlich angesehen werden können. Falls ein Wort mit langem Text vorhanden ist, wird der Eintrag automatisch als „nicht geprüft“ markiert und du musst ihn manuell moderieren."
+
+#: admin/tabs/gb-antispamtab.php:119
+msgid "Scan for Long Text."
+msgstr "Suche nach langem Text."
+
+#. translators: %s is the number of file parts
+#: admin/gb-page-export.php:72
+msgid "The download will happen in a CSV file in %s part."
+msgid_plural "The download will happen in a CSV file in %s parts."
+msgstr[0] "Der Download wird eine CSV-Datei in %s Teil erstellen."
+msgstr[1] "Der Download wird eine CSV-Datei in %s Teilen erstellen."
+
+#: admin/gb-page-gwolle-gb.php:266
+msgid "Super Simple Slider"
+msgstr "Super Simple Slider"
+
+#: admin/gb-page-gwolle-gb.php:265
+msgid "Really Simple CAPTCHA plugin"
+msgstr "„Really Simple CAPTCHA“-Plugin"
+
+#: admin/gb-page-gwolle-gb.php:264
+msgid "MarkItUp"
+msgstr "MarkItUp"
+
+#: admin/tabs/gb-formtab.php:110
+msgid "Submit the form while staying on the same page and place, without a new page load."
+msgstr "Versende das Formular, bleibe auf derselben Seite und am selben Ort, ohne eine neue Seite zu laden."
+
+#: admin/tabs/gb-formtab.php:101
+msgid "Use AJAX"
+msgstr "AJAX verwenden"
+
+#: admin/gb-page-import.php:491 functions/gb-debug.php:52
+msgid "You have a very old version of PHP. Please contact your hosting provider and request an upgrade."
+msgstr "Du verwendest eine sehr alte PHP-Version. Bitte kontaktiere deinen Hosting-Anbieter und frage nach einem Upgrade."
+
+#: admin/tabs/gb-formtab.php:108
+msgid "Use AJAX to submit the form."
+msgstr "Verwendet AJAX, um das Formular zu versenden."
+
+#: admin/gb-page-import.php:647
+msgid "Your data seems to be corrupt. Saving failed and import failed."
+msgstr "Die Daten scheinen korrupt zu sein. Speichern und Import fehlgeschlagen."
+
+#: admin/tabs/gb-uninstalltab.php:44
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: admin/tabs/gb-uninstalltab.php:44
+msgid "(We will go there in 10 seconds)"
+msgstr "(Wir werden in 10 Sekunden dorthin gehen)"
+
+#: admin/gb-page-gwolle-gb.php:29
+msgid "Third Party"
+msgstr "Drittanbieter"
+
+#: frontend/gb-widget.php:370
+msgid "Use Slider View."
+msgstr "Verwende die Slider View."
+
+#: frontend/gb-widget.php:393
+msgid "0 means all."
+msgstr "0 meint Alle."
+
+#: frontend/gb-widget.php:390
+msgid "Book ID:"
+msgstr "Buch-ID:"
+
+#: admin/gb-page-gwolle-gb.php:278
+msgid "Shortcode:"
+msgstr "Shortcode:"
+
+#: functions/gb-debug.php:75
+msgid "MySQL Column Charset:"
+msgstr "MySQL Column Charset:"
+
+#: admin/tabs/gb-antispamtab.php:98
+msgid "This will add a Nonce to the form. It is a way to check for a human user. If it does not validate, the entry will be marked as spam."
+msgstr "Dies wird dem Formular ein „Nonce“ hinzufügen. Das ist ein Weg, um einen menschlichen Benutzer zu identifizieren. Falls die Validierung negativ ist, wird der Eintrag als Spam markiert."
+
+#: admin/tabs/gb-antispamtab.php:86
+msgid "Nonce"
+msgstr "Nonce"
+
+#: admin/tabs/gb-antispamtab.php:94
+msgid "Use Nonce."
+msgstr "Benutze Nonce."
+
+#: admin/tabs/gb-antispamtab.php:104
+msgid "If your website uses caching, it is possible that you get false-positives in your spamfolder. If this is the case, you could either disable the Nonce, or disable caching for the guestbook page."
+msgstr "Falls die Website Caching benutzt, ist es möglich, dass falsch-positive Eingänge im Spam-Verzeichnis landen. In diesem Fall sollte entweder Nonce deaktiviert werden oder das Caching der Gästebuch-Seite."
+
+#. translators: at a certain time
+#: frontend/gwolle_gb-entry.php:106
+msgid "at"
+msgstr "um"
+
+#: admin/gb-page-editor.php:370 admin/gb-page-gwolle-gb.php:27
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
+#: admin/gb-page-editor.php:373
+msgid "Log"
+msgstr "Logdatei"
+
+#. translators: Menu entry
+#: gwolle-gb-hooks.php:63
+msgid "Add/Edit entry"
+msgstr "Füge Eintrag hinzu / Bearbeite Eintrag"
+
+#. translators: %s is the number of comments
+#: admin/gb-page-import.php:198 admin/gb-page-import.php:235
+msgid "%s Comment"
+msgid_plural "%s Comments"
+msgstr[0] "%s Kommentar"
+msgstr[1] "%s Kommentare"
+
+#: admin/tabs/gb-readingtab.php:149
+msgid "Infinite Scroll"
+msgstr "Unendlich scrollen"
+
+#: functions/gb-debug.php:23
+msgid "WordPress version:"
+msgstr "WordPress-Version:"
+
+#: functions/gb-debug.php:39
+msgid "Active plugins:"
+msgstr "Aktive Plugins:"
+
+#: functions/gb-debug.php:47
+msgid "PHP Version:"
+msgstr "PHP-Version:"
+
+#: functions/gb-debug.php:58
+msgid "MySQL Version:"
+msgstr "MySQL-Version:"
+
+#: functions/gb-debug.php:81
+msgid "MySQL / MySQLi:"
+msgstr "MySQL / MySQLi:"
+
+#: functions/gb-debug.php:133
+msgid "Just a test"
+msgstr "Nur ein Test"
+
+#. translators: Infinite Scroll
+#: gwolle-gb-hooks.php:190
+msgid "Loading more..."
+msgstr "Mehr laden..."
+
+#. translators: Infinite Scroll
+#: gwolle-gb-hooks.php:191
+msgid "No more entries."
+msgstr "Keine Einträge mehr vorhanden."
+
+#: functions/gb-debug.php:66 functions/gb-debug.php:68
+msgid "MySQL Charset:"
+msgstr "MySQL-Zeichensatz:"
+
+#: admin/tabs/gb-readingtab.php:163
+msgid "Show a link in the pagination for All entries."
+msgstr "Zeige beim Seitenwechsel einen Link für alle Einträge."
+
+#: functions/gb-debug.php:118
+msgid "Test entry, delete if you wish."
+msgstr "Testeintrag; lösche ihn, wenn Du willst."
+
+#: functions/gb-debug.php:92
+msgid "MySQL variables:"
+msgstr "MySQL-Variablen:"
+
+#: functions/gb-debug.php:28
+msgid "WordPress theme:"
+msgstr "WordPress Theme:"
+
+#: admin/tabs/gb-readingtab.php:151
+msgid "Use standard navigation with links to all pages, or use infinite scroll where entries will be added to the bottom as you are reading."
+msgstr "Standardnavigation mit Links zu allen Seiten verwenden, oder ans Ende blättern, wo die neuen Einträge hinzugefügt werden."
+
+#: admin/tabs/gb-readingtab.php:142
+msgid "Navigation"
+msgstr "Tabs"
+
+#: admin/tabs/gb-debugtab.php:75
+msgid "Test"
+msgstr "Test"
+
+#: admin/tabs/gb-debugtab.php:51 admin/tabs/gb-debugtab.php:63
+msgid "Failed."
+msgstr "Fehlgeschlagen."
+
+#: admin/tabs/gb-debugtab.php:54 admin/tabs/gb-debugtab.php:66
+msgid "Succeeded."
+msgstr "Erfolgreich."
+
+#: admin/tabs/gb-debugtab.php:81
+msgid "Run test"
+msgstr "Test starten"
+
+#: admin/tabs/gb-debugtab.php:78
+msgid "This test will attempt to save two test entries, one with standard text and one with Emoji."
+msgstr "Dieser Test wird zwei Einträge erstellen, einen mit Standardtext und einen mit Emojis."
+
+#: admin/tabs/gb-debugtab.php:59
+msgid "Emoji test:"
+msgstr "Emoji-Test:"
+
+#: admin/tabs/gb-debugtab.php:47
+msgid "Standard test:"
+msgstr "Standard-Test:"
+
+#: admin/tabs/gb-emailtab.php:223 functions/gb-mail.php:224
+msgid ""
+"\n"
+"Hello,\n"
+"\n"
+"An admin has just added or changed a reply message to your guestbook entry at '%blog_name%'.\n"
+"\n"
+"Have a nice day.\n"
+"The editors at %blog_name%.\n"
+"\n"
+"\n"
+"Website address: %blog_url%\n"
+"Admin Reply:\n"
+"%admin_reply%\n"
+"\n"
+"\n"
+"Original entry posted on %date%:\n"
+"%entry_content%\n"
+msgstr ""
+"\n"
+"Hallo,\n"
+"\n"
+"ein Admin hat gerade eine Antwort zu Deinem Gästebuch-Eintrag bei '%blog_name%' hinzugefügt oder bearbeitet.\n"
+"\n"
+"Wir wünschen einen schönen Tag.\n"
+"Die Redakteure von %blog_name%.\n"
+"\n"
+"\n"
+"Website-Adresse: %blog_url%\n"
+"Admin-Antwort:\n"
+"%admin_reply%\n"
+"\n"
+"\n"
+"Original-Eintrag erstellt am %date%:\n"
+"%entry_content%\n"
+
+#: admin/tabs/gb-debugtab.php:35
+msgid "Please provide this information when posting a support message on the support forum."
+msgstr "Bitte übermittle diese Information, wenn Du eine Support-Meldung im Forum verfasst."
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:498
+msgid "Debug"
+msgstr "Fehlersuche"
+
+#: functions/gb-mail.php:119
+msgid "Log messages:"
+msgstr "Log-Einträge:"
+
+#: admin/gb-page-gwolle-gb.php:178 admin/gb-page-gwolle-gb.php:182
+msgid "Subscribe to RSS Feed"
+msgstr "Den RSS-Feed abonnieren"
+
+#. translators: Log message
+#: functions/gb-log.php:114
+msgid "Entry marked by invalid Nonce."
+msgstr "Eintrag markiert von ungültigem Nonce."
+
+#. translators: Log message
+#: functions/gb-log.php:117
+msgid "Entry marked for too long text."
+msgstr "Eintrag markiert wegen zu langem Text."
+
+#: admin/tabs/gb-antispamtab.php:147 admin/tabs/gb-antispamtab.php:164
+msgid "Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries."
+msgstr "Akismet ist ein externer Service von Automattic, der als Spamfilter für Gästebucheinträge funktioniert."
+
+#: frontend/gb-form.php:278
+msgid "Do not fill this in"
+msgstr "Dies nicht ausfüllen"
+
+#. translators: Log message
+#: functions/gb-log.php:113
+msgid "Entry marked by the Honeypot."
+msgstr "Eintrag markiert vom Honeypot."
+
+#. translators: Log message
+#: functions/gb-log.php:115
+msgid "Entry marked by Akismet."
+msgstr "Eintrag markiert von Akismet."
+
+#: admin/gb-page-gwolle-gb.php:262 admin/tabs/gb-antispamtab.php:134
+msgid "Akismet"
+msgstr "Akismet"
+
+#: admin/tabs/gb-antispamtab.php:77
+msgid "Use Honeypot."
+msgstr "Honeypot verwenden."
+
+#: admin/tabs/gb-antispamtab.php:80
+msgid "This will add a non-visible input field to the form. It should not get filled in, but when it is, the entry will be marked as spam."
+msgstr "Damit wird ein unsichtbares Eingabefeld dem Formular hinzugefügt. Es wird normalerweise nicht ausgefüllt, aber wenn dies doch geschieht, wird der Beitrag als Spam gekennzeichnet."
+
+#: admin/tabs/gb-antispamtab.php:69
+msgid "Honeypot"
+msgstr "Honeypot"
+
+#: frontend/gb-form-posthandling.php:453
+msgid "Sorry, something went wrong with saving your entry. Please contact a site admin."
+msgstr "Entschuldigung, es ging etwas schief bei der Speicherung dieses Eintrags. Bitte kontaktiere den Administrator."
+
+#: frontend/gwolle_gb-entry.php:134
+msgid "Read more"
+msgstr "Weiterlesen"
+
+#: frontend/gwolle_gb-entry.php:134
+msgid "Expand this entry and read more"
+msgstr "Diesen Eintrag aufklappen und weiterlesen"
+
+#. translators: BuddyPress profile
+#: functions/gb-user.php:149
+msgid "Visit the profile of"
+msgstr "Besuche das Profil von"
+
+#: frontend/gb-shortcode-widget.php:43 frontend/gb-widget.php:29
+#: frontend/gb-widget.php:294 gwolle-gb-hooks.php:41 gwolle-gb-hooks.php:43
+msgid "Guestbook"
+msgstr "Gästebuch"
+
+#. translators: Menu entry
+#: admin/tabs/gb-admintab.php:41 admin/tabs/gb-readingtab.php:42
+#: gwolle-gb-hooks.php:52 gwolle-gb-hooks.php:55
+msgid "Entries"
+msgstr "Einträge"
+
+#. translators: Menu entry
+#: gwolle-gb-hooks.php:63
+msgid "Entry editor"
+msgstr "Eintrag-Editor"
+
+#. translators: Menu entry
+#: admin/gb-page-settings.php:476 gwolle-gb-hooks.php:66
+#: gwolle-gb-hooks.php:101
+msgid "Settings"
+msgstr "Einstellungen"
+
+#. translators: Menu entry
+#: gwolle-gb-hooks.php:69
+msgid "Import"
+msgstr "Import"
+
+#. translators: Menu entry
+#: gwolle-gb-hooks.php:72
+msgid "Export"
+msgstr "Export"
+
+#: frontend/gb-rss.php:35 frontend/gb-rss.php:39 frontend/gb-rss.php:116
+#: frontend/gb-rss.php:119
+msgid "Guestbook Feed"
+msgstr "Gästebuch-Feed"
+
+#: admin/gb-page-import.php:253
+msgid "Comments from selected page."
+msgstr "Kommentare aus der ausgewählten Seite."
+
+#: admin/gb-page-import.php:254
+msgid "Comments from selected post."
+msgstr "Kommentare aus dem ausgewählten Beitrag."
+
+#: admin/gb-page-import.php:255
+msgid "All Comments"
+msgstr "Alle Kommentare"
+
+#: admin/gb-page-import.php:59
+msgid "Import guestbook entries from Gwolle-GB"
+msgstr "Import von Gästebucheinträgen aus „Gwolle Guestbook“"
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:493
+msgid "Form"
+msgstr "Formular"
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:494
+msgid "Reading"
+msgstr "Lesen"
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:495
+msgid "Admin"
+msgstr "Verwaltung"
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:496 frontend/gb-form.php:345
+#: frontend/gb-form.php:422
+msgid "Anti-spam"
+msgstr "Anti-Spam"
+
+#. translators: Settings page tab
+#: admin/gb-page-settings.php:500 admin/tabs/gb-uninstalltab.php:61
+msgid "Uninstall"
+msgstr "Deinstallieren"
+
+#: admin/gb-page-entries.php:560 admin/gb-pagination.php:46
+msgid "Showing:"
+msgstr "Anzeige:"
+
+#: admin/gb-pagination.php:47
+msgid "of"
+msgstr "aus"
+
+#. translators: city or origin
+#: frontend/gwolle_gb-entry.php:91
+msgid "from"
+msgstr "aus"
+
+#. translators: on a certain date
+#: frontend/gwolle_gb-entry.php:101
+msgid "wrote on"
+msgstr "schrieb am"
+
+#: frontend/gwolle_gb-entry.php:184
+msgid "Admin Reply:"
+msgstr "Administrator-Antwort:"
+
+#: frontend/gb-pagination.php:26
+msgid "Previous page"
+msgstr "Vorherige Seite"
+
+#: frontend/gb-pagination.php:42 frontend/gb-pagination.php:53
+#: frontend/gb-pagination.php:68 frontend/gb-pagination.php:82
+msgid "Page"
+msgstr "Seite"
+
+#: frontend/gb-pagination.php:84
+msgid "Next page"
+msgstr "Nächste Seite"
+
+#: frontend/gb-pagination.php:92
+msgid "All entries"
+msgstr "Alle Einträge"
+
+#: frontend/gb-form-posthandling.php:40
+msgid "Submitting a new guestbook entry is only allowed for logged-in users."
+msgstr "Die Erstellung eines neuen Gästebucheintrags ist nur für angemeldete Benutzer möglich."
+
+#: frontend/gb-form-posthandling.php:146 frontend/gb-form-posthandling.php:155
+msgid "There is no message, even though it is mandatory."
+msgstr "Keine Nachricht vorhanden, obwohl sie erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:169
+msgid "The anti-spam question was not answered correctly, even though it is mandatory."
+msgstr "Die Anti-Spam-Frage wurde nicht richtig beantwortet, obwohl sie erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:191
+msgid "The CAPTCHA was not filled in correctly, even though it is mandatory."
+msgstr "Das CAPTCHA wurde nicht korrekt ausgefüllt, obwohl es erforderlich ist."
+
+#: functions/gb-mail.php:66 functions/gb-mail.php:170
+msgid "New Guestbook Entry"
+msgstr "Neuer Gästebucheintrag"
+
+#: functions/gb-mail.php:107
+msgid "Unchecked"
+msgstr "Ungeprüft"
+
+#: frontend/gb-read.php:137
+msgid "(no entries yet)"
+msgstr "(Noch keine Einträge)"
+
+#: frontend/gb-rss.php:131
+msgid "Guestbook Entry by"
+msgstr "Gästebucheintrag von"
+
+#: frontend/gb-widget.php:19
+msgid "Displays the recent guestbook entries."
+msgstr "Zeigt die letzten Einträge im Gästebuch."
+
+#: frontend/gb-widget.php:38 frontend/gb-widget.php:303
+msgid "Visit guestbook"
+msgstr "Das Gästebuch besuchen"
+
+#: frontend/gb-widget.php:322
+msgid "Title:"
+msgstr "Titel:"
+
+#: frontend/gb-widget.php:328
+msgid "Number of entries:"
+msgstr "Anzahl der Einträge:"
+
+#: frontend/gb-widget.php:344
+msgid "Best entries to show:"
+msgstr "Die besten Einträge anzeigen:"
+
+#: frontend/gb-widget.php:346
+msgid "List of entry_id's, comma-separated"
+msgstr "Liste der Eintrag-IDs, durch Kommata getrennt"
+
+#: frontend/gb-widget.php:358
+msgid "Show name of author."
+msgstr "Zeige Name des Autors."
+
+#: frontend/gb-widget.php:364
+msgid "Show date of entry."
+msgstr "Datum des Eintrags anzeigen."
+
+#: frontend/gb-widget.php:374
+msgid "Number of words for each entry:"
+msgstr "Anzahl der Wörter pro Eintrag:"
+
+#: frontend/gb-widget.php:397
+msgid "Link text:"
+msgstr "Linktext:"
+
+#: frontend/gb-widget.php:406
+msgid "Select page"
+msgstr "Seite auswählen"
+
+#: frontend/gb-form.php:98
+msgid "Log in to post an entry"
+msgstr "Anmelden, um einen neuen Beitrag zu schreiben"
+
+#: admin/tabs/gb-formtab.php:63 frontend/gb-form.php:147
+msgid "Write a new entry for the Guestbook"
+msgstr "Einen neuen Eintrag für das Gästebuch schreiben"
+
+#: frontend/gb-form.php:354
+msgid "Question:"
+msgstr "Frage:"
+
+#: frontend/gb-form.php:360
+msgid "Answer"
+msgstr "Antwort"
+
+#: frontend/gb-form.php:415
+msgid "Correct CAPTCHA value."
+msgstr "Richtiger CAPTCHA-Wert."
+
+#: frontend/gb-form.php:416
+msgid "Incorrect CAPTCHA value."
+msgstr "Falscher CAPTCHA-Wert."
+
+#: admin/tabs/gb-antispamtab.php:213 admin/tabs/gb-formtab.php:273
+#: frontend/gb-form.php:435
+msgid "CAPTCHA"
+msgstr "CAPTCHA"
+
+#: frontend/gb-form.php:478
+msgid "Submit"
+msgstr "Absenden"
+
+#. translators: Log message
+#: functions/gb-log.php:109
+msgid "Entry has been locked."
+msgstr "Eintrag wurde gesperrt."
+
+#. translators: Log message
+#: functions/gb-log.php:110
+msgid "Entry has been checked."
+msgstr "Eintrag wurde überprüft."
+
+#. translators: Log message
+#: functions/gb-log.php:111
+msgid "Entry marked as spam."
+msgstr "Eintrag als Spam markiert."
+
+#. translators: Log message
+#: functions/gb-log.php:112
+msgid "Entry marked as not spam."
+msgstr "Eintrag als Nicht-Spam markiert."
+
+#. translators: Log message
+#: functions/gb-log.php:118
+msgid "Entry has been edited."
+msgstr "Eintrag wurde bearbeitet."
+
+#. translators: Log message
+#: functions/gb-log.php:119
+msgid "Imported from DMSGuestbook"
+msgstr "Aus DMSGuestbook importiert"
+
+#. translators: Log message
+#: functions/gb-log.php:120
+msgid "Imported from WordPress comments"
+msgstr "Aus WordPress-Kommentaren importiert"
+
+#. translators: Log message
+#: functions/gb-log.php:121
+msgid "Imported from Gwolle-GB"
+msgstr "Aus „Gwolle Guestbook“ importiert"
+
+#. translators: Log message
+#: functions/gb-log.php:122
+msgid "Exported to CSV file"
+msgstr "In CSV-Datei exportiert"
+
+#. translators: Log message
+#: functions/gb-log.php:123
+msgid "Entry has been trashed."
+msgstr "Eintrag wurde in Papierkorb verschoben."
+
+#. translators: Log message
+#: functions/gb-log.php:124
+msgid "Entry has been untrashed."
+msgstr "Eintrag wurde aus dem Papierkorb wiederhergestellt."
+
+#. translators: Log message
+#: functions/gb-log.php:125
+msgid "Admin reply has been added."
+msgstr "Administrator-Antwort wurde hinzugefügt."
+
+#. translators: Log message
+#: functions/gb-log.php:126
+msgid "Admin reply has been updated."
+msgstr "Administrator-Antwort wurde geändert."
+
+#. translators: Log message
+#: functions/gb-log.php:127
+msgid "Admin reply has been removed."
+msgstr "Administrator-Antwort wurde entfernt."
+
+#: functions/gb-formatting.php:86
+msgid "No content to display. This entry is empty."
+msgstr "Keine Inhalte zum Anzeigen. Dieser Eintrag ist leer."
+
+#: functions/gb-user.php:161
+msgid "Visit the website of"
+msgstr "Besuche die Website von"
+
+#: functions/gb-misc.php:162
+msgid "Day"
+msgstr "Tag"
+
+#: functions/gb-misc.php:165
+msgid "Month"
+msgstr "Monat"
+
+#. translators: 1: month number (01, 02, etc.), 2: month abbreviation
+#: functions/gb-misc.php:170
+msgid "%1$s-%2$s"
+msgstr "%1$s-%2$s"
+
+#: functions/gb-misc.php:175
+msgid "Year"
+msgstr "Jahr"
+
+#: functions/gb-misc.php:178
+msgid "Hour"
+msgstr "Stunde"
+
+#: functions/gb-misc.php:180
+msgid "Minute"
+msgstr "Minute"
+
+#: functions/gb-misc.php:189
+msgid "Save the date and time"
+msgstr "Datum und Uhrzeit speichern"
+
+#: functions/gb-misc.php:192
+msgid "Cancel saving date and time"
+msgstr "Abbrechen der Speicherung von Datum und Uhrzeit"
+
+#: functions/gb-misc.php:193
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: admin/tabs/gb-admintab.php:31
+msgid "Entries per page in the admin"
+msgstr "Einträge pro Seite im Admin-Bereich"
+
+#: admin/tabs/gb-admintab.php:51
+msgid "Entry icons"
+msgstr "Eintrag-Symbole"
+
+#: admin/tabs/gb-admintab.php:57
+msgid "Show entry icons"
+msgstr "Eintrag-Symbole anzeigen"
+
+#: admin/tabs/gb-admintab.php:66 admin/tabs/gb-antispamtab.php:237
+#: admin/tabs/gb-emailtab.php:262 admin/tabs/gb-formtab.php:305
+#: admin/tabs/gb-readingtab.php:278
+msgid "Save settings"
+msgstr "Einstellungen speichern"
+
+#. translators: Settings page, option for moderation
+#: admin/tabs/gb-antispamtab.php:31
+msgid "Moderate Guestbook"
+msgstr "Gästebuch moderieren"
+
+#: admin/tabs/gb-antispamtab.php:42
+msgid "New entries have to be unlocked by a moderator before they are visible to the public."
+msgstr "Neue Einträge müssen von einem Moderator freigeschaltet werden, bevor sie für die Öffentlichkeit sichtbar sind."
+
+#: admin/tabs/gb-antispamtab.php:162
+msgid "Use Akismet"
+msgstr "Akismet verwenden"
+
+#: admin/tabs/gb-antispamtab.php:200
+msgid "Custom Anti-Spam Security Question"
+msgstr "Individuelle Anti-Spam-Sicherheitsfrage"
+
+#: admin/tabs/gb-antispamtab.php:204
+msgid "12 + six ="
+msgstr "12 + sechs ="
+
+#: admin/tabs/gb-antispamtab.php:206
+msgid "18"
+msgstr "18"
+
+#: admin/tabs/gb-antispamtab.php:217
+msgid "A CAPTCHA is a way to have visitors fill in a field with a few letters or numbers. It is a way to make sure that you have a human visitor and not a spambot. Not every visitor will appreciate it though, some will consider it unfriendly."
+msgstr "Ein CAPTCHA ist ein Weg, bei dem die Besucher in ein Feld ein paar Buchstaben oder Zahlen eintragen müssen. Dadurch wird sichergestellt, dass ein menschlicher Benutzer und kein Spam-Bot den Eintrag vornimmt. Nicht jeder Besucher wird es aber zu schätzen wissen, einige werden es für unpraktisch und kompliziert halten."
+
+#: admin/tabs/gb-antispamtab.php:220
+msgid "Really Simple CAPTCHA plugin at wordpress.org"
+msgstr "„Really Simple CAPTCHA“-Plugin auf wordpress.org"
+
+#: admin/tabs/gb-antispamtab.php:225
+msgid "This plugin is installed and activated, so the CAPTCHA is ready to be used."
+msgstr "Das Plugin ist installiert und aktiviert, daher kann CAPTCHA benutzt werden."
+
+#: admin/tabs/gb-emailtab.php:69
+msgid "Unsubscribe moderators"
+msgstr "Moderatoren abmelden"
+
+#: admin/tabs/gb-emailtab.php:79
+msgid "Unsubscribe User"
+msgstr "Benutzer abmelden"
+
+#: admin/tabs/gb-emailtab.php:97
+msgid "These users have subscribed to the notification emails."
+msgstr "Diese Benutzer haben Benachrichtigungs-E-Mails abonniert."
+
+#: admin/tabs/gb-emailtab.php:36
+msgid "Subscribe moderators"
+msgstr "Moderatoren anmelden"
+
+#: admin/tabs/gb-emailtab.php:39
+msgid "Subscribe User"
+msgstr "Benutzer anmelden"
+
+#: admin/tabs/gb-emailtab.php:118
+msgid "Admin mail content"
+msgstr "Admin-E-Mail-Inhalt"
+
+#: admin/tabs/gb-emailtab.php:160
+msgid "Mail Author"
+msgstr "E-Mail an Autor"
+
+#: admin/tabs/gb-emailtab.php:172
+msgid "The author of the guestbook entry will receive an email after posting. It will have a copy of the entry."
+msgstr "Der Autor des Gästebucheintrags wird eine E-Mail nach dem Eintrag erhalten. Sie wird eine Kopie des Eintrags beinhalten."
+
+#: admin/tabs/gb-emailtab.php:178
+msgid "Author mail content"
+msgstr "Autor-E-Mail-Inhalt"
+
+#: admin/tabs/gb-formtab.php:31
+msgid "Require Login"
+msgstr "Anmeldung erforderlich"
+
+#: admin/tabs/gb-formtab.php:38
+msgid "Require user to be logged in."
+msgstr "Benötigt angemeldeten Benutzer"
+
+#: admin/tabs/gb-formtab.php:40
+msgid "Only allow logged-in users to add a guestbook entry."
+msgstr "Nur angemeldete Benutzer können einen Gästebucheintrag verfassen."
+
+#: admin/tabs/gb-formtab.php:45
+msgid "Labels float"
+msgstr "Beschriftungs-Ausrichtung"
+
+#: admin/tabs/gb-formtab.php:52
+msgid "Labels in the form float to the left."
+msgstr "Formular-Beschriftungen linksbündig"
+
+#: admin/tabs/gb-formtab.php:54
+msgid "Labels in the form float to the left. Otherwise the labels will be above the input-fields."
+msgstr "Formular-Beschriftungen werden linksbündig ausgerichtet. Andernfalls werden die Beschriftungen über den Eingabefeldern platziert."
+
+#: admin/tabs/gb-formtab.php:59
+msgid "Header Text"
+msgstr "Kopfzeile"
+
+#: admin/tabs/gb-formtab.php:74
+msgid "Notice Text"
+msgstr "Hinweis-Text"
+
+#: admin/tabs/gb-formtab.php:150 admin/tabs/gb-formtab.php:170
+#: admin/tabs/gb-formtab.php:190 admin/tabs/gb-formtab.php:210
+#: admin/tabs/gb-formtab.php:230 admin/tabs/gb-formtab.php:250
+#: admin/tabs/gb-formtab.php:265 admin/tabs/gb-formtab.php:280
+#: admin/tabs/gb-formtab.php:295 admin/tabs/gb-readingtab.php:184
+#: admin/tabs/gb-readingtab.php:196 admin/tabs/gb-readingtab.php:208
+#: admin/tabs/gb-readingtab.php:220 admin/tabs/gb-readingtab.php:233
+#: admin/tabs/gb-readingtab.php:246 admin/tabs/gb-readingtab.php:258
+#: admin/tabs/gb-readingtab.php:270
+msgid "Enabled"
+msgstr "Aktiv"
+
+#: admin/tabs/gb-formtab.php:158 admin/tabs/gb-formtab.php:178
+#: admin/tabs/gb-formtab.php:198 admin/tabs/gb-formtab.php:218
+#: admin/tabs/gb-formtab.php:238
+msgid "Mandatory"
+msgstr "Pflichtfeld"
+
+#: admin/tabs/gb-formtab.php:243
+msgid "BBcode and Emoji"
+msgstr "BBcode und Emoji"
+
+#: admin/tabs/gb-formtab.php:253
+msgid "Will only be shown if the Message is enabled."
+msgstr "Wird nur angezeigt, wenn die Nachricht aktiviert ist."
+
+#: admin/tabs/gb-formtab.php:258
+msgid "Custom Anti-spam"
+msgstr "Individuelle Anti-Spam-Maßnahme"
+
+#: admin/tabs/gb-formtab.php:268 admin/tabs/gb-formtab.php:283
+#: admin/tabs/gb-formtab.php:298
+msgid "When enabled it is mandatory."
+msgstr "Wenn aktiviert, ist es zwingend erforderlich."
+
+#: admin/tabs/gb-readingtab.php:32
+msgid "Entries per page on the frontend"
+msgstr "Einträge pro Seite auf dem Frontend"
+
+#: admin/tabs/gb-readingtab.php:47
+msgid "Number of entries shown on the frontend."
+msgstr "Anzahl der auf dem Frontend angezeigten Einträge."
+
+#: admin/tabs/gb-readingtab.php:52
+msgid "Length of the entry content"
+msgstr "Länge des Eintrag-Inhaltes"
+
+#: admin/tabs/gb-readingtab.php:62
+msgid "Unlimited Words"
+msgstr "Unbegrenzte Wörter"
+
+#: admin/tabs/gb-readingtab.php:69
+msgid "Words"
+msgstr "Wörter"
+
+#: admin/tabs/gb-readingtab.php:75
+msgid "Maximum length of the entry content in words."
+msgstr "Die maximale Länge des Beitrags-Inhalts in Worten."
+
+#: admin/tabs/gb-readingtab.php:82
+msgid "Line breaks"
+msgstr "Zeilenumbrüche"
+
+#: admin/tabs/gb-readingtab.php:92
+msgid "Show line breaks as the entry authors entered them. (May result in very long entries. Is turned off by default.)"
+msgstr "Zeige Zeilenumbrüche, wie sie von den Eintrag-Autoren eingegeben wurden. (Das kann zu sehr langen Einträgen führen. Es ist standardmäßig deaktiviert.)"
+
+#: admin/tabs/gb-readingtab.php:93
+msgid "This can only be enabled if the Excerpt Length above is set to Unlimited Words."
+msgstr "Dies kann nur eingeschaltet werden, falls die obige „Länge des Eintrags-Inhaltes“ auf „Unbegrenzte Wörter“ gesetzt wurde."
+
+#: admin/tabs/gb-readingtab.php:99
+msgid "Smileys"
+msgstr "Smileys"
+
+#: admin/tabs/gb-readingtab.php:106
+msgid "Display smileys as images."
+msgstr "Smileys als Bilder zeigen"
+
+#: admin/tabs/gb-readingtab.php:114
+msgid "Links"
+msgstr "Links"
+
+#: admin/tabs/gb-readingtab.php:128
+msgid "Admin Entry Styling"
+msgstr "Admin-Eintrags-Styling"
+
+#: admin/tabs/gb-readingtab.php:135
+msgid "Admin entries get a special CSS styling."
+msgstr "Admin-Einträge bekommen eine spezielles CSS-Styling"
+
+#: admin/tabs/gb-readingtab.php:165
+msgid "Clicking this link will list all the published entries in the guestbook."
+msgstr "Das Klicken dieses Links zeigt alle Einträge ohne Seitenumbrüche."
+
+#: admin/tabs/gb-readingtab.php:213
+msgid "Date and Time"
+msgstr "Datum und Uhrzeit"
+
+#: admin/tabs/gb-readingtab.php:239
+msgid "Content"
+msgstr "Inhalt"
+
+#: admin/tabs/gb-readingtab.php:263
+msgid "Edit link"
+msgstr "Link bearbeiten"
+
+#: admin/tabs/gb-uninstalltab.php:42
+msgid "The entries and settings have been removed."
+msgstr "Die Eingaben und Einstellungen wurden entfernt."
+
+#: admin/tabs/gb-uninstalltab.php:43
+msgid "The plugin is deactivated."
+msgstr "Das Plugin ist deaktiviert."
+
+#: admin/tabs/gb-uninstalltab.php:63
+msgid "Uninstalling means that all database entries are removed (settings and entries)."
+msgstr "Deinstallieren bedeutet, dass alle Datenbankeinträge entfernt werden (Einstellungen und Einträge)."
+
+#: admin/tabs/gb-uninstalltab.php:65
+msgid "This can <strong>not</strong> be undone."
+msgstr "Das kann <strong>nicht</strong> rückgängig gemacht werden."
+
+#: admin/tabs/gb-uninstalltab.php:71
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: admin/tabs/gb-uninstalltab.php:81
+msgid "Uninstall &raquo;"
+msgstr "Deinstallieren &raquo;"
+
+#: functions/gb-misc.php:190
+msgid "Save Date"
+msgstr "Datum speichern"
+
+#. #-#-#-#-#  gwolle-gb-code.pot (Gwolle Guestbook 2.4.2)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  gwolle-gb-code.pot (Gwolle Guestbook 2.4.2)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://zenoweb.nl"
+msgstr "http://zenoweb.nl"
+
+#. Author of the plugin/theme
+msgid "Marcel Pol"
+msgstr "Marcel Pol"
+
+#: admin/tabs/gb-antispamtab.php:228
+msgid "If you use any caching plugin together with this CAPTCHA, page caching will be disabled for the page that the CAPTCHA is shown on. This is to prevent errors and to have a fresh CAPCHA image each time."
+msgstr "Bei der Nutzung eines Caching-Plugins zusammen mit diesem CAPTCHA wird das Seiten-Caching für diese Seite ausgeschaltet. Dadurch werden Fehler vermieden und es wird jeweils ein frisches CAPTCHA-Bild erzeugt."
+
+#: admin/tabs/gb-emailtab.php:218
+msgid "Admin Reply mail content"
+msgstr "Inhalt der Administrator-Antwort-E-Mail"
+
+#: admin/tabs/gb-emailtab.php:245
+msgid "You can set the content of the mail that the author of the entry will receive when an Admin Reply is added. The following tags are supported:"
+msgstr "Der Inhalt einer E-Mail kann festgelegt werden, die ein Autor eines Gästebuch-Eintrags erhält, wenn eine Administrator-Antwort erstellt wird. Die folgenden Kennzeichen werden unterstützt:"
+
+#: admin/tabs/gb-emailtab.php:111
+msgid "By default the main admin address is used from General > Settings."
+msgstr "Standardmäßig wird die „Absender-E-Mail-Adresse des Admins“ unter „Einstellungen > Allgemein“ verwendet."
+
+#: admin/tabs/gb-formtab.php:79 frontend/gb-form.php:494
+msgid ""
+"\n"
+"Fields marked with * are required.\n"
+"Your E-mail address won't be published.\n"
+"For security reasons we save the IP address %ip%.\n"
+"It's possible that your entry will only be visible in the guestbook after we reviewed it.\n"
+"We reserve the right to edit, delete, or not publish entries.\n"
+msgstr ""
+"\n"
+"Mit * gekennzeichnete Felder sind Pflichtfelder.\n"
+"Die E-Mail-Adresse wird nicht veröffentlicht.\n"
+"Aus Sicherheitsgründen speichern wir die IP-Adresse %ip%.\n"
+"Es könnte sein, dass der Eintrag im Gästebuch erst sichtbar ist, nachdem wir ihn geprüft haben.\n"
+"Wir behalten uns das Recht vor, Einträge zu bearbeiten, zu löschen oder Einträge nicht zu veröffentlichen.\n"
+
+#: admin/tabs/gb-readingtab.php:177
+msgid "Avatar"
+msgstr "Profilbild"
+
+#: admin/tabs/gb-readingtab.php:121
+msgid "Link authors' name to their website."
+msgstr "Verlinke den Autoren-Namen zu dessen Website"
+
+#: admin/tabs/gb-uninstalltab.php:74
+msgid "Yes, I'm absolutely sure of this. Proceed!"
+msgstr "Ja, ich bin absolut sicher. Ausführen!"
+
+#: admin/tabs/gb-readingtab.php:146 admin/tabs/gb-readingtab.php:156
+msgid "Pagination"
+msgstr "Seiten-Nummerierung"
+
+#: frontend/gb-form-posthandling.php:416
+msgid "We will review it and unlock it in a short while."
+msgstr "Wir werden deinen Eintrag überprüfen und bald freischalten."
+
+#: frontend/gb-form-posthandling.php:414
+msgid "Thank you for your entry."
+msgstr "Danke für deinen Eintrag."
+
+#: frontend/gb-form-posthandling.php:130 frontend/gb-form-posthandling.php:134
+msgid "Your website is not filled in, even though it is mandatory."
+msgstr "Deine Website wurde nicht angegeben, obwohl dies erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:101 frontend/gb-form-posthandling.php:105
+msgid "Your e-mail address is not filled in correctly, even though it is mandatory."
+msgstr "Deine E-Mail-Adresse ist nicht korrekt angegeben, obwohl dies erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:81 frontend/gb-form-posthandling.php:86
+msgid "Your origin is not filled in, even though it is mandatory."
+msgstr "Deine Herkunft wurde nicht angegeben, obwohl dies erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:61 frontend/gb-form-posthandling.php:66
+msgid "Your name is not filled in, even though it is mandatory."
+msgstr "Dein Name wurde nicht angegeben, obwohl dies erforderlich ist."
+
+#: frontend/gb-form-posthandling.php:229 functions/gb-messages.php:66
+msgid "There were errors submitting your guestbook entry."
+msgstr "Es gab Fehler beim Absenden deines Gästebucheintrags."
+
+#. translators: %s is a smiley image
+#: admin/tabs/gb-readingtab.php:109
+msgid "Replaces smileys in entries like :) with their image %s. Uses the WP smiley replacer, so check on that one if you'd like to add new/more smileys."
+msgstr "Ersetzt Smileys in Einträgen wie :) mit ihrem Bild %s. Nutzt den „WP Smiley Replacer“ - probiere einen aus, wenn du neue bzw. mehr Smileys hinzufügen möchtest."
+
+#: frontend/gb-widget.php:403
+msgid "Select the page of the guestbook:"
+msgstr "Wähle die Seite für das Gästebuch:"
+
+#: frontend/gb-widget.php:85 frontend/gb-widget.php:237
+msgid "Click here to get to the guestbook."
+msgstr "Hier klicken, um zum Gästebuch zu kommen."
+
+#: admin/tabs/gb-readingtab.php:234
+msgid "Setting this will show the date of the entry. If Date and Time above are enabled, that setting has preference."
+msgstr "Wenn du dies aktivierst, wird das Datum des Eintrags angezeigt. Wenn „Datum und Uhrzeit“ oben aktiviert ist, hat jene Einstellung Vorrang."
+
+#: admin/tabs/gb-readingtab.php:221
+msgid "Setting this will show the date and the time of the entry."
+msgstr "Wenn du dies aktivierst, wird das Datum und die Uhrzeit des Eintrags angezeigt."
+
+#: admin/tabs/gb-readingtab.php:173
+msgid "Configure the parts of the entries that are shown to visitors."
+msgstr "Konfiguriere die Teile der Einträge, die den Besuchern angezeigt werden."
+
+#: admin/tabs/gb-readingtab.php:137
+msgid "Admin entries get a special CSS styling. It will get a lightgrey background."
+msgstr "Admin-Einträge bekommen ein spezielles CSS-Styling mit einem hellgrauen Hintergrund."
+
+#: admin/tabs/gb-readingtab.php:76
+msgid "Please be aware that this will strip linebreaks as well."
+msgstr "Bitte beachte, dass dies Zeilenumbrüche ebenfalls entfernt."
+
+#: admin/tabs/gb-emailtab.php:63
+msgid "You will only see users with the roles of Administrator, Editor and Author, who have the capability 'moderate_comments' ."
+msgstr "Du wirst nur Benutzer mit der Benutzer-Rolle des Administrators, Herausgebers und Autors sehen, die die Fähigkeit „Kommentare moderieren“ haben."
+
+#: admin/tabs/gb-emailtab.php:62
+msgid "Select a user that you want subscribed to the notification emails."
+msgstr "Wähle einen Benutzer, der Benachrichtigungs-E-Mails bekommen soll."
+
+#: admin/tabs/gb-emailtab.php:61
+msgid "You can subscribe a moderator to the notification emails."
+msgstr "Du kannst einen Moderator für die Benachrichtigungs-E-Mails anmelden."
+
+#: admin/tabs/gb-emailtab.php:98
+msgid "Select a user if you want that user to unsubscribe from the notification emails."
+msgstr "Wähle einen Benutzer, wenn du willst, dass dieser Benutzer keine Benachrichtigungs-E-Mails mehr bekommt."
+
+#: admin/tabs/gb-emailtab.php:109
+msgid "You can set the email address that is used for the From header of the mail that a notification subscriber gets on new entries."
+msgstr "Du kannst die E-Mail-Adresse einstellen, die für den Absender der Benachrichtigungs-E-Mail an den Benutzer bei neuen Einträgen verwendet wird. Der Eintrag definiert den E-Mail-Absender."
+
+#: admin/tabs/gb-antispamtab.php:207
+msgid "You can ask your visitors to answer a custom security question, so only real people can post an entry."
+msgstr "Du kannst deine Besucher bitten, eine benutzerdefinierte Sicherheitsfrage zu beantworten, so dass nur echte Menschen einen Eintrag schreiben können."
+
+#: admin/tabs/gb-antispamtab.php:165
+msgid "The WordPress API key has been found, so you can start using Akismet right now."
+msgstr "Der Wordpress-API-Schlüssel wurde gefunden, du kannst jetzt mit Akismet beginnen."
+
+#: admin/tabs/gb-antispamtab.php:149
+msgid "Akismet helps you to fight spam. It's free and easy to install. Download and install it today to stop spam in your guestbook."
+msgstr "Akismet hilft dir, Spam zu bekämpfen. Es ist kostenlos und einfach zu installieren. Installiere es noch heute, um Spam in deinem Gästebuch zu stoppen."
+
+#: admin/tabs/gb-antispamtab.php:138
+msgid "Learn more about Akismet..."
+msgstr "Erfahre mehr über Akismet ..."
+
+#: admin/tabs/gb-antispamtab.php:44
+msgid "It is recommended that you turn this on, because you are responsible for the content on your website."
+msgstr "Es wird empfohlen, dies zu aktivieren, weil du für die Inhalte auf deiner Website verantwortlich bist."
+
+#: admin/tabs/gb-admintab.php:59
+msgid "These icons are shown in every entry row of the admin list, so that you know its status (checked, spam and trash)."
+msgstr "Diese Symbole werden in jeder Eintrags-Zeile der Admin-Liste angezeigt, so dass du den Status (Überprüft, Spam und Papierkorb) kennst."
+
+#: admin/gb-page-import.php:278
+msgid "Select a CSV file with exported entries to import again:"
+msgstr "Wähle eine CSV-Datei mit exportierten Einträgen, um sie wieder zu importieren:"
+
+#: admin/gb-page-import.php:252
+msgid "Select where to import the comments from:"
+msgstr "Wähle, von wo du die Kommentare importieren willst:"
+
+#: admin/gb-page-import.php:208
+msgid "Select a post to import the comments from:"
+msgstr "Wähle einen Beitrag, um die Kommentare daraus zu importieren:"
+
+#: admin/tabs/gb-formtab.php:139
+msgid "Configure the form that is shown to visitors."
+msgstr "Konfiguriere das Formular, das den Besuchern angezeigt wird"
+
+#: admin/tabs/gb-formtab.php:93
+msgid "You can use the tag %ip% to show the ip address."
+msgstr "Du kannst die Markierung %ip% verwenden, um die IP-Adresse anzuzeigen."
+
+#: admin/tabs/gb-formtab.php:91
+msgid "You can set the content of the notice that gets shown below the form."
+msgstr "Du kannst den Inhalt der Mitteilung, die unter dem Formular gezeigt wird, festlegen."
+
+#: admin/tabs/gb-formtab.php:68
+msgid "You can set the header that is shown on top of the form."
+msgstr "Du kannst die Kopfzeile ändern, die zu Beginn des Formulars angezeigt wird."
+
+#: admin/tabs/gb-emailtab.php:203
+msgid "You can set the content of the mail that the author of the entry will receive. The following tags are supported:"
+msgstr "Du kannst den Inhalt der E-Mail, die der Autor des Eintrags empfangen wird, festlegen. Die folgenden Schlagworte werden unterstützt:"
+
+#: admin/tabs/gb-emailtab.php:183 functions/gb-mail.php:150
+msgid ""
+"\n"
+"Hello,\n"
+"\n"
+"You have just posted a new guestbook entry at '%blog_name%'.\n"
+"\n"
+"Have a nice day.\n"
+"The editors at %blog_name%.\n"
+"\n"
+"\n"
+"Website address: %blog_url%\n"
+"User name: %user_name%\n"
+"User email: %user_email%\n"
+"Entry content:\n"
+"%entry_content%\n"
+msgstr ""
+"\n"
+"Hallo,\n"
+"\n"
+"du hast gerade einen neuen Gästebucheintrag auf '%blog_name%' gepostet.\n"
+"\n"
+"Einen schönen Tag noch!\n"
+"Die Redakteure bei %blog_name%.\n"
+"\n"
+"Internetadresse: %blog_url%\n"
+"Benutzer-Name: %user_name%\n"
+"Benutzer-E-Mail: %user_email%\n"
+"Eintragsinhalt:\n"
+"%entry_content%\n"
+
+#: admin/tabs/gb-emailtab.php:123 functions/gb-mail.php:44
+msgid ""
+"\n"
+"Hello,\n"
+"\n"
+"There is a new guestbook entry at '%blog_name%'.\n"
+"You can check it at %entry_management_url%.\n"
+"\n"
+"Have a nice day.\n"
+"Your Gwolle-GB-Mailer\n"
+"\n"
+"\n"
+"Website address: %blog_url%\n"
+"User name: %user_name%\n"
+"User email: %user_email%\n"
+"Entry status: %status%\n"
+"Entry content:\n"
+"%entry_content%\n"
+msgstr ""
+"\n"
+"Hallo,\n"
+"\n"
+"es gibt einen neuen Gästebucheintrag auf '%blog_name%'.\n"
+"Du kannst ihn unter %entry_management_url% prüfen.\n"
+"\n"
+"Einen schönen Tag noch!\n"
+"\n"
+"Ihr „Gwolle Guestbook“\n"
+"\n"
+"Internet-Adresse: %blog_url%\n"
+"Benutzer-Name: %user_name%\n"
+"Benutzer-E-Mail: %user_email%\n"
+"Eintrag-Status: %status%\n"
+"Eintrag-Inhalt:\n"
+"%entry_content%\n"
+
+#: admin/tabs/gb-uninstalltab.php:44
+msgid "You can now go to your"
+msgstr "Gehe jetzt zu"
+
+#: admin/gb-page-import.php:172 admin/gb-page-import.php:210
+msgid "Select"
+msgstr "Wähle"
+
+#: admin/tabs/gb-antispamtab.php:203
+msgid "Custom security question to battle spam:"
+msgstr "Individuelle Sicherheitsfrage, um Spam zu bekämpfen:"
+
+#: admin/tabs/gb-antispamtab.php:205
+msgid "The answer to your security question:"
+msgstr "Die Antwort auf deine Sicherheitsfrage:"
+
+#: admin/tabs/gb-readingtab.php:271
+msgid "A link to the editor will be added to the metabox. Only visible for moderators."
+msgstr "Ein Link zum Editor wird der Metabox hinzugefügt. Nur für Moderatoren sichtbar."
+
+#: admin/tabs/gb-emailtab.php:168
+msgid "Mail the author with a confirmation email."
+msgstr "E-Mail an den Autor mit einer Bestätigung."
+
+#: admin/tabs/gb-admintab.php:46
+msgid "Number of entries shown in the admin."
+msgstr "Anzahl der im Admin-Bereich angezeigten Einträge."
+
+#: admin/gb-page-editor.php:661 admin/tabs/gb-formtab.php:183
+#: frontend/gb-form.php:218
+msgid "Email"
+msgstr "E-Mail"
+
+#: admin/tabs/gb-readingtab.php:89
+msgid "Show line breaks."
+msgstr "Zeige Zeilenumbrüche."
+
+#: frontend/gb-widget.php:352
+msgid "Do not show admin entries."
+msgstr "Zeige keine Administrator-Einträge."
+
+#. translators: Toolbar
+#: gwolle-gb-hooks.php:228
+msgid "%s guestbook entry awaiting moderation"
+msgid_plural "%s guestbook entries awaiting moderation"
+msgstr[0] "%s Gästebuch-Eintrag wartet auf Freischaltung"
+msgstr[1] "%s Gästebuch-Einträge warten auf Freischaltung"
+
+#: admin/tabs/gb-antispamtab.php:39
+msgid "Moderate entries before publishing them."
+msgstr "Schalte Einträge vor der Veröffentlichung frei."
+
+#. Description of the plugin/theme
+msgid "Gwolle Guestbook is not just another guestbook for WordPress. The goal is to provide an easy and slim way to integrate a guestbook into your WordPress powered site. Don't use your 'comment' section the wrong way - install Gwolle Guestbook and have a real guestbook."
+msgstr "Gwolle Guestbook ist nicht irgendein weiteres Gästebuch für WordPress. Das Ziel ist, eine einfache und schlanke Möglichkeit anzubieten, ein Gästebuch in deine WordPress-Website zu integrieren. Verwende den „Kommentar“-Bereich nicht fälschlich – installiere Gwolle Guestbook, und du hast ein echtes Gästebuch."
+
+#: frontend/gb-form-posthandling.php:394
+msgid "Double post: An entry with the data you entered has already been saved."
+msgstr "Doppelter Eintrag: Ein Eintrag mit den von dir eingegebenen Daten ist bereits gespeichert."
+
+#: admin/tabs/gb-readingtab.php:123
+msgid "The author of an entry can set his/her website. If this setting is checked, his/her name will be a link to that website."
+msgstr "Der Autor eines Eintrags kann seine/ihre Website angeben. Wenn diese Einstellung aktiviert ist, wird sein/ihr Name ein Link zu dieser Website sein."
+
+#: admin/tabs/gb-formtab.php:95
+msgid "If you use a Multi-Lingual plugin, keep the 2 fields for header and notice empty when saving. That way the default text will be shown from a translated PO file."
+msgstr "Falls ein multilinguales Plugin genutzt wird, sollten die beiden Felder „Kopfzeile“ und „Hinweis-Text“ beim Speichern leer gelassen werden. Auf diesem Weg wird der Standard-Text aus einer übersetzten PO-Datei angezeigt."
+
+#: admin/tabs/gb-emailtab.php:145
+msgid "You can set the content of the mail that a notification subscriber gets on new entries. The following tags are supported:"
+msgstr "Du kannst den Inhalt der E-Mail festlegen, die ein Teilnehmer, der die Benachrichtigung abonniert hat, bei neuen Einträgen erhält. Die folgenden Schlagworte werden unterstützt:"
+
+#. translators: Button text
+#: frontend/gb-form.php:123
+msgid "Write a new entry."
+msgstr "Neuen Eintrag schreiben"
+
+#: admin/gb-dashboard-widget.php:111 admin/gb-page-entries.php:729
+#: functions/gb-metabox.php:19
+msgid "Edit entry"
+msgstr "Eintrag ändern"
+
+#: admin/gb-dashboard-widget.php:111 admin/gb-page-editor.php:696
+#: admin/gb-page-entries.php:729 functions/gb-metabox.php:19
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: admin/gb-dashboard-widget.php:115 admin/gb-page-editor.php:625
+#: admin/gb-page-entries.php:732
+msgid "Check entry"
+msgstr "Eintrag überprüfen"
+
+#: admin/gb-dashboard-widget.php:115 admin/gb-page-editor.php:625
+#: admin/gb-page-entries.php:732
+msgid "Check"
+msgstr "Prüfen"
+
+#: admin/gb-dashboard-widget.php:119 admin/gb-page-editor.php:628
+#: admin/gb-page-entries.php:735
+msgid "Uncheck entry"
+msgstr "Eintrag deaktivieren"
+
+#: admin/gb-dashboard-widget.php:119 admin/gb-page-editor.php:628
+#: admin/gb-page-entries.php:735
+msgid "Uncheck"
+msgstr "Deaktivieren"
+
+#: admin/gb-dashboard-widget.php:123 admin/gb-page-editor.php:631
+#: admin/gb-page-entries.php:738
+msgid "Mark entry as spam."
+msgstr "Eintrag als Spam markieren."
+
+#: admin/gb-dashboard-widget.php:123 admin/gb-page-editor.php:544
+#: admin/gb-page-editor.php:587 admin/gb-page-editor.php:631
+#: admin/gb-page-entries.php:485 admin/gb-page-entries.php:689
+#: admin/gb-page-entries.php:738
+msgid "Spam"
+msgstr "Spam"
+
+#: admin/gb-dashboard-widget.php:127 admin/gb-page-editor.php:634
+#: admin/gb-page-entries.php:741
+msgid "Mark entry as not-spam."
+msgstr "Eintrag als Nicht-Spam markieren"
+
+#: admin/gb-dashboard-widget.php:127 admin/gb-page-editor.php:634
+#: admin/gb-page-entries.php:741
+msgid "Not spam"
+msgstr "Kein Spam"
+
+#. translators: Move to Trashcan
+#: admin/gb-dashboard-widget.php:131 admin/gb-page-editor.php:637
+#: admin/gb-page-entries.php:744
+msgid "Trash"
+msgstr "Papierkorb"
+
+#: admin/gb-dashboard-widget.php:135 admin/gb-page-editor.php:640
+#: admin/gb-page-entries.php:747
+msgid "Recover entry from trash."
+msgstr "Element aus dem Papierkorb wiederherstellen"
+
+#: admin/gb-dashboard-widget.php:135 admin/gb-page-editor.php:640
+#: admin/gb-page-entries.php:747
+msgid "Untrash"
+msgstr "Aus dem Papierkorb holen"
+
+#: admin/gb-dashboard-widget.php:139 admin/gb-page-editor.php:643
+#: admin/gb-page-entries.php:750 functions/gb-metabox.php:39
+msgid "Please wait..."
+msgstr "Bitte warten …"
+
+#: admin/gb-dashboard-widget.php:150
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: admin/gb-dashboard-widget.php:151
+msgid "View all"
+msgstr "Alles anzeigen"
+
+#: admin/gb-dashboard-widget.php:152
+msgid "View new"
+msgstr "Neue anzeigen"
+
+#: admin/gb-dashboard-widget.php:155
+msgid "No new and unchecked guestbook entries."
+msgstr "Keine neuen und ungeprüften Gästebucheinträge."
+
+#: admin/gb-dashboard-widget.php:167
+msgid "Guestbook (new entries)"
+msgstr "Gästebuch (neue Einträge)"
+
+#: admin/gb-page-editor.php:25
+msgid "Edit guestbook entry"
+msgstr "Gästebucheintrag bearbeiten"
+
+#: admin/gb-page-editor.php:38
+msgid "Entry could not be found."
+msgstr "Eintrag konnte nicht gefunden werden."
+
+#: admin/gb-page-editor.php:40
+msgid "Guestbook entry (error)"
+msgstr "Gästebucheintrag (Fehler)"
+
+#: admin/gb-page-editor.php:43
+msgid "New guestbook entry"
+msgstr "Neuer Gästebucheintrag"
+
+#: admin/gb-page-editor.php:90
+msgid "Submitted as Spam to the Akismet service."
+msgstr "Eingereicht als Spam beim Akismet-Service."
+
+#: admin/gb-page-editor.php:98
+msgid "Submitted as Ham to the Akismet service."
+msgstr "Eingereicht als Ham beim Akismet-Service."
+
+#: admin/gb-page-editor.php:190 admin/gb-page-gwolle-gb.php:366
+#: admin/gb-page-gwolle-gb.php:387 admin/gb-page-settings.php:482
+msgid "Changes saved."
+msgstr "Änderungen gesichert."
+
+#: admin/gb-page-editor.php:193 admin/gb-page-editor.php:309
+msgid "Error happened during saving."
+msgstr "Fehler beim Speichern aufgetreten."
+
+#: admin/gb-page-editor.php:205
+msgid "Entry removed."
+msgstr "Eintrag entfernt."
+
+#: admin/gb-page-editor.php:254
+msgid "Entry has no content, even though that is mandatory."
+msgstr "Eintrag hat keinen Inhalt, obwohl dies vorgeschrieben ist."
+
+#: admin/gb-page-editor.php:305
+msgid "Entry saved."
+msgstr "Eintrag gespeichert."
+
+#: admin/gb-page-editor.php:313
+msgid "Entry was not saved."
+msgstr "Eintrag wurde nicht gespeichert."
+
+#: admin/gb-page-editor.php:351 frontend/gb-form.php:290
+msgid "Guestbook entry"
+msgstr "Gästebucheintrag"
+
+#: admin/gb-page-editor.php:388 admin/gb-page-export.php:85
+#: admin/gb-page-import.php:114 admin/gb-page-import.php:160
+#: admin/tabs/gb-formtab.php:223 admin/tabs/gb-uninstalltab.php:39
+msgid "Message"
+msgstr "Nachricht"
+
+#: admin/gb-page-editor.php:352 admin/gb-page-editor.php:430
+#: admin/tabs/gb-formtab.php:203 frontend/gb-form.php:249
+msgid "Website"
+msgstr "Website"
+
+#: admin/gb-page-export.php:81
+msgid "Origin"
+msgstr "Herkunft"
+
+#: admin/gb-page-editor.php:353 admin/gb-page-editor.php:441
+#: admin/tabs/gb-formtab.php:163 admin/tabs/gb-readingtab.php:201
+#: frontend/gb-form.php:192
+msgid "City"
+msgstr "Ort"
+
+#: admin/gb-page-editor.php:469 frontend/gwolle_gb-entry.php:181
+msgid "Admin Reply by:"
+msgstr "Administrator-Antwort von:"
+
+#: admin/gb-page-editor.php:354 admin/gb-page-editor.php:450
+#: admin/gb-page-export.php:89 functions/gb-mail.php:246
+msgid "Admin Reply"
+msgstr "Administrator-Antwort"
+
+#: admin/gb-page-editor.php:534 admin/gb-page-gwolle-gb.php:167
+msgid "View Guestbook"
+msgstr "Gästebuch anzeigen"
+
+#: admin/gb-page-editor.php:557
+msgid "This entry is not yet visible."
+msgstr "Dieser Eintrag ist noch nicht sichtbar."
+
+#: admin/gb-page-editor.php:561 admin/gb-page-editor.php:566
+msgid "This entry is Visible."
+msgstr "Dieser Eintrag ist sichtbar."
+
+#: admin/gb-page-editor.php:562 admin/gb-page-editor.php:567
+msgid "This entry is Not Visible."
+msgstr "Dieser Eintrag ist nicht sichtbar."
+
+#: admin/gb-page-editor.php:577 functions/gb-mail.php:105
+msgid "Checked"
+msgstr "Geprüft"
+
+#: admin/gb-page-editor.php:606
+msgid "Remove this entry Permanently."
+msgstr "Diesen Eintrag dauerhaft entfernen."
+
+#: admin/gb-page-editor.php:612
+msgid "Save"
+msgstr "Speichern"
+
+#: admin/gb-page-editor.php:371
+msgid "Actions"
+msgstr "Aktionen"
+
+#: admin/gb-page-editor.php:372
+msgid "Details"
+msgstr "Details"
+
+#: admin/gb-page-editor.php:654 admin/gb-page-editor.php:701
+#: admin/gb-page-entries.php:493 admin/gb-page-entries.php:583
+#: admin/gb-page-entries.php:600
+msgid "Author"
+msgstr "Autor"
+
+#: admin/gb-page-editor.php:658 admin/gb-page-editor.php:665
+#: admin/gb-page-editor.php:683 admin/gb-page-editor.php:690
+#: functions/gb-log.php:187
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: admin/gb-page-editor.php:673
+msgid "Not yet"
+msgstr "Noch nicht"
+
+#: admin/gb-page-editor.php:676
+msgid "Author's IP-address"
+msgstr "IP-Adresse des Autors"
+
+#: admin/gb-page-editor.php:679
+msgid "Whois search for this IP"
+msgstr "Whois-Abfrage für diese IP-Adresse"
+
+#: admin/gb-page-editor.php:686
+msgid "Host"
+msgstr "Host"
+
+#: admin/gb-page-editor.php:696
+msgid "Edit metadata"
+msgstr "Bearbeiten von Metadaten"
+
+#: admin/gb-page-editor.php:668 admin/gb-page-editor.php:704
+msgid "Date and time"
+msgstr "Datum und Uhrzeit"
+
+#: admin/gb-page-editor.php:733
+msgid "No log yet."
+msgstr "Noch kein Protokoll."
+
+#: admin/gb-page-entries.php:444
+msgid "Guestbook entries"
+msgstr "Gästebucheinträge"
+
+#: admin/gb-page-entries.php:472 frontend/gb-pagination.php:90
+#: frontend/gb-pagination.php:92
+msgid "All"
+msgstr "Alle"
+
+#: admin/gb-page-entries.php:477
+msgid "Unlocked"
+msgstr "Freigeschaltet"
+
+#: admin/gb-page-entries.php:481
+msgid "New"
+msgstr "Neu"
+
+#: admin/gb-page-entries.php:517
+msgid "Mass edit actions"
+msgstr "Massenbearbeitungsaktionen"
+
+#: admin/gb-page-entries.php:520
+msgid "Recover from trash"
+msgstr "Aus dem Papierkorb wiederherstellen"
+
+#: admin/gb-page-entries.php:521 admin/gb-page-entries.php:538
+msgid "Remove permanently"
+msgstr "Endgültig löschen"
+
+#: admin/gb-page-entries.php:524
+msgid "Mark as checked"
+msgstr "Als überprüft markieren"
+
+#: admin/gb-page-entries.php:527
+msgid "Mark as not checked"
+msgstr "Als nicht geprüft markieren"
+
+#: admin/gb-page-entries.php:530
+msgid "Mark as spam"
+msgstr "Als Spam markieren"
+
+#: admin/gb-page-entries.php:532
+msgid "Mark as not spam"
+msgstr "Als Nicht-Spam markieren"
+
+#: admin/gb-page-entries.php:534
+msgid "Check with Akismet"
+msgstr "Mit Akismet prüfen"
+
+#: admin/gb-page-entries.php:536
+msgid "Move to trash"
+msgstr "In den Papierkorb verschieben"
+
+#: admin/gb-page-entries.php:546 admin/gb-page-entries.php:768
+msgid "Empty Spam"
+msgstr "Spam leeren"
+
+#: admin/gb-page-entries.php:548 admin/gb-page-entries.php:770
+msgid "Empty Trash"
+msgstr "Papierkorb leeren"
+
+#: admin/gb-page-entries.php:576 admin/gb-page-entries.php:593
+msgid "ID"
+msgstr "ID"
+
+#: admin/gb-page-entries.php:582 admin/gb-page-entries.php:599
+#: admin/tabs/gb-readingtab.php:226
+msgid "Date"
+msgstr "Datum"
+
+#: admin/gb-page-entries.php:584 admin/gb-page-entries.php:601
+msgid "Entry (excerpt)"
+msgstr "Eintrag (Auszug)"
+
+#: admin/gb-page-entries.php:585 admin/gb-page-entries.php:602
+msgid "Action"
+msgstr "Aktion"
+
+#: admin/gb-page-entries.php:617
+msgid "No entries found."
+msgstr "Keine Einträge gefunden"
+
+#: admin/gb-page-export.php:28
+msgid "Export guestbook entries."
+msgstr "Gästebucheinträge exportieren"
+
+#: admin/gb-page-export.php:33
+msgid "Export guestbook entries from Gwolle-GB"
+msgstr "Gästebucheinträge von „Gwolle Guestbook“ exportieren"
+
+#: admin/gb-page-export.php:66 admin/gb-page-export.php:250
+msgid "No entries were found."
+msgstr "Keine Einträge gefunden."
+
+#: admin/gb-page-export.php:75
+msgid "The exporter will preserve the following data per entry:"
+msgstr "Beim Export werden folgende Daten je Eintrag enthalten sein:"
+
+#: admin/gb-page-export.php:78 admin/gb-page-import.php:109
+#: admin/gb-page-import.php:154 admin/tabs/gb-formtab.php:143
+#: admin/tabs/gb-readingtab.php:189 frontend/gb-form.php:165
+msgid "Name"
+msgstr "Name"
+
+#: admin/gb-page-export.php:79 admin/gb-page-import.php:110
+#: admin/gb-page-import.php:156
+msgid "E-Mail address"
+msgstr "E-Mail-Adresse"
+
+#: admin/gb-page-export.php:80 admin/gb-page-import.php:111
+#: admin/gb-page-import.php:157
+msgid "URL/Website"
+msgstr "URL / Website"
+
+#: admin/gb-page-export.php:82 admin/gb-page-import.php:112
+#: admin/gb-page-import.php:158
+msgid "Date of the entry"
+msgstr "Datum des Eintrags"
+
+#: admin/gb-page-export.php:83 admin/gb-page-import.php:113
+#: admin/gb-page-import.php:159
+msgid "IP address"
+msgstr "IP-Adresse"
+
+#: admin/gb-page-export.php:84
+msgid "Host address"
+msgstr "Host-Adresse"
+
+#: admin/gb-page-export.php:86 admin/gb-page-import.php:116
+msgid "\"is checked\" flag"
+msgstr "„Aktiviert“-Kennzeichen"
+
+#: admin/gb-page-export.php:87 admin/gb-page-import.php:115
+msgid "\"is spam\" flag"
+msgstr "„Spam“-Kennzeichen"
+
+#: admin/gb-page-export.php:88
+msgid "\"is trash\" flag"
+msgstr "„Papierkorb“-Kennzeichen"
+
+#: admin/gb-page-export.php:98
+msgid "Export all entries from this website."
+msgstr "Export aller Gästebucheinträge von dieser Website."
+
+#: admin/gb-page-export.php:102 admin/gb-page-export.php:269
+msgid "Start export"
+msgstr "Export starten"
+
+#: admin/gb-page-gwolle-gb.php:91
+msgid "Overview"
+msgstr "Übersicht"
+
+#: admin/gb-page-gwolle-gb.php:170
+msgid "Write admin entry"
+msgstr "Einen Admin-Eintrag schreiben"
+
+#: admin/gb-page-gwolle-gb.php:225
+msgid "Save setting"
+msgstr "Einstellung speichern"
+
+#: admin/gb-page-gwolle-gb.php:229
+msgid "The following users have subscribed to this service:"
+msgstr "Die folgenden Benutzer haben diesen Dienst abonniert:"
+
+#: admin/gb-page-gwolle-gb.php:241 admin/tabs/gb-emailtab.php:55
+#: admin/tabs/gb-emailtab.php:91 functions/gb-log.php:196
+msgid "You"
+msgstr "Du"
+
+#: admin/gb-page-gwolle-gb.php:321
+msgid "Review this plugin."
+msgstr "Plugin bewerten"
+
+#: admin/gb-page-gwolle-gb.php:287
+msgid "Marked as Checked."
+msgstr "Markiert als überprüft."
+
+#: admin/gb-page-gwolle-gb.php:288
+msgid "Not marked as Spam."
+msgstr "Nicht als Spam gekennzeichnet."
+
+#: admin/gb-page-gwolle-gb.php:289
+msgid "Not marked as Trash."
+msgstr "Nicht als gelöscht markiert."
+
+#: admin/gb-page-gwolle-gb.php:26
+msgid "Welcome to the Guestbook!"
+msgstr "Herzlich willkommen im Gästebuch!"
+
+#: admin/gb-page-gwolle-gb.php:28
+msgid "E-mail Notifications"
+msgstr "E-Mail-Benachrichtigungen"
+
+#: admin/gb-page-gwolle-gb.php:31
+msgid "Help"
+msgstr "Hilfe"
+
+#. #-#-#-#-#  gwolle-gb-code.pot (Gwolle Guestbook 2.4.2)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: admin/gb-page-gwolle-gb.php:38 frontend/gb-widget.php:20
+msgid "Gwolle Guestbook"
+msgstr "Gwolle Guestbook"
+
+#: admin/gb-page-import.php:364
+msgid "I'm sorry, but I wasn't able to import entries from DMSGuestbook successfully."
+msgstr "Es tut mir leid, aber ich war nicht in der Lage, Einträge aus DMSGuestbook erfolgreich zu importieren."
+
+#: admin/gb-page-import.php:375
+msgid "I'm sorry, but I wasn't able to find the MySQL table of DMSGuestbook."
+msgstr "Es tut mir leid, aber ich war nicht in der Lage, die MySQL-Tabelle von DMSGuestbook zu finden."
+
+#: admin/gb-page-import.php:444
+msgid "I'm sorry, but I wasn't able to import comments from that page successfully."
+msgstr "Es tut mir leid, aber ich war nicht in der Lage, Kommentare von dieser Seite erfolgreich zu importieren."
+
+#: admin/gb-page-import.php:655
+msgid "I'm sorry, but I wasn't able to import entries from the CSV file."
+msgstr "Es tut mir leid, aber ich war nicht in der Lage, Einträge aus der CSV-Datei zu importieren."
+
+#: admin/gb-page-import.php:667
+msgid "Your upload triggered the following error:"
+msgstr "Das Hochladen erzeugte folgenden Fehler:"
+
+#: admin/gb-page-import.php:37
+msgid "Import guestbook entries."
+msgstr "Gästebucheinträge importieren"
+
+#: admin/gb-page-import.php:57
+msgid "Import guestbook entries from DMSGuestbook"
+msgstr "Importiere Gästebucheinträge aus DMSGuestbook"
+
+#: admin/gb-page-import.php:107 admin/gb-page-import.php:152
+msgid "The importer will preserve the following data per entry:"
+msgstr "Der Import wird folgende Daten je Eintrag erhalten:"
+
+#: admin/gb-page-import.php:130 admin/gb-page-import.php:259
+#: admin/gb-page-import.php:283
+msgid "Start import"
+msgstr "Import starten"
+
+#: admin/gb-page-import.php:133
+msgid "DMSGuestbook was not found."
+msgstr "DMSGuestbook wurde nicht gefunden."
+
+#: admin/gb-page-entries.php:504 admin/gb-page-entries.php:505
+#: admin/gb-page-export.php:255 admin/gb-page-export.php:256
+#: admin/gb-page-import.php:155
+msgid "User ID"
+msgstr "Benutzer-ID"
+
+#: admin/gb-page-import.php:161
+msgid "\"approved\" status"
+msgstr "„Genehmigt“-Status"
+
+#: admin/gb-page-import.php:165
+msgid "Spam comments will not be imported."
+msgstr "Spam-Kommentare werden nicht importiert."
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:410 frontend/gb-form.php:324
+msgid "Clean"
+msgstr "Säubern"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:411 frontend/gb-form.php:325
+msgid "Emoji"
+msgstr "Emoji"
+
+#: admin/gb-page-editor.php:478
+msgid "Mail the author a notification about this reply."
+msgstr "Sende dem Autor eine E-Mail bezüglich dieser Antwort."
+
+#: admin/gb-page-editor.php:542 admin/gb-page-entries.php:687
+msgid "Visible"
+msgstr "Sichtbar"
+
+#: admin/gb-page-editor.php:543 admin/gb-page-entries.php:688
+msgid "Invisible"
+msgstr "Unsichtbar"
+
+#: admin/gb-page-editor.php:693 admin/gb-page-entries.php:575
+#: admin/gb-page-entries.php:592
+msgid "Book"
+msgstr "Buch"
+
+#: admin/gb-page-editor.php:709 admin/gb-page-entries.php:674
+#: admin/gb-page-entries.php:676 admin/gb-page-export.php:90
+msgid "Book ID"
+msgstr "Buch-ID"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:405 frontend/gb-form.php:319
+msgid "Numeric List"
+msgstr "Numerische Liste"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:406 frontend/gb-form.php:320
+msgid "Picture"
+msgstr "Bild"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:407 frontend/gb-form.php:321
+msgid "Source"
+msgstr "Quelle"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:408 frontend/gb-form.php:322
+msgid "Link"
+msgstr "Link"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:409 frontend/gb-form.php:323
+msgid "Your text to link..."
+msgstr "Text zum Link ..."
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:402 frontend/gb-form.php:316
+msgid "Bold"
+msgstr "Fett"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:403 frontend/gb-form.php:317
+msgid "Italic"
+msgstr "Kursiv"
+
+#. translators: MarkItUp menu item
+#: admin/gb-page-editor.php:404 frontend/gb-form.php:318
+msgid "Bulleted List"
+msgstr "Aufzählungsliste"
+
+#. translators: %s is the number of entries
+#: admin/gb-page-import.php:448
+msgid "%s entry imported successfully from WordPress comments."
+msgid_plural "%s entries imported successfully from WordPress comments."
+msgstr[0] "%s Eintrag erfolgreich aus den WordPress-Kommentaren importiert."
+msgstr[1] "%s Einträge erfolgreich aus den WordPress-Kommentaren importiert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:254
+msgid "%s entry unchecked."
+msgid_plural "%s entries unchecked."
+msgstr[0] "%s Eintrag deaktiviert."
+msgstr[1] "%s Einträge deaktiviert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:260
+msgid "%s entry marked as not spam and submitted to Akismet as ham (if Akismet was enabled)."
+msgid_plural "%s entries marked as not spam and submitted to Akismet as ham (if Akismet was enabled)."
+msgstr[0] "%s Eintrag als Nicht-Spam markiert und an Akismet als harmlos übermittelt (falls Akismet aktiviert wurde)."
+msgstr[1] "%s Einträge als Nicht-Spam markiert und an Akismet als harmlos übermittelt (falls Akismet aktiviert wurde)."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:257
+msgid "%s entry marked as spam and submitted to Akismet as spam (if Akismet was enabled)."
+msgid_plural "%s entries marked as spam and submitted to Akismet as spam (if Akismet was enabled)."
+msgstr[0] "%s Eintrag als Nicht-Spam markiert und an Akismet als harmlos übermittelt (falls Akismet aktiviert wurde)."
+msgstr[1] "%s Einträge als Nicht-Spam markiert und an Akismet als harmlos übermittelt (falls Akismet aktiviert wurde)."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:268
+msgid "%s entry considered not spam and marked as such."
+msgid_plural "%s entries considered not spam and marked as such."
+msgstr[0] "%s Eintrag als Spam betrachtet und als solcher markiert."
+msgstr[1] "%s Einträge als Spam betrachtet und als solche markiert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:272
+msgid "%s entry already considered spam and not changed."
+msgid_plural "%s entries already considered spam and not changed."
+msgstr[0] "%s Eintrag bereits als Spam betrachtet und nicht geändert."
+msgstr[1] "%s Einträge bereits als Spam betrachtet und nicht geändert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:264
+msgid "%s entry considered spam and marked as such."
+msgid_plural "%s entries considered spam and marked as such."
+msgstr[0] "%s Eintrag als Spam betrachtet und als solcher gekennzeichnet."
+msgstr[1] "%s Einträge als Spam betrachtet und als solche gekennzeichnet."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:276
+msgid "%s entry already considered not spam and not changed."
+msgid_plural "%s entries already considered not spam and not changed."
+msgstr[0] "%s Eintrag bereits als kein Spam betrachtet und nicht geändert."
+msgstr[1] "%s Einträge bereits als kein Spam betrachtet und nicht geändert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:283
+msgid "%s entry recovered from trash."
+msgid_plural "%s entries recovered from trash."
+msgstr[0] "%s Eintrag aus dem Papierkorb wiederhergestellt."
+msgstr[1] "%s Einträge aus dem Papierkorb wiederhergestellt."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:280
+msgid "%s entry moved to trash."
+msgid_plural "%s entries moved to trash."
+msgstr[0] "%s Eintrag in den Papierkorb verschoben."
+msgstr[1] "%s Einträge in den Papierkorb verschoben."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:286 admin/gb-page-entries.php:297
+msgid "%s entry removed permanently."
+msgid_plural "%s entries removed permanently."
+msgstr[0] "%s Eintrag dauerhaft entfernt."
+msgstr[1] "%s Einträge dauerhaft entfernt."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-export.php:70
+msgid "%s entry was found and will be exported."
+msgid_plural "%s entries were found and will be exported."
+msgstr[0] "%s Eintrag wurde gefunden und wird exportiert."
+msgstr[1] "%s Einträge wurden gefunden und werden exportiert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-import.php:368
+msgid "%s entry imported successfully from DMSGuestbook."
+msgid_plural "%s entries imported successfully from DMSGuestbook."
+msgstr[0] "%s Eintrag erfolgreich von DMSGuestbook importiert."
+msgstr[1] "%s Einträge erfolgreich von DMSGuestbook importiert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-import.php:659
+msgid "%s entry imported successfully from the CSV file."
+msgid_plural "%s entries imported successfully from the CSV file."
+msgstr[0] "%s Eintrag erfolgreich aus der CSV-Datei importiert."
+msgstr[1] "%s Einträge erfolgreich aus der CSV-Datei importiert."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-import.php:104
+msgid "%s entry was found and will be imported."
+msgid_plural " %s entries were found and will be imported."
+msgstr[0] "%s Eintrag wurde gefunden und wird importiert."
+msgstr[1] "%s Einträge wurden gefunden und werden importiert."
+
+#: admin/gb-page-gwolle-gb.php:223
+msgid "Send me an e-mail when a new entry has been posted."
+msgstr "Sende mir eine E-Mail, wenn ein neuer Eintrag veröffentlicht wurde ."
+
+#: admin/gb-page-gwolle-gb.php:250
+msgid "No subscriber yet"
+msgstr "Noch keine Abonnenten vorhanden"
+
+#: admin/gb-page-gwolle-gb.php:260
+msgid "This plugin uses the following scripts and services:"
+msgstr "Dieses Plugin verwendet die folgenden Skripte und Dienste:"
+
+#: admin/gb-dashboard-widget.php:131 admin/gb-page-editor.php:637
+#: admin/gb-page-entries.php:744
+msgid "Move entry to trash."
+msgstr "Verschiebe Eintrag in den Papierkorb."
+
+#: admin/gb-dashboard-widget.php:139 admin/gb-page-editor.php:551
+#: admin/gb-page-editor.php:643 admin/gb-page-entries.php:697
+#: admin/gb-page-entries.php:750
+msgid "Wait..."
+msgstr "Warten ..."
+
+#: admin/gb-page-editor.php:549 admin/gb-page-entries.php:694
+msgid "Admin Replied"
+msgstr "Administrator hat geantwortet"
+
+#. translators: Log on Editor
+#: admin/gb-page-editor.php:724
+msgid "Written"
+msgstr "Geschrieben"
+
+#: admin/gb-page-gwolle-gb.php:103
+msgid "Entry total"
+msgid_plural "Entries total"
+msgstr[0] "Eintrag gesamt"
+msgstr[1] "Einträge gesamt"
+
+#: admin/gb-page-gwolle-gb.php:115
+msgid "Unlocked entry"
+msgid_plural "Unlocked entries"
+msgstr[0] "Freigeschalteter Eintrag"
+msgstr[1] "Freigeschaltete Einträge"
+
+#: admin/gb-page-gwolle-gb.php:127
+msgid "New entry"
+msgid_plural "New entries"
+msgstr[0] "Neuer Eintrag"
+msgstr[1] "Neue Einträge"
+
+#: admin/gb-page-gwolle-gb.php:139
+msgid "Spam entry"
+msgid_plural "Spam entries"
+msgstr[0] "Spam-Eintrag"
+msgstr[1] "Spam-Einträge"
+
+#: admin/gb-page-gwolle-gb.php:151
+msgid "Trashed entry"
+msgid_plural "Trashed entries"
+msgstr[0] "Gelöschter Eintrag"
+msgstr[1] "Gelöschte Einträge"
+
+#: admin/gb-page-editor.php:66
+msgid "Something strange happened."
+msgstr "Etwas Seltsames ist geschehen."
+
+#. translators: %s is the number of entries
+#: admin/gb-page-entries.php:251
+msgid "%s entry checked."
+msgid_plural "%s entries checked."
+msgstr[0] "%s Eintrag aktiviert."
+msgstr[1] "%s Einträge aktiviert."
+
+#: admin/gb-page-entries.php:543
+msgid "Apply"
+msgstr "Übernehmen"
+
+#: admin/gb-page-import.php:58
+msgid "Import guestbook entries from WordPress comments"
+msgstr "Importiere Gästebuch-Einträge aus WordPress-Kommentaren"
+
+#: admin/gb-page-export.php:93
+msgid "The exporter does not delete any data, so your data will still be here."
+msgstr "Beim Export werden keine Daten gelöscht, so dass deine Daten immer noch hier sein werden."
+
+#: admin/gb-page-gwolle-gb.php:276
+msgid "Create a new page."
+msgstr "Eine neue Seite erstellen."
+
+#: admin/gb-page-gwolle-gb.php:274
+msgid "This is how you can get your guestbook displayed on your website:"
+msgstr "So kannst du das Gästebuch auf deiner Website anzeigen:"
+
+#: admin/tabs/gb-emailtab.php:75
+msgid "Sorry, but the function <code>mail()</code> required to notify you by mail is not enabled in your PHP configuration. You might want to install a WordPress plugin that uses SMTP instead of <code>mail()</code>. Or you can contact your hosting provider to change this."
+msgstr "Sorry, aber die notwendige Funktion <code>mail()</code>, um dich per E-Mail zu benachrichtigen, ist in deiner PHP-Konfiguration nicht aktiviert. Vielleicht möchtest du ein WordPress-Plugin installieren, das SMTP nutzt statt <code>mail()</code>. Oder du kannst dich an deinen Hosting-Provider wenden, um dies zu ändern."
+
+#: admin/gb-page-import.php:170
+msgid "Select a page to import the comments from:"
+msgstr "Wähle eine Seite, um daraus Kommentare zu importieren:"
+
+#: admin/gb-page-import.php:126
+msgid "Import all entries from DMSGuestbook."
+msgstr "Importiere alle Einträge aus DMSGuestbook."
+
+#: admin/gb-page-import.php:120 admin/gb-page-import.php:167
+msgid "The importer does not delete any data, so you can go back whenever you want."
+msgstr "Der Import wird keine Daten löschen, so dass du zurückgehen kannst, wann immer du willst."
+
+#: admin/gb-page-import.php:410
+msgid "You haven't chosen how to import from WordPress comments. Please choose and try again."
+msgstr "Du hast nichts zum Importieren von WordPress-Kommentaren ausgewählt. Bitte wähle aus und versuche es erneut."
+
+#: admin/gb-page-gwolle-gb.php:277
+msgid "Choose a title and set &quot;[gwolle_gb]&quot; (without the quotes) as the content."
+msgstr "Wähle einen Titel und füge &quot;[gwolle_gb]&quot; (ohne die Anführungszeichen) als Inhalt ein."
+
+#. translators: %s is for bold text
+#: admin/gb-page-import.php:452
+msgid "%sNothing to import.%s There seem to be no comments on this page, post or at all."
+msgstr "%sNichts zu importieren.%s Es scheint keine Kommentare zu dieser Seite, diesem Beitrag oder überhaupt zu geben."
+
+#. translators: %s is for bold text
+#: admin/gb-page-import.php:118 admin/gb-page-import.php:163
+msgid "However, data such as HTML formatting is not supported by Gwolle-GB and %swill not%s be imported."
+msgstr "Jedoch werden Daten wie z.B. HTML-Formatierungen von Gwolle-GB nicht unterstützt und daher %snicht%s importiert."
+
+#. translators: %s is for bold text
+#: admin/gb-page-import.php:372
+msgid "%sNothing to import.%s The guestbook you've chosen does not contain any entries."
+msgstr "%sNichts zu importieren.%s Das ausgewählte Gästebuch enthält keine Einträge."
+
+#: admin/gb-page-import.php:595
+msgid "Your data seems to be corrupt. Import failed."
+msgstr "Deine Daten scheinen beschädigt zu sein. Import fehlgeschlagen."
+
+#: admin/gb-page-import.php:587
+msgid "It seems your CSV file is from an export that is not compatible with this version of Gwolle-GB."
+msgstr "Es scheint, deine CSV-Datei ist von einem Export, der nicht mit dieser Version von „Gwolle Guestbook“ kompatibel ist."
+
+#: admin/gb-page-import.php:478
+msgid "Your file is too large."
+msgstr "Deine Datei ist zu groß."
+
+#: admin/gb-page-gwolle-gb.php:285
+msgid "These entries will be visible for your visitors:"
+msgstr "Diese Einträge werden für deine Besucher sichtbar sein:"

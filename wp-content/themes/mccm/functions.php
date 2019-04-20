@@ -50,6 +50,8 @@ add_action('wp_head', 'wp_head_event');
 $_registration_start_date = new DateTime('2020-05-02 22:00');
 $_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
+	'91.130.91.9',
+ 	'188.21.52.126'
 );
 
 function head_menu_inject_registration_countdown($items) 
