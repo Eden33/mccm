@@ -13,18 +13,15 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 
 /*
- * $params:
- * $entry:  object $gwolle_gb_entry with a guestbook entry to be checked
- *          should be an instance of the gwolle_gb_entry class
- * $action: string with the requested action
+ * @param object $entry  instance of gwolle_gb_entry with a guestbook entry to be checked
+ * @param string $action the requested action
  *          - comment-check: check with Akismet service if entry is considered spam or not
  *          - submit-ham: submit as ham to Akismet service
  *          - submit-spam: submit as spam to Akismet service
- *
- * Return: - true if the entry is considered spam by akismet
- *         - false if no spam, or no akismet functionality is found
+ * @return bool
+ *          - true if the entry is considered spam by akismet
+ *          - false if no spam, or no akismet functionality is found
  */
-
 function gwolle_gb_akismet( $entry, $action ) {
 
 	$actions = array(
@@ -33,13 +30,17 @@ function gwolle_gb_akismet( $entry, $action ) {
 		'submit-spam'
 	);
 
-	if ( !in_array( $action, $actions ) ) {
+	if ( ! in_array( $action, $actions ) ) {
+		return false;
+	}
+
+	$active_plugins = get_option('active_plugins');
+	if ( ! in_array('akismet/akismet.php', $active_plugins)) {
 		return false;
 	}
 
 	$akismet_active = get_option( 'gwolle_gb-akismet-active', 'false' );
 	if ( $akismet_active != 'true' ) {
-		// Akismet is not active, so we don't do anything
 		return false;
 	}
 
@@ -49,12 +50,12 @@ function gwolle_gb_akismet( $entry, $action ) {
 		$api_key = (bool) akismet_get_key();
 	}
 
-	if ( !$api_key ) {
+	if ( ! $api_key ) {
 		// No api key, no glory
 		return false;
 	}
 
-	if ( !is_object( $entry ) ) {
+	if ( ! is_object( $entry ) ) {
 		// No object, no fuss
 		return false;
 	}
@@ -74,8 +75,11 @@ function gwolle_gb_akismet( $entry, $action ) {
 	$comment['blog'] = get_option( 'home' );
 	$comment['blog_lang'] = get_locale();
 	$comment['blog_charset'] = get_option( 'blog_charset' );
-	$comment['user_ip'] = preg_replace( '/[^0-9., ]/', '', $_SERVER['REMOTE_ADDR'] );
-	$comment['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+	$store_author_ip = get_option('gwolle_gb-store_ip', 'true');
+	if ( $store_author_ip == 'true' ) {
+		$comment['user_ip'] = preg_replace( '/[^0-9., ]/', '', $_SERVER['REMOTE_ADDR'] );
+		$comment['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+	}
 	if ( isset($_SERVER['HTTP_REFERER']) ) {
 		$comment['referrer'] = $_SERVER['HTTP_REFERER'];
 	}
@@ -83,12 +87,12 @@ function gwolle_gb_akismet( $entry, $action ) {
 	// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
 	$comment['comment_type'] = 'comment';
 
-	$permalink = get_permalink( get_the_ID() );
+	$permalink = gwolle_gb_get_permalink( get_the_ID() );
 	if ( $permalink ) {
 		$comment['permalink'] = $permalink;
 	}
 
-	$ignore = array( 'HTTP_COOKIE', 'HTTP_COOKIE2', 'PHP_AUTH_PW' );
+	$ignore = array( 'HTTP_COOKIE', 'HTTP_COOKIE2', 'PHP_AUTH_PW', 'REMOTE_ADDR', 'HTTP_USER_AGENT', 'PATH' );
 	foreach ( $_SERVER as $key => $value ) {
 		if ( ! in_array( $key, (array) $ignore ) )
 			$comment["$key"] = $value;
@@ -103,13 +107,15 @@ function gwolle_gb_akismet( $entry, $action ) {
 /*
  * Check the $comment against Akismet service
  *
- * Parameters:
- * $comment: Array with the comment
- * $action: string with 'comment-check', 'submit-ham', 'submit-spam'
- *
- * Return: true or false
+ * @param array $comment array with data fields to be checked on
+ * @param string $action the requested action
+ *          - comment-check: check with Akismet service if entry is considered spam or not
+ *          - submit-ham: submit as ham to Akismet service
+ *          - submit-spam: submit as spam to Akismet service
+ * @return bool
+ *          - true if the entry is considered spam by akismet
+ *          - false if no spam, or no akismet functionality is found
  */
-
 function gwolle_gb_akismet_entry_check( $comment, $action ) {
 	global $akismet_api_host, $akismet_api_port;
 

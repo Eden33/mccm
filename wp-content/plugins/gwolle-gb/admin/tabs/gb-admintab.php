@@ -9,6 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Admin tab of the Settings page.
+ */
 function gwolle_gb_page_settingstab_admin() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {

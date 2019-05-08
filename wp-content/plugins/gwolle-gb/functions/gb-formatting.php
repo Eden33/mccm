@@ -9,7 +9,10 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Function to sanitize values from input fields for the database.
- * @param $input string to sanitize
+ *
+ * @param string $input string to sanitize
+ * @param string $field string to check which sanitizing to do
+ * @return string $input sanitized string
  */
 function gwolle_gb_sanitize_input( $input, $field = '' ) {
 	$input = strval($input);
@@ -30,7 +33,10 @@ function gwolle_gb_sanitize_input( $input, $field = '' ) {
 
 /*
  * Function to sanitize values for output in a form or div.
- * @param $output string to sanitize
+ *
+ * @param string $input string to sanitize
+ * @param string $field string to check which sanitizing to do
+ * @return string $input sanitized string
  */
 function gwolle_gb_sanitize_output( $output, $field = '' ) {
 	$output = strval($output);
@@ -52,8 +58,9 @@ function gwolle_gb_sanitize_output( $output, $field = '' ) {
 
 /*
  * Function to format values for beeing send by mail.
- * Since users can input malicious code we have to make
- * sure that this code is being taken care of.
+ *
+ * @param string $value string to sanitize
+ * @return string $value sanitized string
  */
 function gwolle_gb_format_values_for_mail($value) {
 	$value = htmlspecialchars_decode($value, ENT_COMPAT);
@@ -74,9 +81,8 @@ function gwolle_gb_format_values_for_mail($value) {
 /*
  * Function to build the excerpt
  *
- * @param $content string content of the entry to be shortened
- *        $excerpt_length int the maximum length to return in number of words (uses wp_trim_words)
- *
+ * @param string $content content of the entry to be shortened
+ * @param int $excerpt_length the maximum length to return in number of words (uses wp_trim_words)
  * @return $excerpt string the shortened content
  */
 function gwolle_gb_get_excerpt( $content, $excerpt_length = 20 ) {

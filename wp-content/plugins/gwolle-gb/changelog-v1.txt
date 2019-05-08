@@ -1,5 +1,5 @@
 
-== Changelog of Gwolle Guestbook Version 0.9.4.2 - 0.9.9.3 ==
+== Changelog of Gwolle Guestbook Version 1.0 - 1.7.4 ==
 
 = 1.7.4 =
 * 2016-06-27

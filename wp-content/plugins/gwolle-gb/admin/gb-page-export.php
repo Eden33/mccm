@@ -11,6 +11,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Admin page for export.
+ */
 function gwolle_gb_page_export() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
@@ -45,7 +48,7 @@ function gwolle_gb_page_export() {
 function gwolle_gb_export_postbox() {
 
 	$count = gwolle_gb_get_entry_count(array( 'all'  => 'all' ));
-	$num_entries = 5000;
+	$num_entries = 2000;
 	$parts = ceil( $count / $num_entries );
 	?>
 
@@ -59,9 +62,6 @@ function gwolle_gb_export_postbox() {
 	$nonce = wp_create_nonce( 'gwolle_gb_page_export' );
 	echo '<input type="hidden" id="gwolle_gb_wpnonce" name="gwolle_gb_wpnonce" value="' . $nonce . '" />';
 
-	$count = gwolle_gb_get_entry_count( array( 'all' => 'all' ) );
-	$num_entries = 5000;
-	$parts = ceil( $count / $num_entries );
 	if ( $count == 0 ) { ?>
 		<p><?php esc_html_e('No entries were found.', 'gwolle-gb'); ?></p><?php
 	} else {
@@ -119,7 +119,7 @@ add_action('admin_init', 'gwolle_gb_export_action');
 
 
 /*
- * Callback function for request generated from the Export page
+ * Callback function for request generated from the Export page.
  */
 function gwolle_gb_export_callback() {
 
@@ -140,7 +140,7 @@ function gwolle_gb_export_callback() {
 	}
 
 	$count = gwolle_gb_get_entry_count(array( 'all'  => 'all' ));
-	$num_entries = 5000;
+	$num_entries = 2000;
 	$parts = ceil( $count / $num_entries );
 	if ( isset( $_POST['gwolle_gb_export_part']) && ( (int) $_POST['gwolle_gb_export_part'] < ($parts + 1) ) ) {
 		$part = (int) $_POST['gwolle_gb_export_part'];
@@ -148,7 +148,7 @@ function gwolle_gb_export_callback() {
 		echo '(Gwolle-GB) Wrong part requested.';
 		die();
 	}
-	$offset = ($part * 5000) - 5000;
+	$offset = ($part * $num_entries) - $num_entries;
 
 	$entries = gwolle_gb_get_entries(array(
 			'num_entries' => $num_entries,
@@ -214,7 +214,7 @@ function gwolle_gb_export_callback() {
 			}
 			$row[] = $meta;
 
-			fputcsv($output, $row);
+			fputcsv($output, $row, ',', '"');
 
 			gwolle_gb_add_log_entry( $entry->get_id(), 'exported-to-csv' );
 
@@ -230,7 +230,7 @@ function gwolle_gb_export_callback() {
 
 
 /*
- * Export entries for user
+ * Export entries for user.
  *
  * @since 2.3.11
  */
@@ -284,7 +284,7 @@ add_action('admin_init', 'gwolle_gb_export_user_action');
 
 
 /*
- * Callback function for request generated from the Export page
+ * Callback function for request generated from the Export page.
  */
 function gwolle_gb_export_user_callback() {
 
@@ -378,7 +378,7 @@ function gwolle_gb_export_user_callback() {
 			}
 			$row[] = $meta;
 
-			fputcsv($output, $row);
+			fputcsv($output, $row, ',', '"');
 
 			gwolle_gb_add_log_entry( $entry->get_id(), 'exported-to-csv' );
 

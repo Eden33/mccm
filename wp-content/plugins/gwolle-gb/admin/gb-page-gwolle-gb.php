@@ -9,7 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
-/* Show the page */
+/*
+ * Main Admin page.
+ */
 function gwolle_gb_welcome() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
@@ -67,7 +69,9 @@ function gwolle_gb_welcome() {
 }
 
 
-
+/*
+ * Metabox with overview.
+ */
 function gwolle_gb_overview(){
 
 	// Calculate the number of entries
@@ -87,71 +91,60 @@ function gwolle_gb_overview(){
 	$count['all']     = gwolle_gb_get_entry_count(array( 'all'   => 'all'   ));
 	?>
 
-	<div class="table table_content gwolle_gb">
+	<div class="table table_content gwolle_gb gwolle-gb-overview">
 		<h3><?php esc_html_e('Overview','gwolle-gb'); ?></h3>
 
 		<table>
 			<tbody>
-				<tr class="first">
-					<td class="first b">
-						<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php">
+				<tr class="gwolle-gb-overview-all">
+					<td>
+						<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=all' ); ?>">
 							<?php echo $count['all']; ?>
 						</a>
 					</td>
-
-					<td class="t" style="color:#0000f0;">
+					<td class="colored">
 						<?php echo _n( 'Entry total', 'Entries total', $count['all'], 'gwolle-gb' ); ?>
 					</td>
-					<td class="b"></td>
-					<td class="last"></td>
 				</tr>
 
-				<tr>
-					<td class="first b">
-						<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=checked">
+				<tr class="gwolle-gb-overview-checked">
+					<td>
+						<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=checked' ); ?>">
 						<?php echo $count['checked']; ?>
 					</a></td>
-					<td class="t" style="color:#008000;">
+					<td class="colored">
 						<?php echo _n( 'Unlocked entry', 'Unlocked entries', $count['checked'], 'gwolle-gb' ); ?>
 					</td>
-					<td class="b"></td>
-					<td class="last"></td>
 				</tr>
 
-				<tr>
-					<td class="first b">
-						<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked">
+				<tr class="gwolle-gb-overview-unchecked">
+					<td>
+						<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=unchecked' ); ?>">
 						<?php echo $count['unchecked']; ?>
 					</a></td>
-					<td class="t" style="color:#ff6f00;">
+					<td class="colored">
 						<?php echo _n( 'New entry', 'New entries', $count['unchecked'], 'gwolle-gb' ); ?>
 					</td>
-					<td class="b"></td>
-					<td class="last"></td>
 				</tr>
 
-				<tr>
-					<td class="first b">
-						<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=spam">
+				<tr class="gwolle-gb-overview-spam">
+					<td>
+						<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=spam' ); ?>">
 						<?php echo $count['spam']; ?>
 					</a></td>
-					<td class="t" style="color:#FF0000;">
+					<td class="colored">
 						<?php echo _n( 'Spam entry', 'Spam entries', $count['spam'], 'gwolle-gb' ); ?>
 					</td>
-					<td class="b"></td>
-					<td class="last"></td>
 				</tr>
 
-				<tr>
-					<td class="first b">
-						<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=trash">
+				<tr class="gwolle-gb-overview-trash">
+					<td>
+						<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=trash' ); ?>">
 						<?php echo $count['trash']; ?>
 					</a></td>
-					<td class="t" style="color:#FF0000;">
+					<td class="colored">
 						<?php echo _n( 'Trashed entry', 'Trashed entries', $count['trash'], 'gwolle-gb' ); ?>
 					</td>
-					<td class="b"></td>
-					<td class="last"></td>
 				</tr>
 
 			</tbody>
@@ -162,12 +155,12 @@ function gwolle_gb_overview(){
 			<?php
 			$postid = gwolle_gb_get_postid_biggest_book();
 			if ( $postid ) {
-				$permalink = get_permalink( $postid );
+				$permalink = gwolle_gb_get_permalink( $postid );
 				?>
 				<a class="button rbutton button button-primary" href="<?php echo $permalink; ?>"><?php esc_html_e('View Guestbook','gwolle-gb'); ?></a>
 				<?php
 			} ?>
-			<a class="button rbutton button button-primary" href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/editor.php"><?php esc_html_e('Write admin entry','gwolle-gb'); ?></a>
+			<a class="button rbutton button button-primary" href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php' ); ?>"><?php esc_html_e('Write admin entry','gwolle-gb'); ?></a>
 		</p>
 		<p>
 			<?php
@@ -187,6 +180,9 @@ function gwolle_gb_overview(){
 <?php }
 
 
+/*
+ * Metabox with checbox for subscribing this user to email notifications.
+ */
 function gwolle_gb_overview_notification() {
 
 	// Check if function mail() exists. If not, display a hint to the user.
@@ -222,7 +218,7 @@ function gwolle_gb_overview_notification() {
 			} ?> >
 		<label for="notify_by_mail" class="setting-description"><?php esc_html_e('Send me an e-mail when a new entry has been posted.', 'gwolle-gb'); ?></label>
 		<p class="submit">
-			<input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save setting', 'gwolle-gb'); ?>" />
+			<input type="submit" name="submit" class="button-primary" value="<?php esc_attr_e('Save setting', 'gwolle-gb'); ?>" />
 		</p>
 	</form>
 	<div>
@@ -231,8 +227,8 @@ function gwolle_gb_overview_notification() {
 		if ( is_array($user_ids) && ! empty($user_ids) ) {
 			echo '<ul>';
 			foreach ( $user_ids as $user_id ) {
-				$user_info = get_userdata($user_id);
-				if ($user_info === FALSE) {
+				$user_info = get_userdata( (int) $user_id );
+				if ($user_info === false) {
 					// Invalid $user_id
 					continue;
 				}
@@ -255,6 +251,9 @@ function gwolle_gb_overview_notification() {
 }
 
 
+/*
+ * Metabox with overview of third parties.
+ */
 function gwolle_gb_overview_thanks() {
 	echo '<h3>
 	' . esc_html__('This plugin uses the following scripts and services:', 'gwolle-gb') . '</h3>
@@ -262,13 +261,14 @@ function gwolle_gb_overview_thanks() {
 		<li><a href="https://akismet.com/tos/" target="_blank">' . esc_html__( 'Akismet', 'gwolle-gb' ) . '</a></li>
 		<li><a href="https://www.stopforumspam.com" target="_blank">' . esc_html__( 'Stop Forum Spam', 'gwolle-gb' ) . '</a></li>
 		<li><a href="https://markitup.jaysalvat.com/" target="_blank">' . esc_html__( 'MarkItUp', 'gwolle-gb' ) . '</a></li>
-		<li><a href="https://wordpress.org/plugins/really-simple-captcha/" target="_blank">' . esc_html__( 'Really Simple CAPTCHA plugin', 'gwolle-gb' ) . '</a></li>
 		<li><a href="http://supersimpleslider.com/" target="_blank">' . esc_html__( 'Super Simple Slider', 'gwolle-gb' ) . '</a></li>
 	</ul>';
 }
 
 
-/* Metaboxes on the right */
+/*
+ * Metabox with quick help text.
+ */
 function gwolle_gb_overview_help() {
 	echo '<h3>
 	' . esc_html__('This is how you can get your guestbook displayed on your website:', 'gwolle-gb') . '</h3>
@@ -280,6 +280,9 @@ function gwolle_gb_overview_help() {
 }
 
 
+/*
+ * Metabox with quick help text.
+ */
 function gwolle_gb_overview_visibility() {
 	echo '<h3>
 	' . esc_html__('These entries will be visible for your visitors:', 'gwolle-gb').'</h3>
@@ -291,6 +294,9 @@ function gwolle_gb_overview_visibility() {
 }
 
 
+/*
+ * Metabox with text about support and translations.
+ */
 function gwolle_gb_overview_support() {
 	?>
 	<h3><?php esc_html_e('Support.', 'gwolle-gb'); ?></h3>
@@ -316,6 +322,10 @@ function gwolle_gb_overview_support() {
 }
 
 
+/*
+ * Metabox with text about wp.org reviews.
+ * Call for donations is gone.
+ */
 function gwolle_gb_overview_donate() {
 	?>
 	<h3><?php esc_html_e('Review this plugin.', 'gwolle-gb'); ?></h3>
@@ -328,6 +338,9 @@ function gwolle_gb_overview_donate() {
 }
 
 
+/*
+ * Subscribe this user to email notifications.
+ */
 function gwolle_gb_welcome_post() {
 
 	/* Check Nonce */
@@ -350,15 +363,15 @@ function gwolle_gb_welcome_post() {
 		if ( strlen($user_ids_old) > 0 ) {
 			$user_ids_old = explode( ",", $user_ids_old );
 			foreach ( $user_ids_old as $user_id_old ) {
-				if ( $user_id_old == $user_id ) {
+				if ( (int) $user_id_old === (int) $user_id ) {
 					continue; // will be added again below the loop
 				}
 				if ( is_numeric($user_id_old) ) {
-					$user_ids[] = $user_id_old;
+					$user_ids[] = (int) $user_id_old;
 				}
 			}
 		}
-		$user_ids[] = $user_id; // Really add it.
+		$user_ids[] = (int) $user_id; // Really add it.
 
 		$user_ids = implode(",", $user_ids);
 		update_option('gwolle_gb-notifyByMail', $user_ids);
@@ -373,11 +386,11 @@ function gwolle_gb_welcome_post() {
 		if ( strlen($user_ids_old) > 0 ) {
 			$user_ids_old = explode( ",", $user_ids_old );
 			foreach ( $user_ids_old as $user_id_old ) {
-				if ( $user_id_old == $user_id ) {
+				if ( (int) $user_id_old === (int) $user_id ) {
 					continue;
 				}
 				if ( is_numeric($user_id_old) ) {
-					$user_ids[] = $user_id_old;
+					$user_ids[] = (int) $user_id_old;
 				}
 			}
 		}

@@ -16,3 +16,6 @@ phpinfo.html
 
 # ignore wp-config
 wp-config.php
+
+# ignore really-simpe-captcha tmp directory
+/wp-content/plugins/really-simple-captcha/tmp

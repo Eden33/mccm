@@ -6,21 +6,29 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
-/* Widget Function for simple layout.
+/*
+ * Widget Function for simple layout.
  *
  * For multiple guestbooks, use it like this:
  * gwolle_gb_shortcode_widget( array('book_id'=>2) );
  * which will show Book ID 2 in widget layout.
+ *
+ * @since 2.1.4
+ *
+ * @param array $atts array with the shortcode attributes.
+ * - book_id, int with an ID.
+ * - num_entries, int with the shown number of messages.
+ * - num_words, int with the shown number of words per entry.
  */
-
 function gwolle_gb_shortcode_widget( $atts ) {
 	echo get_gwolle_gb_shortcode_widget( $atts );
 }
 
 
-/* Frontend function to show the list of entries in widget layout.
+/*
+ * Frontend function to show the list of entries in widget layout.
  *
- * Parameters:
+ * @param array $atts array with the shortcode attributes.
  * - book_id, int with an ID.
  * - num_entries, int with the shown number of messages.
  * - num_words, int with the shown number of words per entry.

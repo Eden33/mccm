@@ -29,7 +29,7 @@ function gwolle_gb_debug_info() {
 		<td><?php
 			if ( version_compare($wp_version,'3.4', '>=') ) {
 				echo wp_get_theme()->get('Name');
-			} else {
+			} else if ( function_exists('get_current_theme') ) {
 				echo get_current_theme();
 			} ?>
 		</td>
@@ -110,6 +110,9 @@ function gwolle_gb_debug_info() {
 
 /*
  * Test adding an entry.
+ *
+ * @param bool $emoji save text with or without emoji characters
+ * @return int ID of the saved entry, 0 if not saved
  *
  * @since 1.6.2
  */

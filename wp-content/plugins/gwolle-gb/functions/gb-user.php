@@ -8,13 +8,10 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 
 /*
- * Is User also Author of the entry
+ * Is User also Author of the entry.
  *
- * Args: $entry object, instance of gwolle_gb_entry
- *
- * Return:
- * - true if author
- * - false if not author
+ * @param object $entry instance of gwolle_gb_entry
+ * @return bool true if author, false if not author
  *
  * @since 2.3.0
  */
@@ -33,13 +30,12 @@ function gwolle_gb_is_author( $entry ) {
 
 
 /*
- * Is User allowed to manage comments
+ * Is User allowed to manage comments.
  *
- * Args: $user_id
- *
- * Return:
- * - user_nicename or user_login if allowed
- * - false if not allowed
+ * $param int $user_id ID of the user in question.
+ * @return
+ * - string user_nicename or user_login if allowed
+ * - bool false if not allowed
  */
 function gwolle_gb_is_moderator($user_id) {
 
@@ -63,7 +59,7 @@ function gwolle_gb_is_moderator($user_id) {
 /*
  * Get all the users with capability 'moderate_comments'.
  *
- * Return: Array with User objects.
+ * @return array User objects.
  */
 function gwolle_gb_get_moderators() {
 
@@ -80,7 +76,7 @@ function gwolle_gb_get_moderators() {
 
 	$moderators = array();
 
-	if ( is_array($users) && !empty($users) ) {
+	if ( is_array($users) && ! empty($users) ) {
 		foreach ( $users as $user_info ) {
 
 			if ($user_info === FALSE) {
@@ -102,8 +98,10 @@ function gwolle_gb_get_moderators() {
 
 
 /*
- * Delete author_id (and maybe checkedby) after deletion of user.
- * Will trim down db requests, because non-existent user do not get cached.
+ * Delete author_id (and maybe checkedby) from stored entries after deletion of user.
+ * Will trim down db requests, because non-existent users do not get cached.
+ *
+ * @param int $user_id ID of the deleted user.
  */
 function gwolle_gb_deleted_user( $user_id ) {
 	$entries = gwolle_gb_get_entries(array(
@@ -123,9 +121,8 @@ add_action( 'deleted_user', 'gwolle_gb_deleted_user' );
 /*
  * Get Author name in the right format as html
  *
- * Args: $entry object
- *
- * Return: $author_name_html string with html
+ * @param object $entry instance of gb_entry class.
+ * @return string $author_name_html html with formatted username
  */
 function gwolle_gb_get_author_name_html($entry) {
 
@@ -140,7 +137,7 @@ function gwolle_gb_get_author_name_html($entry) {
 		$author_name_html = $author_name;
 	}
 
-	$author_link_to_buddypress = apply_filters( 'gwolle_gb_author_link_to_buddypress', true );
+	$author_link_to_buddypress = (bool) apply_filters( 'gwolle_gb_author_link_to_buddypress', true );
 	if ( function_exists('bp_core_get_user_domain') && $author_link_to_buddypress ) {
 		// Link to Buddypress profile.
 		$author_website = trim( bp_core_get_user_domain( $author_id ) );
@@ -159,7 +156,7 @@ function gwolle_gb_get_author_name_html($entry) {
 			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow' );
 			$author_name_html = '<a href="' . $author_website . '" target="_blank" rel="' . $author_link_rel . '"
 							title="' . esc_attr__( 'Visit the website of', 'gwolle-gb' ) . ' ' . $author_name . ': ' . $author_website . '">' . $author_name_html . '</a>';
-			}
+		}
 	}
 
 	$author_name_html = apply_filters( 'gwolle_gb_author_name_html', $author_name_html, $entry );

@@ -9,6 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Notifications tab of the Settings page.
+ */
 function gwolle_gb_page_settingstab_email() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
@@ -78,10 +81,10 @@ function gwolle_gb_page_settingstab_email() {
 				<select name="unsubscribe" id="unsubscribe">
 					<option value="0"><?php esc_html_e('Unsubscribe User', 'gwolle-gb'); ?></option>
 					<?php
-					if ( is_array($user_ids) && !empty($user_ids) ) {
+					if ( is_array($user_ids) && ! empty($user_ids) ) {
 						foreach ( $user_ids as $user_id ) {
 
-							$user_info = get_userdata($user_id);
+							$user_info = get_userdata( (int) $user_id );
 							if ($user_info === FALSE) {
 								// Invalid $user_id
 								continue;
@@ -90,7 +93,7 @@ function gwolle_gb_page_settingstab_email() {
 							if ( $user_info->ID == get_current_user_id() ) {
 								$username .= ' ' . esc_html__('You', 'gwolle-gb');
 							}
-							echo '<option value="' . $user_id . '">' . $username . '</option>';
+							echo '<option value="' . $user_info->ID . '">' . $username . '</option>';
 						}
 					} ?>
 				</select><br />

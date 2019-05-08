@@ -9,6 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Form tab of the Settings page.
+ */
 function gwolle_gb_page_settingstab_form() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
@@ -75,11 +78,10 @@ function gwolle_gb_page_settingstab_form() {
 			<td>
 				<?php
 				$notice = gwolle_gb_sanitize_output( get_option('gwolle_gb-notice', false), 'setting_textarea' );
-				if (!$notice) { // No text set by the user. Use the default text.
+				if ( ! $notice) { // No text set by the user. Use the default text.
 					$notice = esc_html__("
 Fields marked with * are required.
 Your E-mail address won't be published.
-For security reasons we save the IP address %ip%.
 It's possible that your entry will only be visible in the guestbook after we reviewed it.
 We reserve the right to edit, delete, or not publish entries.
 "
@@ -123,7 +125,16 @@ We reserve the right to edit, delete, or not publish entries.
 				<br />
 				<span class="setting-description"><?php /* translators: The GDPR law often has a country specific name */
 				esc_html_e('Since May 2018 there is a GDPR law in the EU about privacy and personal information that is being stored.', 'gwolle-gb'); echo '<br />';
-				esc_html_e('Disabling this option will still add the IP Address to notification emails and it will be used for spamfiltering in Akismet and Stop Forum Spam.', 'gwolle-gb'); ?></span>
+				esc_html_e('Disabling this option will still have the IP Address used for spamfiltering in Stop Forum Spam.', 'gwolle-gb'); echo '<br />';
+				esc_html_e('Disabling this option will probably make the Akismet spamfilter less effective.', 'gwolle-gb'); ?></span><br />
+			</td>
+		</tr>
+
+		<tr valign="top">
+			<th scope="row"><label for="gb_remove_ip"><?php esc_html_e('Remove IP Address', 'gwolle-gb'); ?></label></th>
+			<td>
+				<input type="checkbox" id="gb_remove_ip" name="gb_remove_ip" />
+				<label for="gb_remove_ip"><?php esc_html_e('Permanently remove IP Address and hostname for all existing entries.', 'gwolle-gb'); ?></label>
 			</td>
 		</tr>
 
@@ -263,21 +274,6 @@ We reserve the right to edit, delete, or not publish entries.
 					}
 					?> />
 				<label for="form_antispam_enabled"><?php esc_html_e('Enabled', 'gwolle-gb'); ?></label>
-			</td>
-			<td>
-				<?php esc_html_e('When enabled it is mandatory.', 'gwolle-gb'); ?>
-			</td>
-		</tr>
-
-		<tr valign="top">
-			<th scope="row"><label for="form_recaptcha_enabled"><?php esc_html_e('CAPTCHA', 'gwolle-gb'); ?>:</label></th>
-			<td>
-				<input type="checkbox" id="form_recaptcha_enabled" name="form_recaptcha_enabled"<?php
-					if ( isset($form_setting['form_recaptcha_enabled']) && $form_setting['form_recaptcha_enabled']  === 'true' ) {
-						echo ' checked="checked"';
-					}
-					?> />
-				<label for="form_recaptcha_enabled"><?php esc_html_e('Enabled', 'gwolle-gb'); ?></label>
 			</td>
 			<td>
 				<?php esc_html_e('When enabled it is mandatory.', 'gwolle-gb'); ?>

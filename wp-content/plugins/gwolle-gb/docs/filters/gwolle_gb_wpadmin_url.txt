@@ -18,7 +18,7 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 
 function my_gwolle_gb_wpadmin_url( $wpadmin_url ) {
 	// this is the default;
-	$wpadmin_url = admin_url( '/admin.php' );
+	$wpadmin_url = admin_url( 'admin.php' );
 	return $wpadmin_url;
 }
 add_filter( 'gwolle_gb_wpadmin_url', 'my_gwolle_gb_wpadmin_url', 10,1 );

@@ -7,16 +7,21 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 
 /*
- * gwolle_gb_frontend_read
- * Reading mode of the guestbook frontend
+ * Called by the shortcode or template function.
+ * Reading mode of the guestbook frontend.
+ *
+ * @param array $shortcode_atts shortcode attributes
+ * @param string $shortcode the shortcode that was used
+ * @return string html with the list of entries
  */
-
 function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 	$output = '';
 
-	/* Show single entry if requested... */
-	if ( ((int) $shortcode_atts['entry_id'] > 0) || ( isset($_GET['entry_id']) && (int) $_GET['entry_id'] > 0 ) ) {
+	$is_search = gwolle_gb_is_search();
+
+	/* Show single entry if requested and is not search. */
+	if ( ((int) $shortcode_atts['entry_id'] > 0 && ! $is_search ) || ( isset($_GET['entry_id']) && (int) $_GET['entry_id'] > 0  && ! $is_search ) ) {
 
 		if ( (int) $shortcode_atts['entry_id'] > 0 ) {
 			$entry_id = (int) $shortcode_atts['entry_id'];
@@ -60,10 +65,9 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	$num_entries = (int) get_option('gwolle_gb-entriesPerPage', 20);
 	$num_entries = (int) apply_filters( 'gwolle_gb_read_num_entries', $num_entries, $shortcode_atts );
 
-	$key = 'gwolle_gb_frontend_pagination_book_' . $shortcode_atts['book_id'];
-	$entries_total = get_transient( $key );
-	if ( false === $entries_total ) {
-		$entries_total = gwolle_gb_get_entry_count(
+	/* Get the total count for the frontend in case of search. */
+	if ( $is_search ) {
+		$entries_total = gwolle_gb_get_entry_count_from_search(
 			array(
 				'checked' => 'checked',
 				'trash'   => 'notrash',
@@ -71,7 +75,21 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'book_id' => $shortcode_atts['book_id']
 			)
 		);
-		set_transient( $key, $entries_total, DAY_IN_SECONDS );
+	} else {
+		/* Get the total count from cache/transient or from database. */
+		$key = 'gwolle_gb_frontend_pagination_book_' . $shortcode_atts['book_id'];
+		$entries_total = get_transient( $key );
+		if ( false === $entries_total ) {
+			$entries_total = gwolle_gb_get_entry_count(
+				array(
+					'checked' => 'checked',
+					'trash'   => 'notrash',
+					'spam'    => 'nospam',
+					'book_id' => $shortcode_atts['book_id']
+				)
+			);
+			set_transient( $key, $entries_total, DAY_IN_SECONDS );
+		}
 	}
 	$pages_total = ceil( $entries_total / $num_entries );
 
@@ -95,7 +113,30 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 
 	/* Get the entries for the frontend */
-	if ( isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
+	if ( $is_search ) {
+		$entries = gwolle_gb_get_entries_from_search(
+			array(
+				'offset'      => $offset,
+				'num_entries' => $num_entries,
+				'checked'     => 'checked',
+				'trash'       => 'notrash',
+				'spam'        => 'nospam',
+				'book_id'     => $shortcode_atts['book_id']
+			)
+		);
+	} else if ( $is_search && isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
+		$entries = gwolle_gb_get_entries_from_search(
+			array(
+				'offset'      => 0,
+				'num_entries' => -1,
+				'checked'     => 'checked',
+				'trash'       => 'notrash',
+				'spam'        => 'nospam',
+				'book_id'     => $shortcode_atts['book_id']
+			)
+		);
+		$pageNum = 0; // do not have it set to 1, this way the '1' will be clickable too.
+	} else if ( isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
 		$entries = gwolle_gb_get_entries(
 			array(
 				'offset'      => 0,
@@ -122,7 +163,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 
 	/* Page navigation on top */
-	$navigation = get_option( 'gwolle_gb-navigation', 0 );
+	$navigation = (int) get_option( 'gwolle_gb-navigation', 0 );
 	$entries_list_class = '';
 	if ( $navigation == 0 ) {
 		$pagination = gwolle_gb_pagination_frontend( $pageNum, $pages_total );
@@ -133,7 +174,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	$entries_list_class = apply_filters( 'gwolle_gb_entries_list_class', $entries_list_class );
 
 	/* Entries from the template */
-	if ( !is_array($entries) || empty($entries) ) {
+	if ( ! is_array( $entries ) || empty( $entries ) ) {
 		$no_entries = apply_filters( 'gwolle_gb_read_no_entries', esc_html__('(no entries yet)', 'gwolle-gb') );
 		$output .= '<div id="gwolle_gb_entries" class="' . $entries_list_class . '" data-book_id="' . $shortcode_atts['book_id'] . '">';
 		$output .= $no_entries;
@@ -144,10 +185,10 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 		$output .= '<div id="gwolle_gb_entries" class="' . $entries_list_class . '" data-book_id="' . $shortcode_atts['book_id'] . '">';
 
 		$args = array(
-				'checked'     => 'checked',
-				'trash'       => 'notrash',
-				'spam'        => 'nospam',
-				'book_id'     => $shortcode_atts['book_id']
+				'checked' => 'checked',
+				'trash'   => 'notrash',
+				'spam'    => 'nospam',
+				'book_id' => $shortcode_atts['book_id']
 			);
 		$output .= apply_filters( 'gwolle_gb_entries_list_before', '', $args );
 

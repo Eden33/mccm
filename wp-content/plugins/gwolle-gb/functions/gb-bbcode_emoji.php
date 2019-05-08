@@ -9,30 +9,44 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Parse the BBcode into HTML for output.
+ *
+ * @param string $str content that needs to be parsed
+ * @return string parsed content
  */
-function gwolle_gb_bbcode_parse( $str ){
+function gwolle_gb_bbcode_parse( $str ) {
+	$bb = array();
+	$html = array();
+
 	$bb[] = "#\[b\](.*?)\[/b\]#si";
 	$html[] = "<strong>\\1</strong>";
 	$bb[] = "#\[i\](.*?)\[/i\]#si";
 	$html[] = "<i>\\1</i>";
 	$bb[] = "#\[u\](.*?)\[/u\]#si";
 	$html[] = "<u>\\1</u>";
+	// We run the regex on lists twice to support sublists.
+	$bb[] = "#\[ul\](.*?)\[/ul\]#si";
+	$html[] = "<ul>\\1</ul>";
 	$bb[] = "#\[ul\](.*?)\[/ul\]#si";
 	$html[] = "<ul>\\1</ul>";
 	$bb[] = "#\[ol\](.*?)\[/ol\]#si";
 	$html[] = "<ol>\\1</ol>";
+	$bb[] = "#\[ol\](.*?)\[/ol\]#si";
+	$html[] = "<ol>\\1</ol>";
+	$bb[] = "#\[li\](.*?)\[/li\]#si";
+	$html[] = "<li>\\1</li>";
 	$bb[] = "#\[li\](.*?)\[/li\]#si";
 	$html[] = "<li>\\1</li>";
 	$str = preg_replace($bb, $html, $str);
 
-	$pattern="#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
-	$bbcode_link_rel = apply_filters( 'gwolle_gb_bbcode_link_rel', 'nofollow' );
-	$replace='<a href="\\1" target="_blank" rel="' . $bbcode_link_rel . '">\\2</a>';
-	$str=preg_replace($pattern, $replace, $str);
+	// First images, then links, so we support images inside links.
+	$pattern = "#\[img\]([^\[]*)\[/img\]#i";
+	$replace = '<img src="\\1" alt=""/>';
+	$str = preg_replace($pattern, $replace, $str);
 
-	$pattern="#\[img\]([^\[]*)\[/img\]#i";
-	$replace='<img src="\\1" alt=""/>';
-	$str=preg_replace($pattern, $replace, $str);
+	$pattern = "#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
+	$bbcode_link_rel = apply_filters( 'gwolle_gb_bbcode_link_rel', 'nofollow' );
+	$replace = '<a href="\\1" target="_blank" rel="' . $bbcode_link_rel . '">\\2</a>';
+	$str = preg_replace($pattern, $replace, $str);
 
 	if ( get_option( 'gwolle_gb-showLineBreaks', 'false' ) === 'true' ) {
 		// fix nl2br adding <br />'s
@@ -51,8 +65,14 @@ function gwolle_gb_bbcode_parse( $str ){
 
 /*
  * Strip the BBcode from the output.
+ *
+ * @param string $str content that needs to be stripped
+ * @return string stripped content
  */
 function gwolle_gb_bbcode_strip( $str ){
+	$bb = array();
+	$html = array();
+
 	$bb[] = "#\[b\](.*?)\[/b\]#si";
 	$html[] = "\\1";
 	$bb[] = "#\[i\](.*?)\[/i\]#si";
@@ -67,13 +87,13 @@ function gwolle_gb_bbcode_strip( $str ){
 	$html[] = "\\1";
 	$str = preg_replace($bb, $html, $str);
 
-	$pattern="#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
-	$replace='\\1';
-	$str=preg_replace($pattern, $replace, $str);
+	$pattern = "#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
+	$replace = '\\1';
+	$str = preg_replace($pattern, $replace, $str);
 
-	$pattern="#\[img\]([^\[]*)\[/img\]#i";
-	$replace='';
-	$str=preg_replace($pattern, $replace, $str);
+	$pattern = "#\[img\]([^\[]*)\[/img\]#i";
+	$replace = '';
+	$str = preg_replace($pattern, $replace, $str);
 
 	return $str;
 }
@@ -81,6 +101,8 @@ function gwolle_gb_bbcode_strip( $str ){
 
 /*
  * Get the list of Emoji for the form.
+ *
+ * @return string html with a elements with emoji
  */
 function gwolle_gb_get_emoji() {
 	$emoji = '
@@ -149,6 +171,7 @@ function gwolle_gb_get_emoji() {
 		<a title="🌜" class="gwolle_gb_emoji_63 noslimstat">🌜</a>
 		<a title="🌈" class="gwolle_gb_emoji_64 noslimstat">🌈</a>
 		<a title="🏝" class="gwolle_gb_emoji_65 noslimstat">🏝</a>
+		<a title="🎅" class="gwolle_gb_emoji_66 noslimstat">🎅</a>
 		';
 	/*
 	 * Filters the list of emoji shown on textarea/bbcode/emoji at the frontend form.
@@ -168,10 +191,9 @@ function gwolle_gb_get_emoji() {
 /*
  * Convert to 3byte Emoji for storing in db, if db-charset is not utf8mb4.
  *
- * $Args: - string, text string to encode
- *        - field, the database field that is used for that string, will be checked on charset.
- *
- * Return: string, encoded or not.
+ * @param string $string text string to encode
+ * @param string $field the database field that is used for that string, will be checked on charset.
+ * @return string original input string encoded or not.
  */
 function gwolle_gb_maybe_encode_emoji( $string, $field ) {
 	global $wpdb;

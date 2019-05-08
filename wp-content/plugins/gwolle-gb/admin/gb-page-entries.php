@@ -1,6 +1,5 @@
 <?php
 /*
- * entries.php
  * Displays the guestbook entries in a list.
  */
 
@@ -10,296 +9,28 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Admin page with lists of entries.
+ */
 function gwolle_gb_page_entries() {
 
-	if ( function_exists('current_user_can') && !current_user_can('moderate_comments') ) {
+	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
 	gwolle_gb_admin_enqueue();
 
-	$gwolle_gb_errors = '';
-	$gwolle_gb_messages = '';
 	$show = (isset($_REQUEST['show']) && in_array($_REQUEST['show'], array( 'checked', 'unchecked', 'spam', 'trash', 'user' ))) ? $_REQUEST['show'] : 'all';
 
 	if ( isset($_POST['gwolle_gb_page']) && $_POST['gwolle_gb_page'] == 'entries' ) {
-		$action = '';
-		if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'check' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'check' ) ) {
-			$action = 'check';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'uncheck' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'uncheck' ) ) {
-			$action = 'uncheck';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'spam' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'spam' ) ) {
-			$action = 'spam';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'no-spam' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'no-spam' ) ) {
-			$action = 'no-spam';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'akismet' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'akismet' ) ) {
-			$action = 'akismet';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'trash' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'trash' ) ) {
-			$action = 'trash';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'untrash' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'untrash' ) ) {
-			$action = 'untrash';
-		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'remove' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'remove' ) ) {
-			$action = 'remove';
-		}
-
-
-		/* Check if we are not sending in more entries than were even listed... */
-		$continue_on_entries_checked = false;
-		$entries_checked = 0;
-		$num_entries = get_option('gwolle_gb-entries_per_page', 20);
-		foreach( array_keys($_POST) as $postElementName ) {
-			if (strpos($postElementName, 'check') > -1 && !strpos($postElementName, '-all-') && $_POST[$postElementName] == 'on') {
-				$entries_checked++;
-			}
-		}
-		if ( $entries_checked < ( $num_entries + 1 ) ) {
-			$continue_on_entries_checked = true;
-		} else if ( $show == 'user' ) {
-			// special case for mass edit all entries from user.
-			$continue_on_entries_checked = true;
-		} else {
-			$gwolle_gb_messages .= '<p>' . /* translators: Someone seems to be abusing the website in strange ways. */ esc_html__('It seems you checked more entries then were even listed on the page.', 'gwolle-gb') . '</p>';
-			$gwolle_gb_errors = 'error';
-		}
-
-		/* Check Nonce */
-		$continue_on_nonce_checked = false;
-		if ( isset($_POST['gwolle_gb_wpnonce']) ) {
-			$verified = wp_verify_nonce( $_POST['gwolle_gb_wpnonce'], 'gwolle_gb_page_entries' );
-			if ( $verified == true ) {
-				$continue_on_nonce_checked = true;
-			} else {
-				// Nonce is invalid, so considered spam
-				$gwolle_gb_messages .= '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>';
-				$gwolle_gb_errors = 'error';
-			}
-		}
-		/* End of security checks. */
-
-
-		if ( $action != '' && $continue_on_entries_checked && $continue_on_nonce_checked ) {
-			// Initialize variables to generate messages with
-			$entries_handled = 0;
-			$entries_not_handled = 0;
-			$akismet_spam = 0;
-			$akismet_not_spam = 0;
-			$akismet_already_spam = 0;
-			$akismet_already_not_spam = 0;
-
-			/* Handle the $_POST entries */
-			foreach( array_keys($_POST) as $postElementName ) {
-				if (strpos($postElementName, 'check') > -1 && !strpos($postElementName, '-all-') && $_POST[$postElementName] == 'on') {
-					$entry_id = str_replace('check-','',$postElementName);
-					$entry_id = intval($entry_id);
-					if ( isset($entry_id) && $entry_id > 0 ) {
-						$entry = new gwolle_gb_entry();
-						$result = $entry->load( $entry_id );
-						if ( $result ) {
-
-							if ( $action == 'check' ) {
-								if ( $entry->get_ischecked() == 0 ) {
-									$entry->set_ischecked( true );
-									$user_id = get_current_user_id(); // returns 0 if no current user
-									$entry->set_checkedby( $user_id );
-									gwolle_gb_add_log_entry( $entry->get_id(), 'entry-checked' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'uncheck' ) {
-								if ( $entry->get_ischecked() == 1 ) {
-									$entry->set_ischecked( false );
-									$user_id = get_current_user_id(); // returns 0 if no current user
-									$entry->set_checkedby( $user_id );
-									gwolle_gb_add_log_entry( $entry->get_id(), 'entry-unchecked' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'spam' ) {
-
-								if ( $entry->get_isspam() == 0 ) {
-									$entry->set_isspam( true );
-									if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
-										gwolle_gb_akismet( $entry, 'submit-spam' );
-									}
-									gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-spam' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'no-spam' ) {
-								if ( $entry->get_isspam() == 1 ) {
-									$entry->set_isspam( false );
-									if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
-										gwolle_gb_akismet( $entry, 'submit-ham' );
-									}
-									gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'akismet' ) {
-								/* Check for spam and set accordingly */
-								if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
-									$isspam = gwolle_gb_akismet( $entry, 'comment-check' );
-									if ( $isspam ) {
-										// Returned true, so considered spam
-										if ( $entry->get_isspam() == 0 ) {
-											$entry->set_isspam( true );
-											gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-spam' );
-											$result = $entry->save();
-											if ( $result ) {
-												$akismet_spam++;
-												do_action( 'gwolle_gb_save_entry_admin', $entry );
-											} else {
-												$akismet_not_spam++;
-											}
-										} else {
-											$akismet_already_spam++;
-										}
-									} else {
-										if ( $entry->get_isspam() == 1 ) {
-											$entry->set_isspam( false );
-											gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
-											$result = $entry->save();
-											if ( $result ) {
-												$akismet_not_spam++;
-												do_action( 'gwolle_gb_save_entry_admin', $entry );
-											} else {
-												$akismet_spam++;
-											}
-										} else {
-											$akismet_already_not_spam++;
-										}
-									}
-								}
-							} else if ( $action == 'trash' ) {
-								if ( $entry->get_istrash() == 0 ) {
-									$entry->set_istrash( true );
-									gwolle_gb_add_log_entry( $entry->get_id(), 'entry-trashed' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'untrash' ) {
-								if ( $entry->get_istrash() == 1 ) {
-									$entry->set_istrash( false );
-									gwolle_gb_add_log_entry( $entry->get_id(), 'entry-untrashed' );
-									$result = $entry->save();
-									if ( $result ) {
-										$entries_handled++;
-										do_action( 'gwolle_gb_save_entry_admin', $entry );
-									} else {
-										$entries_not_handled++;
-									}
-								} else {
-									$entries_not_handled++;
-								}
-							} else if ( $action == 'remove' ) {
-								$result = $entry->delete();
-								if ( $result ) {
-									$entries_handled++;
-									do_action( 'gwolle_gb_save_entry_admin', $entry );
-								} else {
-									$entries_not_handled++;
-								}
-							}
-						} else { // no result on load()
-							$entries_not_handled++;
-						}
-					} else { // entry_id is not set or not > 0
-						$entries_not_handled++;
-					}
-				} // no entry with the check-'entry_id' input, continue
-			} // foreach
-
-
-			/* Construct Message */
-			if ( $action == 'check' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry checked.','%s entries checked.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'uncheck' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry unchecked.','%s entries unchecked.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'spam' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry marked as spam and submitted to Akismet as spam (if Akismet was enabled).','%s entries marked as spam and submitted to Akismet as spam (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'no-spam' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry marked as not spam and submitted to Akismet as ham (if Akismet was enabled).','%s entries marked as not spam and submitted to Akismet as ham (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'akismet' ) {
-				if ( $akismet_spam > 0 ) {
-					/* translators: %s is the number of entries */
-					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry considered spam and marked as such.','%s entries considered spam and marked as such.', $akismet_spam, 'gwolle-gb'), $akismet_spam ). '</p>';
-				}
-				if ( $akismet_not_spam > 0 ) {
-					/* translators: %s is the number of entries */
-					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry considered not spam and marked as such.','%s entries considered not spam and marked as such.', $akismet_not_spam, 'gwolle-gb'), $akismet_not_spam ). '</p>';
-				}
-				if ( $akismet_already_spam > 0 ) {
-					/* translators: %s is the number of entries */
-					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry already considered spam and not changed.','%s entries already considered spam and not changed.', $akismet_already_spam, 'gwolle-gb'), $akismet_already_spam ). '</p>';
-				}
-				if ( $akismet_already_not_spam > 0 ) {
-					/* translators: %s is the number of entries */
-					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry already considered not spam and not changed.','%s entries already considered not spam and not changed.', $akismet_already_not_spam, 'gwolle-gb'), $akismet_already_not_spam ). '</p>';
-				}
-			} else if ( $action == 'trash' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry moved to trash.','%s entries moved to trash.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'untrash' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry recovered from trash.','%s entries recovered from trash.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			} else if ( $action == 'remove' ) {
-				/* translators: %s is the number of entries */
-				$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $entries_handled, 'gwolle-gb'), $entries_handled ). '</p>';
-			}
-		}
-
-		if ( isset( $_POST['delete_all'] ) || isset( $_POST['delete_all2'] ) ) {
-			if ( $continue_on_nonce_checked ) {
-				// Delete all entries in spam or trash
-				if ( isset($_POST['show']) && in_array($_POST['show'], array('spam', 'trash')) ) {
-					$delstatus = $_POST['show'];
-					$deleted = gwolle_gb_del_entries( $delstatus );
-					/* translators: %s is the number of entries */
-					$gwolle_gb_messages .= '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $deleted, 'gwolle-gb'), $deleted ). '</p>';
-				}
-			}
-		}
+		gwolle_gb_page_entries_update();
 	}
-
+	$gwolle_gb_messages = gwolle_gb_get_messages();
+	$gwolle_gb_errors = gwolle_gb_get_errors();
+	$messageclass = '';
+	if ( $gwolle_gb_errors ) {
+		$messageclass = 'error';
+	}
 
 	// Get entry counts
 	$count = Array();
@@ -318,17 +49,17 @@ function gwolle_gb_page_entries() {
 	$count['all']   = gwolle_gb_get_entry_count(array( 'all'  => 'all'   ));
 	$count['user']  = 0; // dummy data, there is no pagination here.
 
-	$num_entries = get_option('gwolle_gb-entries_per_page', 20);
+	$num_entries = (int) get_option('gwolle_gb-entries_per_page', 20);
 
 	// Check if the requested page number is an integer > 0
 	$pageNum = (isset($_REQUEST['pageNum']) && $_REQUEST['pageNum'] && (int) $_REQUEST['pageNum'] > 0) ? (int) $_REQUEST['pageNum'] : 1;
 
 	$pages_total = ceil( $count[$show] / $num_entries );
 	if ($pageNum > $pages_total) {
-		$pageNum = 1; // page doesnot exist, return to first page
+		$pageNum = 1; // page does not exist, return to first page.
 	}
 
-	// Calculate Query
+	// Calculate query.
 	if ($pageNum == 1 && $count[$show] > 0) {
 		$offset = 0;
 	} elseif ($count[$show] == 0) {
@@ -342,7 +73,7 @@ function gwolle_gb_page_entries() {
 		$book_id = (int) $_GET['book_id'];
 	}
 
-	// Get the entries
+	// Get the entries.
 	if ( $show == 'checked' ) {
 		$entries = gwolle_gb_get_entries(array(
 			'num_entries' => $num_entries,
@@ -446,7 +177,7 @@ function gwolle_gb_page_entries() {
 		<?php
 		if ( $gwolle_gb_messages ) {
 			echo '
-				<div id="message" class="updated fade notice is-dismissible ' . $gwolle_gb_errors . ' ">' .
+				<div id="message" class="updated fade notice is-dismissible ' . $messageclass . ' ">' .
 					$gwolle_gb_messages .
 				'</div>';
 		} ?>
@@ -466,29 +197,29 @@ function gwolle_gb_page_entries() {
 			?>
 
 			<ul class="subsubsub">
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=all' ); ?>" <?php
 					if ($show == 'all') { echo 'class="current"'; }
 					?>>
 					<?php esc_html_e('All', 'gwolle-gb'); ?> <span class="count gwolle_gb_all">(<?php echo $count['all']; ?>)</span></a> |
 				</li>
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=checked' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=checked' ); ?>" <?php
 					if ($show == 'checked') { echo 'class="current"'; }
 					?>>
 					<?php esc_html_e('Unlocked', 'gwolle-gb'); ?> <span class="count gwolle_gb_unlocked">(<?php echo $count['checked']; ?>)</span></a> |
 				</li>
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=unchecked' ); ?>" <?php
 					if ($show == 'unchecked') { echo 'class="current"'; }
 					?>><?php esc_html_e('New', 'gwolle-gb'); ?> <span class="count gwolle_gb_new">(<?php echo $count['unchecked']; ?>)</span></a> |
 				</li>
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=spam' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=spam' ); ?>" <?php
 					if ($show == 'spam') { echo 'class="current"'; }
 					?>><?php esc_html_e('Spam', 'gwolle-gb'); ?> <span class="count gwolle_gb_spam_">(<?php echo $count['spam']; ?>)</span></a> |
 				</li>
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=trash' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=trash' ); ?>" <?php
 					if ($show == 'trash') { echo 'class="current"'; }
 					?>><?php /* translators: Is in Trashcan */ esc_html_e('In Trash', 'gwolle-gb'); ?> <span class="count gwolle_gb_trash_">(<?php echo $count['trash']; ?>)</span></a> |
 				</li>
-				<li><a href='admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=user' <?php
+				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=user' ); ?>" <?php
 					if ($show == 'user') { echo 'class="current"'; }
 					?>><?php esc_html_e('Author', 'gwolle-gb'); ?></a>
 				</li>
@@ -537,6 +268,7 @@ function gwolle_gb_page_entries() {
 						if ( $show == 'spam' ) {
 							$massEditControls .= '<option value="remove">' . esc_html__('Remove permanently', 'gwolle-gb') . '</option>';
 						}
+						$massEditControls .= '<option value="anon">' . esc_html__('Anonymize', 'gwolle-gb') . '</option>';
 
 					}
 					$massEditControls .= '</select>';
@@ -609,7 +341,7 @@ function gwolle_gb_page_entries() {
 						$request_uri = $_SERVER['REQUEST_URI'];
 						$rowOdd = true;
 						$html_output = '';
-						if ( !is_array($entries) || empty($entries) ) {
+						if ( ! is_array( $entries ) || empty( $entries ) ) {
 							$colspan = (get_option('gwolle_gb-showEntryIcons', 'true') === 'true') ? 8 : 7;
 							$html_output .= '
 								<tr>
@@ -678,7 +410,11 @@ function gwolle_gb_page_entries() {
 												</a>
 											</span>
 										</td>
-										<td class="id">' . $entry->get_id() . '</td>';
+										<td class="id">
+											<label for="check-' . $entry->get_id() . '">
+												' . $entry->get_id() . '
+											</label>
+										</td>';
 
 								// Optional Icon column where CSS is being used to show them or not
 								if ( get_option('gwolle_gb-showEntryIcons', 'true') === 'true' ) {
@@ -707,26 +443,27 @@ function gwolle_gb_page_entries() {
 								// Author column
 								$author_name_html = gwolle_gb_get_author_name_html($entry);
 								$html_output .= '
-									<td class="entry-author-name"><span class="author-name">' . $author_name_html . '</span><br />' .
-										'<span class="author-email">' . $entry->get_author_email() . '</span>' .
-									'</td>';
+									<td class="entry-author-name">
+										<span class="author-name">' . $author_name_html . '</span><br />
+										<span class="author-email">' . $entry->get_author_email() . '</span>
+									</td>';
 
 								// Excerpt column
 								$html_output .= '
 									<td class="entry-content">
-										<label for="check-' . $entry->get_id() . '">';
+									';
 								$entry_content = gwolle_gb_get_excerpt( $entry->get_content(), 17 );
 								if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
 									$entry_content = convert_smilies($entry_content);
 								}
-								$html_output .= $entry_content . '</label>
+								$html_output .= $entry_content . '
 									</td>';
 
 								// Actions column
 								$html_output .= '
 									<td class="gwolle_gb_actions">
 										<span class="gwolle_gb_edit">
-											<a href="admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit', 'gwolle-gb') . '</a>
+											<a href="' . admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() ) . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit', 'gwolle-gb') . '</a>
 										</span>
 										<span class="gwolle_gb_check">&nbsp;|&nbsp;
 											<a id="check_' . $entry->get_id() . '" href="#" class="vim-a" title="' . esc_attr__('Check entry', 'gwolle-gb') . '">' . esc_html__('Check', 'gwolle-gb') . '</a>
@@ -771,7 +508,7 @@ function gwolle_gb_page_entries() {
 					}
 
 					// Only show controls when there are entries
-					if ( is_array($entries) && !empty($entries) ) {
+					if ( is_array($entries) && ! empty($entries) ) {
 						echo $massEditControls_select . $massEditControls . $empty_button;
 					} ?>
 				</div>
@@ -785,4 +522,310 @@ function gwolle_gb_page_entries() {
 
 	</div>
 	<?php
+}
+
+
+
+/*
+ * Update admin page with lists of entries.
+ *
+ * @since 3.0.0
+ */
+function gwolle_gb_page_entries_update() {
+
+	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
+		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
+	}
+
+	$show = (isset($_REQUEST['show']) && in_array($_REQUEST['show'], array( 'checked', 'unchecked', 'spam', 'trash', 'user' ))) ? $_REQUEST['show'] : 'all';
+
+	/* Check Nonce */
+	if ( isset($_POST['gwolle_gb_wpnonce']) ) {
+		$verified = wp_verify_nonce( $_POST['gwolle_gb_wpnonce'], 'gwolle_gb_page_entries' );
+		if ( $verified == false ) {
+			// Nonce is invalid, so considered spam.
+			gwolle_gb_add_message( '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>', true, false);
+			return;
+		}
+	} else {
+		// Nonce is not set, so considered spam.
+		gwolle_gb_add_message( '<p>' . esc_html__('Nonce check failed. Please try again.', 'gwolle-gb') . '</p>', true, false);
+		return;
+	}
+
+	/* Check if we are not sending in more entries than were even listed. */
+	$entries_checked = 0;
+	$num_entries = (int) get_option('gwolle_gb-entries_per_page', 20);
+	foreach( array_keys($_POST) as $postElementName ) {
+		if (strpos($postElementName, 'check') > -1 && ! strpos($postElementName, '-all-') && $_POST[$postElementName] == 'on') {
+			$entries_checked++;
+		}
+	}
+	if ( $entries_checked < ( $num_entries + 1 ) ) {
+		// number of entries checked is less or equal to the number listed on the page.
+	} else if ( $show == 'user' ) {
+		// special case for mass edit all entries from user.
+	} else {
+		gwolle_gb_add_message( '<p>' . esc_html__('It seems you checked more entries then were even listed on the page.', 'gwolle-gb') . '</p>', true, false);
+		return;
+	}
+	/* End of security checks. */
+
+
+	if ( isset($_POST['gwolle_gb_page']) && $_POST['gwolle_gb_page'] == 'entries' ) {
+		$action = '';
+		if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'check' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'check' ) ) {
+			$action = 'check';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'uncheck' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'uncheck' ) ) {
+			$action = 'uncheck';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'spam' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'spam' ) ) {
+			$action = 'spam';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'no-spam' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'no-spam' ) ) {
+			$action = 'no-spam';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'akismet' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'akismet' ) ) {
+			$action = 'akismet';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'trash' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'trash' ) ) {
+			$action = 'trash';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'untrash' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'untrash' ) ) {
+			$action = 'untrash';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'remove' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'remove' ) ) {
+			$action = 'remove';
+		} else if ( ( isset($_POST['massEditAction1']) && $_POST['massEditAction1'] == 'anon' ) || ( isset($_POST['massEditAction2']) && $_POST['massEditAction2'] == 'anon' ) ) {
+			$action = 'anon';
+		}
+		if ( $action == '' && $show != 'user' && ! isset( $_POST['delete_all'] ) && ! isset( $_POST['delete_all2'] ) ) {
+			gwolle_gb_add_message( '<p>' . esc_html__('Something went wrong. Please try again.', 'gwolle-gb') . '</p>', true, false);
+			return;
+		}
+
+		// Initialize variables to generate messages with.
+		$entries_handled = 0;
+		$entries_not_handled = 0;
+		$akismet_spam = 0;
+		$akismet_not_spam = 0;
+		$akismet_already_spam = 0;
+		$akismet_already_not_spam = 0;
+
+		foreach( array_keys($_POST) as $postElementName ) {
+			if (strpos($postElementName, 'check') > -1 && ! strpos($postElementName, '-all-') && $_POST[$postElementName] == 'on') {
+				$entry_id = str_replace('check-','',$postElementName);
+				$entry_id = intval($entry_id);
+				if ( isset($entry_id) && $entry_id > 0 ) {
+					$entry = new gwolle_gb_entry();
+					$result = $entry->load( $entry_id );
+					if ( $result ) {
+
+						if ( $action == 'check' ) {
+							if ( $entry->get_ischecked() == 0 ) {
+								$entry->set_ischecked( true );
+								$user_id = get_current_user_id(); // returns 0 if no current user
+								$entry->set_checkedby( $user_id );
+								gwolle_gb_add_log_entry( $entry->get_id(), 'entry-checked' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'uncheck' ) {
+							if ( $entry->get_ischecked() == 1 ) {
+								$entry->set_ischecked( false );
+								$user_id = get_current_user_id(); // returns 0 if no current user
+								$entry->set_checkedby( $user_id );
+								gwolle_gb_add_log_entry( $entry->get_id(), 'entry-unchecked' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'spam' ) {
+
+							if ( $entry->get_isspam() == 0 ) {
+								$entry->set_isspam( true );
+								if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
+									gwolle_gb_akismet( $entry, 'submit-spam' );
+								}
+								gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-spam' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'no-spam' ) {
+							if ( $entry->get_isspam() == 1 ) {
+								$entry->set_isspam( false );
+								if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
+									gwolle_gb_akismet( $entry, 'submit-ham' );
+								}
+								gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'akismet' ) {
+							/* Check for spam and set accordingly */
+							if ( get_option('gwolle_gb-akismet-active', 'false') == 'true' ) {
+								$isspam = gwolle_gb_akismet( $entry, 'comment-check' );
+								if ( $isspam ) {
+									// Returned true, so considered spam
+									if ( $entry->get_isspam() == 0 ) {
+										$entry->set_isspam( true );
+										gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-spam' );
+										$result = $entry->save();
+										if ( $result ) {
+											$akismet_spam++;
+											do_action( 'gwolle_gb_save_entry_admin', $entry );
+										} else {
+											$akismet_not_spam++;
+										}
+									} else {
+										$akismet_already_spam++;
+									}
+								} else {
+									if ( $entry->get_isspam() == 1 ) {
+										$entry->set_isspam( false );
+										gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
+										$result = $entry->save();
+										if ( $result ) {
+											$akismet_not_spam++;
+											do_action( 'gwolle_gb_save_entry_admin', $entry );
+										} else {
+											$akismet_spam++;
+										}
+									} else {
+										$akismet_already_not_spam++;
+									}
+								}
+							}
+						} else if ( $action == 'trash' ) {
+							if ( $entry->get_istrash() == 0 ) {
+								$entry->set_istrash( true );
+								gwolle_gb_add_log_entry( $entry->get_id(), 'entry-trashed' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'untrash' ) {
+							if ( $entry->get_istrash() == 1 ) {
+								$entry->set_istrash( false );
+								gwolle_gb_add_log_entry( $entry->get_id(), 'entry-untrashed' );
+								$result = $entry->save();
+								if ( $result ) {
+									$entries_handled++;
+									do_action( 'gwolle_gb_save_entry_admin', $entry );
+								} else {
+									$entries_not_handled++;
+								}
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'remove' ) {
+							$result = $entry->delete();
+							if ( $result ) {
+								$entries_handled++;
+								do_action( 'gwolle_gb_save_entry_admin', $entry );
+							} else {
+								$entries_not_handled++;
+							}
+						} else if ( $action == 'anon' ) {
+							$entry = gwolle_gb_privacy_anonymize_entry( $entry );
+							$result = $entry->save();
+							if ( $result ) {
+								$entries_handled++;
+								do_action( 'gwolle_gb_save_entry_admin', $entry );
+								gwolle_gb_add_log_entry( $entry->get_id(), 'entry-anonymized' );
+							} else {
+								$entries_not_handled++;
+							}
+						}
+					} else { // no result on load()
+						$entries_not_handled++;
+					}
+				} else { // entry_id is not set or not > 0
+					$entries_not_handled++;
+				}
+			} // no entry with the check-'entry_id' input, continue
+		} // foreach
+
+
+		/* Construct Message */
+		if ( $action == 'check' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry checked.','%s entries checked.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'uncheck' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry unchecked.','%s entries unchecked.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'spam' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry marked as spam and submitted to Akismet as spam (if Akismet was enabled).','%s entries marked as spam and submitted to Akismet as spam (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'no-spam' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry marked as not spam and submitted to Akismet as ham (if Akismet was enabled).','%s entries marked as not spam and submitted to Akismet as ham (if Akismet was enabled).', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'akismet' ) {
+			if ( $akismet_spam > 0 ) {
+				/* translators: %s is the number of entries */
+				gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry considered spam and marked as such.','%s entries considered spam and marked as such.', $akismet_spam, 'gwolle-gb'), $akismet_spam ) . '</p>', false, false);
+			}
+			if ( $akismet_not_spam > 0 ) {
+				/* translators: %s is the number of entries */
+				gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry considered not spam and marked as such.','%s entries considered not spam and marked as such.', $akismet_not_spam, 'gwolle-gb'), $akismet_not_spam ) . '</p>', false, false);
+			}
+			if ( $akismet_already_spam > 0 ) {
+				/* translators: %s is the number of entries */
+				gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry already considered spam and not changed.','%s entries already considered spam and not changed.', $akismet_already_spam, 'gwolle-gb'), $akismet_already_spam ) . '</p>', false, false);
+			}
+			if ( $akismet_already_not_spam > 0 ) {
+				/* translators: %s is the number of entries */
+				gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry already considered not spam and not changed.','%s entries already considered not spam and not changed.', $akismet_already_not_spam, 'gwolle-gb'), $akismet_already_not_spam ) . '</p>', false, false);
+			}
+		} else if ( $action == 'trash' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry moved to trash.','%s entries moved to trash.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'untrash' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry recovered from trash.','%s entries recovered from trash.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'remove' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		} else if ( $action == 'anon' ) {
+			/* translators: %s is the number of entries */
+			gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry anonymized.','%s entries anonymized.', $entries_handled, 'gwolle-gb'), $entries_handled ) . '</p>', false, false);
+		}
+
+		if ( isset( $_POST['delete_all'] ) || isset( $_POST['delete_all2'] ) ) {
+			// Delete all entries in spam or trash.
+			if ( isset($_POST['show']) && in_array($_POST['show'], array('spam', 'trash')) ) {
+				$status = $_POST['show'];
+				$deleted = gwolle_gb_del_entries( $status );
+				/* translators: %s is the number of entries */
+				gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry removed permanently.','%s entries removed permanently.', $deleted, 'gwolle-gb'), $deleted ) . '</p>', false, false);
+			}
+		}
+	}
 }

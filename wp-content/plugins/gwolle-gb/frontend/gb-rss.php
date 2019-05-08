@@ -7,7 +7,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
-/* Add the feed. */
+/*
+ * Add the feed.
+ */
 function gwolle_gb_rss_init(){
 	add_feed('gwolle_gb', 'gwolle_gb_rss');
 }
@@ -45,7 +47,9 @@ function gwolle_gb_rss_head() {
 add_action('wp_head', 'gwolle_gb_rss_head', 1);
 
 
-/* Set the correct HTTP header for Content-type. */
+/*
+ * Set the correct HTTP header for Content-type.
+ */
 function gwolle_gb_rss_content_type( $content_type, $type ) {
 	if ( 'gwolle_gb' === $type ) {
 		return feed_content_type( 'rss2' );
@@ -55,7 +59,9 @@ function gwolle_gb_rss_content_type( $content_type, $type ) {
 add_filter( 'feed_content_type', 'gwolle_gb_rss_content_type', 10, 2 );
 
 
-/* Show the XML Feed */
+/*
+ * Show the XML Feed
+ */
 function gwolle_gb_rss() {
 
 	// Only show the first page of entries.
@@ -82,16 +88,13 @@ function gwolle_gb_rss() {
 	$blog_url = get_bloginfo('wpurl');
 	$biggest_book = gwolle_gb_get_postid_biggest_book();
 	if ( $biggest_book ) {
-		$permalink_biggest_book = get_permalink( $biggest_book );
+		$permalink_biggest_book = gwolle_gb_get_permalink( $biggest_book );
 	}
 	if ( is_wp_error( $permalink_biggest_book ) ) {
 		$permalink_biggest_book = $blog_url . '?p=' . $biggest_book;
 	}
 	/* Get the Language setting */
-	$WPLANG = get_option('WPLANG', false);
-	if ( ! $WPLANG ) {
-		$WPLANG = WPLANG;
-	}
+	$WPLANG = get_locale();
 	if ( ! $WPLANG ) {
 		$WPLANG = 'en-us';
 	}
@@ -133,7 +136,7 @@ function gwolle_gb_rss() {
 							$postid = gwolle_gb_get_postid( (int) $entry->get_book_id() );
 							$permalink = $blog_url; // init for new entry.
 							if ( $postid ) {
-								$permalink = get_permalink( $postid );
+								$permalink = gwolle_gb_get_permalink( $postid );
 							}
 							if ( is_wp_error( $permalink ) ) {
 								$permalink = $blog_url . '?p=' . $postid;
@@ -148,7 +151,6 @@ function gwolle_gb_rss() {
 						<content:encoded><![CDATA[<?php echo wp_trim_words( $entry->get_content(), 25, '...' ) ?>]]></content:encoded>
 						<?php rss_enclosure(); ?>
 						<?php do_action('rss2_item'); ?>
-
 					</item>
 
 					<?php

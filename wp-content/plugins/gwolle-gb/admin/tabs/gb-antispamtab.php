@@ -9,6 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Anti-spam tab of the Settings page.
+ */
 function gwolle_gb_page_settingstab_antispam() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
@@ -60,7 +63,7 @@ function gwolle_gb_page_settingstab_antispam() {
 				<span class="setting-description">
 					<?php esc_html_e('Entries that are marked as spam will be placed in your spam folder by default.', 'gwolle-gb'); ?>
 					<br />
-					<?php esc_html_e('This option will refuse to accept entries marked by Honeypot, Nonce, Akismet and Stop Forum Spam. Users will see the form again after submit, with an error stating that it is recognized as spam.', 'gwolle-gb'); ?>
+					<?php esc_html_e('This option will refuse to accept entries marked by Honeypot, Nonce, Link Checker, Form Timeout, Akismet and Stop Forum Spam. Users will see the form again after submit, with an error stating that it is recognized as spam.', 'gwolle-gb'); ?>
 				</span>
 			</td>
 		</tr>
@@ -130,6 +133,44 @@ function gwolle_gb_page_settingstab_antispam() {
 		</tr>
 
 		<tr valign="top">
+			<th scope="row"><label for="gwolle_gb_linkchecker"><?php esc_html_e('Link Checker', 'gwolle-gb'); ?></label></th>
+			<td>
+				<input <?php
+					if (get_option( 'gwolle_gb-linkchecker', 'true') == 'true') {
+						echo 'checked="checked"';
+					} ?>
+					type="checkbox" name="gwolle_gb_linkchecker" id="gwolle_gb_linkchecker">
+				<label for="gwolle_gb_linkchecker">
+					<?php esc_html_e('Scan for multiple links.', 'gwolle-gb'); ?>
+				</label><br />
+				<span class="setting-description">
+					<?php
+					esc_html_e('This will scan entries for links, which are often part of spam. If there are 2 links found in the content, it will be automatically marked as spam.', 'gwolle-gb');
+					?>
+				</span>
+			</td>
+		</tr>
+
+		<tr valign="top">
+			<th scope="row"><label for="gwolle_gb_timeout"><?php esc_html_e('Form Timeout', 'gwolle-gb'); ?></label></th>
+			<td>
+				<input <?php
+					if (get_option( 'gwolle_gb-timeout', 'true') == 'true') {
+						echo 'checked="checked"';
+					} ?>
+					type="checkbox" name="gwolle_gb_timeout" id="gwolle_gb_timeout">
+				<label for="gwolle_gb_timeout">
+					<?php esc_html_e('Set timeout for form submit.', 'gwolle-gb'); ?>
+				</label><br />
+				<span class="setting-description">
+					<?php
+					esc_html_e('This will enable a timer function for the form. If the form is submitted faster than the timeout the entry will be marked as spam.', 'gwolle-gb');
+					?>
+				</span>
+			</td>
+		</tr>
+
+		<tr valign="top">
 			<th scope="row">
 				<label for="akismet-active"><?php esc_html_e('Akismet', 'gwolle-gb'); ?></label>
 			</th>
@@ -161,7 +202,7 @@ function gwolle_gb_page_settingstab_antispam() {
 							<label for="akismet-active">
 							' . esc_html__('Use Akismet', 'gwolle-gb') . '
 							</label><br />';
-						esc_html_e('Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.', 'gwolle-gb') . '<br />';
+						esc_html_e('Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.', 'gwolle-gb'); echo '<br />';
 						esc_html_e('The WordPress API key has been found, so you can start using Akismet right now.', 'gwolle-gb');
 					}
 					?>
@@ -182,8 +223,7 @@ function gwolle_gb_page_settingstab_antispam() {
 				</label><br />
 				<span class="setting-description">
 					<?php
-					_e('Stop Forum Spam is an external service that acts as a spamfilter for guestbook entries.', 'gwolle-gb') . '<br />';
-					echo '<br />';
+					esc_html_e('Stop Forum Spam is an external service that acts as a spamfilter for guestbook entries.', 'gwolle-gb'); echo '<br />';
 					$link_wp = '<a href="https://www.stopforumspam.com" target="_blank">';
 					/* translators: %s is a link */
 					echo sprintf( esc_html__( 'If you want to know more about Stop Forum Spam and how it works, please read about it on their %swebsite%s.', 'gwolle-gb' ), $link_wp, '</a>' );
@@ -205,28 +245,6 @@ function gwolle_gb_page_settingstab_antispam() {
 					<label for="antispam-answer" class="setting-description"><?php esc_html_e('The answer to your security question:', 'gwolle-gb'); ?></label><br />
 					<input name="antispam-answer" type="text" id="antispam-answer" value="<?php echo $antispam_answer; ?>" class="regular-text" placeholder="<?php esc_attr_e('18', 'gwolle-gb'); ?>" /><br />
 					<span class="setting-description"><?php esc_html_e('You can ask your visitors to answer a custom security question, so only real people can post an entry.', 'gwolle-gb'); ?></span>
-				</div>
-			</td>
-		</tr>
-
-		<tr valign="top">
-			<th scope="row"><?php esc_html_e('CAPTCHA', 'gwolle-gb'); ?></th>
-			<td>
-				<div>
-					<span class="setting-description">
-						<?php esc_html_e('A CAPTCHA is a way to have visitors fill in a field with a few letters or numbers. It is a way to make sure that you have a human visitor and not a spambot. Not every visitor will appreciate it though, some will consider it unfriendly.', 'gwolle-gb'); ?>
-						<br /><br />
-						<?php
-						$link_wp = '<a href="https://wordpress.org/plugins/really-simple-captcha/" title="' . esc_attr__('Really Simple CAPTCHA plugin at wordpress.org', 'gwolle-gb') . '" target="_blank">';
-						/* translators: %s is a link */
-						echo sprintf( esc_html__('For the CAPTCHA you need the plugin %sReally Simple CAPTCHA%s installed and activated.', 'gwolle-gb'), $link_wp, '</a>' );
-						if ( class_exists('ReallySimpleCaptcha') ) {
-							echo '<br />';
-							esc_html_e('This plugin is installed and activated, so the CAPTCHA is ready to be used.', 'gwolle-gb');
-						} ?>
-						<br /><br />
-						<?php esc_html_e('If you use any caching plugin together with this CAPTCHA, page caching will be disabled for the page that the CAPTCHA is shown on. This is to prevent errors and to have a fresh CAPCHA image each time.', 'gwolle-gb'); ?>
-					</span>
 				</div>
 			</td>
 		</tr>

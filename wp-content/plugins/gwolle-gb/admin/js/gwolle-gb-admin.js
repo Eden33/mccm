@@ -48,12 +48,12 @@ jQuery(document).ready(function($) {
 /* Edit metadata */
 jQuery(document).ready(function($) {
 	jQuery('.gwolle_gb_edit_meta').click( function() {
-		jQuery('.gwolle_gb_edit_meta_inputs').toggle();
+		jQuery('.gwolle_gb_editor_meta_inputs').toggle();
 		return false;
 	});
 
 	jQuery('.gwolle_gb_cancel_timestamp').click( function() {
-		jQuery('.gwolle_gb_edit_meta_inputs').toggle();
+		jQuery('.gwolle_gb_editor_meta_inputs').toggle();
 		return false;
 	});
 
@@ -72,9 +72,16 @@ jQuery(document).ready(function($) {
 		jQuery("#gwolle_gb_timestamp").val(timestamp);
 
 		var readable_time = gb_timeconverter( timestamp );
-		jQuery( 'span.gb-datetime' ).text( readable_time );
+		jQuery( 'span.gb-editor-datetime' ).text( readable_time );
 
-		jQuery('.gwolle_gb_edit_meta_inputs').toggle();
+		var author_name = jQuery("#gwolle_gb_author_name").val();
+		jQuery( 'span.gb-editor-author-name' ).text( author_name );
+
+		var book_id = jQuery("#gwolle_gb_book_id").val();
+		jQuery( 'span.gb-editor-book-id' ).text( book_id );
+
+
+		jQuery('.gwolle_gb_editor_meta_inputs').toggle();
 		return false;
 	});
 });
@@ -217,14 +224,14 @@ jQuery(document).ready(function($) {
 		var parts = parseFloat( jQuery("#gwolle_gb_export_parts").val() );
 
 		for ( var part = 1; part < (parts + 1); part++ ) {
-			var timeout = (part - 1) * 5000;
+			var timeout = (part - 1) * 10000;
 			gwolle_gb_export_part( part, timeout );
 		}
 
 		setTimeout(
 			function() {
 				jQuery( ".gwolle_gb_export_gif" ).css( 'visibility', 'hidden' );
-			}, ( (part - 1)  * 5000 )
+			}, ( (part - 1)  * 10000 )
 		);
 
 		event.preventDefault();

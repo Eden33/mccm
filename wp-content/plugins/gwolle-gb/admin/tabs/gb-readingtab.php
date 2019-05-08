@@ -9,6 +9,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Reading tab of the Settings page.
+ */
 function gwolle_gb_page_settingstab_reading() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
@@ -32,7 +35,7 @@ function gwolle_gb_page_settingstab_reading() {
 			<th scope="row"><label for="entriesPerPage"><?php esc_html_e('Entries per page on the frontend', 'gwolle-gb'); ?></label></th>
 			<td>
 				<select name="entriesPerPage" id="entriesPerPage">
-					<?php $entriesPerPage = get_option( 'gwolle_gb-entriesPerPage', 20 );
+					<?php $entriesPerPage = (int) get_option( 'gwolle_gb-entriesPerPage', 20 );
 					$presets = array(3, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 150, 200, 250);
 					for ($i = 0; $i < count($presets); $i++) {
 						echo '<option value="' . $presets[$i] . '"';
@@ -53,7 +56,7 @@ function gwolle_gb_page_settingstab_reading() {
 			<td>
 				<select name="excerpt_length" id="excerpt_length">
 					<?php
-					$excerpt_length = get_option( 'gwolle_gb-excerpt_length', 0 );
+					$excerpt_length = (int) get_option( 'gwolle_gb-excerpt_length', 0 );
 					$presets = array( 20, 40, 60, 80, 100, 120, 150, 200, 300 );
 					echo '<option value="0"';
 					if ( 0 == $excerpt_length ) {
@@ -141,7 +144,7 @@ function gwolle_gb_page_settingstab_reading() {
 		<tr valign="top">
 			<th scope="row"><label for="navigation"><?php esc_html_e('Navigation', 'gwolle-gb'); ?></label></th>
 			<td>
-				<?php $navigation = get_option( 'gwolle_gb-navigation', 0 ); ?>
+				<?php $navigation = (int) get_option( 'gwolle_gb-navigation', 0 ); ?>
 				<label><input type="radio" name="navigation" value="0" <?php checked('0', $navigation); ?> />
 					<?php esc_html_e('Pagination', 'gwolle-gb'); ?>
 				</label><br />

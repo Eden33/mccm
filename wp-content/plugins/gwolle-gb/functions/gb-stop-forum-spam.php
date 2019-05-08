@@ -15,14 +15,13 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 /*
  * Check the $entry against Stop Forum Spam service
  *
- * Parameters:
- * $entry: Object with the entry
- *
- * Return: true or false
+ * @param object $entry instance of gb_entry class
+ * @return bool true or false
  *
  * @since 2.3.0
  */
 function gwolle_gb_stop_forum_spam( $entry ) {
+	$args = array();
 	$args['ip']         = $_SERVER['REMOTE_ADDR'];
 	$args['email']      = urlencode(iconv( 'GBK', 'UTF-8', $entry->get_author_email() ));
 	$args['username']   = urlencode(iconv( 'GBK', 'UTF-8', $entry->get_author_name() ));
@@ -30,9 +29,9 @@ function gwolle_gb_stop_forum_spam( $entry ) {
 	$args['confidence']	= true;
 	$args = array_filter( $args );
 
-	$url = 'https://api.stopforumspam.com/api?';
+	$url   = 'https://api.stopforumspam.com/api?';
 	$query = $url . http_build_query( $args );
-	$key = md5( $query );
+	$key   = md5( $query );
 
 	if ( false === ( $transient = get_transient( 'gwolle_gb_sfs_' . $key ) ) ) {
 		$result = wp_remote_get( $query );

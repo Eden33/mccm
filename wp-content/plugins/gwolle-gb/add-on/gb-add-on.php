@@ -4,6 +4,13 @@
  * http://www.mojomarketplace.com/item/gwolle-gb-add-on
  */
 
+
+// No direct calls to this script
+if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
+	die('No direct calls allowed!');
+}
+
+
 function gwolle_gb_addon_translation_strings() {
 
 	// description of readme
@@ -29,13 +36,47 @@ function gwolle_gb_addon_translation_strings() {
 	/* translators: Commercial Add-On: Settings page tab */
 	esc_html_e('Strings', 'gwolle-gb');
 	/* translators: Commercial Add-On: Settings page tab */
-	esc_html_e('Ideas?', 'gwolle-gb');
+	esc_html_e('Abuse', 'gwolle-gb');
 
 	// function gwolle_gb_entry_metabox_lines_admin_reply( $gb_metabox, $entry ) {
 	/* translators: Commercial Add-On */
 	esc_attr__('Add admin reply', 'gwolle-gb');
 
 	// function gwolle_gb_admin_reply_javascript() {
+
+	// function gwolle_gb_entry_metabox_lines_report_abuse( $gb_metabox, $entry ) {
+	/* translators: Commercial Add-On */
+	esc_attr__('Report Abuse for this entry', 'gwolle-gb');
+	/* translators: Commercial Add-On, frontend metabox */
+	esc_html__('Report Abuse', 'gwolle-gb');
+
+	// function gwolle_gb_report_abuse_javascript()
+	/* translators: Commercial Add-On, abuse report submitted */
+	esc_html__('Reported', 'gwolle-gb');
+	/* translators: Commercial Add-On, error on abuse report */
+	esc_html__('Error', 'gwolle-gb');
+
+	// gwolle_gb_addon_mail_moderators_report_abuse()
+	/* translators: Commercial Add-On, mail notification on abuse report */
+	esc_html__("
+Hello,
+
+There was a report for abuse for a guestbook entry at '%blog_name%'.
+You can check it at %entry_management_url%.
+
+Have a nice day.
+Your Gwolle-GB-Mailer
+
+
+Website address: %blog_url%
+User name: %user_name%
+User email: %user_email%
+Entry status: %status%
+Reports: %reports%
+Entry content:
+%entry_content%
+"
+, 'gwolle-gb');
 
 	// function gwolle_gb_entry_metabox_lines_delete_link( $gb_metabox, $entry ) {
 	/* translators: Commercial Add-On */
@@ -69,10 +110,6 @@ function gwolle_gb_addon_translation_strings() {
 	/* translators: Commercial Add-On. %s is a version number. */
 	esc_html__( 'Gwolle Guestbook: The Add-On requires Gwolle Guestbook version %s. You have version %s. Go to your %sPlugins%s page to update Gwolle Guestbook.', 'gwolle-gb' );
 
-	// function gwolle_gb_addon_page_settingstab_empty() {
-	/* translators: Commercial Add-On. %s is a link. */
-	esc_html__( 'Please place them on the %ssupport forum%s. I will see what I can do.', 'gwolle-gb' );
-
 	// function gwolle_gb_addon_page_settingstab_form() {
 	/* translators: Commercial Add-On */
 	esc_html_e('Configure the extra fields that you want.', 'gwolle-gb');
@@ -95,6 +132,10 @@ function gwolle_gb_addon_translation_strings() {
 
 
 	// function gwolle_gb_addon_page_settingstab_misc() {
+	/* translators: Settings page, option for preview */
+	esc_html_e('Show Preview button in Form.', 'gwolle-gb');
+	/* translators: Settings page, option for preview */
+	esc_html_e('Adds a button to the form where visitors can preview their entry before posting.', 'gwolle-gb');
 	/* translators: Settings page, option for permalink */
 	esc_html_e('Permalink', 'gwolle-gb');
 	/* translators: Commercial Add-On */
@@ -117,6 +158,37 @@ function gwolle_gb_addon_translation_strings() {
 	esc_html_e('Show delete link in Metabox for author.', 'gwolle-gb');
 	/* translators: Commercial Add-On */
 	esc_html_e('A link to delete the entry will be added to the metabox. Only visible for moderators and the author.', 'gwolle-gb');
+
+	/* translators: Commercial Add-On, option for auto anonymize */
+	esc_html_e('Auto Anonymize', 'gwolle-gb');
+	/* translators: Commercial Add-On, option for auto anonymize */
+	esc_html_e('Auto Anonymize entries after a certain time.', 'gwolle-gb');
+	/* translators: Commercial Add-On, option for auto anonymize */
+	esc_html_e('This setting will enable automatic anonymization of entries older than a certain date.', 'gwolle-gb');
+	/* translators: Commercial Add-On, option for auto anonymize */
+	esc_html_e('Be very carefull with this option.', 'gwolle-gb');
+	/* translators: Commercial Add-On, option for auto anonymize */
+	esc_html_e('Auto Anonymize entries older than:', 'gwolle-gb');
+
+
+	/* translators: Commercial Add-On */
+	esc_html_e('Auto Delete', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('Auto Delete entries after a certain time.', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('This setting will enable automatic deletion of entries older than a certain date.', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('Auto Delete entries older than:', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('1 Day','gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('2 Days','gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('1 Week','gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('2 Weeks','gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e('1 Month','gwolle-gb');
 
 	// function gwolle_gb_addon_page_settingstab_reading() {
 	/* translators: Commercial Add-On */
@@ -170,8 +242,35 @@ function gwolle_gb_addon_translation_strings() {
 	/* translators: Commercial Add-On */
 	esc_html_e('+ Add new string.', 'gwolle-gb');
 
+	// function gwolle_gb_addon_page_settingstab_abuse() {
+	/* translators: Commercial Add-On */
+	esc_html_e('Enable report abuse link in Metabox.', 'gwolle-gb');
+	/* translators: Commercial Add-On, obsoleted because of typo */
+	esc_html_e('Vistors can report abusive entries through a link in the metabox.', 'gwolle-gb'); // in version 1.2.1 and older.
+	/* translators: Commercial Add-On */
+	esc_html_e('Visitors can report abusive entries through a link in the metabox.', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e( 'Blacklist Moderation', 'gwolle-gb' );
+	/* translators: Commercial Add-On */
+	esc_html_e('Enter words for the blacklist.', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html_e( 'When an entry contains any of these words in its content, name, URL, email, or IP address, it will be held in the moderation queue. One word or IP address per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.', 'gwolle-gb' );
+
+	// gwolle_gb_addon_editor_metabox_meta()
+	/* translators: Commercial Add-On, metabox on editor */
+	esc_html__('Abuse Reports', 'gwolle-gb');
+	/* translators: Commercial Add-On, remove abuse reports and moderate entry */
+	esc_html__('Remove and moderate', 'gwolle-gb');
+	/* translators: Commercial Add-On */
+	esc_html__('Already moderated', 'gwolle-gb');
+
 	// function gwolle_gb_addon_starrating_average_html()
 	/* translators: Commercial Add-On. %s is the value/number of votes. */
 	__( 'Average Rating: <strong>%s out of %s</strong> (%s votes)', 'gwolle-gb' );
 
+	// function gwolle_gb_addon_add_privacy_policy_content() {
+	/* translators: Commercial Add-On. Text for privacy policy. */
+	__( 'When visitors report an entry as abusive, the entry ID will be stored in a cookie in the browser. For fallback, the IP address will be saved temporarily as a transient in the database together with the number of reports.', 'gwolle-gb' ); // 1.2.1 and older
+	/* translators: Commercial Add-On. Text for privacy policy. */
+	__( 'When visitors report an entry as abusive, the entry ID will be stored in a cookie in the browser. Also, the IP address will be saved temporarily in the database together with the number of reports.', 'gwolle-gb' );
 }

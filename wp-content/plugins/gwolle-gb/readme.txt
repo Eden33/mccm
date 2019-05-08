@@ -1,10 +1,11 @@
 === Gwolle Guestbook ===
 Contributors: Gwolle, mpol
-Tags: guestbook, guest book, livre d'or, Gästebuch, libro de visitas
+Tags: guestbook, guest book, livre d'or, Gästebuch, review
 Requires at least: 3.7
-Tested up to: 4.9
-Stable tag: 2.4.2
+Tested up to: 5.2
+Stable tag: 3.1.4
 License: GPLv2 or later
+Requires PHP: 5.3
 
 Gwolle Guestbook is the WordPress guestbook you've just been looking for. Beautiful and easy.
 
@@ -25,7 +26,7 @@ Current features include:
 * Easy Import from other guestbooks into Gwolle Guestbook.
 * Notification by mail when a new entry has been posted.
 * Moderation, so that you can check an entry before it is visible in your guestbook (optional).
-* 6 anti-spam features, like Honeypot, Nonce, Akismet, Stop Forum Spam, Custom Quiz Question and CAPTCHA.
+* 7 anti-spam features, like Honeypot, Nonce, Form Timeout, Akismet, Stop Forum Spam and Custom Quiz Question.
 * Simple Form Builder to select which form-fields you want to use.
 * Simple Entry Builder with the parts of each entry that you want to show.
 * Multiple guestbooks are possible.
@@ -81,17 +82,25 @@ Current features include:
 * Preview for the frontend form.
 * Preview for the admin editor form.
 * Admin reply on the frontend with AJAX.
+* Report Abuse.
+* Blacklist for words and IP address.
 * Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want.
 * Delete button in each entry for the moderator and author (optional).
 * Permalink button in each entry for easy access (optional).
 * Email button to contact each author (optional).
 * Sitemap support for popular SEO/Sitemap plugins.
+* Auto Anonymize timer (optional).
+* Auto Delete timer (optional).
 
 You can buy the Add-On at [Mojo Marketplace](http://www.mojomarketplace.com/item/gwolle-gb-add-on) for only $ 9.
 
 = Demo with Add-On =
 
 Check out the demo with the Add-On enabled at [http://demo.zenoweb.nl](http://demo.zenoweb.nl/wordpress-plugins/gwolle-guestbook-the-add-on/).
+
+= Compatibility =
+
+This plugin is compatible with [ClassicPress](https://www.classicpress.net).
 
 
 == Installation ==
@@ -118,6 +127,12 @@ With version 1.0 there have been some changes:
 
 The plugin itself is released under the GNU General Public License. A copy of this license can be found at the license homepage or
 in the gwolle-gb.php file at the top.
+
+= Known Issues =
+
+On some websites sending the data from the form doesn't work correctly. Some field data is being sent and some not.
+If you are affected by this issue and can debug this to find the real problem, please do so and report it on the support forum.
+Disabling AJAX for the form is a good workaround.
 
 = Hooks: Actions and Filters =
 
@@ -187,8 +202,7 @@ The next lines are made up of the content.
 
 There are some gotchas:
 
-* Date needs to be a UNIX timestamp. For manually creating a timestamp, look at
-the [timestamp generator](http://www.timestampgenerator.com/). When using a formatted date, the plugin will try to read it correctly. If it fails it will use today's date.
+* Date needs to be a UNIX timestamp. For manually creating a timestamp, look at the [timestamp generator](http://www.timestampgenerator.com/). When using a formatted date, the plugin will try to read it correctly. If it fails it will use today's date.
 * Use commas for field separators. If you use Office software like Excel (which is hell) or LibreOffice Calc, set this correctly.
 * Use double quotes around each field. When no quotes are used the import process can break when having quotes or commas inside the content of the entry.
 * The file should be encoded as UTF-8 without BOM to correctly enter special characters.
@@ -196,8 +210,10 @@ the [timestamp generator](http://www.timestampgenerator.com/). When using a form
 
 With version 1.4.1 and older, the field datetime was called date.
 
-You could make a test-entry, export that, and look to see what the importer expects from the CSV. There is also an example CSV file included in the zipfile of the plugin under '/docs/import_example/'.
+You could make a test-entry, export that, and look to see what the importer expects from the CSV.
+There is also an example CSV file included in the zipfile of the plugin under '/docs/import_example/'.
 
+If you want to prepare a CSV file from other software, plaese be aware that Microsoft Excel is terrible in dealing with CSV files. You will not manage to create a working CSV file with this. Please use LibreOffice Calc for this.
 
 == Frequently Asked Questions ==
 
@@ -224,9 +240,9 @@ Before that, in 0.9.7, all the 'checked' entries were visible.
 = I want to translate this plugin =
 
 Translations can be added very easily through [GlotPress](https://translate.wordpress.org/projects/wp-plugins/gwolle-gb).
-You can start translating strings there for your locale. They need to be validated though, so if there's no validator yet,
-and you want to apply for being validator (PTE), please post it on the support forum. I will make a request on make/polyglots to
-have you added as validator for this plugin/locale.
+You can start translating strings there for your locale.
+They need to be validated though, so if there's no validator yet, and you want to apply for being validator (PTE), please post it on the support forum.
+I will make a request on make/polyglots to have you added as validator for this plugin/locale.
 
 = What about Spam? =
 
@@ -236,24 +252,16 @@ If you still have problems there are more options:
 
 * Honeypot feature: Hidden input field that only spambots would fill in.
 * Nonce: Will verify if you really loaded the page with the form first, before posting an entry. Spambots will just submit the form without having a Nonce.
+* Form Timeout: If the form was sent in too fast after loading the page, the entry will be marked as spam.
 * Akismet: Third party spamfilter by Automattic. Works really well, but not everybody likes to use a third party service.
 * Stop Forum Spam: Third party spamfilter. Again, works really well, but not everybody likes to use a third party service.
 * Custom Anti-Spam question: Use a simple quiz question to test if you are human.
-* CAPTCHA: Fill in numbers and letters from an image. This should be your last resort, since it has bad usability and will scare off some visitors.
 
 = I already use WP-SpamShield =
 
 WP-SpamShield is a general plugin for anti-spam that supports the general WordPress forms and many plugins.
 Activating WP-SpamShield will disable the anti-spam features in Gwolle Guestbook and all anti-spam will be handled by WP-SpamShield.
 If you don’t want to use WP-SpamShield’s protection for Gwolle Guestbook, then all you need to do is disable Anti-Spam for Miscellaneous Forms in WP-SpamShield settings.
-
-= I enabled the CAPTCHA, but I don't see it in the form. =
-
-The CAPTCHA uses the one provided by the [Really Simple Captcha plugin](https://wordpress.org/plugins/really-simple-captcha/).
-Please install and activate that plugin.
-
-If it still doesn't show, it could be that the plugin has no write permission in the '/tmp' folder of the Really Simple Captcha plugin.
-Please fix this in your install.
 
 = How can I use Multiple Guestbooks? =
 
@@ -269,8 +277,8 @@ If you use the template function, you can use it like this:
 
 = With multiple guestbooks, how do I keep track? =
 
-There is no need to use id's that are incrementing. If you have a lot of guestbooks on lots of pages,
-you can just use the id of the post as the id of the guestbook. That way you won't have double id's.
+There is no need to use id's that are incrementing.
+If you have a lot of guestbooks on lots of pages, you can just use the id of the post as the id of the guestbook. That way you won't have double id's.
 You can set the book_id automatically to the post_id with this shortcode:
 
 	[gwolle_gb book_id="post_id"]
@@ -300,10 +308,11 @@ If it still doesn't work, request the maillog at your hosting provider, or ask i
 
 = I want to show the form and the list on different pages =
 
-There are different shortcodes that you can use. Instead of the '[gwolle_gb]' shortcode, you can use '[gwolle_gb_write]' for just the form,
-and '[gwolle_gb_read]' for the list of entries.
+There are different shortcodes that you can use.
+Instead of the '[gwolle_gb]' shortcode, you can use '[gwolle_gb_write]' for just the form, and '[gwolle_gb_read]' for the list of entries.
 
-There is also a widget that can display the latest entries in a widget area, that has many options. Alternatively you can use the shortcode '[gwolle_gb_widget]' to display the latest entries in widget layout. Parameters are:
+There is also a widget that can display the latest entries in a widget area, that has many options.
+Alternatively you can use the shortcode '[gwolle_gb_widget]' to display the latest entries in widget layout. Parameters are:
 
 * book_id, int with an ID.
 * num_entries, int with the shown number of messages.
@@ -311,7 +320,8 @@ There is also a widget that can display the latest entries in a widget area, tha
 
 = I want to show the form immediately, without the button =
 
-The shortcodes '[gwolle_gb]' and '[gwolle_gb_write]' have a parameter for the button. You can use them as '[gwolle_gb button="false"]' or '[gwolle_gb_write button="true"]', to deviate from the default.
+The shortcodes '[gwolle_gb]' and '[gwolle_gb_write]' have a parameter for the button.
+You can use them as '[gwolle_gb button="false"]' or '[gwolle_gb_write button="true"]', to deviate from the default.
 
 = Moderation is enabled, but my entry is marked as checked =
 
@@ -319,8 +329,13 @@ If a user with capability of 'moderate_comments' posts an entry, it will be mark
 
 = Moderation is disabled, but some entries are still unchecked =
 
-There is validation of the length of words in the content and author name. If the words are too long and it looks
-abusive, it will be marked as unchecked. A moderator will still be needed to manually edit and check these entries.
+There is validation of the length of words in the content and author name.
+If the words are too long and it looks abusive, it will be marked as unchecked. A moderator will still be needed to manually edit and check these entries.
+
+= On the form I see text meant for screen-readers. =
+
+Your theme is missing some necessary CSS for '.screen-reader-text'. Please contact the maker of your theme.
+More information can be found in the [Handbook](https://make.wordpress.org/accessibility/handbook/markup/the-css-class-screen-reader-text/) about Accessibility.
 
 = When opening the RSS Feed, I get a Error 404 =
 
@@ -329,8 +344,8 @@ This will most likely add the rewrite rule for the RSS Feed.
 
 = I use a caching plugin, and my entries are not visible after posting =
 
-When you have moderation disabled, Gwolle Guestbook will try to refresh the cache. If it doesn't on your setup,
-please let me know which caching plugin you use, and support for it might be added.
+When you have moderation disabled, Gwolle Guestbook will try to refresh the cache.
+If it doesn't on your setup, please let me know which caching plugin you use, and support for it might be added.
 
 You can also refresh or delete your cache manually. Most caching plugins offer support for that.
 
@@ -370,11 +385,12 @@ For managing options you need the capability 'manage_options'.
 = Can I override a template? =
 
 You can look at 'frontend/gwolle_gb-entry.php', and copy it to your theme folder. Then it will be loaded by the plugin.
-Make sure you keep track of changes in the default templatefile though.
+Make sure you keep track of changes in the default templatefile though. It is often better to use filters, that way you are more forward-compatible.
 
 = What hooks are available for customization? =
 
-There are many hooks available in this plugin. Documentation is included in the zip file in /docs/actions and /docs/filters. Examples are included. If you have a need for an additional hook, please request this in the support forum.
+There are many hooks available in this plugin. Documentation is included in the zip file in /docs/actions and /docs/filters. Examples are included.
+If you have a need for an additional hook, please request this in the support forum.
 
 = I want to change the word Guestbook into something else. =
 
@@ -383,6 +399,11 @@ Take a look at the previous question about hooks.
 You are probably wanting to use the hooks for 'gwolle_gb_write' and 'gwolle_gb_button'.
 
 This question gets asked a lot. You can also take a look at the [support forum](https://wordpress.org/support/topic/change-button-text-20/). Also, the add-on has options for text changes.
+
+= I have a one-page design and want to use links with the right anchor. =
+
+It should be possible by using a filter.
+Have a look at this [example code](https://plugins.trac.wordpress.org/browser/gwolle-gb/trunk/docs/filters/gwolle_gb_get_permalink.txt). Make sure to use the correct anchor tag for your website.
 
 = Should I really not use WordPress comments for a guestbook? =
 
@@ -404,233 +425,55 @@ But if you don't use standard comments, you can just as easily use the comment s
 
 == Changelog ==
 
-= 2.4.2 =
-* 2018-03-30
-* Close div element correctly.
+= 3.1.4 =
+* 2019-05-03
+* Make it possible to set entry to moderated with the gwolle_gb_new_entry_frontend filter.
+* Update strings for add-on.
 
-= 2.4.1 =
-* 2018-03-28
-* Improve features for anti-spam.
-* Add readmore link to admin reply excerpt.
-* More improvements to mobile CSS for the form.
-* Fix warning when sending mail to moderator.
+= 3.1.3 =
+* 2019-04-16
+* Small fix for silly mistake.
 
-= 2.4.0 =
-* 2018-03-25
-* Add checkbox for privacy policy for GDPR compliance.
-* Add option to store or not store IP Address and hostname.
-* Add export for user based on ID or email.
-* Add search on entries page for user based on ID or email.
-* Support meta fields from the add-on in export/import (needs add-on > 1.1.0 ).
-* Fix CSS for mobile form and form in widget.
-* Remove book_id meta key when only one entry is shown.
-* Fix warning on entries page when no entries.
-* Add function 'gwolle_gb_get_postid_biggest_book'.
-* Add function 'gwolle_gb_get_books'.
-* Add hook 'gwolle_gb_delete_entry' when permanently deleting an entry.
-* Delete log entries in that hook.
-* Use correct URL in RSS feed.
-* Add filters for email body.
-* Fix docs for filters for email subject.
-* Drop support for Shortcake feature plugin.
-* Rephrase Cheating messages like WP Core.
+= 3.1.2 =
+* 2019-04-04
+* Improve accessibility for the frontend metabox.
+* Add filter gwolle_gb_new_entry_frontend.
+* Add filter gwolle_gb_get_permalink.
+* Change arrows in next/prev pagination.
+* Auto-detect line endings in import from CSV.
 
-= 2.3.10 =
-* 2018-02-10
-* Small CSS update for login form.
-* Small CSS update for .gb-entry.
-* Small CSS update for Twenty Fifteen.
-* Update strings for add-on 1.0.7.
+= 3.1.1 =
+* 2019-03-08
+* Drop check for mime-type on import, too many problems.
+* Small CSS fix for pagination.
 
-= 2.3.9 =
-* 2018-01-26
-* Support book_id for export and import (thanks therab).
+= 3.1.0 =
+* 2019-02-19
+* Remove support for Really Simple Captcha plugin, since it is ineffective.
+* Please take a look at the other options for spamfilters, there are more and better options.
+* Update CSS for admin navigation for WP 5.1.
+* Add screen-reader-text to navigation for frontend and admin.
+* Small fixes found by the phan tool.
 
-= 2.3.8 =
-* 2018-01-18
-* Editor.php: Heading for City should really be City.
-* Improve and add translator comments.
-
-= 2.3.7 =
-* 2017-11-29
-* Rename header field in settingsform for compatibility.
-* Improve some text strings (thanks dedotombo).
-* Update strings for add-on 1.0.5.
-
-= 2.3.6 =
-* 2017-11-06
-* Update strings for add-on 1.0.4.
-
-= 2.3.5 =
-* 2017-11-04
-* Add classes with dashes.
-* Small text updates.
-
-= 2.3.4 =
-* 2017-10-19
-* When editing date, show new date after saving the date.
-* Add translations for Add-On to GlotPress of gwolle-gb.
-
-= 2.3.3 =
-* 2017-10-06
-* Use more of esc_html function in translatable strings.
-* Add advertisement page for Add-On.
-
-= 2.3.2 =
-* 2017-09-06
-* Editor: also save when no change was made.
-* Add total counter to frontend list.
-
-= 2.3.1 =
-* 2017-08-29
-* Use correct class for menu-counters.
-
-= 2.3.0 =
-* 2017-08-28
-* Add Stop Forum Spam service for anti-spam.
-* GET parameter entry_id with single view is back (back from the dead).
-* Set admin styling to off by default.
-* Remove "display:inline" for span elements, it is default.
-* Don't use 'strip_tags' anymore.
-* Add Metabox on frontend for more action links.
-* Move Edit link and add Ajax icon to metabox in new file gb-metabox.php.
-* Attach event listener to frontend metabox after posting with AJAX.
-* Add option for Admin Avatar (thanks roots84).
-* Add more filters to frontend form.
-* Add filter 'gwolle_gb_entry_read_add_content_before'.
-* Add filter 'gwolle_gb_entries_list_before'.
-* Add action 'gwolle_gb_notsaved_entry_frontend'.
-* Add filter 'gwolle_gb_get_emoji'.
-* Add function 'gwolle_gb_get_entry_ids'.
-* Add callbacks for infinite scroll and AJAX post.
-* Set border between entries to solid instead of dotted.
-* Fix counters on entries.php page.
-* Admin Editor.php uses less globals now.
-* Use esc_html functions for translatable strings.
-* Store entry total for frontend pagination in a transient.
-* Store counter for admin menu in a transient.
-* Add gwolle_gb_is_author function.
-* Small refactor of AJAX JS code.
-* Move functions for settings, user/author, cache and shortcake to their own files.
-
-= 2.2.1 =
-* 2017-05-24
-* Fix jQuery incompatibility in Super Simple Slider (for widget).
-
-= 2.2.0 =
-* 2017-05-03
-* Add setting to refuse spam entries.
-* Update counter in admin menu and toolbar after check of entry.
-* Add translator comments for Trash (in Trash / to Trash).
-* Add CSS text-color to pagination.
-* Add filter 'gwolle_gb_entries_list_class'.
-* Add filter 'gwolle_gb_entry_class'.
-* Add filter 'gwolle_gb_widget_list_class'.
-* Add filter 'gwolle_gb_widget_item_class'.
-* Add filter 'gwolle_gb_author_link_rel'.
-* Add filter 'gwolle_gb_bbcode_link_rel'.
-* Use wp_kses_post function for sanitizing content and admin_reply.
-* Use sanitize_text_field function for sanitizing other fields.
-* Better testing for 'post_id' in shortcodes.
-* Some better explanations at the Settingspage for anti-spam.
-* Do not concatenate strings, but use sprintf on about page.
-* Move functions for post-meta to own file.
-
-= 2.1.5 =
-* 2017-02-13
-* Add CSS for responsive design for the form.
-* Add CSS for the form inside a .widget and .widget-area.
-* Add class .button to buttons on frontend form.
-* Query for widgets checks on meta field.
-* Make our custom fields protected.
-* Only save custom fields on page edit.
-* Improve error handling on import with missing finfo_open.
-* On entries list, icon column gets header 'Status'.
-* Don't update caches on wp_query.
-* Remove Polish from zipfile, it is maintained in GlotPress.
-
-= 2.1.4 =
-* 2017-01-19
-* Borrow pagination CSS from bbPress.
-* Add shortcode for widget layout: [gwolle_gb_widget].
-* Improve HTML formatting of widget.
-* Remove Italian and Swedish from zipfile, they are at 100% in GlotPress.
-
-= 2.1.3 =
-* 2016-12-24
-* Add rel="nofollow" to website link.
-* Improve HTML formatting of entry.
-* Add filter gwolle_gb_author_link_to_buddypress.
-* Add filters for prefill of the form.
-
-= 2.1.2 =
-* 2016-11-06
-* Wrap text '(no entries yet)' inside the standard div#gwolle_gb_entries so we always list the submitted entry.
-* Add filter for gwolle_gb_admin_reply_header.
-* Long words check shouldn't match http, https or ftp strings.
-* Explain scan for long text better.
-* Again fix for Twenty Sixteen and Twenty Seventeen.
-* On import, run the clear_cache function only once.
-* Slightly improve error handling for admin AJAX.
-
-= 2.1.1 =
-* 2016-09-07
-* Security fix: fix XSS on editor view (Thanks Radjnies of securify.nl).
-* Security fix: fix CSRF on admin pages (Thanks Radjnies of securify.nl).
-* Use str_replace on quotes the right way (no need to escape).
-* Add Nonces to admin pages and check on them.
-* Check the max number of checked entries on bulk edit on admin list.
-* Flush cache on mass delete.
-* Update text of metaboxes on main admin page.
-
-= 2.1.0 =
-* 2016-08-23
-* Fix html validation in form buttons.
-* Add setting for the scan for long text.
-* Set that scan from 80 chars to 100 chars.
-* Support persistent object cache.
-* Flush cache on saving an entry on admin too.
-* Add save-hook to mass edit.
-* Add save-hook to AJAX admin actions.
-* Add save-hook to importer.
-* Load admin CSS on all pages (not JS).
-* Offer MultiSite uninstall through a filter.
-* Set wpdb prefix correctly on uninstall.
-* Rename most files with prefix.
-
-= 2.0.2 =
-* 2016-08-19
-* Fix loading images in CSS.
-* Better AJAX icon.
-* Improve a11y of toolbar menu-item.
-
-= 2.0.1 =
-* 2016-08-16
-* Fix upgrade in MultiSite.
-* More subtle styling of AJAX icon.
-* More consistent naming in error fields.
-* Append Infinite Scroll load message to div#gwolle_gb_entries.
-* Don't use 'focus()' in form ajax, no point to it.
-* Rename CSS and JS files.
-* Rename infinite_scroll.php to ajax-infinite_scroll.php.
-* Rename captcha-ajax.php to ajax-captcha.php.
-* Rename admin/upgrade.php to admin/gwolle-gb-upgrade.php.
-
-= 2.0.0 =
-* 2016-08-08
-* Add AJAX Form Submit (default).
-* Add container div around gwolle_gb_messages div.
-* Small adaptations to form-posthandling.php.
-* Function 'gwolle_gb_clear_cache()' is now hooked to 'gwolle_gb_save_entry_frontend' action.
-* Moderator and author mail are now hooked to 'gwolle_gb_save_entry_frontend' action.
-* Rename frontend/write.php to frontend/form.php.
-* Rename frontend/posthandling.php to frontend/form-posthandling.php.
-* Rename admin/ajax.php to admin/ajax-management.php.
-* Remove more br elements from BBcode lists.
-* Add a 'read more' link to each entry in the widget in the form of a '&raquo;'.
-* Set CSS width of '.input input[type="email"]' and '.input input[type="url"]' to 100%.
-* Set z-index for infinite scroll load message.
-* Make CSS reset for MarkItUp more specific.
-* Add some bootstrap classes to the form.
-* Add comments for translators.
-* Cleanup changelog. Add changelog.txt for v0 and v1.
+= 3.0.0 =
+* 2019-01-22
+* Add search widget (only visible on guestbook pages).
+* Add '[noscript]' to frontend form for when JavaScript is disabled.
+* Add function 'gwolle_gb_post_is_guestbook'.
+* Add function 'gwolle_gb_get_entries_from_search'.
+* Add function 'gwolle_gb_enqueue_markitup'.
+* Fix BBcode: support images inside links.
+* Fix BBcode: have sublists work.
+* Show new username and book ID after editing in editor postbox.
+* Add some accessibility fixes.
+* Switch database engine to InnoDB.
+* Don't use transients for hashed field names, is faster this way.
+* Better test if admin user exists for admin_reply.
+* Use 'field-name' for gwolle_gb_content too.
+* On admin pages, have separate functions for $_POST update. (settings, editor, entries).
+* Use GWOLLE_GB_URL where appropriate.
+* Use static vars instead of global vars.
+* Integrate 2 JavaScript files for Markitup/BBcode.
+* Switch export to 2000 entries per part instead of 3000.
+* Add strings for add-on 1.3.0.
+* Cleanup changelog. Add changelog-v2.txt.

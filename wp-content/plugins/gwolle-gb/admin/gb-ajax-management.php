@@ -234,13 +234,13 @@ function gwolle_gb_ajax_javascript() {
 					if ( jQuery( '.gwolle_gb_actions' ).hasClass('checked') && jQuery( '.gwolle_gb_actions' ).hasClass('nospam') && jQuery( '.gwolle_gb_actions' ).hasClass('notrash') ) {
 						jQuery( '.entry-icons' ).addClass('visible').removeClass('invisible');
 						jQuery( '.gwolle_gb_actions' ).addClass('visible').removeClass('invisible');
-						jQuery( '.h3_invisible' ).css('display', 'none');
-						jQuery( '.h3_visible' ).css('display', 'block');
+						jQuery( '.h3-invisible' ).css('display', 'none');
+						jQuery( '.h3-visible' ).css('display', 'block');
 					} else {
 						jQuery( '.entry-icons' ).addClass('invisible').removeClass('visible');
 						jQuery( '.gwolle_gb_actions' ).addClass('invisible').removeClass('visible');
-						jQuery( '.h3_visible' ).css('display', 'none');
-						jQuery( '.h3_invisible' ).css('display', 'block');
+						jQuery( '.h3-visible' ).css('display', 'none');
+						jQuery( '.h3-invisible' ).css('display', 'block');
 					}
 
 					// Countup counter in admin menu, toolbar

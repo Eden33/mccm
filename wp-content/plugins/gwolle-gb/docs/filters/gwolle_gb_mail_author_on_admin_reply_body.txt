@@ -16,7 +16,7 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 ==Examples==
 
 
-function my_gwolle_gb_mail_author_on_admin_reply_body( $body ) {
+function my_gwolle_gb_mail_author_on_admin_reply_body( $body, $entry ) {
 	// this is the default;
 	$body = esc_html__("
 Hello,
@@ -39,5 +39,5 @@ Original entry posted on %date%:
 
 	return $body;
 }
-add_filter( 'gwolle_gb_mail_author_on_admin_reply_body', 'my_gwolle_gb_mail_author_on_admin_reply_body', 10,1 );
+add_filter( 'gwolle_gb_mail_author_on_admin_reply_body', 'my_gwolle_gb_mail_author_on_admin_reply_body', 10, 2 );
 

@@ -8,20 +8,16 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 
 /*
- * gwolle_gb_add_log_entry()
- * Add a new log entry
+ * Add a new log for an entry.
  *
- * Parameters:
- *   - entry_id: (int)    the id of the entry
- *   - subject:  (string) one of the possible log_messages
- *
- * Return: (bool) true or false, depending on succes
+ * @param  int    $entry_id ID of the entry
+ * @param  string $subject one of the possible log_messages
+ * @return bool   true or false, depending on succes
  */
-
 function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 	global $wpdb;
 
-	if ( !isset($subject) || !isset($entry_id) || (int) $entry_id === 0 ) {
+	if ( ! isset($subject) || ! isset($entry_id) || (int) $entry_id === 0 ) {
 		return false;
 	}
 
@@ -35,6 +31,8 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 		'marked-by-akismet',
 		'marked-by-sfs',
 		'marked-by-longtext',
+		'marked-by-linkchecker',
+		'marked-by-timeout',
 		'entry-edited',
 		'imported-from-dmsguestbook',
 		'imported-from-wp',
@@ -44,9 +42,10 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 		'entry-untrashed',
 		'admin-reply-added',
 		'admin-reply-updated',
-		'admin-reply-removed'
+		'admin-reply-removed',
+		'entry-anonymized'
 	);
-	if ( !in_array( $subject, $log_messages ) ) {
+	if ( ! in_array( $subject, $log_messages ) ) {
 		return false;
 	}
 
@@ -81,12 +80,11 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 
 
 /*
- * gwolle_gb_get_log_entries
  * Function to get log entries.
  *
- * Parameter: (string) $entry_id: the id of the guestbook entry where the log belongs to
+ * @param int $entry_id ID of the guestbook entry where the log belongs to
  *
- * Return: Array with log_entries, each is an Array:
+ * @return array with log_entries, each is an array:
  *   id           => (int) id
  *   subject      => (string) subject of the log, what happened
  *   author_id    => (int) author_id of the user responsible for this log entry
@@ -96,11 +94,10 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
  *   msg_html     => (string) string of html-text ready for displayed
  *
  */
-
 function gwolle_gb_get_log_entries( $entry_id ) {
 	global $wpdb;
 
-	if ( !isset($entry_id) || (int) $entry_id === 0 ) {
+	if ( ! isset($entry_id) || (int) $entry_id === 0 ) {
 		return false;
 	}
 
@@ -115,6 +112,8 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 		'marked-by-akismet'           => /* translators: Log message */ esc_html__('Entry marked by Akismet.', 'gwolle-gb'),
 		'marked-by-sfs'               => /* translators: Log message */ esc_html__('Entry marked by Stop Forum Spam.', 'gwolle-gb'),
 		'marked-by-longtext'          => /* translators: Log message */ esc_html__('Entry marked for too long text.', 'gwolle-gb'),
+		'marked-by-linkchecker'       => /* translators: Log message */ esc_html__('Entry marked for too many links.', 'gwolle-gb'),
+		'marked-by-timeout'           => /* translators: Log message */ esc_html__('Entry marked for being submitted too fast.', 'gwolle-gb'),
 		'entry-edited'                => /* translators: Log message */ esc_html__('Entry has been edited.',    'gwolle-gb'),
 		'imported-from-dmsguestbook'  => /* translators: Log message */ esc_html__('Imported from DMSGuestbook', 'gwolle-gb'),
 		'imported-from-wp'            => /* translators: Log message */ esc_html__('Imported from WordPress comments', 'gwolle-gb'),
@@ -124,7 +123,8 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 		'entry-untrashed'             => /* translators: Log message */ esc_html__('Entry has been untrashed.', 'gwolle-gb'),
 		'admin-reply-added'           => /* translators: Log message */ esc_html__('Admin reply has been added.', 'gwolle-gb'),
 		'admin-reply-updated'         => /* translators: Log message */ esc_html__('Admin reply has been updated.', 'gwolle-gb'),
-		'admin-reply-removed'         => /* translators: Log message */ esc_html__('Admin reply has been removed.', 'gwolle-gb')
+		'admin-reply-removed'         => /* translators: Log message */ esc_html__('Admin reply has been removed.', 'gwolle-gb'),
+		'entry-anonymized'            => /* translators: Log message */ esc_html__('Entry has been anonymized.', 'gwolle-gb')
 	);
 
 	$where = " 1 = %d";
@@ -208,43 +208,39 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 
 
 /*
- * gwolle_gb_del_log_entries()
- * Delete the log entries for a guestbook entry
+ * Delete the log entries for a guestbook entry after the entry was removed.
  *
- * Parameters:
- *   - entry_id: (int) the id of the entry
- *
- * Return: (bool) true or false, depending on succes
+ * @param  int  $entry_id ID of the entry
+ * @return bool true or false, depending on succes
  */
-
 function gwolle_gb_del_log_entries( $entry_id ) {
-		global $wpdb;
+	global $wpdb;
 
-		$entry_id = intval( $entry_id );
+	$entry_id = intval( $entry_id );
 
-		if ( $entry_id == 0 || $entry_id < 0 ) {
-			return false;
-		}
-
-		$sql = "
-			DELETE
-			FROM
-				$wpdb->gwolle_gb_log
-			WHERE
-				entry_id = %d";
-
-		$values = array(
-				$entry_id
-			);
-
-		$result = $wpdb->query(
-				$wpdb->prepare( $sql, $values )
-			);
-
-
-		if ( $result > 0 ) {
-			return true;
-		}
+	if ( $entry_id == 0 || $entry_id < 0 ) {
 		return false;
+	}
+
+	$sql = "
+		DELETE
+		FROM
+			$wpdb->gwolle_gb_log
+		WHERE
+			entry_id = %d";
+
+	$values = array(
+			$entry_id
+		);
+
+	$result = $wpdb->query(
+			$wpdb->prepare( $sql, $values )
+		);
+
+
+	if ( $result > 0 ) {
+		return true;
+	}
+	return false;
 }
 add_action( 'gwolle_gb_delete_entry', 'gwolle_gb_del_log_entries' );

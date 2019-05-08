@@ -8,10 +8,12 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 	die('No direct calls allowed!');
 }
 
+
 /*
- * $debug_test is a bool, if we want a debug test to be done.
+ * Debug tab of the Settings page.
+ *
  */
-function gwolle_gb_page_settingstab_debug( $debug_test ) {
+function gwolle_gb_page_settingstab_debug() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
@@ -38,7 +40,13 @@ function gwolle_gb_page_settingstab_debug( $debug_test ) {
 		</tr>
 
 		<?php
-		if ( $debug_test ) {
+		/* Check Nonce */
+		$verified = false;
+		if ( isset($_POST['gwolle_gb_page_settings_debugtab']) ) {
+			$verified = wp_verify_nonce( $_POST['gwolle_gb_page_settings_debugtab'], 'gwolle_gb_page_settings_debugtab' );
+		}
+		if ( $verified && isset( $_POST['gwolle_gb_debug']) ) {
+			// Save test entries
 			$entry_id = gwolle_gb_test_add_entry( false );
 			$entry_id_emoji = gwolle_gb_test_add_entry( true );
 			?>

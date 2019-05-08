@@ -10,15 +10,15 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * gwolle_gb_pagination_admin
  * Pagination of the entries for the page-entries.php
  *
- * @args: $pageNum, int with the number of the requested page.
- *        $pages_total, int with the total number of pages.
- *        $count, int with total number of entries. Relative to the $show variable.
- *        $show, string with the tab of the page that is shown.
- *  @return: $pagination, string with the html of the pagination.
+ * @param int $pageNum the number of the requested page.
+ * @param int $pages_total the total number of pages.
+ * @param int $count total number of entries. Relative to the $show variable.
+ * @param string $show the tab of the page that is shown.
+ * @return string $pagination the html of the pagination.
  */
 function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 
-	$num_entries = get_option('gwolle_gb-entries_per_page', 20);
+	$num_entries = (int) get_option('gwolle_gb-entries_per_page', 20);
 
 	$book_id = 0;
 	if ( isset( $_GET['book_id'] ) ) {
@@ -38,7 +38,9 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 		$lastentry = $firstentry + $total_on_this_page -1;
 	}
 
-	$pagination = '<div class="tablenav-pages">';
+	$pagination = '
+				<h2 class="screen-reader-text">' . esc_html__('Guestbook list navigation', 'gwolle-gb') . '</h2>
+				<div class="tablenav-pages">';
 
 	$highDotsMade = false;
 	$pages_done = array();
@@ -49,7 +51,8 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 
 
 	if ($pageNum > 1) {
-		$pagination .= '<a class="first page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . round($pageNum - 1) . '&book_id=' . $book_id . '" rel="prev">&laquo;</a>';
+		$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . round($pageNum - 1) . '&book_id=' . $book_id );
+		$pagination .= '<a class="first page-numbers button" href="' . $link . '" rel="prev">&larr;</a>';
 	}
 
 	if ($pageNum < 5) {
@@ -65,7 +68,8 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 				$pages_done[] = $i;
 			} else {
 				if ( in_array( $i, $pages_done ) ) { continue; }
-				$pagination .= '<a class="page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $i . '&book_id=' . $book_id . '">' . $i . '</a>';
+				$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $i . '&book_id=' . $book_id );
+				$pagination .= '<a class="page-numbers button" href="' . $link . '">' . $i . '</a>';
 				$pages_done[] = $i;
 				if ( $i == $pages_total ) { break; }
 			}
@@ -76,7 +80,8 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 			$highDotsMade = true;
 		}
 	} elseif ($pageNum > 4) {
-		$pagination .= '<a class="page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=1&book_id=' . $book_id . '">1</a>';
+		$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=1&book_id=' . $book_id );
+		$pagination .= '<a class="page-numbers button" href="' . $link . '">1</a>';
 		if ($pages_total > 4) {
 			$pagination .= '<span class="page-numbers dots">...</span>';
 		}
@@ -89,13 +94,14 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 		}
 		for ($i = $minRange; $i <= $showRange; $i++) {
 			if ($i == $pageNum) {
-				$pagination .= '<span class="page-numbers current">' . $i . '</span>';
+				$pagination .= '<span class="page-numbers button current">' . $i . '</span>';
 			} else {
-				$pagination .= '<a class="page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $i . '&book_id=' . $book_id . '">' . $i . '</a>';
+				$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $i . '&book_id=' . $book_id );
+				$pagination .= '<a class="page-numbers button" href="' . $link . '">' . $i . '</a>';
 			}
 		}
 		if ($pageNum == $pages_total) {
-			$pagination .= '<span class="page-numbers current">' . $pageNum . '</span>';
+			$pagination .= '<span class="page-numbers button current">' . $pageNum . '</span>';
 		}
 	}
 
@@ -105,9 +111,11 @@ function gwolle_gb_pagination_admin( $pageNum, $pages_total, $count, $show ) {
 			$highDotsMade = true;
 		}
 		if ( ! in_array( $pages_total, $pages_done ) ) {
-			$pagination .= '<a class="page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $pages_total . '&book_id=' . $book_id . '">' . $pages_total . '</a>';
+			$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . $pages_total . '&book_id=' . $book_id );
+			$pagination .= '<a class="page-numbers button" href="' . $link . '">' . $pages_total . '</a>';
 		}
-		$pagination .= '<a class="last page-numbers" href="admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . round($pageNum + 1) . '&book_id=' . $book_id . '" rel="next">&raquo;</a>';
+		$link = admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=' . $show . '&pageNum=' . round($pageNum + 1) . '&book_id=' . $book_id );
+		$pagination .= '<a class="last page-numbers button" href="' . $link . '" rel="next">&rarr;</a>';
 	}
 
 	$pagination .= '</div>';

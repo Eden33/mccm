@@ -8,8 +8,12 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Build up a form for the user, including possible error_fields
+ * Called by shortcode or template function
+ *
+ * @param array $shortcode_atts shortcode attributes
+ * @param string $shortcode the shortcode that was used
+ * @return string html with the form and messages
  */
-
 function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 	/* Get the messages and formdata from the form handling in posthandling.php. */
@@ -20,7 +24,7 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 	$html5  = current_theme_supports( 'html5' );
 	$output = '';
-
+	$button_class = (string) apply_filters( 'gwolle_gb_button_class', '' );
 
 	// Set data up for prefilling an already submitted form that had errors.
 	$name = '';
@@ -51,7 +55,7 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 	// Only show old data when there are errors.
 	if ( $gwolle_gb_errors ) {
-		if ( is_array($gwolle_gb_formdata) && !empty($gwolle_gb_formdata) ) {
+		if ( is_array($gwolle_gb_formdata) && ! empty($gwolle_gb_formdata) ) {
 			if (isset($gwolle_gb_formdata['author_name'])) {
 				$name = stripslashes($gwolle_gb_formdata['author_name']);
 			}
@@ -75,9 +79,8 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 
 	/*
-	 * Handle Messaging to the user
+	 * Handle Messaging to the user.
 	 */
-
 	$messageclass = '';
 	if ( $gwolle_gb_errors ) {
 		$messageclass = 'error';
@@ -115,12 +118,11 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 	 * Button 'write a new entry.'
 	 * Only show when shortcode [gwolle_gb] is used and there are no errors.
 	 */
-
 	$formclass = '';
 	if ( ( $shortcode_atts['button'] == 'true' ) && ( ! $gwolle_gb_errors ) ) {
 		$button = '
 			<div id="gwolle_gb_write_button">
-				<input type="button" class="button btn btn-default" value="&raquo; ' . /* translators: Button text */ esc_attr__('Write a new entry.', 'gwolle-gb') . '" />
+				<input type="button" class="button btn btn-default ' . $button_class . '" value="&raquo; ' . /* translators: Button text */ esc_attr__('Write a new entry.', 'gwolle-gb') . '" />
 			</div>';
 		$output .= apply_filters( 'gwolle_gb_button', $button);
 
@@ -129,9 +131,8 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 
 	/*
-	 * Build up Form including possible error_fields
+	 * Build up Form including possible error_fields.
 	 */
-
 	$form_setting = gwolle_gb_get_setting( 'form' );
 	$autofocus = ' autofocus="autofocus"';
 	if ( get_option( 'gwolle_gb-labels_float', 'true' ) === 'true' ) {
@@ -141,16 +142,21 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$formclass .= ' gwolle_gb_form_ajax gwolle-gb-form-ajax';
 	}
 
-	// Form for submitting new entries
 	$header = gwolle_gb_sanitize_output( get_option('gwolle_gb-header', false) );
 	if ( $header == false ) {
 		$header = esc_html__('Write a new entry for the Guestbook', 'gwolle-gb');
 	}
 
+	$hidebutton = '';
+	if ( ( $shortcode_atts['button'] == 'true' ) ) {
+		$hidebutton = '<button type="button" class="gb-notice-dismiss"><span class="screen-reader-text">' . esc_html__('Hide this form.', 'gwolle-gb') . '</span></button>
+			';
+	}
 	$output .= '
-		<form id="gwolle_gb_new_entry" action="#" method="POST" class="' . $formclass . '">
-			<h3>' . $header . '</h3>
-			<input type="hidden" name="gwolle_gb_function" id="gwolle_gb_function" value="add_entry" />';
+			<form id="gwolle_gb_new_entry" action="#" method="POST" class="' . $formclass . '">
+				<h3>' . $header . '</h3>
+				' . $hidebutton . '
+				<input type="hidden" name="gwolle_gb_function" id="gwolle_gb_function" value="add_entry" />';
 
 	// The book_id from the shortcode, to be used by the posthandling function again.
 	$output .= '<input type="hidden" name="gwolle_gb_book_id" id="gwolle_gb_book_id" value="' . $shortcode_atts['book_id'] . '" />';
@@ -271,14 +277,38 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 	$output .= apply_filters( 'gwolle_gb_write_add_after_website', '' );
 
 	/* Honeypot */
-	if (get_option( 'gwolle_gb-honeypot', 'true') == 'true') {
+	if ( get_option( 'gwolle_gb-honeypot', 'true') == 'true' ) {
 		$field_name = gwolle_gb_get_field_name( 'honeypot' );
+		$field_name2 = gwolle_gb_get_field_name( 'honeypot2' );
+		$honeypot_value = (int) get_option( 'gwolle_gb-honeypot_value', 15 );
 		$output .= '
 			<div class="' . $field_name . '" style="display:none;">
-				<div class="label"><label for="' . $field_name . '" class="text-primary">' . esc_html__('Do not fill this in', 'gwolle-gb') . ':
-				</label></div>
+				<div class="label">
+					<label for="' . $field_name . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . ':</label>
+					<label for="' . $field_name2 . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . ':</label>
+				</div>
 				<div class="input">
-					<input value="" type="text" name="' . $field_name . '" id="' . $field_name . '" placeholder="" />
+					<input value="' . $honeypot_value . '" type="text" name="' . $field_name . '" id="' . $field_name . '" placeholder="" />
+					<input value="" type="text" name="' . $field_name2 . '" id="' . $field_name2 . '" placeholder="" />
+				</div>
+			</div>
+			<div class="clearBoth"></div>';
+	}
+
+	/* Form Timeout */
+	if ( get_option( 'gwolle_gb-timeout', 'true') == 'true' ) {
+		$field_name = gwolle_gb_get_field_name( 'timeout' );
+		$field_name2 = gwolle_gb_get_field_name( 'timeout2' );
+		$random = rand( 100, 100000 );
+		$output .= '
+			<div class="' . $field_name . '" style="display:none;">
+				<div class="label">
+					<label for="' . $field_name . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . ':</label>
+					<label for="' . $field_name2 . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . ':</label>
+				</div>
+				<div class="input">
+					<input value="' . $random . '" type="text" name="' . $field_name . '" id="' . $field_name . '" placeholder="" />
+					<input value="' . $random . '" type="text" name="' . $field_name2 . '" id="' . $field_name2 . '" placeholder="" />
 				</div>
 			</div>
 			<div class="clearBoth"></div>';
@@ -288,11 +318,11 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 	if ( isset($form_setting['form_message_enabled']) && $form_setting['form_message_enabled']  === 'true' ) {
 		$field_name = gwolle_gb_get_field_name( 'content' );
 		$label = apply_filters( 'gwolle_gb_content_label', esc_html__('Guestbook entry', 'gwolle-gb') );
-		$output .= '<div class="gwolle_gb_content">
-				<div class="label"><label for="gwolle_gb_content" class="text-info">' . $label . ':';
+		$output .= '<div class="' . $field_name . '">
+				<div class="label"><label for="' . $field_name . '" class="text-info">' . $label . ':';
 		if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory']  === 'true' ) { $output .= ' *';}
 		$output .= '</label></div>
-				<div class="input"><textarea name="gwolle_gb_content" id="gwolle_gb_content" class="wp-exclude-emoji ';
+				<div class="input"><textarea name="' . $field_name . '" id="' . $field_name . '" class="wp-exclude-emoji ';
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
 			$output .= ' error';
 		}
@@ -308,23 +338,7 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 		if ( isset($form_setting['form_bbcode_enabled']) && $form_setting['form_bbcode_enabled']  === 'true' ) {
 			// BBcode and MarkItUp
-			wp_enqueue_script( 'markitup', plugins_url('markitup/jquery.markitup.js', __FILE__), 'jquery', GWOLLE_GB_VER, false );
-			wp_enqueue_script( 'markitup_set', plugins_url('markitup/set.js', __FILE__), 'jquery', GWOLLE_GB_VER, false );
-			wp_enqueue_style('gwolle_gb_markitup_css', plugins_url('markitup/style.css', __FILE__), false, GWOLLE_GB_VER,  'screen');
-
-			$dataToBePassed = array(
-				'bold'      => /* translators: MarkItUp menu item */ esc_html__('Bold', 'gwolle-gb' ),
-				'italic'    => /* translators: MarkItUp menu item */ esc_html__('Italic', 'gwolle-gb' ),
-				'bullet'    => /* translators: MarkItUp menu item */ esc_html__('Bulleted List', 'gwolle-gb' ),
-				'numeric'   => /* translators: MarkItUp menu item */ esc_html__('Numeric List', 'gwolle-gb' ),
-				'picture'   => /* translators: MarkItUp menu item */ esc_html__('Picture', 'gwolle-gb' ),
-				'source'    => /* translators: MarkItUp menu item */ esc_html__('Source', 'gwolle-gb' ),
-				'link'      => /* translators: MarkItUp menu item */ esc_html__('Link', 'gwolle-gb' ),
-				'linktext'  => /* translators: MarkItUp menu item */ esc_html__('Your text to link...', 'gwolle-gb' ),
-				'clean'     => /* translators: MarkItUp menu item */ esc_html__('Clean', 'gwolle-gb' ),
-				'emoji'     => /* translators: MarkItUp menu item */ esc_html__('Emoji', 'gwolle-gb' )
-			);
-			wp_localize_script( 'markitup_set', 'gwolle_gb_localize', $dataToBePassed );
+			gwolle_gb_enqueue_markitup();
 
 			// Emoji symbols
 			$output .= '<div class="gwolle_gb_emoji gwolle_gb_hide">';
@@ -342,6 +356,7 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 	/* Custom Anti-Spam */
 	if ( isset($form_setting['form_antispam_enabled']) && $form_setting['form_antispam_enabled']  === 'true' ) {
+		$field_name = gwolle_gb_get_field_name( 'custom' );
 		$label = apply_filters( 'gwolle_gb_antispam_label', esc_html__('Anti-spam', 'gwolle-gb') );
 		$antispam_question = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-question') );
 		$antispam_answer   = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-answer') );
@@ -350,15 +365,15 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 			$output .= '
 				<div class="gwolle_gb_antispam">
 					<div class="label">
-						<label for="gwolle_gb_antispam_answer" class="text-info">' . $label . ': *<br />
+						<label for="' . $field_name . '" class="text-info">' . $label . ': *<br />
 						' . esc_html__('Question:', 'gwolle-gb') . ' ' .  $antispam_question . '</label>
 					</div>
 					<div class="input"><input class="';
-			if (in_array('gwolle_gb_antispam_answer', $gwolle_gb_error_fields)) {
+			if (in_array( $field_name, $gwolle_gb_error_fields)) {
 				$output .= ' error';
 			}
-			$output .= '" value="' . $antispam . '" type="text" name="gwolle_gb_antispam_answer" id="gwolle_gb_antispam_answer" placeholder="' . esc_attr__('Answer', 'gwolle-gb') . '" ';
-			if ( in_array('gwolle_gb_antispam_answer', $gwolle_gb_error_fields) && isset($autofocus) ) {
+			$output .= '" value="' . $antispam . '" type="text" name="' . $field_name . '" id="' . $field_name . '" placeholder="' . esc_attr__('Answer', 'gwolle-gb') . '" ';
+			if ( in_array( $field_name, $gwolle_gb_error_fields) && isset($autofocus) ) {
 				$output .= $autofocus;
 				$autofocus = false; // disable it for the next error.
 			}
@@ -371,86 +386,19 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 	}
 	$output .= apply_filters( 'gwolle_gb_write_add_after_antispam', '' );
 
-	/* CAPTCHA */
-	if ( isset($form_setting['form_recaptcha_enabled']) && $form_setting['form_recaptcha_enabled']  === 'true' ) {
-		if ( class_exists('ReallySimpleCaptcha') ) {
-			// Disable page caching, we want a new CAPTCHA image each time.
-			if ( ! defined( 'DONOTCACHEPAGE' ) )
-				define( 'DONOTCACHEPAGE', 'true' );
-
-			// Instantiate the ReallySimpleCaptcha class, which will handle all of the heavy lifting
-			$gwolle_gb_captcha = new ReallySimpleCaptcha();
-
-			// Set Really Simple CAPTCHA Options
-			$gwolle_gb_captcha->chars           = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-			$gwolle_gb_captcha->char_length     = '4';
-			$gwolle_gb_captcha->img_size        = array( '72', '24' );
-			$gwolle_gb_captcha->fg              = array( '0', '0', '0' );
-			$gwolle_gb_captcha->bg              = array( '255', '255', '255' );
-			$gwolle_gb_captcha->font_size       = '16';
-			$gwolle_gb_captcha->font_char_width = '15';
-			$gwolle_gb_captcha->img_type        = 'png';
-			$gwolle_gb_captcha->base            = array( '6', '18' );
-
-			// Generate random word and image prefix
-			$gwolle_gb_captcha_word = $gwolle_gb_captcha->generate_random_word();
-			$gwolle_gb_captcha_prefix = mt_rand();
-			// Generate CAPTCHA image
-			$gwolle_gb_captcha_image_name = $gwolle_gb_captcha->generate_image($gwolle_gb_captcha_prefix, $gwolle_gb_captcha_word);
-			// Define values for CAPTCHA fields
-			$gwolle_gb_captcha_image_url = content_url('plugins/really-simple-captcha/tmp/');
-			$gwolle_gb_captcha_image_src = $gwolle_gb_captcha_image_url . $gwolle_gb_captcha_image_name;
-			$gwolle_gb_captcha_image_width = $gwolle_gb_captcha->img_size[0];
-			$gwolle_gb_captcha_image_height = $gwolle_gb_captcha->img_size[1];
-			$gwolle_gb_captcha_field_size = $gwolle_gb_captcha->char_length;
-
-			// Enqueue and localize the frontend script for CAPTCHA.
-			wp_enqueue_script('gwolle_gb_captcha_js', plugins_url('js/captcha.js', __FILE__), 'jquery', GWOLLE_GB_VER, true );
-			$dataToBePassed = array(
-				// URL to wp-admin/admin-ajax.php to process the request
-				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-				// generate a nonce with a unique ID "gwolle_gb_captcha_ajax"
-				// so that you can check it later when an AJAX request is sent
-				'security'  => wp_create_nonce( 'gwolle_gb_captcha_ajax' ),
-				'correct'   => esc_html__ ('Correct CAPTCHA value.', 'gwolle-gb' ),
-				'incorrect' => esc_html__( 'Incorrect CAPTCHA value.', 'gwolle-gb' ),
-				'gwolle_gb_captcha_prefix' => $gwolle_gb_captcha_prefix
-			);
-			wp_localize_script( 'gwolle_gb_captcha_js', 'gwolle_gb_captcha', $dataToBePassed );
-
-			// Output the CAPTCHA fields
-			$label = apply_filters( 'gwolle_gb_antispam_label', esc_html__('Anti-spam', 'gwolle-gb') );
-			$output .= '
-				<div class="gwolle_gb_captcha">
-					<div class="label">
-						<label for="gwolle_gb_captcha_code" class="text-info">' . $label . ': *<br />
-						<img src="' . $gwolle_gb_captcha_image_src . '" alt="captcha" width="' . $gwolle_gb_captcha_image_width . '" height="' . $gwolle_gb_captcha_image_height . '" />
-						</label>
-					</div>
-					<div class="input">
-					<input class="';
-			if (in_array('gwolle_gb_captcha_code', $gwolle_gb_error_fields)) {
-				$output .= 'error';
-			}
-			$output .= '" value="" type="text" name="gwolle_gb_captcha_code" id="gwolle_gb_captcha_code" placeholder="' . esc_attr__('CAPTCHA', 'gwolle-gb') . '" ';
-			if ( in_array('gwolle_gb_captcha_code', $gwolle_gb_error_fields) && isset($autofocus) ) {
-				$output .= $autofocus;
-				$autofocus = false; // disable it for the next error.
-			}
-			$output .= ' required'; // always required.
-			$output .= ' />
-							<input type="hidden" name="gwolle_gb_captcha_prefix" id="gwolle_gb_captcha_prefix" value="' . $gwolle_gb_captcha_prefix . '" />
-							<span id="gwolle_gb_captcha_verify"></span>
-					</div>
-				</div>
-				<div class="clearBoth">&nbsp;</div>';
-		}
-	}
-	$output .= apply_filters( 'gwolle_gb_write_add_after_captcha', '' );
-
 	/* Privacy checkbox for GDPR compliance. */
 	if ( isset($form_setting['form_privacy_enabled']) && $form_setting['form_privacy_enabled']  === 'true' ) {
-		$label = apply_filters( 'gwolle_gb_privacy_label', esc_html__('Accept Privacy Policy', 'gwolle-gb') );
+		$a_open  = '';
+		$a_close = '';
+		if ( function_exists( 'get_privacy_policy_url' ) ) {
+			$privacy_policy_page = get_privacy_policy_url(); // Since WP 4.9.6
+			if ( ! empty( $privacy_policy_page ) ) {
+				$a_open  = '<a href="' . $privacy_policy_page . '" title="' . esc_attr__('Read the Privacy Policy', 'gwolle-gb') . '" target="_blank">';
+				$a_close = '</a>';
+			}
+		}
+		/* translators: %s is a link to the privacy policy page. */
+		$label = apply_filters( 'gwolle_gb_privacy_label', sprintf( esc_html__( 'Accept %sPrivacy Policy%s', 'gwolle-gb' ), $a_open, $a_close ) );
 		$output .= '
 				<div class="gwolle_gb_privacy">
 					<div class="label"><label for="gwolle_gb_privacy" class="text-info">' . $label . ': *</label></div>
@@ -472,10 +420,12 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 	$output .= '
 			<div id="gwolle_gb_messages_bottom_container"></div>
 
+			<noscript><div class="no-js">' . esc_html__( 'Warning: This form can only be used if JavaScript is enabled in your browser.', 'gwolle-gb' ) . '</div></noscript>
+
 			<div class="gwolle_gb_submit">
 				<div class="label gwolle_gb_invisible text-muted">&nbsp;</div>
 				<div class="input">
-					<input type="submit" name="gwolle_gb_submit" id="gwolle_gb_submit" class="button btn btn-primary" value="' . esc_attr__('Submit', 'gwolle-gb') . '" />
+					<input type="submit" name="gwolle_gb_submit" id="gwolle_gb_submit" class="button btn btn-primary ' . $button_class . '" value="' . esc_attr__('Submit', 'gwolle-gb') . '" />
 					<span class="gwolle_gb_submit_ajax_icon"></span>
 			';
 
@@ -494,7 +444,6 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$notice = esc_html__("
 Fields marked with * are required.
 Your E-mail address won't be published.
-For security reasons we save the IP address %ip%.
 It's possible that your entry will only be visible in the guestbook after we reviewed it.
 We reserve the right to edit, delete, or not publish entries.
 "

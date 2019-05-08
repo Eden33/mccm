@@ -6,13 +6,6 @@
  * By default this file will be loaded from /wp-content/plugins/gwolle-gb-frontend/gwolle_gb-entry.php.
  * If you place it in your childtheme or parenttheme, it will be overridden.
  * Make sure you only return values, and not to use echo statements.
- *
- *
- * $args: $entry, instance of gwolle_gb_entry.
- *        $first, boolean with true if it is the first entry.
- *        $counter,int with the number of the entry. (since 1.4.7)
- *
- * return: string, html with a single guestbook entry.
  */
 
 
@@ -21,7 +14,14 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 	die('No direct calls allowed!');
 }
 
-
+/*
+ * Template file for s single guestbook entry.
+ *
+ * @param object $entry instance of gwolle_gb_entry.
+ * @param bool $first true if it is the first entry.
+ * @param int $counter the number of the entry. (since 1.4.7)
+ * @return: string, html with a single guestbook entry.
+ */
 if ( ! function_exists('gwolle_gb_entry_template') ) {
 	function gwolle_gb_entry_template( $entry, $first, $counter ) {
 
@@ -168,11 +168,13 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 				/* Admin Avatar */
 				if ( isset($read_setting['read_aavatar']) && $read_setting['read_aavatar']  === 'true' ) {
 					$user_info = get_userdata( $entry->get_admin_reply_uid() );
-					$admin_reply_email = $user_info->user_email;
-					$avatar = get_avatar( $admin_reply_email, 32, '', $admin_reply_name );
-					if ($avatar) {
-						$admin_reply .= '
-							<span class="gb-admin-avatar">' . $avatar . '</span>';
+					if ( is_object($user_info) ) {
+						$admin_reply_email = $user_info->user_email;
+						$avatar = get_avatar( $admin_reply_email, 32, '', $admin_reply_name );
+						if ($avatar) {
+							$admin_reply .= '
+								<span class="gb-admin-avatar">' . $avatar . '</span>';
+						}
 					}
 				}
 				/* Admin Header */
@@ -223,7 +225,7 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 		$gb_metabox = apply_filters( 'gwolle_gb_entry_metabox_lines', '', $entry );
 		if ( $gb_metabox ) {
 			$entry_output .= '
-					<div class="gb-metabox-handle">' . esc_html__('...', 'gwolle-gb' ) . '</div>
+					<div class="gb-metabox-handle" tabindex="0">' . esc_html__('...', 'gwolle-gb' ) . '<span class="screen-reader-text"> ' . esc_html__('Toggle this metabox.', 'gwolle-gb') . '</span></div>
 					<div class="gb-metabox gwolle_gb_invisible gwolle-gb-invisible">' .
 						$gb_metabox . '
 					</div>';

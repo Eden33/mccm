@@ -8,7 +8,7 @@
     </label>
 </p>
 <p>
-    <input type="checkbox" id="import_keep_location" name="keep_location" value="on" /> <label for="import_keep_location"> <?php esc_html_e('Keep images in original location.', 'nggallery'); ?> <span style="font-size: 85%"><?php esc_html_e('Caution: If you keep images in the original folder and later delete the gallery, the images in that folder might be deleted depending on your settings.', 'nggallery'); ?></span></label><br/><br/>
+    <input type="checkbox" id="import_keep_location" name="keep_location" value="on" /> <label for="import_keep_location"> <?php esc_html_e('Keep images in original location. Caution: If you keep images in the original folder and later delete the gallery, the images in that folder might be deleted depending on your settings.', 'nggallery'); ?></label><br/><br/>
     <input type="button" id="import_button" name="import_folder" value="<?php _e('Import Folder', 'nggallery'); ?>" class="button-primary"/>
 </p>
 <script type="text/javascript">
@@ -20,7 +20,10 @@
         else return;
 
 	    // Post params
-	    var browse_params = <?php echo $browse_sec_token->get_json() ?>;
+	    var browse_params = {
+            action: 'browser_folder',
+            nonce: '<?php echo $browse_nonce ?>'        
+        };
 	    browse_params.action = 'browse_folder';
 
         // Render file browser
@@ -52,11 +55,13 @@
             });
 
             // Start importing process
-	        var post_params = <?php echo $import_sec_token->get_json()?>;
-	        post_params.action = 'import_folder';
-	        post_params.folder = selected_folder;
-	        post_params.keep_location =  $('#import_keep_location').is(":checked") ? 'on' : 'off';
-            post_params.gallery_title = $('#import_gallery_title').val();
+            var post_params = {
+                nonce: '<?php echo $import_nonce ?>',
+                action: "import_folder",
+                folder: selected_folder,
+                keep_location: $('#import_keep_location').is(":checked") ? 'on' : 'off',
+                gallery_title: $('#import_gallery_title').val()
+            }
 
             $.post(photocrati_ajax.url, post_params, function(response){
                 if (typeof(response) != 'object') response = JSON.parse(response);

@@ -1,10 +1,9 @@
-<?php /*
- *
- * import.php
+<?php
+/*
  * Lets the user import guestbook entries from other plugins.
  * Currently supported:
  * - DMSGuestbook (http://wordpress.org/plugins/dmsguestbook/).
- * - WordPress coments from a page, post or just all.
+ * - WordPress comments from a page, post or just all.
  * - Gwolle-GB through a CSV-file.
  */
 
@@ -14,23 +13,22 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Admin page for import.
+ * Contains metaboxes with forms.
+ */
 function gwolle_gb_page_import() {
 
 	gwolle_gb_admin_enqueue();
 
-	if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
-	/* $_POST handling. */
 	if ( isset( $_POST['gwolle_gb_page']) &&  $_POST['gwolle_gb_page'] == 'gwolle_gb_import' ) {
 		gwolle_gb_page_import_post();
 	}
 
-
-	/*
-	 * Build the Page and the Form
-	 */
 	?>
 	<div class="wrap gwolle_gb">
 		<div id="icon-gwolle-gb"><br /></div>
@@ -67,6 +65,9 @@ function gwolle_gb_page_import() {
 }
 
 
+/*
+ * Metabox with form for import from DMS Guestbook.
+ */
 function gwolle_gb_import_postbox_dms() {
 	global $wpdb;
 	?>
@@ -137,6 +138,9 @@ function gwolle_gb_import_postbox_dms() {
 }
 
 
+/*
+ * Metabox with form for import from WordPress comments.
+ */
 function gwolle_gb_import_postbox_wp() {
 	?>
 	<form name="gwolle_gb_import_wp" id="gwolle_gb_import_wp" method="POST" action="#" accept-charset="UTF-8">
@@ -263,6 +267,9 @@ function gwolle_gb_import_postbox_wp() {
 }
 
 
+/*
+ * Metabox with form for import from Gwolle through a CSV file.
+ */
 function gwolle_gb_import_postbox_gwolle() {
 	?>
 	<form name="gwolle_gb_import_gwolle" id="gwolle_gb_import_gwolle" method="POST" action="#" accept-charset="UTF-8" enctype="multipart/form-data">
@@ -282,11 +289,18 @@ function gwolle_gb_import_postbox_gwolle() {
 		<p>
 			<input name="start_import_gwolle" id="start_import_gwolle" type="submit" class="button" disabled value="<?php esc_attr_e('Start import', 'gwolle-gb'); ?>">
 		</p>
+		<p>
+			<?php esc_html_e('If you want to manually prepare a CSV file, please use decent software like LibreOffice Calc. Microsoft Excel will not be able to prepare a valid CSV file.', 'gwolle-gb'); ?><br />
+		</p>
+
 	</form>
 	<?php
 }
 
 
+/*
+ * Handle the submitted forms.
+ */
 function gwolle_gb_page_import_post() {
 	global $wpdb;
 
@@ -477,190 +491,172 @@ function gwolle_gb_page_import_post() {
 						$valid_file = false;
 						gwolle_gb_add_message( '<p>' . esc_html__('Your file is too large.', 'gwolle-gb') . '</p>', true, false);
 					} else {
-						if ( function_exists('finfo_open') ) {
-							// Check MIME Type. Only PHP >= 5.3.0 with the Fileinfo extension loaded.
-							$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
-							$mimetype = trim( finfo_file( $finfo, $_FILES['start_import_gwolle_file']['tmp_name'] ) );
-							finfo_close($finfo);
-						} else {
-							gwolle_gb_add_message( '<p>' . esc_html__('Please check if your PHP installation has the Fileinfo extension. You can also contact your hosting provider about this and request for that extension to be installed.', 'gwolle-gb') . '</p>', false, false);
-						}
-						if ( version_compare( PHP_VERSION, '5.3', '<' ) && ( ! $mimetype ) ) {
-							// PHP 5.2 is insecure anyway?
-							$mimetype = 'text/csv';
+						if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 							gwolle_gb_add_message( '<p>' . esc_html__('You have a very old version of PHP. Please contact your hosting provider and request an upgrade.', 'gwolle-gb') . '</p>', false, false);
 						}
-						$mimetypes = array(
-							'csv' => 'text/csv',
-							'txt' => 'text/plain',
-							'xls' => 'application/excel',
-							'ms'  => 'application/ms-excel',
-							'vnd' => 'application/vnd.ms-excel',
-						);
-						if ( ! in_array( $mimetype, $mimetypes ) ) {
-							gwolle_gb_add_message( '<p>' . esc_html__('Invalid file format. Mime-type:', 'gwolle-gb') . ' ' . print_r($mimetype, true) . '</p>', true, false);
-						} else {
-							$handle = fopen($_FILES['start_import_gwolle_file']['tmp_name'], "r");
-							$row = 0;
 
-							while ( ( $data = fgetcsv( $handle, 2000, ',', '"' ) ) !== FALSE ) {
-								$num = count($data);
-								if ($row == 0) {
-									// Check the headerrow. $testrow_old is version 1.4.1 and older.
-									$testrow_1_0 = array(
-										'id',
-										'author_name',
-										'author_email',
-										'author_origin',
-										'author_website',
-										'author_ip',
-										'author_host',
-										'content',
-										'date',
-										'isspam',
-										'ischecked',
-										'istrash'
-									);
-									$testrow_1_4_1 = array(
-										'id',
-										'author_name',
-										'author_email',
-										'author_origin',
-										'author_website',
-										'author_ip',
-										'author_host',
-										'content',
-										'datetime',
-										'isspam',
-										'ischecked',
-										'istrash'
-									);
-									$testrow_1_4_8 = array(
-										'id',
-										'author_name',
-										'author_email',
-										'author_origin',
-										'author_website',
-										'author_ip',
-										'author_host',
-										'content',
-										'datetime',
-										'isspam',
-										'ischecked',
-										'istrash',
-										'admin_reply'
-									);
-									$testrow_2_3_9 = array(
-										'id',
-										'author_name',
-										'author_email',
-										'author_origin',
-										'author_website',
-										'author_ip',
-										'author_host',
-										'content',
-										'datetime',
-										'isspam',
-										'ischecked',
-										'istrash',
-										'admin_reply',
-										'book_id'
-									);
-									$testrow_2_4_0 = array(
-										'id',
-										'author_name',
-										'author_email',
-										'author_origin',
-										'author_website',
-										'author_ip',
-										'author_host',
-										'content',
-										'datetime',
-										'isspam',
-										'ischecked',
-										'istrash',
-										'admin_reply',
-										'book_id',
-										'meta_fields'
-									);
-									if ( $data != $testrow_1_0 && $data != $testrow_1_4_1 && $data != $testrow_1_4_8 && $data != $testrow_2_3_9 && $data != $testrow_2_4_0 ) {
-										gwolle_gb_add_message( '<p>' . esc_html__('It seems your CSV file is from an export that is not compatible with this version of Gwolle-GB.', 'gwolle-gb') . '</p>', true, false);
-										break;
-									}
-									$row++;
-									continue;
-								}
+						ini_set('auto_detect_line_endings', true);
+						$handle = fopen($_FILES['start_import_gwolle_file']['tmp_name'], "r");
+						$row = 0;
 
-								if ( $num != 12 && $num != 13 && $num != 14 && $num != 15 ) {
-									gwolle_gb_add_message( '<p>' . esc_html__('Your data seems to be corrupt. Import failed.', 'gwolle-gb') . '</p>', true, false);
+						while ( ( $data = fgetcsv( $handle, 2000, ',', '"' ) ) !== FALSE ) {
+							$num = count($data);
+							if ($row == 0) {
+								// Check the headerrow. $testrow_old is version 1.4.1 and older.
+								$testrow_1_0 = array(
+									'id',
+									'author_name',
+									'author_email',
+									'author_origin',
+									'author_website',
+									'author_ip',
+									'author_host',
+									'content',
+									'date',
+									'isspam',
+									'ischecked',
+									'istrash'
+								);
+								$testrow_1_4_1 = array(
+									'id',
+									'author_name',
+									'author_email',
+									'author_origin',
+									'author_website',
+									'author_ip',
+									'author_host',
+									'content',
+									'datetime',
+									'isspam',
+									'ischecked',
+									'istrash'
+								);
+								$testrow_1_4_8 = array(
+									'id',
+									'author_name',
+									'author_email',
+									'author_origin',
+									'author_website',
+									'author_ip',
+									'author_host',
+									'content',
+									'datetime',
+									'isspam',
+									'ischecked',
+									'istrash',
+									'admin_reply'
+								);
+								$testrow_2_3_9 = array(
+									'id',
+									'author_name',
+									'author_email',
+									'author_origin',
+									'author_website',
+									'author_ip',
+									'author_host',
+									'content',
+									'datetime',
+									'isspam',
+									'ischecked',
+									'istrash',
+									'admin_reply',
+									'book_id'
+								);
+								$testrow_2_4_0 = array(
+									'id',
+									'author_name',
+									'author_email',
+									'author_origin',
+									'author_website',
+									'author_ip',
+									'author_host',
+									'content',
+									'datetime',
+									'isspam',
+									'ischecked',
+									'istrash',
+									'admin_reply',
+									'book_id',
+									'meta_fields'
+								);
+								if ( $data != $testrow_1_0 && $data != $testrow_1_4_1 && $data != $testrow_1_4_8 && $data != $testrow_2_3_9 && $data != $testrow_2_4_0 ) {
+									gwolle_gb_add_message( '<p>' . esc_html__('It seems your CSV file is from an export that is not compatible with this version of Gwolle-GB.', 'gwolle-gb') . '</p>', true, false);
 									break;
 								}
+								$row++;
+								continue;
+							}
 
-								/* New Instance of gwolle_gb_entry. */
-								$entry = new gwolle_gb_entry();
+							if ( $num != 12 && $num != 13 && $num != 14 && $num != 15 ) {
+								gwolle_gb_add_message( '<p>' . esc_html__('Your data seems to be corrupt. Import failed.', 'gwolle-gb') . '</p>', true, false);
+								break;
+							}
 
-								/* Check if the date is a timestamp, else convert */
-								if ( !is_numeric($data[8]) ) {
-									$data[8] = strtotime($data[8]);
-								}
+							/* New Instance of gwolle_gb_entry. */
+							$entry = new gwolle_gb_entry();
 
-								/* Set the data in the instance */
-								// $entry->set_id( $data[0] ); // id of entry
-								$entry->set_author_name( $data[1] );
-								$entry->set_author_email( $data[2] );
-								$entry->set_author_origin( $data[3] );
-								$entry->set_author_website( $data[4] );
-								$entry->set_author_ip( $data[5] );
-								$entry->set_author_host( $data[6] );
-								$entry->set_content( $data[7] );
-								$entry->set_datetime( $data[8] );
-								$entry->set_isspam( $data[9] );
-								$entry->set_ischecked( $data[10] );
-								$entry->set_istrash( $data[11] );
-								if ( isset( $data[12] ) ) {
-									$entry->set_admin_reply( $data[12] ); // admin_reply is only since 1.4.8
-								}
-								if ( isset( $data[13] ) ) {
-									$entry->set_book_id( $data[13] ); // book_id is only since 2.3.9
-								}
-								$metas = ''; // reset
-								if ( isset( $data[14] ) ) {
-									$metas = $data[14]; // meta fields is only since is only since 2.4.0
-								}
+							/* Check if the date is a timestamp, else convert */
+							if ( ! is_numeric($data[8]) ) {
+								$data[8] = strtotime($data[8]);
+							}
 
-								/* Save the instance */
-								$save = $entry->save();
-								if ( $save ) {
-									// We have been saved to the Database
-									if ( isset( $metas ) && function_exists( 'gwolle_gb_addon_save_meta' ) ) {
-										$metas = maybe_unserialize( $metas );
-										if ( ! empty( $metas ) ) {
-											foreach ( $metas as $meta ) {
-												gwolle_gb_addon_save_meta( $entry->get_id(), $meta['meta_key'], $meta['meta_value'] );
-											}
+							/* Set the data in the instance */
+							// $entry->set_id( $data[0] ); // id of entry
+							$entry->set_author_name( $data[1] );
+							$entry->set_author_email( $data[2] );
+							$entry->set_author_origin( $data[3] );
+							$entry->set_author_website( $data[4] );
+							$entry->set_author_ip( $data[5] );
+							$entry->set_author_host( $data[6] );
+							$entry->set_content( $data[7] );
+							$entry->set_datetime( $data[8] );
+							$entry->set_isspam( $data[9] );
+							$entry->set_ischecked( $data[10] );
+							$entry->set_istrash( $data[11] );
+							if ( isset( $data[12] ) ) {
+								$entry->set_admin_reply( $data[12] ); // admin_reply is only since 1.4.8
+							}
+							if ( isset( $data[13] ) ) {
+								$entry->set_book_id( $data[13] ); // book_id is only since 2.3.9
+							}
+							$metas = ''; // reset
+							if ( isset( $data[14] ) ) {
+								$metas = $data[14]; // meta fields is only since is only since 2.4.0
+							}
+
+							/* Save the instance */
+							$save = $entry->save();
+							if ( $save ) {
+								// We have been saved to the Database
+								if ( isset( $metas ) && function_exists( 'gwolle_gb_addon_save_meta' ) ) {
+									$metas = maybe_unserialize( $metas );
+									if ( ! empty( $metas ) && is_array( $metas ) ) {
+										foreach ( $metas as $meta ) {
+											gwolle_gb_addon_save_meta( $entry->get_id(), $meta['meta_key'], $meta['meta_value'] );
 										}
 									}
-									gwolle_gb_add_log_entry( $entry->get_id(), 'imported-from-gwolle' );
-									$row++;
-								} else {
-									//$gwolle_gb_messages .= '<p>' . print_r( $entry, true ) . '</p>'; // Debug
-									gwolle_gb_add_message( '<p>' . esc_html__('Your data seems to be corrupt. Saving failed and import failed.', 'gwolle-gb') . '</p>', true, false);
-									break;
 								}
-
-							}
-							$row--; // minus the header
-
-							if ( $row == 0 ) {
-								gwolle_gb_add_message( '<p>' . esc_html__("I'm sorry, but I wasn't able to import entries from the CSV file.", 'gwolle-gb') . '</p>', true, false);
-							} else if ( $row == 1 || $row > 1 ) {
-								do_action( 'gwolle_gb_save_entry_admin' );
-								/* translators: %s is the number of entries */
-								gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry imported successfully from the CSV file.','%s entries imported successfully from the CSV file.', $row, 'gwolle-gb'), $row ) . '</p>', false, false);
+								gwolle_gb_add_log_entry( $entry->get_id(), 'imported-from-gwolle' );
+								$row++;
+							} else {
+								//$gwolle_gb_messages .= '<p>' . print_r( $entry, true ) . '</p>'; // Debug
+								gwolle_gb_add_message( '<p>' . esc_html__('Your data seems to be corrupt. Saving failed and import failed.', 'gwolle-gb') . '</p>', true, false);
+								break;
 							}
 
-							fclose($handle);
 						}
+						$row--; // minus the header
+
+						if ( $row == 0 ) {
+							gwolle_gb_add_message( '<p>' . esc_html__("I'm sorry, but I wasn't able to import entries from the CSV file.", 'gwolle-gb') . '</p>', true, false);
+						} else if ( $row == 1 || $row > 1 ) {
+							do_action( 'gwolle_gb_save_entry_admin' );
+							/* translators: %s is the number of entries */
+							gwolle_gb_add_message( '<p>' . sprintf( _n('%s entry imported successfully from the CSV file.','%s entries imported successfully from the CSV file.', $row, 'gwolle-gb'), $row ) . '</p>', false, false);
+						}
+
+						fclose($handle);
+
 					}
 				} else {
 					// Set that to be the returned message.

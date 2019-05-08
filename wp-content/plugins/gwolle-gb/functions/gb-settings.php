@@ -24,8 +24,10 @@ function gwolle_gb_register_settings() {
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-form_ajax',         'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-header',            'strval' ); // string, but initially empty
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-honeypot',          'strval' ); // 'true'
+	register_setting( 'gwolle_gb_options', 'gwolle_gb-honeypot_value',    'intval' ); // random 1 - 100
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-labels_float',      'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-linkAuthorWebsite', 'strval' ); // 'true'
+	register_setting( 'gwolle_gb_options', 'gwolle_gb-linkchecker',       'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-longtext',          'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-mail-from',         'strval' ); // empty string
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-mail_admin_replyContent', 'strval' ); // 'false'
@@ -44,6 +46,7 @@ function gwolle_gb_register_settings() {
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-showEntryIcons',    'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-showLineBreaks',    'strval' ); // 'false'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb-showSmilies',       'strval' ); // 'true'
+	register_setting( 'gwolle_gb_options', 'gwolle_gb-timeout',           'strval' ); // 'true'
 	register_setting( 'gwolle_gb_options', 'gwolle_gb_version',           'strval' ); // string, mind the underscore
 }
 add_action( 'admin_init', 'gwolle_gb_register_settings' );
@@ -52,9 +55,9 @@ add_action( 'admin_init', 'gwolle_gb_register_settings' );
 /*
  * Get the setting for Gwolle-GB that is saved as serialized data.
  *
- * Args: $request, string with value 'form' or 'read'.
+ * @param string $request value 'form' or 'read'.
  *
- * Return:
+ * @return
  * - Array with settings for that request.
  * - or false if no setting.
  */
@@ -77,7 +80,6 @@ function gwolle_gb_get_setting($request) {
 					'form_message_mandatory'  => 'true',
 					'form_bbcode_enabled'     => 'false',
 					'form_antispam_enabled'   => 'false',
-					'form_recaptcha_enabled'  => 'false',
 					'form_privacy_enabled'    => 'false'
 					);
 				$setting = get_option( 'gwolle_gb-form', Array() );
@@ -89,7 +91,6 @@ function gwolle_gb_get_setting($request) {
 					return $setting;
 				}
 				return $defaults;
-				break;
 			case 'read':
 				if ( get_option('show_avatars') ) {
 					$avatar = 'true';
@@ -116,10 +117,8 @@ function gwolle_gb_get_setting($request) {
 					return $setting;
 				}
 				return $defaults;
-				break;
 			default:
 				return false;
-				break;
 		}
 	}
 	return false;

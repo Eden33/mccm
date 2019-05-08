@@ -8,8 +8,16 @@
  */
 jQuery(document).ready(function($) {
 	jQuery( "#gwolle_gb_write_button input" ).click(function() {
-		document.getElementById("gwolle_gb_write_button").style.display = "none";
+		jQuery("#gwolle_gb_write_button").slideUp(1000);
 		jQuery("#gwolle_gb_new_entry").slideDown(1000);
+		return false;
+	});
+});
+// And close it again.
+jQuery(document).ready(function($) {
+	jQuery( "button.gb-notice-dismiss" ).click(function() {
+		jQuery("#gwolle_gb_write_button").slideDown(1000);
+		jQuery("#gwolle_gb_new_entry").slideUp(1000);
 		return false;
 	});
 });
@@ -57,8 +65,20 @@ function gwolle_gb_metabox_handle() {
 		jQuery( metabox_parent ).find('div.gb-metabox').toggleClass( 'gwolle_gb_invisible' );
 		return false;
 	});
+	jQuery("div.gb-metabox-handle").keypress(function(e) {
+		if (e.keyCode == 13) {
+			var metabox_parent = jQuery(this).parent();
+			jQuery( metabox_parent ).find('div.gb-metabox').toggleClass( 'gwolle_gb_invisible' );
+			return false;
+		}
+	});
 	return false;
 }
+jQuery(document).ready(function($) {
+	jQuery('body').on('click', function( el ) {
+		jQuery('div.gb-metabox').addClass( 'gwolle_gb_invisible' );
+	});
+});
 
 
 /*
@@ -137,21 +157,64 @@ jQuery(document).ready(function($) {
 
 
 /*
+ * Mangle data for the honeypot.
+ */
+jQuery(document).ready(function($) {
+	var honeypot  = gwolle_gb_frontend_script.honeypot;
+	var honeypot2 = gwolle_gb_frontend_script.honeypot2;
+	var val = jQuery( '#' + honeypot ).val();
+	if ( val > 0 ) {
+		jQuery( '#' + honeypot2 ).val( val );
+		jQuery( '#' + honeypot ).val( '' );
+	}
+});
+
+
+/*
+ * Mangle data for the form timeout.
+ */
+jQuery(document).ready(function($) {
+	setInterval('gwolle_gb_timout_clock()', 1000 );
+});
+function gwolle_gb_timout_clock() {
+	var timeout  = gwolle_gb_frontend_script.timeout;
+	var timeout2 = gwolle_gb_frontend_script.timeout2;
+
+	var timer  = new Number( jQuery( '#' + timeout ).val() );
+	var timer2 = new Number( jQuery( '#' + timeout2 ).val() );
+
+	var timer  = timer - 1
+	var timer2 = timer2 + 1
+
+	jQuery( '#' + timeout ).val( timer );
+	jQuery( '#' + timeout2 ).val( timer2 );
+}
+
+
+/*
  * AJAX Submit for Gwolle Guestbook Frontend.
  */
-var gwolle_gb_ajax_data = {};
-gwolle_gb_ajax_data['permalink'] = window.location.href;
-
 var gwolle_gb_ajax_callback = jQuery.Callbacks(); // Callback function to be fired after AJAX request.
+// Use an object, arrays are only indexed by integers. This var is kept for compatibility with add-on 1.0.0 till 1.1.1.
+var gwolle_gb_ajax_data = {
+	permalink: window.location.href,
+	action: 'gwolle_gb_form_ajax'
+};
 
 jQuery(document).ready(function($) {
 	jQuery( '.gwolle_gb_form_ajax #gwolle_gb_submit' ).click( function( submit_button ) {
 
 		jQuery( '#gwolle_gb .gwolle_gb_submit_ajax_icon' ).css( 'display', 'inline' );
 
+		// Use an object, arrays are only indexed by integers.
+		var gwolle_gb_ajax_data = {
+			permalink: window.location.href,
+			action: 'gwolle_gb_form_ajax'
+		};
+
 		jQuery('.gwolle_gb_form_ajax input').each(function( index, value ) {
-			var val = jQuery( value ).val();
-			var id = jQuery( value ).attr('id');
+			var val = jQuery( this ).prop('value'); // For some reason, some hosts do not see any value here, and data does not get sent.
+			var id = jQuery( this ).attr('id');
 			if ( id == 'gwolle_gb_privacy' ) {
 				var checked = jQuery('.gwolle_gb_form_ajax input#gwolle_gb_privacy').prop('checked');
 				if ( checked == true ) {
@@ -159,14 +222,17 @@ jQuery(document).ready(function($) {
 				}
 			} else {
 				gwolle_gb_ajax_data[id] = val;
+				/*if ( typeof console != 'undefined' ) {
+					console.log( id + ': ' + val );
+					console.table( val );
+				} */
 			}
 		});
 		jQuery('.gwolle_gb_form_ajax textarea').each(function( index, value ) {
-			var val = jQuery( value ).val();
-			var id = jQuery( value ).attr('id');
+			var val = jQuery( this ).val();
+			var id = jQuery( this ).attr('id');
 			gwolle_gb_ajax_data[id] = val;
 		});
-		gwolle_gb_ajax_data['action'] = 'gwolle_gb_form_ajax';
 
 		jQuery.post( gwolle_gb_frontend_script.ajax_url, gwolle_gb_ajax_data, function( response ) {
 
@@ -213,7 +279,7 @@ jQuery(document).ready(function($) {
 						});
 
 						// Reset content textarea.
-						jQuery( '#gwolle_gb_content' ).val('');
+						jQuery( '.gwolle_gb_form_ajax textarea' ).val('');
 
 						jQuery( '#gwolle_gb .gwolle_gb_submit_ajax_icon' ).css( 'display', 'none' );
 
@@ -244,8 +310,8 @@ jQuery(document).ready(function($) {
 						document.getElementById( 'gwolle_gb_messages_bottom_container' ).innerHTML = '<div id="gwolle_gb_messages" class="error">' + data['gwolle_gb_messages'] + '</div>';
 
 						// Add error class to failed input fields.
-						jQuery( '#gwolle_gb_new_entry input' ).removeClass( 'error' );
-						jQuery( '#gwolle_gb_new_entry textarea' ).removeClass( 'error' );
+						jQuery( '.gwolle_gb_form_ajax input' ).removeClass( 'error' );
+						jQuery( '.gwolle_gb_form_ajax textarea' ).removeClass( 'error' );
 						jQuery.each( gwolle_gb_error_fields, function( index, value ) {
 							jQuery( '#' + value ).addClass( 'error' );
 						});

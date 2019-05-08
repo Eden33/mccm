@@ -1,11 +1,5 @@
 <?php
 
-/*
- * Handles AJAX request from Gwolle-GB AJAX Submit.
- *
- * Returns json encoded data, which is handled with by frontend/js/script.js.
- */
-
 
 // No direct calls to this script
 if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
@@ -13,6 +7,11 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Handles AJAX request from Gwolle-GB AJAX Submit.
+ *
+ * @return string json encoded data, which is handled with by frontend/js/script.js.
+ */
 function gwolle_gb_form_ajax_callback() {
 
 	$saved = gwolle_gb_frontend_posthandling();

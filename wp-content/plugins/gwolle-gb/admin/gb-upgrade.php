@@ -14,6 +14,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Install plugin structure.
+ */
 function gwolle_gb_install() {
 	global $wpdb;
 
@@ -47,7 +50,7 @@ function gwolle_gb_install() {
 				admin_reply_uid int(5) NOT NULL default '0',
 				book_id int(5) NOT NULL default '1',
 				PRIMARY KEY  (id)
-			) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
+			) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$result = $wpdb->query($sql);
 	}
 
@@ -63,7 +66,7 @@ function gwolle_gb_install() {
 				author_id int(5) NOT NULL,
 				datetime bigint(8) UNSIGNED NOT NULL,
 				PRIMARY KEY  (id)
-			) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
+			) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$result = $wpdb->query($sql);
 	}
 
@@ -76,19 +79,26 @@ function gwolle_gb_install() {
 		}
 	}
 
-	// Save plugin version to database only when we did install.
+	/* Set default options if not set yet. */
+	gwolle_gb_set_defaults();
+
+	/* Save plugin version to database only when we did install. */
 	$result_after = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_entries'");
 	$result_after2 = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_log'");
 	if ( $result_after != 0 && $result_after2 != 0 ) {
 		add_option('gwolle_gb_version', GWOLLE_GB_VER);
 	}
 
-	// Call flush_rules() as a method of the $wp_rewrite object for the RSS Feed.
+	/* Call flush_rules() as a method of the $wp_rewrite object for the RSS Feed. */
 	global $wp_rewrite;
 	$wp_rewrite->flush_rules( false );
 }
 
 
+/*
+ * Uninstall plugin structure.
+ * Called from the settingspage or from multisite uninstall function.
+ */
 function gwolle_gb_uninstall() {
 	// Delete the plugin's tables
 	global $wpdb;
@@ -103,11 +113,16 @@ function gwolle_gb_uninstall() {
 				option_name LIKE 'gwolle_gb%'
 		");
 
+	do_action( 'gwolle_gb_uninstall' );
+
 	// Deactivate ourselves
 	deactivate_plugins( GWOLLE_GB_FOLDER . '/gwolle-gb.php' );
 }
 
 
+/*
+ * Upgrade plugin structure.
+ */
 function gwolle_gb_upgrade() {
 	global $wpdb;
 	$installed_ver = get_option('gwolle_gb_version');
@@ -475,11 +490,23 @@ function gwolle_gb_upgrade() {
 		 * 1.5.0->1.5.1
 		 * Add book_id field to database and fill it with value '1'.
 		 */
-			$wpdb->query( "
+		$wpdb->query( "
 			ALTER TABLE $wpdb->gwolle_gb_entries ADD `book_id` INT(8) UNSIGNED NOT NULL default '1' AFTER `admin_reply_uid`;
 		");
 	}
 
+	if (version_compare($installed_ver, '3.0.0', '<')) {
+		/*
+		 * 2.6.7->3.0.0
+		 * Switch from MyISAM to InnoDB database engine.
+		 */
+		$wpdb->query( "
+			ALTER TABLE $wpdb->gwolle_gb_entries ENGINE=InnoDB;
+		");
+		$wpdb->query( "
+			ALTER TABLE $wpdb->gwolle_gb_log ENGINE=InnoDB;
+		");
+	}
 
 	/* Upgrade to new shiny db collation. Since WP 4.2 */
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -490,7 +517,134 @@ function gwolle_gb_upgrade() {
 		}
 	}
 
+	/* Set default options if not set yet. */
+	gwolle_gb_set_defaults();
 
-	/* Update the plugin version option */
+	/* Update the plugin version option. */
 	update_option('gwolle_gb_version', GWOLLE_GB_VER);
+}
+
+
+/*
+ * Set default options.
+ * Idea is to have all options in the database and thus cached, so we hit an empty cache less often.
+ *
+ * @since 2.5.0
+ */
+function gwolle_gb_set_defaults() {
+	if ( get_option('gwolle_gb-admin_style', false) == false ) {
+		update_option( 'gwolle_gb-admin_style', 'false' );
+	}
+	if ( get_option('gwolle_gb-akismet-active', false) == false ) {
+		update_option( 'gwolle_gb-akismet-active', 'false' );
+	}
+	if ( get_option('gwolle_gb-entries_per_page', false) == false ) {
+		update_option( 'gwolle_gb-entries_per_page', 20 );
+	}
+	if ( get_option('gwolle_gb-entriesPerPage', false) == false ) {
+		update_option( 'gwolle_gb-entriesPerPage', 20 );
+	}
+	if ( get_option('gwolle_gb-excerpt_length', false) === false ) {
+		update_option( 'gwolle_gb-excerpt_length', 0 );
+	}
+	if ( get_option('gwolle_gb-form', false) == false ) {
+		$defaults = Array(
+			'form_name_enabled'       => 'true',
+			'form_name_mandatory'     => 'true',
+			'form_city_enabled'       => 'true',
+			'form_city_mandatory'     => 'false',
+			'form_email_enabled'      => 'true',
+			'form_email_mandatory'    => 'true',
+			'form_homepage_enabled'   => 'true',
+			'form_homepage_mandatory' => 'false',
+			'form_message_enabled'    => 'true',
+			'form_message_mandatory'  => 'true',
+			'form_bbcode_enabled'     => 'false',
+			'form_antispam_enabled'   => 'false',
+			'form_recaptcha_enabled'  => 'false',
+			'form_privacy_enabled'    => 'false'
+			);
+		$defaults = serialize( $defaults );
+		update_option( 'gwolle_gb-form', $defaults );
+	}
+	if ( get_option('gwolle_gb-form_ajax', false) == false ) {
+		update_option( 'gwolle_gb-form_ajax', 'true' );
+	}
+	if ( get_option('gwolle_gb-honeypot', false) == false ) {
+		update_option( 'gwolle_gb-honeypot', 'true' );
+	}
+	if ( get_option('gwolle_gb-honeypot_value', false) == false ) {
+		$random = rand( 1, 99 );
+		update_option( 'gwolle_gb-honeypot_value', $random );
+	}
+	if ( get_option('gwolle_gb-labels_float', false) == false ) {
+		update_option( 'gwolle_gb-labels_float', 'true' );
+	}
+	if ( get_option('gwolle_gb-linkAuthorWebsite', false) == false ) {
+		update_option( 'gwolle_gb-linkAuthorWebsite', 'true' );
+	}
+	if ( get_option('gwolle_gb-linkchecker', false) == false ) {
+		update_option( 'gwolle_gb-linkchecker', 'true' );
+	}
+	if ( get_option('gwolle_gb-longtext', false) == false ) {
+		update_option( 'gwolle_gb-longtext', 'true' );
+	}
+	if ( get_option('gwolle_gb-mail_author', false) == false ) {
+		update_option( 'gwolle_gb-mail_author', 'false' );
+	}
+	if ( get_option('gwolle_gb-moderate-entries', false) == false ) {
+		update_option( 'gwolle_gb-moderate-entries', 'true' );
+	}
+	if ( get_option('gwolle_gb-navigation', false) === false ) {
+		update_option( 'gwolle_gb-navigation', 0 );
+	}
+	if ( get_option('gwolle_gb-nonce', false) == false ) {
+		update_option( 'gwolle_gb-nonce', 'true' );
+	}
+	if ( get_option('gwolle_gb-paginate_all', false) == false ) {
+		update_option( 'gwolle_gb-paginate_all', 'false' );
+	}
+	if ( get_option('gwolle_gb-read', false) == false ) {
+		if ( get_option('show_avatars') ) {
+			$avatar = 'true';
+		} else {
+			$avatar = 'false';
+		}
+		$defaults = Array(
+			'read_avatar'   => $avatar,
+			'read_name'     => 'true',
+			'read_city'     => 'true',
+			'read_datetime' => 'true',
+			'read_date'     => 'false',
+			'read_content'  => 'true',
+			'read_aavatar'  => 'false',
+			'read_editlink' => 'true'
+			);
+		$defaults = serialize( $defaults );
+		update_option( 'gwolle_gb-read', $defaults );
+	}
+	if ( get_option('gwolle_gb-refuse-spam', false) == false ) {
+		update_option( 'gwolle_gb-refuse-spam', 'false' );
+	}
+	if ( get_option('gwolle_gb-require_login', false) == false ) {
+		update_option( 'gwolle_gb-require_login', 'false' );
+	}
+	if ( get_option('gwolle_gb-sfs', false) == false ) {
+		update_option( 'gwolle_gb-sfs', 'false' );
+	}
+	if ( get_option('gwolle_gb-store_ip', false) == false ) {
+		update_option( 'gwolle_gb-store_ip', 'true' );
+	}
+	if ( get_option('gwolle_gb-showEntryIcons', false) == false ) {
+		update_option( 'gwolle_gb-showEntryIcons', 'true' );
+	}
+	if ( get_option('gwolle_gb-showLineBreaks', false) == false ) {
+		update_option( 'gwolle_gb-showLineBreaks', 'false' );
+	}
+	if ( get_option('gwolle_gb-showSmilies', false) == false ) {
+		update_option( 'gwolle_gb-showSmilies', 'true' );
+	}
+	if ( get_option('gwolle_gb-timeout', false) == false ) {
+		update_option( 'gwolle_gb-timeout', 'true' );
+	}
 }

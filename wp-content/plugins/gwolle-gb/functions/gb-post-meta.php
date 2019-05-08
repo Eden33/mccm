@@ -9,6 +9,8 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Set meta_keys so we can find the post with the shortcode back.
+ *
+ * @param int $id ID of the post
  */
 function gwolle_gb_save_post($id) {
 
@@ -46,17 +48,15 @@ add_action('save_post', 'gwolle_gb_save_post');
 /*
  * Make our meta fields protected, so they are not in the custom fields metabox.
  *
- * Since 2.1.5
+ * @since 2.1.5
  */
 function gwolle_gb_is_protected_meta( $protected, $meta_key, $meta_type ) {
 
 	switch ($meta_key) {
 		case 'gwolle_gb_read':
 			return true;
-			break;
 		case 'gwolle_gb_book_id':
 			return true;
-			break;
 	}
 
 	return $protected;
@@ -66,12 +66,12 @@ add_filter( 'is_protected_meta', 'gwolle_gb_is_protected_meta', 10, 3 );
 
 /*
  * Set Meta_keys so we can find the post with the shortcode back.
- * Args: $shortcode, string with value 'write' or 'read'.
- *       $shortcode_atts, array with the shortcode attributes.
- *
  * Gets called from frontend/gb-shortcodes.php.
  *
- * Since 1.5.6
+ * @param string $shortcode      value 'write' or 'read'.
+ * @param array  $shortcode_atts array with the shortcode attributes.
+ *
+ * @since 1.5.6
  */
 function gwolle_gb_set_meta_keys( $shortcode, $shortcode_atts ) {
 
@@ -96,5 +96,26 @@ function gwolle_gb_set_meta_keys( $shortcode, $shortcode_atts ) {
 	if ( $meta_value_book_id != $book_id ) {
 		update_post_meta( get_the_ID(), 'gwolle_gb_book_id', $book_id );
 	}
+
+}
+
+
+/*
+ * Check whether this post/page is a guestbook.
+ * Will test if the 'gwolle_gb_read' meta key is set to 'true'.
+ *
+ * @param  bool $post_id the ID of the post to check.
+ * @return bool          true if this post has a guestbook shortcode.
+ *
+ * @since 3.0.0
+ */
+function gwolle_gb_post_is_guestbook( $post_id ) {
+
+	$meta_value_read = get_post_meta( $post_id, 'gwolle_gb_read', true );
+	if ( $meta_value_read == 'true' ) {
+		return true;
+	}
+
+	return false;
 
 }

@@ -59,7 +59,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			// Prepare for SSS Slider. Registers Script with WordPress to wp_footer().
 			$widget_class = 'gwolle_gb_widget';
 			if ( $slider ) {
-				wp_register_script( 'gwolle_gb_widget_sss', plugins_url( '/js/sss/sss.js', __FILE__ ), 'jquery', GWOLLE_GB_VER, true );
+				wp_register_script( 'gwolle_gb_widget_sss', GWOLLE_GB_URL . '/frontend/js/sss/sss.js', 'jquery', GWOLLE_GB_VER, true );
 				wp_enqueue_script( 'gwolle_gb_widget_sss' );
 				$widget_class .= ' gwolle_gb_widget_slider gwolle-gb-widget-slider';
 			}
@@ -70,19 +70,20 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			// Init
 			$widget_html = '';
 
-			$widget_html .= $before_widget;
+			$widget_html .= $args['before_widget'];
 			$widget_html .= '
 				<div class="gwolle_gb_widget gwolle-gb-widget">';
 
 			if ($widget_title !== FALSE) {
-				$widget_html .= $before_title . apply_filters('widget_title', $widget_title) . $after_title;
+				$widget_html .= $args['before_title'] . apply_filters('widget_title', $widget_title) . $args['after_title'];
 			}
 
 			$raquo = '';
 			if ( (int) $postid > 0 ) {
-				$permalink = get_permalink( $postid );
+				$permalink = gwolle_gb_get_permalink( $postid );
 				$raquo = '
-							<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">&raquo;</a>';
+									<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">&raquo;</a>
+								';
 			}
 
 			$widget_html .= '
@@ -90,7 +91,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			$counter = 0;
 
 			// Get the best entries first
-			if ( is_array( $best ) && !empty( $best ) ) {
+			if ( is_array( $best ) && ! empty( $best ) ) {
 				foreach ($best as $entry_id) {
 					if ( $counter == $num_entries) { break; } // we have enough
 					$entry = new gwolle_gb_entry();
@@ -239,7 +240,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 			$widget_html .= '
 				</div>
-				' . $after_widget;
+				' . $args['after_widget'];
 
 			// Add a filter for the entries, so devs can add or remove parts.
 			$widget_html = apply_filters( 'gwolle_gb_widget', $widget_html);

@@ -425,7 +425,6 @@ class gwolle_gb_entry {
 		}
 	}
 	public function set_author_name($author_name) {
-		// User input
 		$author_name = gwolle_gb_sanitize_input($author_name);
 		if ($author_name) {
 			$this->author_name = $author_name;
@@ -433,30 +432,21 @@ class gwolle_gb_entry {
 	}
 	public function set_author_id($author_id) {
 		$author_id = intval($author_id);
-		if ($author_id) {
-			$this->author_id = $author_id;
-		}
+		$this->author_id = $author_id;
 	}
 	public function set_author_email($author_email) {
-		// User input
 		$author_email = gwolle_gb_sanitize_input($author_email);
-		$author_email = filter_var($author_email, FILTER_VALIDATE_EMAIL);
-		if ($author_email) {
-			$this->author_email = $author_email;
-		}
+		//$author_email = filter_var($author_email, FILTER_VALIDATE_EMAIL);
+		$this->author_email = $author_email;
 	}
 	public function set_author_origin($author_origin) {
-		// User input
 		$author_origin = gwolle_gb_sanitize_input($author_origin);
-		if ($author_origin) {
-			$this->author_origin = $author_origin;
-		}
+		$this->author_origin = $author_origin;
 	}
 	public function set_author_website($author_website) {
-		// User input
 		$author_website = gwolle_gb_sanitize_input($author_website);
 		$pattern = '/^http/';
-		if ( !preg_match($pattern, $author_website, $matches) ) {
+		if ( ! preg_match($pattern, $author_website, $matches) ) {
 			$author_website = "http://" . $author_website;
 		}
 		$author_website = filter_var($author_website, FILTER_VALIDATE_URL);
@@ -464,20 +454,13 @@ class gwolle_gb_entry {
 	}
 	public function set_author_ip($author_ip = NULL) {
 		$author_ip = gwolle_gb_sanitize_input($author_ip);
-		if ($author_ip) {
-			$this->author_ip = $author_ip;
-		}
+		$this->author_ip = $author_ip;
 	}
 	public function set_author_host($author_host = NULL) {
 		$author_host = gwolle_gb_sanitize_input($author_host);
-		// Don't use this here, only when it is really needed, like on a new entry
-		// $author_host = gethostbyaddr( $author_ip );
-		if ($author_host) {
-			$this->author_host = $author_host;
-		}
+		$this->author_host = $author_host;
 	}
 	public function set_content($content) {
-		// User input
 		$content = gwolle_gb_sanitize_input($content, 'content');
 		if ( strlen($content) > 0 ) {
 			$this->content = $content;
@@ -488,7 +471,7 @@ class gwolle_gb_entry {
 	}
 	public function set_datetime($date = NULL) {
 		$date = intval($date); // timestamp can be cast to int.
-		if ( !$date ) {
+		if ( ! $date ) {
 			$date = current_time( 'timestamp' );
 		}
 		if ($date) {
@@ -516,7 +499,6 @@ class gwolle_gb_entry {
 		$this->isspam = $isspam;
 	}
 	public function set_admin_reply($admin_reply) {
-		// User input
 		$admin_reply = gwolle_gb_sanitize_input($admin_reply, 'admin_reply');
 		$this->admin_reply = $admin_reply;
 	}
@@ -525,7 +507,7 @@ class gwolle_gb_entry {
 	}
 	public function set_book_id($book_id) {
 		$this->book_id = intval($book_id);
-		if (!$book_id) {
+		if ( ! $book_id) {
 			$this->book_id = 1;
 		}
 	}

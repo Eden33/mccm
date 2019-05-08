@@ -14,7 +14,7 @@
 
 /* Menu Icon */
 #icon-gwolle-gb {
-	background-image: url('../gfx/icon-45x45.png');
+	background-image: url('../images/icon-45x45.png');
 	background-repeat: no-repeat;
 	margin: 0 10px;
 	float: left;
@@ -23,7 +23,9 @@
 }
 
 
-/* Welcome page */
+/*
+ * Welcome page
+ */
 
 body #dashboard-widgets .postbox#gwolle_gb_notification form p.submit {
 	margin: 1em 0;
@@ -34,9 +36,33 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 	list-style-type: disc;
 	padding-left: 14px;
 }
+.gwolle-gb-overview td {
+	padding: 2px 6px;
+}
+#wpbody .gwolle-gb-overview tr.gwolle-gb-overview-all td.colored {
+	color: #0000f0;
+}
+#wpbody .gwolle-gb-overview tr.gwolle-gb-overview-checked td.colored {
+	color: #008000;;
+}
+#wpbody .gwolle-gb-overview tr.gwolle-gb-overview-unchecked td.colored {
+	color: #ff6f00;;
+}
+#wpbody .gwolle-gb-overview tr.gwolle-gb-overview-spam td.colored {
+	color: #FF0000;;
+}
+#wpbody .gwolle-gb-overview tr.gwolle-gb-overview-trash td.colored {
+	color: #FF0000;;
+}
+/* Dark Mode */
+.dark-mode #wpbody .gwolle-gb-overview tr.gwolle-gb-overview-all td.colored {
+	color: #3030ff;
+}
 
 
-/* Editor.php */
+/*
+ * Editor.php
+ */
 
 #gwolle_gb_editor #normal-sortables .postbox input[type="text"],
 #gwolle_gb_editor #normal-sortables .postbox input[type="url"],
@@ -63,7 +89,7 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 	margin-top: 1em;
 }
 
-#gwolle_gb_editor .gwolle_gb_edit_meta_inputs {
+#gwolle_gb_editor .gwolle_gb_editor_meta_inputs {
 	display: none;
 }
 
@@ -82,7 +108,9 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 }
 
 
-/* Entries.php */
+/*
+ * Entries.php
+ */
 
 /* Page Navigation */
 .gwolle_gb .tablenav .tablenav-pages a {
@@ -101,10 +129,23 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 .gwolle_gb .tablenav .tablenav-pages span.dots {
 	margin-left: 4px;
 }
+
+
 /* Table */
 #gwolle_gb_entries th {
 	white-space: nowrap;
 }
+#gwolle_gb_entries th,
+#gwolle_gb_entries td {
+	box-shadow: inset 0 -1px 0 #0000001a;
+}
+
+/* Dark Mode */
+.dark-mode #gwolle_gb_entries th,
+.dark-mode #gwolle_gb_entries td {
+	box-shadow: inset 0 -1px 0 #32373c;
+}
+
 .gwolle_gb .id,
 .gwolle_gb .check {
 	min-width: 12px;
@@ -113,7 +154,8 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 .gwolle_gb .entry-author-name {
 	min-width: 92px;
 }
-.gwolle_gb td.entry-author-name{
+.gwolle_gb td.entry-author-name {
+	word-break: break-all;
 	word-break: break-word;
 }
 .gwolle_gb td.entry-content {
@@ -130,15 +172,18 @@ body #dashboard-widgets .postbox#gwolle_gb_notification ul {
 	cursor: move;
 }
 
+/* Admin entry */
 .gwolle_gb #gwolle_gb_entries .admin-entry {
 	color: #333;
 	background-color: #e6e6e6;
 	background-repeat: repeat-x;
-	background-image: -moz-linear-gradient(top, #f4f4f4, #e6e6e6);
-	background-image: -ms-linear-gradient(top, #f4f4f4, #e6e6e6);
-	background-image: -webkit-linear-gradient(top, #f4f4f4, #e6e6e6);
-	background-image: -o-linear-gradient(top, #f4f4f4, #e6e6e6);
 	background-image: linear-gradient(top, #f4f4f4, #e6e6e6);
+}
+/* Dark Mode */
+.dark-mode .gwolle_gb #gwolle_gb_entries .admin-entry {
+	border: 1px solid #191f25;
+	background-color: #32373c;
+	color: #bbc8dd;
 }
 
 /* Entries actions */
@@ -151,7 +196,10 @@ span.book-icon a {
 }
 
 
-/* Icons on entries.php and editor.php */
+/*
+ * Icons on entries.php and editor.php
+ */
+
 .gwolle_gb td.entry-icons {
 	min-width: 50px;
 }
@@ -167,31 +215,31 @@ span.book-icon a {
 }
 .gwolle_gb .visible .visible-icon {
 	display: inline-block;
-	background-image: url('../gfx/entry-checked.png');
+	background-image: url('../images/entry-checked.png');
 }
 .gwolle_gb .invisible .invisible-icon {
 	display: inline-block;
-	background-image: url('../gfx/entry-unchecked.png');
+	background-image: url('../images/entry-unchecked.png');
 }
 .gwolle_gb .spam .spam-icon {
 	display: inline-block;
-	background-image: url('../gfx/entry-spam.png');
+	background-image: url('../images/entry-spam.png');
 }
 .gwolle_gb .trash .trash-icon {
 	display: inline-block;
-	background-image: url('../gfx/entry-trash.png');
+	background-image: url('../images/entry-trash.png');
 }
 .gwolle_gb .admin_reply-icon {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
 	margin-right: 5px;
-	background-image: url('../gfx/entry-admin_reply.png');
+	background-image: url('../images/entry-admin-reply.png');
 }
 
 /* AJAX */
 .gwolle_gb .entry-icons .gwolle_gb_ajax {
-	background-image: url('../gfx/loading.gif'); /* Small icon for entries list */
+	background-image: url('../images/loading.gif'); /* Small icon for entries list */
 }
 
 .gwolle_gb tr.entry td span {
@@ -204,7 +252,9 @@ span.book-icon a {
 }
 
 
-/* Settings page */
+/*
+ * Settings page
+ */
 
 /* Tabs */
 form.gwolle_gb_options {
@@ -222,7 +272,9 @@ form.gwolle_gb_options.active {
 }
 
 
-/* Dashboard Widget */
+/*
+ * Dashboard Widget
+ */
 
 #gwolle_gb_dashboard .inside {
 	margin-top: 4px;
@@ -257,7 +309,10 @@ form.gwolle_gb_options.active {
 }
 
 
-/* AJAX on Entries Page and on Dashboard Widget */
+/*
+ * AJAX on Entries Page and on Dashboard Widget
+ */
+
 span.gwolle_gb_check,
 span.gwolle_gb_uncheck,
 span.gwolle_gb_spam,
@@ -286,15 +341,21 @@ span.gwolle_gb_ajax {
 	display: inline;
 }
 
-/* Admin Bar */
-/* Remember, the icon gets only loaded on our own admin pages... */
+/*
+ * Admin Bar
+ * Remember, the icon gets only loaded on our own admin pages...
+ */
+
 #wpadminbar #wp-admin-bar-gwolle-gb .ab-icon::before {
 	content: "";
 	top: 3px;
 }
 
 
-/* Export page */
+/*
+ * Export page
+ */
+
 #gwolle_gb_export .gwolle_gb_export_gif_container {
 	position: relative;
 }
@@ -309,20 +370,25 @@ span.gwolle_gb_ajax {
 	position: absolute;
 	bottom: 0;
 	left: 150px;
-
 }
 
 
-/* Add-On admin page */
+/*
+ * Add-On admin page
+ */
+
 #gwolle-gb-addon-screenshot {
-	background-image: url("../gfx/screenshot-entry-with-metabox-open.png");
+	background-image: url("../images/screenshot-entry-with-metabox-open.png");
 	width: 100%;
 	height: 240px;
 	background-size: cover;
 }
 
 
-/* Add-On */
+/*
+ * Add-On
+ */
+
 form.gwolle_gb_options.gwolle_gb_social img {
 	margin-bottom: -8px;
 }
@@ -337,5 +403,9 @@ form.gwolle_gb_options.gwolle_gb_strings td {
 .gb-form-website-add-new,
 .gb-form-message-add-new,
 .gb-string-add-new {
+	cursor: pointer;
+}
+
+span.gwolle-gb-report-abuse-positive a {
 	cursor: pointer;
 }

@@ -28,8 +28,28 @@
 
 #gwolle_gb form#gwolle_gb_new_entry,
 #gwolle_gb form#gwolle-gb-new-entry {
+	position: relative;
 	margin-top: 20px;
 	text-align: left;
+}
+
+button.gb-notice-dismiss {
+	position: absolute;
+	top: 0;
+	right: 1px;
+	border: none;
+	margin: 0;
+	padding: 9px;
+	cursor: pointer;
+	background-image: url("../images/close.png");
+	background-color: transparent;
+	background-position: 4px 4px;
+	background-repeat: no-repeat;
+	display: inline-block;
+	speak: none;
+	height: 14px;
+	text-align: center;
+	width: 13px;
 }
 
 .gwolle_gb_float .label,
@@ -37,6 +57,20 @@
 .gwolle-gb-float .label,
 .gwolle-gb-float .input {
 	float: left;
+}
+
+/* Text meant only for screen readers in broken themes. */
+#gwolle_gb .screen-reader-text {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
 }
 
 /* Overwrite shizzle from fancy themes */
@@ -78,13 +112,15 @@ body .gwolle-gb-content a {
 	padding: 2px;
 }
 
-#gwolle_gb form#gwolle_gb_new_entry .input.error, /* recaptcha */
-#gwolle_gb form#gwolle-gb-new-entry .input.error, /* recaptcha */
 #gwolle_gb form#gwolle_gb_new_entry input.error,
 #gwolle_gb form#gwolle-gb-new-entry input.error,
 #gwolle_gb form#gwolle_gb_new_entry textarea.error,
 #gwolle_gb form#gwolle-gb-new-entry textarea.error {
 	border: 1px solid #dd3d36;
+}
+#gwolle_gb form#gwolle_gb_new_entry input[type="checkbox"].error,
+#gwolle_gb form#gwolle-gb-new-entry input[type="checkbox"].error {
+	box-shadow: 1px 1px 0px 0px rgba(221,61,54,1);
 }
 
 #gwolle_gb div.label,
@@ -146,9 +182,9 @@ body .gwolle-gb-content a {
 	color: #555;
 }
 
-/* Border-radius for whole thing. */
-#gwolle_gb .page-navigation a:first-child,
-#gwolle_gb .page-navigation span:first-child {
+/* Border-radius for whole pagination thing. */
+#gwolle_gb .page-navigation a:nth-child(2),
+#gwolle_gb .page-navigation span:nth-child(2) {
 	border-radius: 3px 0 0 3px;
 }
 #gwolle_gb .page-navigation a:last-child,
@@ -206,6 +242,9 @@ body .gwolle-gb-content a {
 #gwolle_gb .gb-entry .gb-entry-content {
 	padding-left: 10px;
 }
+#gwolle_gb .gb-entry .gb-entry-content img {
+	max-width: 100%;
+}
 
 
 /* Metabox */
@@ -218,6 +257,12 @@ div.gb-metabox-handle {
 	cursor: pointer;
 	font-weight: bold;
 }
+div.gb-metabox-handle:focus {
+	outline-color: currentColor;
+	outline-style: solid;
+	outline-width: thin;
+}
+
 div.gb-metabox {
 	position: absolute;
 	top: 0;

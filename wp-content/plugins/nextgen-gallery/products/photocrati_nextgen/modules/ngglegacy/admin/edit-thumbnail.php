@@ -32,7 +32,7 @@ include_once( nggGallery::graphic_library() );
 $ngg_options=get_option('ngg_options');
 
 $thumb = new ngg_Thumbnail($picture->imagePath, TRUE);
-$thumb->resize(350,350);
+$thumb->resize(450,350);
 // we need the new dimension
 $resizedPreviewInfo = $thumb->newDimensions;
 $thumb->destruct();
@@ -41,8 +41,10 @@ $thumb->destruct();
 $storage            = C_Gallery_Storage::get_instance();
 $thumbnail_manager  = C_Dynamic_Thumbnails_Manager::get_instance();
 $dynamic_size       = $thumbnail_manager->get_size_name(array(
-	'width'     =>  350,
+	'width'     =>  450,
 	'height'    =>  350,
+	// 'width'     =>  300,
+	// 'height'    =>  300,
 
 ));
 //$preview_image		= NGGALLERY_URLPATH . 'nggshow.php?pid=' . $picture->pid . '&amp;width=350&amp;height=350';
@@ -91,7 +93,7 @@ if ($thumbnail_crop_frame != null)
 
 <script type="text/javascript">
 //<![CDATA[	
-	var status = 'start';
+	var status = 'edit';
 	var xT, yT, wT, hT, selectedCoords;
 	var selectedImage = "thumb<?php echo $id ?>";
 
@@ -99,7 +101,7 @@ if ($thumbnail_crop_frame != null)
 	{
 		if (status != 'edit') {
 			jQuery('#actualThumb').hide();
-			jQuery('#previewNewThumb').show();
+			jQuery('#previewNewThumb').hide();
 			status = 'edit';	
 		}
 		
@@ -140,7 +142,7 @@ if ($thumbnail_crop_frame != null)
 					
 					jQuery('#thumbMsg').html("<?php _e('Thumbnail updated', 'nggallery') ?>");
 					jQuery('#thumbMsg').css({'display':'block'});
-					setTimeout(function(){ jQuery('#thumbMsg').fadeOut('slow'); }, 1500);
+					setTimeout(function(){ jQuery('#thumbMsg').html(''); }, 1500);
 			},
 		  error: function() {
 		  			jQuery('#thumbMsg').html("<?php _e('Error updating thumbnail', 'nggallery') ?>");
@@ -153,17 +155,18 @@ if ($thumbnail_crop_frame != null)
 //]]>
 </script>
 
-<table width="98%" align="center" style="border:1px solid #DADADA">
+<table align="center">
 	<tr>
-		<td rowspan="3" valign="middle" align="center" width="350" style="background-color:#DADADA;">
+		<td rowspan="3" valign="middle" align="center" id="ngg-overlay-dialog-main">
+			<small><?php esc_html_e('Select the area for the thumbnail from the picture below.', 'nggallery'); ?></small>
 			<img src="<?php echo nextgen_esc_url( $preview_image ); ?>" alt="" id="imageToEdit" />	
 		</td>
-		<td width="300" style="background-color : #DADADA;">
-			<small style="margin-left:6px; display:block;"><?php esc_html_e('Select the area for the thumbnail from the picture on the left.', 'nggallery'); ?></small>
+		<td style="display:none;">
+			<small><?php esc_html_e('Select the area for the thumbnail from the picture on the left.', 'nggallery'); ?></small>
 		</td>		
 	</tr>
-	<tr>
-		<td align="center" width="300" height="320">
+	<tr style="display:none;">
+		<td align="center">
 			<div id="previewNewThumb" style="display:none;width:<?php echo $WidthHtmlPrev; ?>px;height:<?php echo $HeightHtmlPrev; ?>px;overflow:hidden; margin-left:5px;">
 				<img src="<?php echo nextgen_esc_url( $preview_image ); ?>" id="imageToEditPreview" />
 			</div>
@@ -172,13 +175,11 @@ if ($thumbnail_crop_frame != null)
 			</div>
 		</td>
 	</tr>
-	<tr style="background-color:#DADADA;">
-		<td>
-			<input type="button" name="update" value="<?php esc_attr_e('Update', 'nggallery'); ?>" onclick="updateThumb()" class="button-secondary" style="float:left; margin-left:4px;"/>
-			<div id="thumbMsg" style="color:#FF0000; display : none;font-size:11px; float:right; width:60%; height:2em; line-height:2em;"></div>
-		</td>
-	</tr>
 </table>
+<div id="ngg-overlay-dialog-bottom">
+    <div id="thumbMsg"></div>
+	<input type="button" name="update" value="<?php esc_attr_e('Update', 'nggallery'); ?>" onclick="updateThumb()" class="button-secondary" />
+</div>
 
 <script type="text/javascript">
 //<![CDATA[

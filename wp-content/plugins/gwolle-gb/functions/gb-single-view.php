@@ -11,10 +11,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * Give a single view of the entry.
  * Uses the template 'gwolle_gb-entry.php', either in the themedir or the plugin.
  *
- * @param $entry object of the class gwolle_gb_entry.
- *        $first boolean if it is the first entry in the list
- *        $counter int the number in the list.
- *
+ * @param object $entry instance of the class gb_entry.
+ * @param bool $first if it is the first entry in the list
+ * @param int $counter the number in the list.
  * @return string with html formatted entry.
  *
  * @since 2.3.0

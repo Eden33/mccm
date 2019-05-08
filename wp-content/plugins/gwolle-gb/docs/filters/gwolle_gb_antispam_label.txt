@@ -2,7 +2,7 @@
 
 ==Description==
 
-The <b>"gwolle_gb_antispam_label"</b> filter is used to change the text of the label for the input for antispam at the frontend. It is used for the Custom antispam question and the CAPTCHA.
+The <b>"gwolle_gb_antispam_label"</b> filter is used to change the text of the label for the input for antispam at the frontend. It is used for the Custom antispam question.
 
 You can use this filter as:
 

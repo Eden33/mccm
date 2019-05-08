@@ -9,6 +9,8 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Clear the cache of the most common Cache plugins.
+ *
+ * @param object $entry instance of gb_entry class
  */
 function gwolle_gb_clear_cache( $entry = false ) {
 
@@ -24,8 +26,20 @@ function gwolle_gb_clear_cache( $entry = false ) {
 		$book_id = $entry->get_book_id();
 		$key = 'gwolle_gb_frontend_pagination_book_' . $book_id;
 		delete_transient( $key );
+	} else {
+		// no book_id available, clear all transients.
+		$postids = gwolle_gb_get_books();
+		if ( is_array($postids) && ! empty($postids) ) {
+			foreach ( $postids as $postid ) {
+				$bookid = (int) get_post_meta( $postid, 'gwolle_gb_book_id', true );
+				if ( empty( $bookid ) ) {
+					continue;
+				}
+				$key = 'gwolle_gb_frontend_pagination_book_' . $bookid;
+				delete_transient( $key );
+			}
+		}
 	}
-
 
 	/* Cachify */
 	if ( class_exists('Cachify') ) {

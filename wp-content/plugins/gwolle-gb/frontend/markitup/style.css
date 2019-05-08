@@ -64,9 +64,9 @@
 	margin-right:0px;
 }
 .markItUpHeader ul .markItUpSeparator {
-	margin:0 5px;
-	width:1px;
-	height:16px;
+	margin:0 8px;
+	width: 1px;
+	height: 20px;
 	overflow:hidden;
 	background-color:#CCC;
 }
@@ -100,10 +100,10 @@
 }
 #gwolle_gb .markItUpHeader ul a,
 .gwolle_gb .markItUpHeader ul a {
-	display:block;
+	display: block;
 	box-sizing: content-box;
-	width:16px;
-	height:16px;
+	width: 20px;
+	height: 20px;
 	text-indent:-10000px;
 	background-repeat:no-repeat;
 	padding: 3px 3px 1px 3px;

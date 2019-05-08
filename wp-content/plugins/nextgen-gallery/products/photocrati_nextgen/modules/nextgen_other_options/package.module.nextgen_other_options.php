@@ -118,9 +118,9 @@ class A_Image_Options_Form extends Mixin
         return array(__('Categories', 'nggallery') => 'category', __('Tags', 'nggallery') => 'tags');
     }
     /**
-     * Tries to create the gallery storage directory if it doesn't exist
-     * already
-     * @return string
+     * Tries to create the gallery storage directory if it doesn't exist already
+     * @param null|string $gallerypath (optional)
+     * @return bool|string
      */
     function _create_gallery_storage_dir($gallerypath = NULL)
     {
@@ -136,7 +136,7 @@ class A_Image_Options_Form extends Mixin
         }
         return $retval;
     }
-    /*
+    /**
      * Renders the form
      */
     function render()
@@ -145,7 +145,7 @@ class A_Image_Options_Form extends Mixin
             $this->object->get_model()->add_error(__('Gallery path does not exist and could not be created', 'nggallery'), 'gallerypath');
         }
         $settings = $this->object->get_model();
-        return $this->render_partial('photocrati-nextgen_other_options#image_options_tab', array('gallery_path_label' => __('Where would you like galleries stored?', 'nggallery'), 'gallery_path_help' => __('Where galleries and their images are stored', 'nggallery'), 'gallery_path' => $settings->gallerypath, 'delete_image_files_label' => __('Delete Image Files?', 'nggallery'), 'delete_image_files_help' => __('When enabled, image files will be removed after a Gallery has been deleted', 'nggallery'), 'delete_image_files' => $settings->deleteImg, 'show_related_images_label' => __('Show Related Images on Posts?', 'nggallery'), 'show_related_images_help' => __('When enabled, related images will be appended to each post by matching the posts tags/categories to image tags', 'nggallery'), 'show_related_images' => $settings->activateTags, 'related_images_hidden_label' => __('(Show Customization Settings)', 'nggallery'), 'related_images_active_label' => __('(Hide Customization Settings)', 'nggallery'), 'match_related_images_label' => __('How should related images be match?', 'nggallery'), 'match_related_images' => $settings->appendType, 'match_related_image_options' => $this->object->_get_related_image_match_options(), 'max_related_images_label' => __('Maximum # of related images to display', 'nggallery'), 'max_related_images' => $settings->maxImages, 'related_images_heading_label' => __('Heading for related images', 'nggallery'), 'related_images_heading' => $settings->relatedHeading, 'sorting_order_label' => __("What's the default sorting method?", 'nggallery'), 'sorting_order_options' => $this->object->_get_image_sorting_options(), 'sorting_order' => $settings->galSort, 'sorting_direction_label' => __('Sort in what direction?', 'nggallery'), 'sorting_direction_options' => $this->object->_get_sorting_direction_options(), 'sorting_direction' => $settings->galSortDir, 'automatic_resize_label' => __('Automatically resize images after upload', 'nggallery'), 'automatic_resize_help' => __('It is recommended that your images be resized to be web friendly', 'nggallery'), 'automatic_resize' => $settings->imgAutoResize, 'resize_images_label' => __('What should images be resized to?', 'nggallery'), 'resize_images_help' => __('After images are uploaded, they will be resized to the above dimensions and quality', 'nggallery'), 'resized_image_width_label' => __('Width:', 'nggallery'), 'resized_image_height_label' => __('Height:', 'nggallery'), 'resized_image_quality_label' => __('Quality:', 'nggallery'), 'resized_image_width' => $settings->imgWidth, 'resized_image_height' => $settings->imgHeight, 'resized_image_quality' => $settings->imgQuality, 'backup_images_label' => __('Backup the original images?', 'nggallery'), 'backup_images_yes_label' => __('Yes'), 'backup_images_no_label' => __('No'), 'backup_images' => $settings->imgBackup), TRUE);
+        return $this->render_partial('photocrati-nextgen_other_options#image_options_tab', array('gallery_path_label' => __('Where would you like galleries stored?', 'nggallery'), 'gallery_path_help' => __('Where galleries and their images are stored', 'nggallery'), 'gallery_path' => $settings->gallerypath, 'delete_image_files_label' => __('Delete Image Files?', 'nggallery'), 'delete_image_files_help' => __('When enabled, image files will be removed after a Gallery has been deleted', 'nggallery'), 'delete_image_files' => $settings->deleteImg, 'show_related_images_label' => __('Show Related Images on Posts?', 'nggallery'), 'show_related_images_help' => __('When enabled, related images will be appended to each post by matching the posts tags/categories to image tags', 'nggallery'), 'show_related_images' => $settings->activateTags, 'related_images_hidden_label' => __('(Show Customization Settings)', 'nggallery'), 'related_images_active_label' => __('(Hide Customization Settings)', 'nggallery'), 'match_related_images_label' => __('How should related images be matched?', 'nggallery'), 'match_related_images' => $settings->appendType, 'match_related_image_options' => $this->object->_get_related_image_match_options(), 'max_related_images_label' => __('Maximum # of related images to display', 'nggallery'), 'max_related_images' => $settings->maxImages, 'related_images_heading_label' => __('Heading for related images', 'nggallery'), 'related_images_heading' => $settings->relatedHeading, 'sorting_order_label' => __("What's the default sorting method?", 'nggallery'), 'sorting_order_options' => $this->object->_get_image_sorting_options(), 'sorting_order' => $settings->galSort, 'sorting_direction_label' => __('Sort in what direction?', 'nggallery'), 'sorting_direction_options' => $this->object->_get_sorting_direction_options(), 'sorting_direction' => $settings->galSortDir, 'automatic_resize_label' => __('Automatically resize images after upload', 'nggallery'), 'automatic_resize_help' => __('It is recommended that your images be resized to be web friendly', 'nggallery'), 'automatic_resize' => $settings->imgAutoResize, 'resize_images_label' => __('What should images be resized to?', 'nggallery'), 'resize_images_help' => __('After images are uploaded, they will be resized to the above dimensions and quality', 'nggallery'), 'resized_image_width_label' => __('Width:', 'nggallery'), 'resized_image_height_label' => __('Height:', 'nggallery'), 'resized_image_quality_label' => __('Quality:', 'nggallery'), 'resized_image_width' => $settings->imgWidth, 'resized_image_height' => $settings->imgHeight, 'resized_image_quality' => $settings->imgQuality, 'backup_images_label' => __('Backup the original images?', 'nggallery'), 'backup_images_yes_label' => __('Yes'), 'backup_images_no_label' => __('No'), 'backup_images' => $settings->imgBackup), TRUE);
     }
     function save_action($image_options)
     {
@@ -168,6 +168,28 @@ class A_Image_Options_Form extends Mixin
                 }
             } elseif (isset($image_options['gallerypath'])) {
                 unset($image_options['gallerypath']);
+            }
+            // Sanitize input
+            foreach ($image_options as $key => &$value) {
+                switch ($key) {
+                    case 'imgAutoResize':
+                    case 'deleteImg':
+                    case 'imgWidth':
+                    case 'imgHeight':
+                    case 'imgBackup':
+                    case 'imgQuality':
+                    case 'activateTags':
+                    case 'maxImages':
+                        $value = intval($value);
+                        break;
+                    case 'galSort':
+                    case 'galSortDir':
+                        $value = esc_html($value);
+                        break;
+                    case 'relatedHeading':
+                        $value = M_NextGen_Data::strip_html($value, TRUE);
+                        break;
+                }
             }
             // Update image options
             if ($save) {
@@ -306,7 +328,7 @@ class A_Miscellaneous_Form extends Mixin
     }
     function render()
     {
-        return $this->object->render_partial('photocrati-nextgen_other_options#misc_tab', array('mediarss_activated' => C_NextGen_Settings::get_instance()->useMediaRSS, 'mediarss_activated_label' => __('Add MediaRSS link?', 'nggallery'), 'mediarss_activated_help' => __('When enabled, adds a MediaRSS link to your header. Third-party web services can use this to publish your galleries', 'nggallery'), 'mediarss_activated_no' => __('No'), 'mediarss_activated_yes' => __('Yes'), 'galleries_in_feeds' => C_NextGen_Settings::get_instance()->galleries_in_feeds, 'galleries_in_feeds_label' => __('Display galleries in feeds', 'nggallery'), 'galleries_in_feeds_help' => __('NextGEN hides its gallery displays in feeds other than MediaRSS. This enables image galleries in feeds.', 'nggallery'), 'galleries_in_feeds_no' => __('No'), 'galleries_in_feeds_yes' => __('Yes'), 'cache_label' => __('Clear image cache', 'nggallery'), 'cache_confirmation' => __("Completely clear the NextGEN cache of all image modifications?\n\nChoose [Cancel] to Stop, [OK] to proceed.", 'nggallery'), 'slug_field' => $this->_render_text_field((object) array('name' => 'misc_settings'), 'router_param_slug', __('Permalink slug', 'nggallery'), $this->object->get_model()->router_param_slug), 'maximum_entity_count_field' => $this->_render_number_field((object) array('name' => 'misc_settings'), 'maximum_entity_count', __('Maximum image count', 'nggallery'), $this->object->get_model()->maximum_entity_count, __('This is the maximum limit of images that NextGEN will restrict itself to querying', 'nggallery') . " \n " . __('Note: This limit will not apply to slideshow widgets or random galleries if/when those galleries specify their own image limits', 'nggallery'), FALSE, '', 1)), TRUE);
+        return $this->object->render_partial('photocrati-nextgen_other_options#misc_tab', array('mediarss_activated' => C_NextGen_Settings::get_instance()->useMediaRSS, 'mediarss_activated_label' => __('Add MediaRSS link?', 'nggallery'), 'mediarss_activated_help' => __('When enabled, adds a MediaRSS link to your header. Third-party web services can use this to publish your galleries', 'nggallery'), 'mediarss_activated_no' => __('No'), 'mediarss_activated_yes' => __('Yes'), 'galleries_in_feeds' => C_NextGen_Settings::get_instance()->galleries_in_feeds, 'galleries_in_feeds_label' => __('Display galleries in feeds', 'nggallery'), 'galleries_in_feeds_help' => __('NextGEN hides its gallery displays in feeds other than MediaRSS. This enables image galleries in feeds.', 'nggallery'), 'galleries_in_feeds_no' => __('No'), 'galleries_in_feeds_yes' => __('Yes'), 'cache_label' => __('Clear image cache', 'nggallery'), 'cache_confirmation' => __("Completely clear the NextGEN cache of all image modifications?\n\nChoose [Cancel] to Stop, [OK] to proceed.", 'nggallery'), 'slug_field' => $this->_render_text_field((object) array('name' => 'misc_settings'), 'router_param_slug', __('Permalink slug', 'nggallery'), $this->object->get_model()->router_param_slug), 'maximum_entity_count_field' => $this->_render_number_field((object) array('name' => 'misc_settings'), 'maximum_entity_count', __('Maximum image count', 'nggallery'), $this->object->get_model()->maximum_entity_count, __('This is the maximum limit of images that NextGEN will restrict itself to querying', 'nggallery') . " \n " . __('Note: This limit will not apply to slideshow widgets or random galleries if/when those galleries specify their own image limits', 'nggallery'), FALSE, '', 1), 'random_widget_cache_ttl_field' => $this->_render_number_field((object) array('name' => 'misc_settings'), 'random_widget_cache_ttl', __('Random widget cache duration', 'nggallery'), $this->object->get_model()->random_widget_cache_ttl, __('The duration of time (in minutes) that "random" widget galleries should be cached. A setting of zero will disable caching.', 'nggallery'), FALSE, '', 0), 'alternate_random_method_field' => $this->_render_radio_field((object) array('name' => 'misc_settings'), 'use_alternate_random_method', __('Use alternative method of retrieving random image galleries', 'nggallery'), C_NextGen_Settings::get_instance()->use_alternate_random_method, __("Some web hosts' database servers disable or disrupt queries using 'ORDER BY RAND()' which can cause galleries to lose their randomness. NextGen provides an alternative (but not completely random) method to determine what images are fed into 'random' galleries.", 'nggallery'))), TRUE);
     }
     function cache_action()
     {
@@ -319,8 +341,9 @@ class A_Miscellaneous_Form extends Mixin
         if ($settings = $this->object->param('misc_settings')) {
             // The Media RSS setting is actually a local setting, not a global one
             $local_settings = C_NextGen_Settings::get_instance();
-            $local_settings->set('useMediaRSS', $settings['useMediaRSS']);
+            $local_settings->set('useMediaRSS', intval($settings['useMediaRSS']));
             unset($settings['useMediaRSS']);
+            $settings['galleries_in_feeds'] = intval($settings['galleries_in_feeds']);
             // It's important the router_param_slug never be empty
             if (empty($settings['router_param_slug'])) {
                 $settings['router_param_slug'] = 'nggallery';
@@ -330,7 +353,8 @@ class A_Miscellaneous_Form extends Mixin
                 C_Photocrati_Transient_Manager::flush('displayed_gallery_rendering');
             }
             // Do not allow this field to ever be unset
-            if (empty($settings['maximum_entity_count']) || (int) $settings['maximum_entity_count'] <= 0) {
+            $settings['maximum_entity_count'] = intval($settings['maximum_entity_count']);
+            if ($settings['maximum_entity_count'] <= 0) {
                 $settings['maximum_entity_count'] = 500;
             }
             // Save both setting groups
@@ -350,7 +374,7 @@ class A_Other_Options_Controller extends Mixin
     {
         $this->call_parent('enqueue_backend_resources');
         wp_enqueue_script('nextgen_settings_page', $this->get_static_url('photocrati-nextgen_other_options#nextgen_settings_page.js'), array('jquery-ui-accordion', 'jquery-ui-tooltip', 'wp-color-picker', 'jquery.nextgen_radio_toggle'), NGG_SCRIPT_VERSION);
-        wp_enqueue_style('nextgen_settings_page', $this->get_static_url('photocrati-nextgen_other_options#nextgen_settings_page.css'), FALSE, NGG_SCRIPT_VERSION);
+        wp_enqueue_style('nextgen_settings_page', $this->get_static_url('photocrati-nextgen_other_options#nextgen_settings_page.css'), array(), NGG_SCRIPT_VERSION);
     }
     function get_page_title()
     {
@@ -363,7 +387,7 @@ class A_Other_Options_Controller extends Mixin
 }
 /**
  * Class A_Other_Options_Page
- * @mixin C_Page_Manager
+ * @mixin C_NextGen_Admin_Page_Manager
  * @adapts I_Page_Manager
  */
 class A_Other_Options_Page extends Mixin
@@ -387,7 +411,7 @@ class A_Reset_Form extends Mixin
     }
     function render()
     {
-        return $this->object->render_partial('photocrati-nextgen_other_options#reset_tab', array('reset_value' => __('Reset all options to default settings', 'nggallery'), 'reset_warning' => __('Replace all existing options and gallery options with their default settings', 'nggallery'), 'reset_label' => __('Reset settings', 'nggallery'), 'reset_confirmation' => __("Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.", 'nggallery')), TRUE);
+        return $this->object->render_partial('photocrati-nextgen_other_options#reset_tab', array('reset_value' => __('Reset all options', 'nggallery'), 'reset_warning' => __('Replace all existing options and gallery options with their default settings', 'nggallery'), 'reset_label' => __('Reset settings', 'nggallery'), 'reset_confirmation' => __("Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.", 'nggallery')), TRUE);
     }
     function reset_action()
     {
@@ -470,6 +494,7 @@ class A_Styles_Form extends Mixin
     {
         // Ensure that we have
         if ($settings = $this->object->param('style_settings')) {
+            $settings['activateCSS'] = intval($settings['activateCSS']);
             $valid = TRUE;
             // the desired file, but users shouldn't use this to write files that don't end in .css anyway
             $file_info = pathinfo($settings['CSSfile']);
@@ -529,9 +554,7 @@ class A_Stylesheet_Ajax_Actions extends Mixin
      */
     function _authorized_for_stylesheet_action()
     {
-        $security = $this->get_registry()->get_utility('I_Security_Manager');
-        $sec_actor = $security->get_current_actor();
-        return $sec_actor->is_allowed('nextgen_edit_style');
+        return M_Security::is_allowed('nextgen_edit_style');
     }
 }
 /**
@@ -557,6 +580,10 @@ class A_Thumbnail_Options_Form extends Mixin
     function save_action()
     {
         if ($settings = $this->object->param('thumbnail_settings')) {
+            // Sanitize
+            foreach ($settings as $key => &$value) {
+                $value = intval($value);
+            }
             $this->object->get_model()->set($settings)->save();
         }
     }
@@ -574,26 +601,18 @@ class A_Watermarking_Ajax_Actions extends Mixin
      */
     function get_watermark_preview_url_action()
     {
-        $security = $this->get_registry()->get_utility('I_Security_Manager');
-        $sec_actor = $security->get_current_actor();
-        if ($sec_actor->is_allowed('nextgen_edit_settings')) {
+        if (M_Security::is_allowed('nextgen_edit_settings')) {
             $settings = C_NextGen_Settings::get_instance();
             $imagegen = C_Dynamic_Thumbnails_Manager::get_instance();
             $mapper = C_Image_Mapper::get_instance();
             $image = $mapper->find_first();
             $storage = C_Gallery_Storage::get_instance();
-            $sizeinfo = array('quality' => 100, 'height' => 250, 'crop' => FALSE, 'watermark' => TRUE);
+            $watermark_options = $this->param('watermark_options');
+            $sizeinfo = array('quality' => 100, 'height' => 250, 'crop' => false, 'watermark' => true, 'wmFont' => trim(esc_sql($watermark_options['wmFont'])), 'wmType' => trim(esc_sql($watermark_options['wmType'])), 'wmPos' => trim(esc_sql($watermark_options['wmPos'])), 'wmXpos' => intval(trim($watermark_options['wmXpos'])), 'wmYpos' => intval(trim($watermark_options['wmYpos'])), 'wmPath' => trim(esc_sql($watermark_options['wmPath'])), 'wmText' => trim(esc_sql($watermark_options['wmText'])), 'wmOpaque' => intval(trim($watermark_options['wmOpaque'])), 'wmFont' => trim(esc_sql($watermark_options['wmFont'])), 'wmSize' => intval(trim($watermark_options['wmSize'])), 'wmColor' => trim(esc_sql($watermark_options['wmColor'])));
             $size = $imagegen->get_size_name($sizeinfo);
+            $storage->generate_image_size($image, $size, $sizeinfo);
+            $storage->flush_image_path_cache($image, $size);
             $thumbnail_url = $storage->get_image_url($image, $size);
-            // Temporarily update the watermark options. Generate a new image based
-            // on these settings
-            if ($watermark_options = $this->param('watermark_options')) {
-                $watermark_options['wmFont'] = trim($watermark_options['wmFont']);
-                $settings->set($watermark_options);
-                $storage->generate_image_size($image, $size);
-                $thumbnail_url = $storage->get_image_url($image, $size);
-                $settings->load();
-            }
             return array('thumbnail_url' => $thumbnail_url);
         } else {
             return array('thumbnail_url' => '', 'error' => 'You are not allowed to perform this operation');
@@ -643,7 +662,7 @@ class A_Watermarks_Form extends Mixin
     }
     /**
      * Renders the fields for a watermark source (image, text)
-     * @return string
+     * @return array
      */
     function _get_watermark_source_fields()
     {
@@ -685,7 +704,14 @@ class A_Watermarks_Form extends Mixin
         $storage = C_Gallery_Storage::get_instance();
         $image = C_Image_Mapper::get_instance()->find_first();
         $imagegen = C_Dynamic_Thumbnails_Manager::get_instance();
-        $size = $imagegen->get_size_name(array('height' => 250, 'crop' => FALSE, 'watermark' => TRUE));
+        $settings = C_NextGen_Settings::get_instance();
+        $watermark_setting_keys = array('wmFont', 'wmType', 'wmPos', 'wmXpos', 'wmYpos', 'wmPath', 'wmText', 'wmOpaque', 'wmFont', 'wmSize', 'wmColor');
+        $watermark_options = array();
+        foreach ($watermark_setting_keys as $watermark_setting_key) {
+            $watermark_options[$watermark_setting_key] = $settings->get($watermark_setting_key);
+        }
+        $sizeinfo = array('quality' => 100, 'height' => 250, 'crop' => false, 'watermark' => true, 'wmFont' => trim(esc_sql($watermark_options['wmFont'])), 'wmType' => trim(esc_sql($watermark_options['wmType'])), 'wmPos' => trim(esc_sql($watermark_options['wmPos'])), 'wmXpos' => trim(intval($watermark_options['wmXpos'])), 'wmYpos' => trim(intval($watermark_options['wmYpos'])), 'wmPath' => trim(esc_sql($watermark_options['wmPath'])), 'wmText' => trim(esc_sql($watermark_options['wmText'])), 'wmOpaque' => intval(trim($watermark_options['wmOpaque'])), 'wmFont' => trim(esc_sql($watermark_options['wmFont'])), 'wmSize' => trim(intval($watermark_options['wmSize'])), 'wmColor' => trim(esc_sql($watermark_options['wmColor'])));
+        $size = $imagegen->get_size_name($sizeinfo);
         $url = $image ? $storage->get_image_url($image, $size) : NULL;
         $abspath = $image ? $storage->get_image_abspath($image, $size) : NULL;
         return array('url' => $url, 'abspath' => $abspath);
@@ -699,6 +725,28 @@ class A_Watermarks_Form extends Mixin
     function save_action()
     {
         if ($settings = $this->object->param('watermark_options')) {
+            // Sanitize
+            foreach ($settings as $key => &$value) {
+                switch ($key) {
+                    case 'wmType':
+                        if (!in_array($value, array('', 'text', 'image'))) {
+                            $value = '';
+                        }
+                        break;
+                    case 'wmPos':
+                        if (!in_array($value, array('topLeft', 'topCenter', 'topRight', 'midLeft', 'midCenter', 'midRight', 'botLeft', 'botCenter', 'botRight'))) {
+                            $value = 'midCenter';
+                        }
+                        break;
+                    case 'wmXpos':
+                    case 'wmYpos':
+                        $value = intval($value);
+                        break;
+                    case 'wmText':
+                        $value = M_NextGen_Data::strip_html($value);
+                        break;
+                }
+            }
             $this->object->get_model()->set($settings)->save();
             $image = $this->object->_get_preview_image();
             if (is_file($image['abspath'])) {
@@ -718,6 +766,10 @@ class C_Settings_Model extends C_Component
      */
     var $wrapper = NULL;
     static $_instances = array();
+    /**
+     * @param bool|string $context
+     * @return C_Settings_Model
+     */
     static function get_instance($context = FALSE)
     {
         if (!isset(self::$_instances[$context])) {

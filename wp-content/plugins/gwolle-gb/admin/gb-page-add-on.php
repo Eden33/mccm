@@ -6,6 +6,9 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
+/*
+ * Admin page for advertising the Add-On.
+ */
 function gwolle_gb_addon_menu_advertisement() {
 
 	$active = is_plugin_active( 'gwolle-gb-addon/gwolle-gb-addon.php' ); // true or false
@@ -16,7 +19,9 @@ function gwolle_gb_addon_menu_advertisement() {
 add_action( 'admin_menu', 'gwolle_gb_addon_menu_advertisement', 11 );
 
 
-/* Metaboxes on the left. */
+/*
+ * Admin page for advertising the Add-On. Contains metaboxes.
+ */
 function gwolle_gb_addon_page_advertisement() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
@@ -52,6 +57,9 @@ function gwolle_gb_addon_page_advertisement() {
 }
 
 
+/*
+ * Metabox with the main description of the add-on.
+ */
 function gwolle_gb_addon_description(){
 	?>
 	<div class="table table_content gwolle_gb">
@@ -62,6 +70,9 @@ function gwolle_gb_addon_description(){
 }
 
 
+/*
+ * Metabox with the feature list of the add-on.
+ */
 function gwolle_gb_addon_features() {
 	echo '<h3>
 	' . esc_html__('Current features include:', 'gwolle-gb').'</h3>
@@ -73,16 +84,22 @@ function gwolle_gb_addon_features() {
 		<li>' . esc_html__('Preview for the frontend form.','gwolle-gb').'</li>
 		<li>' . esc_html__('Preview for the admin editor form.','gwolle-gb').'</li>
 		<li>' . esc_html__('Admin reply on the frontend with AJAX.','gwolle-gb').'</li>
+		<li>' . esc_html__('Report Abuse.','gwolle-gb').'</li>
+		<li>' . esc_html__('Blacklist for words and IP address.','gwolle-gb').'</li>
 		<li>' . esc_html__('Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want.','gwolle-gb').'</li>
 		<li>' . esc_html__('Delete button in each entry for the moderator and author (optional).','gwolle-gb').'</li>
 		<li>' . esc_html__('Permalink button in each entry for easy access (optional).','gwolle-gb').'</li>
 		<li>' . esc_html__('Email button to contact each author (optional).','gwolle-gb').'</li>
 		<li>' . esc_html__('Sitemap support for popular SEO/Sitemap plugins.','gwolle-gb').'</li>
+		<li>' . esc_html__('Auto Anonymize timer (optional).','gwolle-gb').'</li>
+		<li>' . esc_html__('Auto Delete timer (optional).','gwolle-gb').'</li>
 	</ul>';
 }
 
 
-/* Metaboxes on the right. */
+/*
+ * Metabox with the link to the marketplace for the add-on.
+ */
 function gwolle_gb_addon_buy() {
 	?>
 	<h3><?php esc_html_e('Buy the Add-On.', 'gwolle-gb'); ?></h3>
@@ -96,6 +113,9 @@ function gwolle_gb_addon_buy() {
 }
 
 
+/*
+ * Metabox with links to the demo site.
+ */
 function gwolle_gb_addon_demo() {
 	?>
 	<h3><?php esc_html_e('Demo with the Add-On.', 'gwolle-gb'); ?></h3>
@@ -115,6 +135,9 @@ function gwolle_gb_addon_demo() {
 }
 
 
+/*
+ * Metabox with the motivational text of the add-on.
+ */
 function gwolle_gb_addon_development() {
 	?>
 	<p><?php

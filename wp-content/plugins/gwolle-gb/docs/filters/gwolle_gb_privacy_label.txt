@@ -18,7 +18,7 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 
 function my_gwolle_gb_privacy_label( $label ) {
 	// $label is a string
-	$label = 'test';
+	$label = 'Accept %sPrivacy Policy%s'; // default text, with placeholders that become a link.
 	return $label;
 }
 add_filter( 'gwolle_gb_privacy_label', 'my_gwolle_gb_privacy_label', 10, 1 );

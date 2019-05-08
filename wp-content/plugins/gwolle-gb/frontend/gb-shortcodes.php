@@ -12,28 +12,27 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 }
 
 
-/* Frontend Function
+/*
+ * Frontend Function
  * Use this to display the guestbook on a page without using a shortcode.
  *
  * For multiple guestbooks, use it like this:
  * show_gwolle_gb( array('book_id'=>2) );
  * which will show Book ID 2.
  */
-
 function show_gwolle_gb( $atts ) {
 	echo get_gwolle_gb( $atts );
 }
 
 
-/* Frontend Function
+/*
+ * Frontend Function
  * Used for the main shortcode.
  *
- * Parameters:
- * shortcode_atts:
+ * @param array $atts array with the shortcode attributes.
  *   - book_id = 1 (default)
  *     Can be any integer. Can also be post_id, which will set it to the ID of that post.
  */
-
 function get_gwolle_gb( $atts ) {
 
 	$shortcode = 'gwolle_gb';
@@ -75,7 +74,11 @@ add_shortcode( 'gwolle-gb', 'get_gwolle_gb' ); // deprecated, do not use dashes 
 add_shortcode( 'gwolle_gb', 'get_gwolle_gb' );
 
 
-/* Frontend function to show just the form */
+/*
+ * Frontend function to show just the form.
+ *
+ * @param array $atts array with the shortcode attributes.
+ */
 function get_gwolle_gb_write( $atts ) {
 
 	$shortcode = 'gwolle_gb_write';
@@ -112,7 +115,11 @@ function get_gwolle_gb_write( $atts ) {
 add_shortcode( 'gwolle_gb_write', 'get_gwolle_gb_write' );
 
 
-/* Frontend function to show just the list of entries */
+/*
+ * Frontend function to show just the list of entries
+ *
+ * @param array $atts array with the shortcode attributes.
+ */
 function get_gwolle_gb_read( $atts ) {
 
 	$shortcode = 'gwolle_gb_read';

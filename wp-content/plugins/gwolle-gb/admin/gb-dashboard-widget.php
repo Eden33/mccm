@@ -12,7 +12,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_dashboard() {
 
-	if ( function_exists('current_user_can') && !current_user_can('moderate_comments') ) {
+	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
 		return;
 	}
 
@@ -26,19 +26,19 @@ function gwolle_gb_dashboard() {
 			'spam'    => 'nospam'
 		));
 
-	if ( is_array($entries) && !empty($entries) ) {
+	if ( is_array($entries) && ! empty($entries) ) {
 
 		// List of guestbook entries
 		echo '<div class="gwolle-gb-dashboard gwolle-gb">';
-		$rowOdd = false;
+		$rowodd = false;
 		foreach ( $entries as $entry ) {
 			$class = '';
 			// rows have a different color.
-			if ($rowOdd) {
-				$rowOdd = false;
+			if ($rowodd) {
+				$rowodd = false;
 				$class = ' alternate';
 			} else {
-				$rowOdd = true;
+				$rowodd = true;
 				$class = '';
 			}
 
@@ -108,7 +108,7 @@ function gwolle_gb_dashboard() {
 					?>
 					<p class="row-actions" id="entry-actions-<?php echo $entry->get_id(); ?>">
 						<span class="gwolle_gb_edit">
-							<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/editor.php&entry_id=<?php echo $entry->get_id(); ?>" title="<?php esc_attr_e('Edit entry', 'gwolle-gb'); ?>"><?php esc_html_e('Edit', 'gwolle-gb'); ?></a>
+							<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() ); ?>" title="<?php esc_attr_e('Edit entry', 'gwolle-gb'); ?>"><?php esc_html_e('Edit', 'gwolle-gb'); ?></a>
 						</span>
 						<span class="gwolle_gb_check">
 							&nbsp;|&nbsp;
@@ -147,9 +147,9 @@ function gwolle_gb_dashboard() {
 
 		</div>
 		<p class="textright">
-			<a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="button"><?php esc_html_e('Refresh', 'gwolle-gb'); ?></a>
-			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=all" class="button button-primary"><?php esc_html_e('View all', 'gwolle-gb'); ?></a>
-			<a href="admin.php?page=<?php echo GWOLLE_GB_FOLDER; ?>/entries.php&amp;show=unchecked" class="button button-primary"><?php esc_html_e('View new', 'gwolle-gb'); ?></a>
+			<a href="<?php echo admin_url( 'index.php' ); ?>" class="button"><?php esc_html_e('Refresh', 'gwolle-gb'); ?></a>
+			<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=all' ); ?>" class="button button-primary"><?php esc_html_e('View all', 'gwolle-gb'); ?></a>
+			<a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&amp;show=unchecked' ); ?>" class="button button-primary"><?php esc_html_e('View new', 'gwolle-gb'); ?></a>
 		</p><?php
 	} else {
 		echo '<p>' . esc_html__('No new and unchecked guestbook entries.', 'gwolle-gb') . '</p>';
@@ -157,7 +157,9 @@ function gwolle_gb_dashboard() {
 }
 
 
-// Add the widget
+/*
+ * The hook to add a dashboard widget to show the latest entries.
+ */
 function gwolle_gb_dashboard_setup() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {

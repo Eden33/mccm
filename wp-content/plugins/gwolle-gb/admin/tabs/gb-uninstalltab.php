@@ -1,6 +1,6 @@
 <?php
 /*
- * Settings page for the guestbook
+ * Settings tab for the guestbook.
  */
 
 // No direct calls to this script
@@ -8,11 +8,11 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 	die('No direct calls allowed!');
 }
 
-/*
- * $uninstalled is a bool, if the install has been done already. In that case, show messages.
- */
 
-function gwolle_gb_page_settingstab_uninstall( $uninstalled ) {
+/*
+ * Uninstall tab of the Settings page.
+ */
+function gwolle_gb_page_settingstab_uninstall() {
 
 	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
@@ -33,32 +33,8 @@ function gwolle_gb_page_settingstab_uninstall( $uninstalled ) {
 	<table class="form-table">
 		<tbody>
 
-		<?php
-		if ( $uninstalled == true ) { ?>
-			<tr valign="top">
-				<th scope="row"><?php esc_html_e('Message', 'gwolle-gb'); ?></th>
-				<td>
-					<div id="message" class="updated error fade">
-						<p><?php esc_html_e('The entries and settings have been removed.', 'gwolle-gb'); ?></p>
-						<p><?php esc_html_e('The plugin is deactivated.', 'gwolle-gb'); ?></p>
-						<p><?php echo esc_html__('You can now go to your', 'gwolle-gb') . ' <a href="' . admin_url( '/index.php' ) . '">' . esc_html__('Dashboard', 'gwolle-gb') . '</a>. ' . esc_html__('(We will go there in 10 seconds)', 'gwolle-gb') ; ?>
-					</div>
-
-					<?php // Redirect to main admin page after 10 seconds. wp_redirect() does not work, headers were already sent. ?>
-					<script>
-						 setTimeout(
-							function() {
-								window.location.href = '<?php echo admin_url( '/index.php' ); ?>'
-							}, 10000 );
-					</script>
-				</td>
-			</tr>
-			<?php
-		}
-		?>
-
 		<tr valign="top">
-			<th scope="row" style="color:#FF0000;"><label for="blogdescription"><?php esc_html_e('Uninstall', 'gwolle-gb'); ?></label></th>
+			<th scope="row" style="color:#FF0000;"><label><?php esc_html_e('Uninstall', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php esc_html_e('Uninstalling means that all database entries are removed (settings and entries).', 'gwolle-gb');
 				echo '<br />';

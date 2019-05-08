@@ -25,7 +25,7 @@ function my_gwolle_gb_save_entry_admin( $entry ) {
 	$post_id = gwolle_gb_get_postid( $book_id );
 	if ( $post_id ) {
 			// this redirect doesn't work, since the headers were already sent.
-			wp_redirect( get_permalink( $post_id ) );
+			wp_redirect( gwolle_gb_get_permalink( $post_id ) );
 			exit;
 	}
 
