@@ -20,7 +20,7 @@ function wp_head_event()
 <?php
         }
 	if(  is_page('rennergebnisse')) 
-        {
+    {
 ?>
 	<script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/jQuery-extends.js"></script>
 <?php
@@ -47,11 +47,9 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2020-05-02 22:00');
+$_registration_start_date = new DateTime('2099-05-02 22:00');
 $_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
-	'91.130.91.9',
- 	'188.21.52.126'
 );
 
 function head_menu_inject_registration_countdown($items) 
@@ -64,14 +62,14 @@ add_filter('wp_nav_menu_items', 'head_menu_inject_registration_countdown');
 function is_registration_enabled() 
 {
 	global $_registration_start_date;
-        global $_registration_ip_whitelist;
+    global $_registration_ip_whitelist;
 
 	$now = new DateTime("now");
 
 	//if now is greater or equal startdate then registration is enabled
 	if($_registration_start_date <= $now 
-            || in_array($_SERVER['REMOTE_ADDR'], $_registration_ip_whitelist)) 
-        {
+        || in_array($_SERVER['REMOTE_ADDR'], $_registration_ip_whitelist)) 
+    {
 		return true;
 	}
 	return false;
@@ -85,40 +83,59 @@ add_filter('the_content', 'filter_the_content');
 
 function filter_the_content( $content ) 
 {
-	if(is_page( 'oldtimer-seitenwagen-online-anmeldung' ) 
-	|| is_page( 'clubsport-online-anmeldung' )
+    $registration_prohibited_msg = 'Zur Zeit sind keine Rennanmeldungen m&ouml;glich.';
+    
+	if(is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'inter-sam-online-anmeldung' )
-        || is_page( 'sam-masters-online-anmeldung')
+    || is_page( 'sam-masters-online-anmeldung')
 	|| is_page( 'sam-junioren-open-online-anmeldung' )
 	|| is_page('sjmcc-online-anmeldung')) 
-        {
-		if( is_registration_enabled() === false ) 
-                {
-                    return "Zur Zeit sind keine Rennanmeldungen m&ouml;glich.";
-                }
+    {
+        return $registration_prohibited_msg;
 	}
 
-        if(is_page('rennfahreranmeldung')) 
+	if(is_page( 'oldtimer-seitenwagen-online-anmeldung' ))
+	{
+	    if( is_registration_enabled() === false )
+	    {
+	        return $registration_prohibited_msg;
+	    }
+	}
+	
+    if(is_page('rennfahreranmeldung')) 
+    {
+        if(is_registration_enabled() === false) 
         {
-            if(is_registration_enabled() === false) 
-            {
-                $now = new DateTime('now');
-                return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
-            }
-
+            $now = new DateTime('now');
+            return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
         }
 
-        if(is_page('mitglieder')) {
-            require_once dirname(__FILE__).'/util/MemberPageUtil.php';
-            $memberPageUtil = new MemberPageUtil($content);
-            $content = $memberPageUtil->getMemberSummaryMarkup();
-            $content .= $memberPageUtil->getMemberListMarkup();
-        }
+    }
+
+    if(is_page('mitglieder')) 
+    {
+        require_once dirname(__FILE__).'/util/MemberPageUtil.php';
+        $memberPageUtil = new MemberPageUtil($content);
+        $content = $memberPageUtil->getMemberSummaryMarkup();
+        $content .= $memberPageUtil->getMemberListMarkup();
+    }
 
 	return $content;
 }
 
+function filter_guestbook_shortcode( $content, $tag )
+{
+    if( $tag === 'gwolle_gb' )
+    {        
+        $content = preg_replace('/Datenschutzerklärung/', '<a href="'
+                    .esc_url(get_permalink(get_page_by_title('Datenschutzerklärung'))).'"' 
+                    . ' target="_blank">Datenschutzerklärung</a>', $content);      
+    }
+    
+    return $content;
+}
 
+add_filter('do_shortcode_tag', 'filter_guestbook_shortcode', 10, 2);
 
 /* Filter SECTION END------------------------------------------------------------------ */
 
