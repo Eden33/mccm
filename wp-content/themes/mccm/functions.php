@@ -123,6 +123,8 @@ function filter_the_content( $content )
 	return $content;
 }
 
+add_filter('do_shortcode_tag', 'filter_guestbook_shortcode', 10, 2);
+
 function filter_guestbook_shortcode( $content, $tag )
 {
     if( $tag === 'gwolle_gb' )
@@ -135,7 +137,16 @@ function filter_guestbook_shortcode( $content, $tag )
     return $content;
 }
 
-add_filter('do_shortcode_tag', 'filter_guestbook_shortcode', 10, 2);
+add_filter('pre_get_posts', 'filter_home');
+
+function filter_home( $query )
+{
+    // exclude category "Rennbericht"
+    if ( $query->is_home() && $query->is_main_query() ) 
+    {
+        $query->set( 'cat', '-5' );
+    }
+}
 
 /* Filter SECTION END------------------------------------------------------------------ */
 
