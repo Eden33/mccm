@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Gwolle Guestbook - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-10-11 08:29:07+0000\n"
+"PO-Revision-Date: 2019-05-21 06:42:45+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,11 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Gwolle Guestbook - Stable (latest release)\n"
+
+#: frontend/gb-widget-search.php:21 frontend/gb-widget-search.php:30
+#: frontend/gb-widget-search.php:92
+msgid "Guestbook Search"
+msgstr "Gästebuch-Suche"
 
 #. translators: Commercial Add-On
 #: add-on/gb-add-on.php:251
@@ -2230,6 +2235,11 @@ msgid "%s guestbook entry awaiting moderation"
 msgid_plural "%s guestbook entries awaiting moderation"
 msgstr[0] "%s Gästebuch-Eintrag wartet auf Freigabe"
 msgstr[1] "%s Gästebuch-Einträge warten auf Freigabe"
+
+#. translators: %s is a link to the dashboard
+#: admin/gb-page-settings.php:488
+msgid "You can now go to your %s."
+msgstr "Du kannst jetzt zu deinem %s wechseln."
 
 #: functions/gb-metabox.php:23 admin/gb-dashboard-widget.php:111
 #: admin/gb-page-entries.php:466
