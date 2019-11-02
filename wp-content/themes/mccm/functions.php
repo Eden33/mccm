@@ -141,10 +141,11 @@ add_filter('pre_get_posts', 'filter_home');
 
 function filter_home( $query )
 {
-    // exclude category "Rennbericht"
+    // exclude all categories: "Rennberichte"
     if ( $query->is_home() && $query->is_main_query() ) 
     {
-        $query->set( 'cat', '-5' );
+        $query->set( 'cat', array('-5', '-6', '-7'));
+        
     }
 }
 
