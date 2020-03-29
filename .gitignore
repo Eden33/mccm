@@ -11,11 +11,10 @@
 .buildpath
 .project
 
-# ignore php info file if any
+# this files we definitely don't want to share
 phpinfo.html
-
-# ignore wp-config
 wp-config.php
+error.log
 
 # ignore really-simpe-captcha tmp directory
 /wp-content/plugins/really-simple-captcha/tmp
