@@ -251,7 +251,7 @@ We reserve the right to edit, delete, or not publish entries.
 		</tr>
 
 		<tr valign="top">
-			<th scope="row"><label for="form_bbcode_enabled"><?php esc_html_e('BBcode and Emoji', 'gwolle-gb'); ?>:</label></th>
+			<th scope="row"><label for="form_bbcode_enabled"><?php esc_html_e('Visual formatting and Emoji', 'gwolle-gb'); ?>:</label></th>
 			<td>
 				<input type="checkbox" id="form_bbcode_enabled" name="form_bbcode_enabled"<?php
 					if ( isset($form_setting['form_bbcode_enabled']) && $form_setting['form_bbcode_enabled']  === 'true' ) {

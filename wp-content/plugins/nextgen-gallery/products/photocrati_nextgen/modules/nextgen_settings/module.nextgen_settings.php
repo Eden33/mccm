@@ -18,7 +18,7 @@ class M_NextGen_Settings extends C_Base_Module
 			'photocrati-nextgen_settings',
 			'NextGEN Gallery Settings',
 			'Provides central management for NextGEN Gallery settings',
-			'3.1.8',
+			'3.1.9',
 			'https://www.imagely.com/wordpress-gallery-plugin/nextgen-gallery/',
 			'Imagely',
 			'https://www.imagely.com'
@@ -108,6 +108,7 @@ class C_NextGen_Settings_Installer
 			'thumbEffectContext'  => 'nextgen_images', // select effect
 
 			// Watermark settings
+            'watermark_automatically_at_upload' => 0,
 			'wmPos'    => 'midCenter',            // Postion
 			'wmXpos'   => 15,                     // X Pos
 			'wmYpos'   => 5,                      // Y Pos
@@ -133,6 +134,7 @@ class C_NextGen_Settings_Installer
             // Misc
             // It is known that WPEngine disables 'order by rand()' by default, but exposes it as an option to users
             'use_alternate_random_method' => (function_exists('is_wpe') && is_wpe()) ? TRUE : FALSE,
+            'disable_fontawesome'         => FALSE,
 
             // Duration of caching of 'random' widgets image IDs
             'random_widget_cache_ttl' => 30

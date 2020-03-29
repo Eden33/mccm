@@ -17,7 +17,7 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 
 
 function my_gwolle_gb_bbcode_link_rel( $rel ) {
-	// default "nofollow"
+	// default "nofollow noopener noreferrer"
 	return 'follow'; // Help out mr. spamalot
 }
 add_filter( 'gwolle_gb_bbcode_link_rel', 'my_gwolle_gb_bbcode_link_rel' );

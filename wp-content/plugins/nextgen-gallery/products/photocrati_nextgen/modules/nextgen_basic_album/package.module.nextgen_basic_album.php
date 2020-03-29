@@ -64,7 +64,7 @@ class A_NextGen_Album_Breadcrumbs extends Mixin
             }
             // Prevent galleries with the same ID as the parent album being displayed as the root
             // breadcrumb when viewing the album page
-            if (count($ids) == 1 && strpos($ids[0], 'a') !== 0) {
+            if (is_array($ids) && count($ids) == 1 && strpos($ids[0], 'a') !== 0) {
                 $ids = array();
             }
             if (!empty($ds['original_album_entities'])) {
@@ -441,6 +441,10 @@ class A_NextGen_Basic_Album_Controller extends Mixin_NextGen_Basic_Pagination
             // the user passed in a gallery id instead
             $mapper = C_Gallery_Mapper::get_instance();
             $tmp = $mapper->select()->where(array('slug = %s', $gallery))->limit(1)->run_query();
+            // NextGen turns "This & That" into "this-&amp;-that" when assigning gallery slugs
+            if (empty($tmp) && strpos($gallery, '&') !== FALSE) {
+                $tmp = $mapper->select()->where(array('slug = %s', str_replace('&', '&amp;', $gallery)))->limit(1)->run_query();
+            }
             $result = reset($tmp);
             unset($tmp);
             if ($result) {

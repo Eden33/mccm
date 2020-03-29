@@ -96,6 +96,10 @@ Entry content:
 	/* translators: Commercial Add-On */
 	esc_html__('Rating', 'gwolle-gb');
 
+	// function gwolle_gb_entry_edit_javascript() {
+	/* translators: Commercial Add-On metabox line for edit inline */
+	esc_attr__('Edit entry:', 'gwolle-gb');
+
 	// class GwolleGB_Widget_Av_Rating extends WP_Widget {
 	/* translators: Commercial Add-On Widget */
 	esc_html__('Displays the average star rating of a guestbook.','gwolle-gb');
@@ -117,7 +121,9 @@ Entry content:
 	esc_html_e('The slug of the field is where your data is attached to. Only change the slug if you know what you are doing.', 'gwolle-gb');
 	/* translators: Commercial Add-On */
 	esc_html_e('The name of the field is what you will see in the label and placeholder in the form.', 'gwolle-gb');
-	/* translators: Commercial Add-On. At the top of the form. */
+	/* translators: Commercial Add-On. */
+	esc_html_e('Required:', 'gwolle-gb');
+	/* translators: Commercial Add-On. */
 	esc_html_e('Top', 'gwolle-gb');
 	/* translators: Commercial Add-On */
 	esc_html_e('Slug:', 'gwolle-gb');
@@ -258,6 +264,8 @@ Entry content:
 
 	// gwolle_gb_addon_editor_metabox_meta()
 	/* translators: Commercial Add-On, metabox on editor */
+	esc_html__('There are no Meta Fields saved in settings yet.','gwolle-gb');
+	/* translators: Commercial Add-On, metabox on editor */
 	esc_html__('Abuse Reports', 'gwolle-gb');
 	/* translators: Commercial Add-On, remove abuse reports and moderate entry */
 	esc_html__('Remove and moderate', 'gwolle-gb');
@@ -273,4 +281,7 @@ Entry content:
 	__( 'When visitors report an entry as abusive, the entry ID will be stored in a cookie in the browser. For fallback, the IP address will be saved temporarily as a transient in the database together with the number of reports.', 'gwolle-gb' ); // 1.2.1 and older
 	/* translators: Commercial Add-On. Text for privacy policy. */
 	__( 'When visitors report an entry as abusive, the entry ID will be stored in a cookie in the browser. Also, the IP address will be saved temporarily in the database together with the number of reports.', 'gwolle-gb' );
+
+	/* translators: %s is the name of the meta field */
+	$error_message = sprintf( esc_html__('The %s field was not filled in, even though it is mandatory.', 'gwolle-gb'), $name );
 }

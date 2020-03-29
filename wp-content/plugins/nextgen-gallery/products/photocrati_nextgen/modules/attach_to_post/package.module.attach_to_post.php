@@ -112,15 +112,20 @@ class A_Attach_To_Post_Ajax extends Mixin
     {
         $response = array();
         if ($this->object->validate_ajax_request('nextgen_edit_displayed_gallery') && ($params = $this->object->param('displayed_gallery'))) {
+            global $wpdb;
             $limit = $this->object->param('limit');
             $offset = $this->object->param('offset');
             $factory = C_Component_Factory::get_instance();
             $displayed_gallery = $factory->create('displayed_gallery');
             foreach ($params as $key => $value) {
+                $key = $wpdb->_escape($key);
+                if (!in_array($key, array('container_ids', 'entity_ids', 'sortorder'))) {
+                    $value = esc_sql($value);
+                }
                 $displayed_gallery->{$key} = $value;
             }
-            $response['limit'] = $limit = $limit ? $limit : 0;
-            $response['offset'] = $offset = $offset ? $offset : 0;
+            $response['limit'] = $limit = $limit ? esc_sql($limit) : 0;
+            $response['offset'] = $offset = $offset ? esc_sql($offset) : 0;
             $response['total'] = $displayed_gallery->get_entity_count('both');
             $response['items'] = $displayed_gallery->get_entities($limit, $offset, FALSE, 'both');
             $controller = C_Display_Type_Controller::get_instance();

@@ -117,15 +117,15 @@ Entry content:
 
 		// Add logging to mail
 		$log_entries = gwolle_gb_get_log_entries( $entry->get_id() );
-		if ( is_array($log_entries) && !empty($log_entries) ) {
-			$mail_body .= "\r\n\r\n" .  esc_html__('Log messages:', 'gwolle-gb') . "\r\n";
+		if ( is_array($log_entries) && ! empty($log_entries) ) {
+			$mail_body .= "\r\n" .  esc_html__('Log messages:', 'gwolle-gb') . "\r\n";
 			if ($entry->get_datetime() > 0) {
 				$mail_body .= date_i18n( get_option('date_format'), $entry->get_datetime() ) . ', ';
 				$mail_body .= date_i18n( get_option('time_format'), $entry->get_datetime() );
 				$mail_body .= ': ' . esc_html__('Written', 'gwolle-gb') . "\r\n";
 			}
 			foreach ($log_entries as $log_entry) {
-				$mail_body .= $log_entry['msg_html'] . "\r\n";
+				$mail_body .= $log_entry['msg_txt'] . "\r\n";
 			}
 		}
 

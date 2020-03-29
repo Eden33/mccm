@@ -84,6 +84,7 @@ function gwolle_gb_addon_features() {
 		<li>' . esc_html__('Preview for the frontend form.','gwolle-gb').'</li>
 		<li>' . esc_html__('Preview for the admin editor form.','gwolle-gb').'</li>
 		<li>' . esc_html__('Admin reply on the frontend with AJAX.','gwolle-gb').'</li>
+		<li>' . esc_html__('Edit content of entry on the frontend with AJAX.','gwolle-gb').'</li>
 		<li>' . esc_html__('Report Abuse.','gwolle-gb').'</li>
 		<li>' . esc_html__('Blacklist for words and IP address.','gwolle-gb').'</li>
 		<li>' . esc_html__('Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want.','gwolle-gb').'</li>

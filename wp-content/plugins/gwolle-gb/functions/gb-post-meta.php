@@ -46,6 +46,46 @@ add_action('save_post', 'gwolle_gb_save_post');
 
 
 /*
+ * Set meta_keys so we can find the post with the shortcode back.
+ *
+ * @param string $content Content of the post
+ * @return string $content Content of the post
+ *
+ * @since 3.1.8
+ */
+function gwolle_gb_content_filter_for_meta_keys( $content ) {
+
+	if ( ! is_singular() || ! is_main_query() || is_admin() ) {
+		return $content;
+	}
+
+	if ( function_exists('has_shortcode') ) {
+		$id = get_the_ID();
+
+		if ( has_shortcode( $content, 'gwolle_gb' ) || has_shortcode( $content, 'gwolle_gb_read' ) ) {
+			// Set a meta_key so we can find the post with the shortcode back.
+			$meta_value = get_post_meta( $id, 'gwolle_gb_read', true );
+			if ( $meta_value != 'true' ) {
+				update_post_meta( $id, 'gwolle_gb_read', 'true' );
+			}
+		} else {
+			// Remove the meta_key in case it is set.
+			delete_post_meta( $id, 'gwolle_gb_read' );
+		}
+
+		if ( has_shortcode( $content, 'gwolle_gb' ) || has_shortcode( $content, 'gwolle_gb_read' ) || has_shortcode( $content, 'gwolle_gb_write' ) ) {
+			// Nothing to do
+		} else {
+			delete_post_meta( $id, 'gwolle_gb_book_id' );
+		}
+	}
+
+	return $content;
+}
+add_filter( 'the_content', 'gwolle_gb_content_filter_for_meta_keys', 1 ); // before shortcodes are done.
+
+
+/*
  * Make our meta fields protected, so they are not in the custom fields metabox.
  *
  * @since 2.1.5
@@ -71,31 +111,13 @@ add_filter( 'is_protected_meta', 'gwolle_gb_is_protected_meta', 10, 3 );
  * @param string $shortcode      value 'write' or 'read'.
  * @param array  $shortcode_atts array with the shortcode attributes.
  *
- * @since 1.5.6
+ * @since      1.5.6
+ * @deprecated 3.1.8 Meta keys are now set in gwolle_gb_content_filter_for_meta_keys()
  */
 function gwolle_gb_set_meta_keys( $shortcode, $shortcode_atts ) {
 
-	if ( $shortcode = 'read' ) {
-		// Set a meta_key so we can find the post with the shortcode back.
-		$meta_value_read = get_post_meta( get_the_ID(), 'gwolle_gb_read', true );
-		if ( $meta_value_read != 'true' ) {
-			update_post_meta( get_the_ID(), 'gwolle_gb_read', 'true' );
-		}
-		if ( isset($shortcode_atts['entry_id']) && $shortcode_atts['entry_id'] > 0 ) {
-			// There is only one entry visible (no form), remove the book_id.
-			delete_post_meta( get_the_ID(), 'gwolle_gb_book_id' );
-			return;
-		}
-	}
-
-	$book_id = 1; // default
-	if ( isset($shortcode_atts['book_id']) ) {
-		$book_id = $shortcode_atts['book_id'];
-	}
-	$meta_value_book_id = get_post_meta( get_the_ID(), 'gwolle_gb_book_id', true );
-	if ( $meta_value_book_id != $book_id ) {
-		update_post_meta( get_the_ID(), 'gwolle_gb_book_id', $book_id );
-	}
+	_deprecated_function( __FUNCTION__, ' 3.1.8', 'gwolle_gb_content_filter_for_meta_keys()' );
+	return;
 
 }
 

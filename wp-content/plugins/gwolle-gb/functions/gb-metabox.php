@@ -20,7 +20,7 @@ function gwolle_gb_entry_metabox_lines_edit_link( $gb_metabox, $entry ) {
 	if ( function_exists('current_user_can') && current_user_can('moderate_comments') ) {
 		$gb_metabox .= '
 					<div class="gb-metabox-line">
-						<a class="gwolle_gb_edit_link gwolle-gb-edit-link" href="' . admin_url('admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&amp;entry_id=' . $entry->get_id() ) . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit', 'gwolle-gb') . '</a>
+						<a class="gwolle_gb_edit_link gwolle-gb-edit-link" href="' . admin_url('admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&amp;entry_id=' . $entry->get_id() ) . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit in Editor', 'gwolle-gb') . '</a>
 					</div>';
 	}
 	return $gb_metabox;

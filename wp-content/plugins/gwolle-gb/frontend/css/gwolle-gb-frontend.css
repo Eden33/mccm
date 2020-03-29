@@ -22,7 +22,10 @@
 #gwolle-gb-write-button {
 	margin: 20px 0 10px;
 }
-
+#gwolle_gb_write_button input.button,
+#gwolle-gb-write-button input.button {
+	float: none; /* To avoid problems with too invasive themes. */
+}
 
 /* Write section */
 
@@ -244,6 +247,9 @@ body .gwolle-gb-content a {
 }
 #gwolle_gb .gb-entry .gb-entry-content img {
 	max-width: 100%;
+}
+#gwolle_gb .gb-entry .gb-highlight {
+	background-color: #ddff00;
 }
 
 

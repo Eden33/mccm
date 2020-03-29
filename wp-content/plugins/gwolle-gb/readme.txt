@@ -2,8 +2,8 @@
 Contributors: Gwolle, mpol
 Tags: guestbook, guest book, livre d'or, Gästebuch, review
 Requires at least: 3.7
-Tested up to: 5.2
-Stable tag: 3.1.4
+Tested up to: 5.4
+Stable tag: 3.1.9
 License: GPLv2 or later
 Requires PHP: 5.3
 
@@ -82,6 +82,7 @@ Current features include:
 * Preview for the frontend form.
 * Preview for the admin editor form.
 * Admin reply on the frontend with AJAX.
+* Edit content of entry on the frontend with AJAX.
 * Report Abuse.
 * Blacklist for words and IP address.
 * Easy String Replacement in the default text so you can make this guestbook into a review section or anything you want.
@@ -202,7 +203,7 @@ The next lines are made up of the content.
 
 There are some gotchas:
 
-* Date needs to be a UNIX timestamp. For manually creating a timestamp, look at the [timestamp generator](http://www.timestampgenerator.com/). When using a formatted date, the plugin will try to read it correctly. If it fails it will use today's date.
+* Date needs to be a UNIX timestamp. For manually creating a timestamp, look at the [timestamp generator](http://www.timestampgenerator.com/). When using a [formatted date](https://www.php.net/manual/en/datetime.formats.date.php), the plugin will try to read it correctly. If it fails it will use today's date.
 * Use commas for field separators. If you use Office software like Excel (which is hell) or LibreOffice Calc, set this correctly.
 * Use double quotes around each field. When no quotes are used the import process can break when having quotes or commas inside the content of the entry.
 * The file should be encoded as UTF-8 without BOM to correctly enter special characters.
@@ -370,6 +371,8 @@ So you would need to load it on every page to have it available for the guestboo
 	add_action('wp_enqueue_scripts', 'my_gwolle_gb_register', 20);
 	?>
 
+I don't have any experience myself with AJAX themes. If it doesn't work, please contact the theme author.
+
 = I use the Autoptimize plugin =
 
 The frontend scripts will only be loaded on the Guestbook page, so they won't be added to autoptimize.
@@ -424,6 +427,40 @@ But if you don't use standard comments, you can just as easily use the comment s
 
 
 == Changelog ==
+
+= 3.1.9 =
+* 2020-02-01
+* Fix undefined variable notice (thanks ronr1999).
+* Add 'float:none;' to frontend button.
+
+= 3.1.8 =
+* 2020-01-21
+* Add highlight to search results (thanks @robinnatter).
+* Add searchwords to search widget after searching.
+* Do not set meta_key when shortcode is used in widget or one-page design.
+* Show InnoDB engine on debug tab.
+* Show existence of database tables on debug tab.
+
+= 3.1.7 =
+* 2019-10-25
+* Show subscription status for email notifications on settings page.
+* Comment out unused images in markitup CSS.
+* Set rel='nofollow noopener noreferrer' for bbcode links and user website.
+* Set referrerpolicy='no-referrer' for bbcode images and avatar.
+* Add filter 'gwolle_gb_bbcode_img_referrer'.
+* Update strings for add-on.
+
+= 3.1.6 =
+* 2019-08-21
+* Use wp_kses for filtering html elements.
+* Add support for quotes already in the bbcode link.
+
+= 3.1.5 =
+* 2019-06-08
+* Add log entry for privacy policy accepted (gets added to notification mail).
+* Add msg_txt key/value to log entries for plain text display.
+* Small updates to install routine.
+* Support new wp_initialize_site action for multisite.
 
 = 3.1.4 =
 * 2019-05-03

@@ -70,6 +70,7 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 		if ( isset($read_setting['read_avatar']) && $read_setting['read_avatar']  === 'true' ) {
 			$avatar = get_avatar( $entry->get_author_email(), 32, '', $entry->get_author_name() );
 			if ($avatar) {
+				$avatar = str_replace('<img', '<img referrerpolicy="no-referrer"', $avatar);
 				$entry_output .= '
 						<span class="gb-author-avatar">' . $avatar . '</span>';
 			}
@@ -117,10 +118,13 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 			$entry_output .= '
 					<div class="gb-entry-content">';
 
-			// Use this filter to just add something
+			// Use this filter to just add something.
 			$entry_output .= apply_filters( 'gwolle_gb_entry_read_add_content_before', '', $entry );
 
-			$entry_content = gwolle_gb_sanitize_output( $entry->get_content(), 'content' );
+			$real_content = gwolle_gb_sanitize_output( $entry->get_content(), 'content' );
+			// This filters the real content of the entry.
+			$entry_content = apply_filters( 'gwolle_gb_entry_the_content', $real_content, $entry );
+
 			if ( get_option( 'gwolle_gb-showLineBreaks', 'false' ) === 'true' ) {
 				$entry_content = nl2br($entry_content);
 			}
@@ -151,6 +155,9 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 
 			/* Admin Reply */
 			$admin_reply_content = gwolle_gb_sanitize_output( $entry->get_admin_reply(), 'admin_reply' );
+			// This filters the real content of the admin reply.
+			$admin_reply_content = apply_filters( 'gwolle_gb_entry_the_admin_reply', $admin_reply_content, $entry );
+
 			if ( $admin_reply_content != '' ) {
 
 				$class = '';

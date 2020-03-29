@@ -78,6 +78,50 @@ function gwolle_gb_debug_info() {
 	</tr>
 
 	<tr>
+		<th><?php esc_html_e('MySQL Tables:', 'gwolle-gb'); ?></th>
+		<td><?php
+			$exist = '';
+			$nonexist = '';
+
+			$table = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_entries'");
+			if ( $table != 0 ) {
+				$exist .= '<li>gwolle_gb_entries</li>';
+			} else {
+				$nonexist .= '<li>gwolle_gb_entries</li>';
+			}
+			$table = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_log'");
+			if ( $table != 0 ) {
+				$exist .= '<li>gwolle_gb_log</li>';
+			} else {
+				$nonexist .= '<li>gwolle_gb_log</li>';
+			}
+
+			$active = is_plugin_active( 'gwolle-gb-addon/gwolle-gb-addon.php' ); // true or false
+			if ( $active ) {
+				$table = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_meta'");
+				if ( $table != 0 ) {
+					$exist .= '<li>gwolle_gb_meta</li>';
+				} else {
+					$nonexist .= '<li>gwolle_gb_meta</li>';
+				}
+			}
+			echo esc_html__('MySQL Tables that exist:', 'gwolle-gb');
+			echo '<ul class="ul-disc">';
+			echo $exist;
+			echo '</ul>';
+
+			if ( strlen( $nonexist ) > 0 ) {
+				echo esc_html__('MySQL Tables that do not exist:', 'gwolle-gb');
+				echo '<ul class="ul-disc">';
+				echo $nonexist;
+				echo '</ul>';
+			}
+
+			?>
+		</td>
+	</tr>
+
+	<tr>
 		<th><?php esc_html_e('MySQL / MySQLi:', 'gwolle-gb'); ?></th>
 		<td><?php
 			if ( $wpdb->use_mysqli == true ) {
@@ -100,6 +144,25 @@ function gwolle_gb_debug_info() {
 				}
 			}
 			print_r( $mysql_variables_char );
+			?>
+		</td>
+	</tr>
+
+	<tr>
+		<th><?php esc_html_e('MySQL engine:', 'gwolle-gb'); ?></th>
+		<td><?php
+			$sql = "
+				SELECT TABLE_NAME, ENGINE
+				FROM   information_schema.TABLES
+				WHERE  TABLE_SCHEMA = '" . $wpdb->dbname . "'
+				;";
+			$engines = $wpdb->get_results( $sql, ARRAY_N );
+			foreach ( $engines as $engine ) {
+				if ( $engine[0] == $wpdb->prefix . 'gwolle_gb_entries' ) {
+					echo $engine[1];
+				}
+			}
+
 			?>
 		</td>
 	</tr>

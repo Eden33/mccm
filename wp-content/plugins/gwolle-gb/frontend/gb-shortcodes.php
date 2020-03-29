@@ -47,10 +47,6 @@ function get_gwolle_gb( $atts ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 
-	// Set Meta_keys
-	//gwolle_gb_set_meta_keys( 'write', $shortcode_atts );
-	gwolle_gb_set_meta_keys( 'read', $shortcode_atts );
-
 	// Load Frontend CSS in Footer, only when it's active
 	wp_enqueue_style('gwolle_gb_frontend_css');
 	//wp_enqueue_script('jquery');
@@ -93,9 +89,6 @@ function get_gwolle_gb_write( $atts ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
 
-	// Set Meta_keys
-	//gwolle_gb_set_meta_keys( 'write', $shortcode_atts );
-
 	// Load Frontend CSS in Footer, only when it's active
 	wp_enqueue_style('gwolle_gb_frontend_css');
 	//wp_enqueue_script('jquery');
@@ -132,9 +125,6 @@ function get_gwolle_gb_read( $atts ) {
 	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
-
-	// Set Meta_keys
-	gwolle_gb_set_meta_keys( 'read', $shortcode_atts );
 
 	// Load Frontend CSS in Footer, only when it's active
 	wp_enqueue_style('gwolle_gb_frontend_css');

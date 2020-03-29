@@ -488,7 +488,7 @@ class C_NextGen_API extends C_Component
         $user_obj = null;
         if ($token != null) {
             $users = get_users(array('meta_key' => 'nextgen_api_token', 'meta_value' => $token));
-            if ($users != null && count($users) == 1) {
+            if ($users != null && count($users) > 0) {
                 $user_obj = $users[0];
             }
         }
@@ -823,7 +823,7 @@ class C_NextGen_API extends C_Component
                                                         }
                                                     }
                                                     if ($image_error == null) {
-                                                        do_action('ngg_delete_picture', $ngg_image->{$ngg_image->id_field});
+                                                        do_action('ngg_delete_picture', $ngg_image->{$ngg_image->id_field}, $ngg_image);
                                                         $image_status = 'done';
                                                     }
                                                 } else {
@@ -861,6 +861,7 @@ class C_NextGen_API extends C_Component
                                                 if ($image_data != null) {
                                                     try {
                                                         $ngg_image = $storage->upload_base64_image($gallery, $image_data, $image_filename, $image_id, true);
+                                                        $image_mapper->reimport_metadata($ngg_image);
                                                         if ($ngg_image != null) {
                                                             $image_status = 'done';
                                                             $image_id = is_int($ngg_image) ? $ngg_image : $ngg_image->{$ngg_image->id_field};

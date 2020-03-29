@@ -315,3 +315,31 @@ function gwolle_gb_get_entry_count_from_search( $args ) {
 	return $count_static;
 
 }
+
+
+/*
+ * Function to highlight the text in search results.
+ *
+ * @param string $text of whatever needs to be highlighted.
+ *
+ * @return string $text with highlighted search words.
+ *
+ * @since 3.1.8
+ */
+function gwolle_gb_highlight_searchresults( $text ) {
+
+	$is_search = gwolle_gb_is_search();
+	if ( ! $is_search ) {
+		return $text;
+	}
+
+	$text = gwolle_gb_highlight( $text, $is_search );
+
+	return $text;
+
+}
+add_filter( 'gwolle_gb_entry_the_author_name', 'gwolle_gb_highlight_searchresults', 10, 1 );
+add_filter( 'gwolle_gb_entry_the_content', 'gwolle_gb_highlight_searchresults', 10, 1 );
+add_filter( 'gwolle_gb_entry_the_admin_reply', 'gwolle_gb_highlight_searchresults', 10, 1 );
+
+

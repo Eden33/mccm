@@ -26,49 +26,43 @@ function gwolle_gb_install() {
 	$wpdb->gwolle_gb_entries = $wpdb->prefix . 'gwolle_gb_entries';
 	$wpdb->gwolle_gb_log = $wpdb->prefix . 'gwolle_gb_log';
 
-	$result = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_entries'");
-	if ( $result === 0 ) {
-		$sql = "
-			CREATE TABLE
-				" . $wpdb->gwolle_gb_entries . "
-			(
-				id int(10) NOT NULL auto_increment,
-				author_name text NOT NULL,
-				author_id int(5) NOT NULL default '0',
-				author_email text NOT NULL,
-				author_origin text NOT NULL,
-				author_website text NOT NULL,
-				author_ip text NOT NULL,
-				author_host text NOT NULL,
-				content longtext NOT NULL,
-				datetime bigint(8) UNSIGNED NOT NULL,
-				ischecked tinyint(1) NOT NULL,
-				checkedby int(5) NOT NULL,
-				istrash varchar(1) NOT NULL default '0',
-				isspam varchar(1) NOT NULL default '0',
-				admin_reply longtext NOT NULL,
-				admin_reply_uid int(5) NOT NULL default '0',
-				book_id int(5) NOT NULL default '1',
-				PRIMARY KEY  (id)
-			) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
-		$result = $wpdb->query($sql);
-	}
+	$sql = "
+		CREATE TABLE IF NOT EXISTS
+			" . $wpdb->gwolle_gb_entries . "
+		(
+			id int(10) NOT NULL auto_increment,
+			author_name text NOT NULL,
+			author_id int(5) NOT NULL default '0',
+			author_email text NOT NULL,
+			author_origin text NOT NULL,
+			author_website text NOT NULL,
+			author_ip text NOT NULL,
+			author_host text NOT NULL,
+			content longtext NOT NULL,
+			datetime bigint(8) UNSIGNED NOT NULL,
+			ischecked tinyint(1) NOT NULL,
+			checkedby int(5) NOT NULL,
+			istrash varchar(1) NOT NULL default '0',
+			isspam varchar(1) NOT NULL default '0',
+			admin_reply longtext NOT NULL,
+			admin_reply_uid int(5) NOT NULL default '0',
+			book_id int(5) NOT NULL default '1',
+			PRIMARY KEY  (id)
+		) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
+	$result = $wpdb->query($sql);
 
-	$result = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_log'");
-	if ( $result === 0 ) {
-		$sql = "
-			CREATE TABLE
-				" . $wpdb->gwolle_gb_log . "
-			(
-				id int(8) NOT NULL auto_increment,
-				subject text NOT NULL,
-				entry_id int(5) NOT NULL,
-				author_id int(5) NOT NULL,
-				datetime bigint(8) UNSIGNED NOT NULL,
-				PRIMARY KEY  (id)
-			) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
-		$result = $wpdb->query($sql);
-	}
+	$sql = "
+		CREATE TABLE IF NOT EXISTS
+			" . $wpdb->gwolle_gb_log . "
+		(
+			id int(8) NOT NULL auto_increment,
+			subject text NOT NULL,
+			entry_id int(5) NOT NULL,
+			author_id int(5) NOT NULL,
+			datetime bigint(8) UNSIGNED NOT NULL,
+			PRIMARY KEY  (id)
+		) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
+	$result = $wpdb->query($sql);
 
 	/* Upgrade to new shiny db collation. Since WP 4.2 */
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

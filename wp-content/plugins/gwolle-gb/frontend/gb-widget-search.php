@@ -49,13 +49,19 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 				$widget_html .= $args['before_title'] . apply_filters('widget_title', $widget_title) . $args['after_title'];
 			}
 
+			$searchwords = '';
+			$is_search = gwolle_gb_is_search();
+			if ( is_array($is_search) && ! empty($is_search) ) {
+				$searchwords = implode( ' ', $is_search);
+			}
+
 			$widget_html .= '
 					<form id="gwolle-gb-widget-search" action="#" method="GET" class="' . $widget_class . '" role="search" aria-label="' . esc_html__( 'Guestbook', 'gwolle-gb' ) . '">
 						<div class="label">
 							<label for="gwolle-gb-search-input" class="text-info">' . esc_html__('Search:', 'gwolle-gb') . '</label>
 						</div>
 						<div class="input">
-							<input class="wp-exclude-emoji" value="" type="text" name="gwolle-gb-search-input" id="gwolle-gb-search-input" placeholder="' . esc_attr__('Search...', 'gwolle-gb') . '" />
+							<input class="wp-exclude-emoji" value="' . $searchwords . '" type="text" name="gwolle-gb-search-input" id="gwolle-gb-search-input" placeholder="' . esc_attr__('Search...', 'gwolle-gb') . '" />
 						</div>
 						<div class="gwolle-gb-search-submit">
 							<div class="input">

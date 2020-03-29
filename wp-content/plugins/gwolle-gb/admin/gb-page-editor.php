@@ -471,7 +471,7 @@ function gwolle_gb_editor_meta_inputs( $entry ) {
 
 		$date = $entry->get_datetime();
 		if ( ! $date ) {
-			$date = current_time('timestamp');
+			$date = current_time( 'timestamp' );
 		}
 
 		$dd = date( 'd', $date );

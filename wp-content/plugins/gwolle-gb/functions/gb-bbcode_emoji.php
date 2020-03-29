@@ -39,12 +39,18 @@ function gwolle_gb_bbcode_parse( $str ) {
 	$str = preg_replace($bb, $html, $str);
 
 	// First images, then links, so we support images inside links.
+	$bbcode_img_referrer = apply_filters( 'gwolle_gb_bbcode_img_referrer', 'no-referrer' );
 	$pattern = "#\[img\]([^\[]*)\[/img\]#i";
-	$replace = '<img src="\\1" alt=""/>';
+	$replace = '<img src="\\1" alt="" referrerpolicy="' . $bbcode_img_referrer . '" />';
 	$str = preg_replace($pattern, $replace, $str);
 
+	// Links with quotes.
+	$bbcode_link_rel = apply_filters( 'gwolle_gb_bbcode_link_rel', 'nofollow noopener noreferrer' );
+	$pattern = "#\[url href=\&\#034\;([^\]]*)\&\#034\;\]([^\[]*)\[/url\]#i";
+	$replace = '<a href="\\1" target="_blank" rel="' . $bbcode_link_rel . '">\\2</a>';
+	$str = preg_replace($pattern, $replace, $str);
+	// Links without quotes.
 	$pattern = "#\[url href=([^\]]*)\]([^\[]*)\[/url\]#i";
-	$bbcode_link_rel = apply_filters( 'gwolle_gb_bbcode_link_rel', 'nofollow' );
 	$replace = '<a href="\\1" target="_blank" rel="' . $bbcode_link_rel . '">\\2</a>';
 	$str = preg_replace($pattern, $replace, $str);
 

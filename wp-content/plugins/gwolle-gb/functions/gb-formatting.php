@@ -23,7 +23,7 @@ function gwolle_gb_sanitize_input( $input, $field = '' ) {
 	$input = str_replace("'", '&#39;', $input);
 	$input = trim($input);
 	if ( $field == 'content' || $field == 'admin_reply' || $field == 'setting_textarea' ) {
-		$input = wp_kses_post( $input ); // Rely on this, not on strip_tags.
+		$input = wp_kses( $input, array() ); // Rely on this, not on strip_tags.
 	} else {
 		$input = sanitize_text_field( $input );
 	}
@@ -48,7 +48,7 @@ function gwolle_gb_sanitize_output( $output, $field = '' ) {
 	$output = str_replace('"', '&#34;', $output);
 	$output = str_replace("'", '&#39;', $output);
 	if ( $field == 'content' || $field == 'admin_reply' || $field == 'setting_textarea' ) {
-		$output = wp_kses_post( $output );
+		$output = wp_kses( $output, array() );
 	} else {
 		$output = sanitize_text_field( $output );
 	}
@@ -92,4 +92,33 @@ function gwolle_gb_get_excerpt( $content, $excerpt_length = 20 ) {
 		$excerpt = '<i>' . esc_html__('No content to display. This entry is empty.', 'gwolle-gb') . '</i>';
 	}
 	return $excerpt;
+}
+
+
+/*
+ * Function to highlight text.
+ * Taken from SO:
+ * https://stackoverflow.com/questions/2757556/highlight-multiple-keywords-in-search/2757619#2757619
+ *
+ * @param string $text the text with possible words to highlight.
+ * @param array $words the words to highlight in that text.
+ * @return $text with highlighted words.
+ *
+ * @since 3.1.8
+ */
+function gwolle_gb_highlight( $text, $words ) {
+
+	if ( is_array($words) && ! empty($words) ) {
+		$pattern = array();
+		foreach ( $words as $word ) {
+			$pattern[] = '/' . preg_quote($word, '/') . '/i';
+		}
+
+		$highlighted = preg_filter($pattern, '<b><span class="gb-highlight">$0</span></b>', $text);
+		if ( ! empty($highlighted) ) {
+			$text = $highlighted;
+		}
+	}
+	return $text;
+
 }

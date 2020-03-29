@@ -127,8 +127,9 @@ add_action( 'deleted_user', 'gwolle_gb_deleted_user' );
 function gwolle_gb_get_author_name_html($entry) {
 
 	$author_name = gwolle_gb_sanitize_output( trim( $entry->get_author_name() ) );
+	$author_name = apply_filters( 'gwolle_gb_entry_the_author_name', $author_name, $entry );
 
-	// Registered User gets italic font-style
+	// Registered user gets italic font-style.
 	$author_id = $entry->get_author_id();
 	$is_moderator = gwolle_gb_is_moderator( $author_id );
 	if ( $is_moderator ) {
@@ -142,7 +143,8 @@ function gwolle_gb_get_author_name_html($entry) {
 		// Link to Buddypress profile.
 		$author_website = trim( bp_core_get_user_domain( $author_id ) );
 		if ($author_website) {
-			$author_name_html = '<a href="' . $author_website . '" target="_blank"
+			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow noopener noreferrer' );
+			$author_name_html = '<a href="' . $author_website . '" target="_blank" rel="' . $author_link_rel . '"
 							title="' . /* translators: BuddyPress profile */ esc_attr__( 'Visit the profile of', 'gwolle-gb' ) . ' ' . $author_name . ': ' . $author_website . '">' . $author_name_html . '</a>';
 		}
 	} else if ( get_option('gwolle_gb-linkAuthorWebsite', 'true') === 'true' ) {
@@ -153,7 +155,7 @@ function gwolle_gb_get_author_name_html($entry) {
 			if ( ! preg_match($pattern, $author_website, $matches) ) {
 				$author_website = "http://" . $author_website;
 			}
-			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow' );
+			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow noopener noreferrer' );
 			$author_name_html = '<a href="' . $author_website . '" target="_blank" rel="' . $author_link_rel . '"
 							title="' . esc_attr__( 'Visit the website of', 'gwolle-gb' ) . ' ' . $author_name . ': ' . $author_website . '">' . $author_name_html . '</a>';
 		}

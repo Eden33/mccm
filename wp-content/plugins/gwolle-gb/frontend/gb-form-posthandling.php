@@ -504,6 +504,12 @@ function gwolle_gb_frontend_posthandling() {
 			}
 
 
+			/* Privacy checkbox for GDPR compliance added to log. */
+			if (isset($_POST['gwolle_gb_privacy']) && $_POST['gwolle_gb_privacy'] == 'on') {
+				gwolle_gb_add_log_entry( $entry->get_id(), 'privacy-policy-accepted' );
+			}
+
+
 			/*
 			 * Hooks gwolle_gb_clear_cache(), gwolle_gb_mail_moderators() and gwolle_gb_mail_author().
 			 */

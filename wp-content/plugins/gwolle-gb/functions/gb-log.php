@@ -43,7 +43,8 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 		'admin-reply-added',
 		'admin-reply-updated',
 		'admin-reply-removed',
-		'entry-anonymized'
+		'entry-anonymized',
+		'privacy-policy-accepted'
 	);
 	if ( ! in_array( $subject, $log_messages ) ) {
 		return false;
@@ -91,7 +92,8 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
  *   datetime     => (int) log_date with timestamp
  *   msg          => (string) subject of the log, what happened. In Human Readable form, translated
  *   author_login => (string) display_name or login_name of the user as standard WP_User
- *   msg_html     => (string) string of html-text ready for displayed
+ *   msg_html     => (string) string of html-text ready for display
+ *   msg_txt      => (string) string of text ready for display
  *
  */
 function gwolle_gb_get_log_entries( $entry_id ) {
@@ -124,7 +126,8 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 		'admin-reply-added'           => /* translators: Log message */ esc_html__('Admin reply has been added.', 'gwolle-gb'),
 		'admin-reply-updated'         => /* translators: Log message */ esc_html__('Admin reply has been updated.', 'gwolle-gb'),
 		'admin-reply-removed'         => /* translators: Log message */ esc_html__('Admin reply has been removed.', 'gwolle-gb'),
-		'entry-anonymized'            => /* translators: Log message */ esc_html__('Entry has been anonymized.', 'gwolle-gb')
+		'entry-anonymized'            => /* translators: Log message */ esc_html__('Entry has been anonymized.', 'gwolle-gb'),
+		'privacy-policy-accepted'     => /* translators: Log message */ esc_html__('Privacy Policy was accepted.', 'gwolle-gb')
 	);
 
 	$where = " 1 = %d";
@@ -184,7 +187,7 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 					$log_entry['author_login'] = $userdata->user_login;
 				}
 			} else {
-				$log_entry['author_login'] = '<i>' . esc_html__('Unknown', 'gwolle-gb') . '</i>';
+				$log_entry['author_login'] = esc_html__('Unknown', 'gwolle-gb');
 			}
 
 			// Construct the message in HTML
@@ -192,12 +195,22 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 			$log_entry['msg_html'] .= date_i18n( get_option('time_format'), $log_entry['datetime']);
 			$log_entry['msg_html'] .= ': ' . $log_entry['msg'];
 
-			if ( $log_entry['author_id'] == get_current_user_id() ) {
-				$log_entry['msg_html'] .= ' (<strong>' . esc_html__('You', 'gwolle-gb') . '</strong>)';
+			if ( $log_entry['author_id'] == get_current_user_id() && $log_entry['author_id'] != 0 ) {
+				$log_entry['msg_html'] .= ' <i>(<strong>' . esc_html__('You', 'gwolle-gb') . '</strong>)</i>';
 			} else {
-				$log_entry['msg_html'] .= ' (' . $log_entry['author_login'] . ')';
+				$log_entry['msg_html'] .= ' <i>(' . $log_entry['author_login'] . ')</i>';
 			}
 
+			// Construct the message in plain text
+			$log_entry['msg_txt']  = date_i18n( get_option('date_format'), $log_entry['datetime']) . ", ";
+			$log_entry['msg_txt'] .= date_i18n( get_option('time_format'), $log_entry['datetime']);
+			$log_entry['msg_txt'] .= ': ' . $log_entry['msg'];
+
+			if ( $log_entry['author_id'] == get_current_user_id() && $log_entry['author_id'] != 0 ) {
+				$log_entry['msg_txt'] .= ' (' . esc_html__('You', 'gwolle-gb') . ')';
+			} else {
+				$log_entry['msg_txt'] .= ' (' . $log_entry['author_login'] . ')';
+			}
 			$log_entries[] = $log_entry;
 		}
 

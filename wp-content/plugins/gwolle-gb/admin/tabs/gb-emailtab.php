@@ -35,6 +35,20 @@ function gwolle_gb_page_settingstab_email() {
 		if ( strlen($user_ids) > 0 ) {
 			$user_ids = explode( ",", $user_ids );
 		} ?>
+
+		<tr valign="top">
+			<th scope="row"><label><?php esc_html_e('Subscription status', 'gwolle-gb'); ?></label></th>
+			<td>
+				<?php
+				$my_user_id = get_current_user_id();
+				if ( is_array($user_ids) && in_array($my_user_id, $user_ids) ) {
+					esc_html_e('You are subscribed to email notifications.', 'gwolle-gb');
+				} else {
+					esc_html_e('You are not subscribed to email notifications.', 'gwolle-gb');
+				} ?>
+			</td>
+		</tr>
+
 		<tr valign="top">
 			<th scope="row"><label for="subscribe"><?php esc_html_e('Subscribe moderators', 'gwolle-gb'); ?></label></th>
 			<td>

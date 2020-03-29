@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Gwolle Guestbook
-Plugin URI: http://zenoweb.nl
+Plugin URI: https://wordpress.org/plugins/gwolle-gb/
 Description: Gwolle Guestbook is not just another guestbook for WordPress. The goal is to provide an easy and slim way to integrate a guestbook into your WordPress powered site. Don't use your 'comment' section the wrong way - install Gwolle Guestbook and have a real guestbook.
-Version: 3.1.4
+Version: 3.1.9
 Author: Marcel Pol
 Author URI: http://zenoweb.nl
 License: GPLv2 or later
@@ -13,7 +13,7 @@ Domain Path: /lang/
 
 /*
 	Copyright 2009 - 2010  Wolfgang Timme  (email: gwolle@wolfgangtimme.de)
-	Copyright 2014 - 2019  Marcel Pol      (email: marcel@timelord.nl)
+	Copyright 2014 - 2020  Marcel Pol      (email: marcel@timelord.nl)
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ Domain Path: /lang/
 
 
 // Plugin Version
-define('GWOLLE_GB_VER', '3.1.4');
+define('GWOLLE_GB_VER', '3.1.9');
 
 
 /*
@@ -58,7 +58,13 @@ define('GWOLLE_GB_VER', '3.1.4');
  *   - Use foreign keys for add-on, set meta var (add function). Test with frontend and export and isam db-engine.
  *   - Use foreign keys through a hook with SQL, and add a setter for meta.
  *   - Or add function to prepopulate metas for export.
- *
+ * - Add emoji for Zwarte Piet and Sinterklaas when locale=nl_nl.
+ * - Look into saving a timestamp including offset. Look again at saving from editor.
+ * - Use button for metabox control.
+ * - phase out current_time:
+ *   https://make.wordpress.org/core/2019/09/23/date-time-improvements-wp-5-3/
+ * - Support rewrite API for single entry.
+ * - Use select2 or similar for subscribe/unsubcribe dropdowns.
  */
 
 

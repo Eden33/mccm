@@ -43,6 +43,7 @@ add_action('admin_init', 'gwolle_gb_init');
 
 /*
  * Install database tables for new blog on MultiSite.
+ * Deprecated action since WP 5.1.0.
  *
  * @since 1.5.2
  */
@@ -52,6 +53,21 @@ function gwolle_gb_activate_new_site($blog_id) {
 	restore_current_blog();
 }
 add_action( 'wpmu_new_blog', 'gwolle_gb_activate_new_site' );
+
+
+/*
+ * Install database tables for new blog on MultiSite.
+ * Used since WP 5.1.0.
+ * Do not use wp_insert_site, since the options table doesn't exist yet...
+ *
+ * @since 3.1.5
+ */
+function gwolle_gb_wp_initialize_site( $blog ) {
+	switch_to_blog( $blog->id );
+	gwolle_gb_install();
+	restore_current_blog();
+}
+add_action( 'wp_initialize_site', 'gwolle_gb_wp_initialize_site' );
 
 
 /*
