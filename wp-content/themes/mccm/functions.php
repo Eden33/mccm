@@ -85,41 +85,29 @@ function filter_the_content( $content )
 {
     $registration_prohibited_msg = 'Zur Zeit sind keine Rennanmeldungen m&ouml;glich.';
     
-	if(is_page( 'clubsport-online-anmeldung' )
-	|| is_page( 'inter-sam-online-anmeldung' )
-    || is_page( 'sam-masters-online-anmeldung')
-	|| is_page( 'sam-junioren-open-online-anmeldung' )
-	|| is_page('sjmcc-online-anmeldung')) 
+	if((is_page( 'clubsport-online-anmeldung' )
+	|| is_page( 'sjmcc-online-anmeldung')
+	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' )
+	|| is_page( 'oldtimer-solo-online-anmeldung' ))
+	&& is_registration_enabled() === false) 
     {
         return $registration_prohibited_msg;
 	}
-
-	if(is_page( 'oldtimer-seitenwagen-online-anmeldung' ))
-	{
-	    if( is_registration_enabled() === false )
-	    {
-	        return $registration_prohibited_msg;
-	    }
-	}
 	
-    if(is_page('rennfahreranmeldung')) 
+	// not available in 2020
+	if(is_page( 'inter-sam-online-anmeldung' )
+	    || is_page( 'sam-masters-online-anmeldung')
+	    || is_page( 'sam-junioren-open-online-anmeldung' ))
+	{
+	    return $registration_prohibited_msg;
+	}
+
+	if(is_page('rennfahreranmeldung') && is_registration_enabled() === false) 
     {
-        if(is_registration_enabled() === false) 
-        {
-            $now = new DateTime('now');
-            return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
-        }
+        return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
 
     }
-
-    if(is_page('mitglieder')) 
-    {
-        require_once dirname(__FILE__).'/util/MemberPageUtil.php';
-        $memberPageUtil = new MemberPageUtil($content);
-        $content = $memberPageUtil->getMemberSummaryMarkup();
-        $content .= $memberPageUtil->getMemberListMarkup();
-    }
-
+    
 	return $content;
 }
 
