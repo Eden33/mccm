@@ -1,14 +1,14 @@
 <?php
 
-function wp_head_event() 
+function wp_head_event()
 {
-        global $_registration_ctr_enabled;
-        global $_registration_start_date;
-        $stylesheet_directory_uri = get_stylesheet_directory_uri();
-
-        if( $_registration_ctr_enabled) 
-        {
-?>
+    global $_registration_ctr_enabled;
+    global $_registration_start_date;
+    $stylesheet_directory_uri = get_stylesheet_directory_uri();
+    
+    if( $_registration_ctr_enabled)
+    {
+        ?>
         <script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/countdown.min.js"></script>
         <script type="text/javascript">
             var registrationStartDate = '<?= $_registration_start_date->format("Y/m/d H:i") ?> UTC';
@@ -47,8 +47,8 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2020-04-20 00:00');
-$_registration_ctr_enabled = true;
+$_registration_start_date = new DateTime('2022-04-20 00:00');
+$_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
 );
 
