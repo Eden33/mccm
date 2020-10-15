@@ -25,16 +25,6 @@ function wp_head_event()
 	<script type="text/javascript" src="<?= $stylesheet_directory_uri ?>/js/jQuery-extends.js"></script>
 <?php
 	}
-?>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53925452-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'UA-53925452-1');
-    </script>
-<?php
 }
 
 /*
