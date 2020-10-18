@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__FILE__).'/util/GDPR_Filter.php';
 
 function wp_head_event()
 {
@@ -97,6 +98,8 @@ function filter_the_content( $content )
         return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
 
     }
+    
+    $content = GDPR_Filter::filterContent($content);
     
 	return $content;
 }
