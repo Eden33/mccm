@@ -19,7 +19,7 @@ class GDPR_Filter {
     public static function filterContent($content) {
         if(self::containsYoutubeIFrames($content) && !isset($_GET[self::GET_YOUTUBE_ACCEPTED])) {            
             $content = self::replaceYoutubeIFrames($content, 
-                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird das Video erst auf unserer Seite eingebettet nachdem Sie auf 'Video laden' geklickt haben. 
+                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird das Video erst auf unserer Seite eingebettet, nachdem Sie auf 'Video laden' geklickt haben. 
                          Mit dem Laden des Videos akzeptieren Sie die Datenschutzerkl&auml;rung von YouTube."
                         , "https://policies.google.com/privacy"
                         , "Video Laden"
@@ -27,7 +27,7 @@ class GDPR_Filter {
         }
         if(self::containsVimeoIFrames($content) && !isset($_GET[self::GET_VIMEO_ACCEPTED])) {
             $content = self::replaceVimeoIFrames($content, 
-                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird das Video erst auf unserer Seite eingebettet nachdem Sie auf 'Video laden' geklickt haben.
+                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird das Video erst auf unserer Seite eingebettet, nachdem Sie auf 'Video laden' geklickt haben.
                          Mit dem Laden des Videos akzeptieren Sie die Datenschutzerkl&auml;rung von Vimeo."
                         , "https://vimeo.com/privacy"
                         , "Video Laden"
@@ -35,7 +35,7 @@ class GDPR_Filter {
         }
         if(self::containsGoogleMapsIFrames($content) && !isset($_GET[self::GET_GOOGLE_MAPS_ACCEPTED])) {
             $content = self::replaceGoogleMapsIFrames($content,
-                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird die Karte erst auf unserer Seite eingebettet nachdem Sie auf 'Karte laden' geklickt haben.
+                self::generateIFrameBlockerHtml("Aufgrund datenschutzrechtlicher Bestimmungen wird die Karte erst auf unserer Seite eingebettet, nachdem Sie auf 'Karte laden' geklickt haben.
                          Mit dem Laden der Karte akzeptieren Sie die Datenschutzerkl&auml;rung von Google."
                     , "https://policies.google.com/privacy"
                     , "Karte Laden"
