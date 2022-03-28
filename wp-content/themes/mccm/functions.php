@@ -75,6 +75,7 @@ add_filter('the_content', 'filter_the_content');
 function filter_the_content( $content ) 
 {
     $registration_prohibited_msg = 'Zur Zeit sind keine Rennanmeldungen m&ouml;glich.';
+	$content_currently_not_available = 'Der Inhalt dieser Seite ist zurzeit leider nicht verfügbar.';
     
 	if((is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'sjmcc-online-anmeldung')
@@ -98,6 +99,17 @@ function filter_the_content( $content )
         return "Alle M&ouml;glichkeiten zur Rennfahreranmeldungen sind derzeit deaktiviert.";
 
     }
+	
+	if(is_page('fotos-2012')
+	|| is_page('fotos-2013')
+	|| is_page('fotos-2014')
+	|| is_page('fotos-2015')
+	|| is_page('fotos-2016')
+	|| is_page('fotos-2017')
+	|| is_page('fotos-2019'))
+	{
+		return '<p>'.$content_currently_not_available.'</p>';
+	}
     
     $content = GDPR_Filter::filterContent($content);
     
