@@ -56,7 +56,7 @@ header('Retry-After: 600');
 
 <footer class="footer">
     <div class="footer__content">
-        Powered by <a href="https://www.plesk.com/" target="_blank"><img class="logo" src="https://www.mccm-feldkirch.at/wp-content/maintenance/assets/images/plesk-logo.png" alt="Plesk"></a>
+        Powered by WordPress Toolkit <a href="https://www.plesk.com/" target="_blank"><img class="logo" src="https://www.mccm-feldkirch.at/wp-content/maintenance/assets/images/plesk-logo.png" alt="Plesk"></a>
     </div>
 </footer>
 
