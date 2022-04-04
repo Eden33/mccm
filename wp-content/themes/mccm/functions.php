@@ -38,8 +38,8 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2022-04-20 00:00');
-$_registration_ctr_enabled = false;
+$_registration_start_date = new DateTime('2022-04-11 00:00');
+$_registration_ctr_enabled = true;
 $_registration_ip_whitelist = array(
 );
 
@@ -140,6 +140,17 @@ function filter_home( $query )
         $query->set( 'cat', array('-5', '-6', '-7'));
         
     }
+}
+
+/**
+ * Pretend success in plugin execution code:
+ * \wp-content\plugins\contact-form-7\includes\submission.php.
+ */
+add_filter('wpcf7_skip_mail', 'filter_contact_form_7_mail_submit', 10, 2);
+
+function filter_contact_form_7_mail_submit($skip_mail, $contact_form)
+{
+    return true;
 }
 
 /* Filter SECTION END------------------------------------------------------------------ */
