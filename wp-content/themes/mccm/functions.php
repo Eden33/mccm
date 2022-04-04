@@ -79,8 +79,7 @@ function filter_the_content( $content )
     
 	if((is_page( 'clubsport-online-anmeldung' )
 	|| is_page( 'sjmcc-online-anmeldung')
-	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' )
-	|| is_page( 'oldtimer-solo-online-anmeldung' ))
+	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' ))
 	&& is_registration_enabled() === false) 
     {
         return $registration_prohibited_msg;
@@ -90,6 +89,12 @@ function filter_the_content( $content )
 	if(is_page( 'inter-sam-online-anmeldung' )
 	    || is_page( 'sam-masters-online-anmeldung')
 	    || is_page( 'sam-junioren-open-online-anmeldung' ))
+	{
+	    return $registration_prohibited_msg;
+	}
+	
+	// not available in 2022
+	if(is_page('oldtimer-solo-online-anmeldung')) 
 	{
 	    return $registration_prohibited_msg;
 	}
