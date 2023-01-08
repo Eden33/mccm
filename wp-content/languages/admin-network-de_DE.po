@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the WordPress - 5.3.x - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-01-28 00:08:57+0000\n"
+"PO-Revision-Date: 2022-12-10 02:03:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/3.0.0-alpha.2\n"
+"X-Generator: GlotPress/4.0.0-alpha.3\n"
 "Language: de\n"
 "Project-Id-Version: WordPress - 5.3.x - Administration - Network Admin\n"
 
@@ -200,7 +200,7 @@ msgstr "Menüs aktivieren"
 
 #: wp-admin/network/settings.php:444
 msgid "Enable administration menus"
-msgstr "Administrations-Menüs aktivieren für:"
+msgstr "Administrations-Menüs aktivieren"
 
 #: wp-admin/network/settings.php:415
 msgid "Default Language"
@@ -1406,11 +1406,11 @@ msgstr "Füge die bezeichneten Zeilen Code zur wp-config.php (kurz vor <code>/*.
 
 #: wp-admin/network.php:61
 msgid "The next screen for Network Setup will give you individually-generated lines of code to add to your wp-config.php and .htaccess files. Make sure the settings of your FTP client make files starting with a dot visible, so that you can find .htaccess; you may have to create this file if it really is not there. Make backup copies of those two files."
-msgstr "Der nächste Bereich im Netzwerk Setup gibt dir individuell generierte Code-Zeilen, die du zu deiner wp-config.php- und .htaccess-Datei hinzufügen sollst. Stelle sicher, dass dein FTP-Programm alle Dateien anzeigt, auch die, die mit einem . beginnen, damit du auch die .htaccess findest. Du kannst manuell eine .htaccess Datei erstellen, sollte noch keine im Verzeichnis vorhanden sein. Mache bitte eine Sicherheitskopie von der wp-config.php und .htaccess-Datei."
+msgstr "Der nächste Bereich im Netzwerk-Einrichtung gibt dir individuell generierte Code-Zeilen, die du zu deiner wp-config.php- und .htaccess-Datei hinzufügen sollst. Stelle sicher, dass dein FTP-Programm alle Dateien anzeigt, auch die, die mit einem . beginnen, damit du auch die .htaccess findest. Du kannst manuell eine .htaccess-Datei erstellen, sollte noch keine im Verzeichnis vorhanden sein. Mache bitte eine Sicherheitskopie von der wp-config.php- und .htaccess-Datei."
 
 #: wp-admin/network.php:60
 msgid "Choose subdomains or subdirectories; this can only be switched afterwards by reconfiguring your installation. Fill out the network details, and click Install. If this does not work, you may have to add a wildcard DNS record (for subdomains) or change to another setting in Permalinks (for subdirectories)."
-msgstr "Wähle Subdomains oder Unterverzeichnisse. Dies kann später nur durch Rekonfiguration der Installation verändert werden. Fülle die Netzwerk-Details aus und klicke Installieren. Sollte dies nicht funktionieren, solltest du einen Wildcard-DNS-Eintrag (für Subdomains) anlegen oder andere Einstellungen in Permalinks (für Unterverzeichnisse) setzen."
+msgstr "Wähle Subdomains oder Unterverzeichnisse. Dies kann später nur durch Rekonfiguration der Installation verändert werden. Fülle die Netzwerk-Details aus und klicke auf Installieren. Sollte dies nicht funktionieren, solltest du einen Wildcard-DNS-Eintrag (für Subdomains) anlegen oder andere Einstellungen in Permalinks (für Unterverzeichnisse) setzen."
 
 #: wp-admin/network.php:59
 msgid "This screen allows you to configure a network as having subdomains (<code>site1.example.com</code>) or subdirectories (<code>example.com/site1</code>). Subdomains require wildcard subdomains to be enabled in Apache and DNS records, if your host allows it."
