@@ -437,7 +437,29 @@ add_filter( 'wp_page_menu_args', 'twentyeleven_page_menu_args' );
  */
 function twentyeleven_widgets_init() {
 
-	register_widget( 'Twenty_Eleven_Ephemera_Widget' );
+/* 
+Comment out next line because of following stack trace:
+
+[20-Jan-2023 22:02:32 UTC] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function WP_Widget::__construct(), 0 passed in /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-widget-factory.php on line 71 and at least 2 expected in /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-widget.php:162
+Stack trace:
+#0 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-widget-factory.php(71): WP_Widget->__construct()
+#1 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/widgets.php(115): WP_Widget_Factory->register()
+#2 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-content/themes/twentyeleven/functions.php(440): register_widget()
+#3 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-hook.php(288): twentyeleven_widgets_init()
+#4 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters()
+#5 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/plugin.php(478): WP_Hook->do_action()
+#6 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/widgets.php(1765): do_action()
+#7 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-hook.php(288): wp_widgets_init()
+#8 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters()
+#9 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-includes/plugin.php(478): WP_Hook->do_action()
+#10 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-settings.php(523): do_action()
+#11 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-config.php(103): require_once('/var/www/vhosts...')
+#12 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-load.php(37): require_once('/var/www/vhosts...')
+#13 /var/www/vhosts/mccm-feldkirch.at/httpdocs/wp-blog-header.php(13): require_once('/var/www/vhosts...')
+#14 /var/www/vhosts/mccm-feldkirch.at/httpdocs/index.php(17): require('/var/www/vhosts...') 
+*/
+
+	// register_widget( 'Twenty_Eleven_Ephemera_Widget' );
 
 	register_sidebar( array(
 		'name' => __( 'Main Sidebar', 'twentyeleven' ),
