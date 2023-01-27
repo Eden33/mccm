@@ -70,33 +70,6 @@ class M_Third_Party_Compat extends C_Base_Module
         if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 4) {
             @ini_set('zlib.output_compression', 'Off');
         }
-
-        // Detect 'Adminer' and whether the user is viewing its loader.php
-        if (class_exists('AdminerForWP') && function_exists('adminer_object'))
-        {
-            if (!defined('NGG_DISABLE_RESOURCE_MANAGER'))
-                define('NGG_DISABLE_RESOURCE_MANAGER', TRUE);
-        }
-
-        // Cornerstone's page builder requires a 'clean slate' of css/js that our resource manager interefers with
-        if (class_exists('Cornerstone'))
-        {
-            if (!defined('NGG_DISABLE_FILTER_THE_CONTENT')) define('NGG_DISABLE_FILTER_THE_CONTENT', TRUE);
-            if (!defined('NGG_DISABLE_RESOURCE_MANAGER'))   define('NGG_DISABLE_RESOURCE_MANAGER', TRUE);
-        }
-
-        // Genesis Tabs creates a new query / do_shortcode loop which requires these be set
-        if (class_exists('Genesis_Tabs'))
-        {
-            if (!defined('NGG_DISABLE_FILTER_THE_CONTENT')) define('NGG_DISABLE_FILTER_THE_CONTENT', TRUE);
-            if (!defined('NGG_DISABLE_RESOURCE_MANAGER'))   define('NGG_DISABLE_RESOURCE_MANAGER', TRUE);
-        }
-
-        // Elementor's graphical builder is broken by our resource manager
-        if (defined('ELEMENTOR_VERSION'))
-        {
-            if (!defined('NGG_DISABLE_RESOURCE_MANAGER')) define('NGG_DISABLE_RESOURCE_MANAGER', TRUE);
-        }
     }
 
     function _register_adapters()
@@ -121,7 +94,6 @@ class M_Third_Party_Compat extends C_Base_Module
 
         add_filter('headway_gzip', array(&$this, 'headway_gzip'), (PHP_INT_MAX - 1));
         add_filter('ckeditor_external_plugins', array(&$this, 'ckeditor_plugins'), 11);
-        add_filter('bp_do_redirect_canonical', array(&$this, 'fix_buddypress_routing'));
         add_filter('the_content', array($this, 'check_weaverii'), -(PHP_INT_MAX-2));
         add_action('wp', array($this, 'check_for_jquery_lightbox'));
         add_filter('get_the_excerpt', array($this, 'disable_galleries_in_excerpts'), 1);
@@ -129,21 +101,114 @@ class M_Third_Party_Compat extends C_Base_Module
 	    add_action('debug_bar_enqueue_scripts', array($this, 'no_debug_bar'));
         add_filter('ngg_non_minified_modules', array($this, 'dont_minify_nextgen_pro_cssjs'));
         add_filter('ngg_atp_show_display_type', array($this, 'atp_check_pro_albums'), 10, 2);
-        add_filter('run_ngg_resource_manager', array($this, 'run_ngg_resource_manager'));
         add_filter('wpseo_sitemap_urlimages', array($this, 'add_wpseo_xml_sitemap_images'), 10, 2);
         add_filter('ngg_pre_delete_unused_term_id', array($this, 'dont_auto_purge_wpml_terms'));
 
-        if ($this->is_ngg_page()) add_action('admin_enqueue_scripts', array(&$this, 'dequeue_spider_calendar_resources'));
+        // Nimble Builder needs special consideration because of our shortcode manager's use of placeholders
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_nimble_builder_frontend_resources']);
+        add_filter('ngg_shortcode_placeholder', [$this, 'nimble_builder_shortcodes'], 10, 4);
+
+        if ($this->is_ngg_page())
+            add_action('admin_enqueue_scripts', array(&$this, 'dequeue_spider_calendar_resources'));
+
+        // Like WPML, BuddyPress is incompatible with our routing hacks.
+        if (function_exists('buddypress'))
+        {
+            M_WordPress_Routing::$_use_canonical_redirect = FALSE;
+            M_WordPress_Routing::$_use_old_slugs = FALSE;
+        }
 
         // WPML fix
-        if (class_exists('SitePress')) {
+        if (class_exists('SitePress'))
+        {
             M_WordPress_Routing::$_use_canonical_redirect = FALSE;
             M_WordPress_Routing::$_use_old_slugs = FALSE;
             add_action('template_redirect', array(&$this, 'fix_wpml_canonical_redirect'), 1);
         }
 
-        // TODO: Only needed for NGG Pro 1.0.10 and lower
-        add_action('the_post', array(&$this, 'add_ngg_pro_page_parameter'));
+        add_action('the_post', [$this, 'fix_page_parameter']);
+    }
+
+    /**
+     * This code was originally added to correct a bug in Pro 1.0.10 and was meant to be temporary. However now the
+     * albums pagination relies on this to function correctly, and fixing it properly would require more time than its worth.
+     *
+     * TODO: Remove this once the router and wordpress_routing modules are removed.
+     */
+    function fix_page_parameter()
+    {
+        global $post;
+
+        if ($post AND isset($post->post_content) AND (strpos($post->post_content, "<!--nextpage-->") === FALSE) AND (strpos($_SERVER['REQUEST_URI'], '/page/') !== FALSE))
+        {
+            if (preg_match("#/page/(\\d+)#", $_SERVER['REQUEST_URI'], $match))
+                $_REQUEST['page'] = $match[1];
+        }
+    }
+
+    /**
+     * @param string $placeholder
+     * @param string $shortcode
+     * @param array $params
+     * @param string $inner_content
+     * @return string
+     */
+    public function nimble_builder_shortcodes($placeholder, $shortcode, $params, $inner_content)
+    {
+        if (!defined( 'NIMBLE_PLUGIN_FILE'))
+            return $placeholder;
+
+        // Invoke our gallery rendering now
+        if (doing_filter('the_nimble_tinymce_module_content'))
+            $placeholder = C_NextGen_Shortcode_Manager::get_instance()->render_shortcode($shortcode, $params, $inner_content);
+
+        return $placeholder;
+    }
+
+    /**
+     * @param array $collection
+     */
+    public function nimble_find_content($collection)
+    {
+        if (!is_array($collection))
+            return;
+
+        foreach ($collection as $item) {
+            if (isset($item['value']) && !empty($item['value']['text_content']))
+                M_Gallery_Display::enqueue_frontent_resources_for_content($item['value']['text_content']);
+
+            if (!empty($item['collection']))
+                $this->nimble_find_content($item['collection']);
+        }
+    }
+
+    public function enqueue_nimble_builder_frontend_resources()
+    {
+        if (!defined( 'NIMBLE_PLUGIN_FILE'))
+            return;
+
+        if (!function_exists('\Nimble\skp_get_skope_id')
+        ||  !function_exists('\Nimble\sek_get_skoped_seks')
+        ||  !function_exists('\Nimble\sek_sniff_and_decode_richtext'))
+            return;
+
+        // Bail now if called before skope_id is set (before @hook 'wp')
+        $skope_id = \Nimble\skp_get_skope_id();
+        if (empty($skope_id) || '_skope_not_set_' === $skope_id)
+            return;
+
+        $global_sections = \Nimble\sek_get_skoped_seks(NIMBLE_GLOBAL_SKOPE_ID);
+        $local_sections  = \Nimble\sek_get_skoped_seks($skope_id);
+        $raw_content = \Nimble\sek_sniff_and_decode_richtext([
+            'local_sections'  => $local_sections,
+            'global_sections' => $global_sections
+        ]);
+        foreach ($raw_content['local_sections'] as $section) {
+            $this->nimble_find_content($section);
+        }
+        foreach ($raw_content['global_sections'] as $section) {
+            $this->nimble_find_content($section);
+        }
     }
 
     public function divi()
@@ -220,41 +285,6 @@ class M_Third_Party_Compat extends C_Base_Module
     }
 
     /**
-     * Some other plugins output content and die(); this causes problems with our resource manager which uses output buffering
-     *
-     * @param bool $valid_request
-     * @return bool
-     */
-    function run_ngg_resource_manager($valid_request = TRUE)
-    {
-        // WP-Post-To-PDF-Enhanced
-        if (class_exists('wpptopdfenh') && !empty($_GET['format']))
-            $valid_request = FALSE;
-
-        // WP-Photo-Seller download
-        if (class_exists('WPS') && isset($_REQUEST['wps_file_dl']) && $_REQUEST['wps_file_dl'] == '1')
-            $valid_request = FALSE;
-
-        // Multiverso Advanced File Sharing download
-        if (function_exists('mv_install') && isset($_GET['upf']) && isset($_GET['id']))
-            $valid_request = FALSE;
-
-        // WooCommerce downloads
-        if (class_exists('WC_Download_Handler') && isset($_GET['download_file']) && isset($_GET['order']) && isset($_GET['email']))
-            $valid_request = FALSE;
-
-        // WP-E-Commerce
-        if (isset($_GET['wpsc_download_id']) || (function_exists('wpsc_download_file') && isset($_GET['downloadid'])))
-            $valid_request = FALSE;
-
-        // Easy Digital Downloads
-        if (function_exists('edd_process_download') && (isset($_GET['download_id']) || isset($_GET['download'])))
-            $valid_request = FALSE;
-
-        return $valid_request;
-    }
-
-    /**
      * This style causes problems with Excellent Themes admin settings
      */
     function excellent_themes_admin()
@@ -300,13 +330,6 @@ class M_Third_Party_Compat extends C_Base_Module
         }
 
         return $excerpt;
-    }
-
-    function fix_buddypress_routing()
-    {
-        M_WordPress_Routing::$_use_canonical_redirect = FALSE;
-
-        return FALSE;
     }
 
     function fix_wpml_canonical_redirect()
@@ -466,23 +489,6 @@ class M_Third_Party_Compat extends C_Base_Module
                 continue;
 
             remove_action('init', array($object, 'init'), 10);
-        }
-    }
-
-    /**
-     * NGG Pro 1.0.10 relies on the 'page' parameter for pagination, but that conflicts with
-     * WordPress Post Pagination (<!-- nextpage -->). This was fixed in 1.0.11, so this code is
-     * for backwards compatibility
-     * TODO: This can be removed in a later release
-     */
-    function add_ngg_pro_page_parameter()
-    {
-        global $post;
-
-        if ($post AND !is_array($post->content) AND (strpos($post->content, "<!--nextpage-->") === FALSE) AND (strpos($_SERVER['REQUEST_URI'], '/page/') !== FALSE)) {
-            if (preg_match("#/page/(\\d+)#", $_SERVER['REQUEST_URI'], $match)) {
-                $_REQUEST['page'] = $match[1];
-            }
         }
     }
 

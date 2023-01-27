@@ -24,7 +24,7 @@ function gwolle_gb_get_entries_from_search( $args = array() ) {
 	global $wpdb;
 
 	$where = " 1 = %d";
-	$values = Array(1);
+	$values = array( 1 );
 
 	if ( ! is_array( $args ) ) {
 		return false;
@@ -45,7 +45,7 @@ function gwolle_gb_get_entries_from_search( $args = array() ) {
 		istrash = %d";
 		$values[] = 0;
 
-	if ( isset( $args['book_id']) && ((int) $args['book_id']) > 0 ) {
+	if ( isset( $args['book_id'] ) && ( (int) $args['book_id'] ) > 0 ) {
 		$where .= "
 			AND
 			book_id = %d";
@@ -83,7 +83,7 @@ function gwolle_gb_get_entries_from_search( $args = array() ) {
 	$limit = " LIMIT " . $perpage_option; // default
 	if ( isset($args['num_entries']) && (int) $args['num_entries'] > 0 ) {
 		$limit = " LIMIT " . (int) $args['num_entries'];
-	} else if ( isset($args['num_entries']) && (int) $args['num_entries'] == -1 ) {
+	} else if ( isset($args['num_entries']) && (int) $args['num_entries'] === -1 ) {
 		$limit = ' LIMIT 999999999999999 ';
 		$offset = ' OFFSET 0 ';
 	}
@@ -161,6 +161,7 @@ function gwolle_gb_get_entries_from_search( $args = array() ) {
 		return $entries;
 	}
 	return false;
+
 }
 
 
@@ -233,49 +234,49 @@ function gwolle_gb_get_entry_count_from_search( $args ) {
 	}
 
 	$where = " 1 = %d";
-	$values = Array(1);
+	$values = array( 1 );
 
 	if ( ! is_array($args) ) {
 		return false;
 	}
 
 	if ( isset($args['checked']) ) {
-		if ( $args['checked'] == 'checked' || $args['checked'] == 'unchecked' ) {
+		if ( $args['checked'] === 'checked' || $args['checked'] === 'unchecked' ) {
 			$where .= "
 				AND
 				ischecked = %d";
-			if ( $args['checked'] == 'checked' ) {
+			if ( $args['checked'] === 'checked' ) {
 				$values[] = 1;
-			} else if ( $args['checked'] == 'unchecked' ) {
+			} else if ( $args['checked'] === 'unchecked' ) {
 				$values[] = 0;
 			}
 		}
 	}
 	if ( isset($args['spam']) ) {
-		if ( $args['spam'] == 'spam' || $args['spam'] == 'nospam' ) {
+		if ( $args['spam'] === 'spam' || $args['spam'] === 'nospam' ) {
 			$where .= "
 				AND
 				isspam = %d";
-			if ( $args['spam'] == 'spam' ) {
+			if ( $args['spam'] === 'spam' ) {
 				$values[] = 1;
-			} else if ( $args['spam'] == 'nospam' ) {
+			} else if ( $args['spam'] === 'nospam' ) {
 				$values[] = 0;
 			}
 		}
 	}
 	if ( isset($args['trash']) ) {
-		if ( $args['trash'] == 'trash' || $args['trash'] == 'notrash' ) {
+		if ( $args['trash'] === 'trash' || $args['trash'] === 'notrash' ) {
 			$where .= "
 				AND
 				istrash = %d";
-			if ( $args['trash'] == 'trash' ) {
+			if ( $args['trash'] === 'trash' ) {
 				$values[] = 1;
-			} else if ( $args['trash'] == 'notrash' ) {
+			} else if ( $args['trash'] === 'notrash' ) {
 				$values[] = 0;
 			}
 		}
 	}
-	if ( isset( $args['book_id']) && ((int) $args['book_id']) > 0 ) {
+	if ( isset( $args['book_id'] ) && ( (int) $args['book_id'] ) > 0 ) {
 		$where .= "
 			AND
 			book_id = %d";
@@ -284,8 +285,8 @@ function gwolle_gb_get_entry_count_from_search( $args ) {
 
 	$search_query = gwolle_gb_is_search();
 	$tablename = $wpdb->prefix . "gwolle_gb_entries";
-	foreach ( $search_query as $term ) {
-		$like = '%' . $wpdb->esc_like( $term ) . '%';
+	foreach ( $search_query as $search_term ) {
+		$like = '%' . $wpdb->esc_like( $search_term ) . '%';
 		$where .= $wpdb->prepare( "
 			AND (
 			($tablename . author_name LIKE %s)

@@ -14,7 +14,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_settingstab_antispam() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	} ?>
 
@@ -25,16 +25,16 @@ function gwolle_gb_page_settingstab_antispam() {
 
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_settings_antispamtab' );
-	echo '<input type="hidden" id="gwolle_gb_page_settings_antispamtab" name="gwolle_gb_page_settings_antispamtab" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_page_settings_antispamtab" name="gwolle_gb_page_settings_antispamtab" value="' . esc_attr( $nonce ) . '" />';
 	?>
 	<table class="form-table">
 		<tbody>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="moderate-entries"><?php /* translators: Settings page, option for moderation */ esc_html_e('Moderate Guestbook', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-moderate-entries', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-moderate-entries', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="moderate-entries" id="moderate-entries">
@@ -49,11 +49,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="refuse-spam"><?php /* translators: Settings page, option for refusing spam */ esc_html_e('Refuse Spam', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+					if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="refuse-spam" id="refuse-spam">
@@ -68,11 +68,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="honeypot"><?php esc_html_e('Honeypot', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-honeypot', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-honeypot', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="honeypot" id="honeypot">
@@ -85,11 +85,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="gwolle_gb_nonce"><?php esc_html_e('Nonce', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-nonce', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-nonce', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="gwolle_gb_nonce" id="gwolle_gb_nonce">
@@ -110,11 +110,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="gwolle_gb_longtext"><?php esc_html_e('Long Text', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-longtext', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-longtext', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="gwolle_gb_longtext" id="gwolle_gb_longtext">
@@ -132,11 +132,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="gwolle_gb_linkchecker"><?php esc_html_e('Link Checker', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-linkchecker', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-linkchecker', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="gwolle_gb_linkchecker" id="gwolle_gb_linkchecker">
@@ -151,11 +151,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="gwolle_gb_timeout"><?php esc_html_e('Form Timeout', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-timeout', 'true') == 'true') {
+					if (get_option( 'gwolle_gb-timeout', 'true') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="gwolle_gb_timeout" id="gwolle_gb_timeout">
@@ -170,7 +170,7 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row">
 				<label for="akismet-active"><?php esc_html_e('Akismet', 'gwolle-gb'); ?></label>
 			</th>
@@ -185,10 +185,10 @@ function gwolle_gb_page_settingstab_antispam() {
 
 					// Check wether Akismet is installed and activated or not.
 					if ( ! in_array('akismet/akismet.php', $current_plugins)) {
-						echo esc_html__("Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.", 'gwolle-gb') . '<br />';
+						echo esc_html__('Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.', 'gwolle-gb') . '<br />';
 						// Akismet is not installed and activated. Show notice with suggestion to install it.
 						esc_html_e("Akismet helps you to fight spam. It's free and easy to install. Download and install it today to stop spam in your guestbook.", 'gwolle-gb');
-					} elseif ( ! $wordpress_api_key) {
+					} else if ( ! $wordpress_api_key) {
 						// No WordPress API key is defined and set in the database.
 						/* translators: First 2 %s are a strong element. Second %s is for a link. */
 						echo sprintf( esc_html__("Sorry, wasn't able to locate your %sWordPress API key%s. You can enter it at the %sAkismet configuration page%s.", 'gwolle-gb'), '<strong>', '</strong>', '<a href="options-general.php?page=akismet-key-config">', '</a>' );
@@ -210,11 +210,11 @@ function gwolle_gb_page_settingstab_antispam() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="gwolle_gb_sfs"><?php esc_html_e('Stop Forum Spam', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-sfs', 'false') == 'true') {
+					if (get_option( 'gwolle_gb-sfs', 'false') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="gwolle_gb_sfs" id="gwolle_gb_sfs">
@@ -233,19 +233,40 @@ function gwolle_gb_page_settingstab_antispam() {
 		</tr>
 
 		<?php
+		$form_setting = gwolle_gb_get_setting( 'form' );
 		$antispam_question = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-question') );
 		$antispam_answer   = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-answer') );
 		?>
-		<tr valign="top">
-			<th scope="row"><label for="antispam-question"><?php esc_html_e('Custom Anti-Spam Security Question', 'gwolle-gb'); ?></label></th>
+		<tr>
+			<th scope="row"><label for="form-antispam-enabled"><?php esc_html_e('Security Question', 'gwolle-gb'); ?></label></th>
 			<td>
 				<div>
+					<input type="checkbox" id="form-antispam-enabled" name="form-antispam-enabled"<?php
+					if ( isset($form_setting['form_antispam_enabled']) && $form_setting['form_antispam_enabled'] === 'true' ) {
+						echo ' checked="checked"';
+					}
+					?> />
+					<label for="form-antispam-enabled"><?php esc_html_e('Use Custom Anti-Spam Security Question.', 'gwolle-gb'); ?></label><br />
+
 					<label for="antispam-question" class="setting-description"><?php esc_html_e('Custom security question to battle spam:', 'gwolle-gb'); ?></label><br />
-					<input name="antispam-question" type="text" id="antispam-question" value="<?php echo $antispam_question; ?>" class="regular-text" placeholder="<?php esc_attr_e('12 + six =', 'gwolle-gb'); ?>" /><br />
+					<input name="antispam-question" type="text" id="antispam-question" value="<?php echo esc_attr( $antispam_question ); ?>" class="regular-text" placeholder="<?php esc_attr_e('12 + six =', 'gwolle-gb'); ?>" /><br />
 					<label for="antispam-answer" class="setting-description"><?php esc_html_e('The answer to your security question:', 'gwolle-gb'); ?></label><br />
-					<input name="antispam-answer" type="text" id="antispam-answer" value="<?php echo $antispam_answer; ?>" class="regular-text" placeholder="<?php esc_attr_e('18', 'gwolle-gb'); ?>" /><br />
+					<input name="antispam-answer" type="text" id="antispam-answer" value="<?php echo esc_attr( $antispam_answer ); ?>" class="regular-text" placeholder="<?php esc_attr_e('18', 'gwolle-gb'); ?>" /><br />
 					<span class="setting-description"><?php esc_html_e('You can ask your visitors to answer a custom security question, so only real people can post an entry.', 'gwolle-gb'); ?></span>
 				</div>
+			</td>
+		</tr>
+
+		<tr>
+			<th scope="row"><label for="gb_moderation_keys"><?php esc_html_e( 'Blocklist Moderation', 'gwolle-gb' ); ?></label></th>
+			<td>
+				<label for="gb_moderation_keys">
+					<?php esc_html_e('Enter words for the blocklist.', 'gwolle-gb'); ?>
+				</label><br />
+				<textarea name="gb_moderation_keys" rows="10" cols="50" id="gb_moderation_keys" class="large-text code"><?php echo esc_textarea( get_option( 'gwolle_gb_addon-moderation_keys' ) ); ?></textarea>
+				<span class="setting-description">
+					<?php esc_html_e( 'When an entry contains any of these words in its content, name, URL, email, or IP address, it will be held in the moderation queue. One word or IP address per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.', 'gwolle-gb' ); ?>
+				</span>
 			</td>
 		</tr>
 

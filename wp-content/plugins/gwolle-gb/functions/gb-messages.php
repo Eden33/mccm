@@ -13,11 +13,13 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 /*
  * Add messages from the form to show again after submitting an entry.
  *
- * @param string $message html and text to show.
- * @param string $error if it is a validation error for the form (default false).
- * @param string $error_field which field does not validate.
+ * @param mixed string $message html and text to show, or false if no message.
+ * @param bool  $error if it is a validation error for the form (default false).
+ * @param mixed string $error_field with which field does not validate, otherwise bool false.
  *
  * @return array list of messages that are already added.
+ *
+ * @uses static array $gwolle_gb_messages list of messages in html.
  *
  * @since 1.5.6
  */
@@ -64,7 +66,10 @@ function gwolle_gb_get_messages() {
 	if ( $gwolle_gb_errors && is_array( $gwolle_gb_error_fields ) && ! empty( $gwolle_gb_error_fields ) ) {
 		// There was no data filled in, even though that was mandatory.
 		$gwolle_gb_messages[] = '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There were errors submitting your guestbook entry.', 'gwolle-gb') . '</strong></p>';
-		$gwolle_gb_messages[] = '<p class="error_fields gb-error-fields" style="display: none;">' . print_r( $gwolle_gb_error_fields, true ) . '</p>';
+
+		$gwolle_gb_error_fields = gwolle_gb_array_flatten( $gwolle_gb_error_fields );
+		$gwolle_gb_error_fields = implode( ', ', $gwolle_gb_error_fields );
+		$gwolle_gb_messages[] = '<p class="error_fields gb-error-fields" style="display: none;">' . $gwolle_gb_error_fields . '</p>';
 	}
 
 	$gwolle_gb_messages = apply_filters( 'gwolle_gb_messages', $gwolle_gb_messages );
@@ -84,6 +89,8 @@ function gwolle_gb_get_messages() {
  * @param bool $error is there a fatal error in submitting the form.
  *
  * @return bool if there was a fatal error already.
+ *
+ * @uses static bool $gwolle_gb_errors
  *
  * @since 3.0.0
  */
@@ -132,6 +139,8 @@ function gwolle_gb_get_errors() {
  *
  * @return array error_fields that were added to the static var.
  *
+ * @uses static array $gwolle_gb_error_fields with error_fields.
+ *
  * @since 3.0.0
  */
 function gwolle_gb_add_error_field( $error_field = false ) {
@@ -175,6 +184,8 @@ function gwolle_gb_get_error_fields() {
  *
  * @return array formdata that was added to the static var.
  *
+ * @uses static array $gwolle_gb_formdata with list of formdata.
+ *
  * @since 1.5.6
  */
 function gwolle_gb_add_formdata( $field = false, $value = false ) {
@@ -186,7 +197,7 @@ function gwolle_gb_add_formdata( $field = false, $value = false ) {
 	}
 
 	if ( $field && $value ) {
-		$gwolle_gb_formdata["$field"] = $value;
+		$gwolle_gb_formdata["$field"] = esc_attr( $value );
 	}
 
 	return $gwolle_gb_formdata;

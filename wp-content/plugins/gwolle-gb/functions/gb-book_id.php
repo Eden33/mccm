@@ -29,18 +29,20 @@ function gwolle_gb_get_postid( $book_id = 1 ) {
 			),
 		),
 		'update_post_term_cache' => false,
-		'update_post_meta_cache' => false
+		'update_post_meta_cache' => false,
 	));
 
 	if ( $the_query->have_posts() ) {
-		while ( $the_query->have_posts() ) : $the_query->the_post();
+		while ( $the_query->have_posts() ) {
+			$the_query->the_post();
 			$postid = get_the_ID();
 			return $postid; // only one postid is needed.
-		endwhile;
+		}
 		wp_reset_postdata();
 	}
 
 	return 0;
+
 }
 
 
@@ -56,7 +58,7 @@ function gwolle_gb_get_postid_biggest_book() {
 	$postids = gwolle_gb_get_books();
 	if ( is_array($postids) && ! empty($postids) ) {
 
-		if ( count( $postids ) == 1 ) {
+		if ( count( $postids ) === 1 ) {
 			return $postids[0]; // just one guestbook, return it.
 		}
 
@@ -75,7 +77,7 @@ function gwolle_gb_get_postid_biggest_book() {
 						'checked' => 'checked',
 						'trash'   => 'notrash',
 						'spam'    => 'nospam',
-						'book_id' => $bookid
+						'book_id' => $bookid,
 					)
 				);
 				set_transient( $key, $entries_total, DAY_IN_SECONDS );
@@ -83,7 +85,7 @@ function gwolle_gb_get_postid_biggest_book() {
 			$book = array();
 			$book['postid'] = $postid;
 			$book['bookid'] = $bookid;
-			$book['entries_total'] = $entries_total;
+			$book['entries_total'] = (int) $entries_total;
 			$books[] = $book;
 			$totals[] = $entries_total;
 		}
@@ -92,13 +94,14 @@ function gwolle_gb_get_postid_biggest_book() {
 		rsort( $totals );
 
 		foreach ( $books as $book ) {
-			if ( $book['entries_total'] == $totals[0] ) {
+			if ( $book['entries_total'] === $totals[0] ) {
 				return $book['postid'];
 			}
 		}
 	}
 
 	return 0;
+
 }
 
 
@@ -114,6 +117,8 @@ function gwolle_gb_get_books() {
 	$the_query = new WP_Query( array(
 		'post_type'           => 'any',
 		'ignore_sticky_posts' => true, // do not use sticky posts.
+		'nopaging'            => true,
+		'posts_per_page'      => 500,
 		'meta_query'          => array(
 			array(
 				'key'   => 'gwolle_gb_read',
@@ -121,18 +126,19 @@ function gwolle_gb_get_books() {
 			),
 		),
 		'update_post_term_cache' => false,
-		'update_post_meta_cache' => false
+		'update_post_meta_cache' => false,
 	));
-
 	$postids = array();
 	if ( $the_query->have_posts() ) {
-		while ( $the_query->have_posts() ) : $the_query->the_post();
+		while ( $the_query->have_posts() ) {
+			$the_query->the_post();
 			$postids[] = get_the_ID();
-		endwhile;
+		}
 		wp_reset_postdata();
 	}
 
 	return $postids;
+
 }
 
 
@@ -147,26 +153,26 @@ function gwolle_gb_get_permalinks() {
 	$postids = gwolle_gb_get_books();
 	$books = array();
 
-	/* Build up all the permalinks for the books. */
 	foreach ( $postids as $postid ) {
 		$permalink = gwolle_gb_get_permalink( $postid );
-
-		if ( empty( $permalink ) ) {
+		if ( strlen( $permalink ) === 0 ) {
 			continue;
 		}
 
 		$book_id = get_post_meta( $postid, 'gwolle_gb_book_id', true );
-		if ( empty( $book_id ) ) {
+		if ( strlen( $book_id ) === 0 ) {
 			continue;
 		}
 
-		$books["$book_id"] = array(
+		$books[] = array(
 			'post_id'   => $postid,
 			'book_id'   => $book_id,
-			'permalink' => $permalink
+			'permalink' => $permalink,
 		);
 	}
+
 	return $books;
+
 }
 
 

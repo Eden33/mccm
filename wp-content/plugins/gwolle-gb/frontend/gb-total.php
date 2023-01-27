@@ -35,6 +35,7 @@ function gwolle_gb_addon_get_total_entries( $html, $args ) {
  * @since 2.6.0
  */
 function gwolle_gb_get_total_entries( $html, $args ) {
+
 	if ( ! isset($args['book_id']) ) {
 		$args['book_id'] = 1; // default
 	}
@@ -46,7 +47,7 @@ function gwolle_gb_get_total_entries( $html, $args ) {
 				'checked' => 'checked',
 				'trash'   => 'notrash',
 				'spam'    => 'nospam',
-				'book_id' => $args['book_id']
+				'book_id' => $args['book_id'],
 			)
 		);
 	} else {
@@ -58,15 +59,17 @@ function gwolle_gb_get_total_entries( $html, $args ) {
 					'checked' => 'checked',
 					'trash'   => 'notrash',
 					'spam'    => 'nospam',
-					'book_id' => $args['book_id']
+					'book_id' => $args['book_id'],
 				)
 			);
 			set_transient( $key, $entries_total, DAY_IN_SECONDS );
 		}
 	}
-	$html .= '<div id="gwolle-gb-total">' .
+	$html .= '<div id="gwolle-gb-total" class="gwolle-gb-total">' .
 		sprintf( _n( '%d entry.', '%d entries.', $entries_total, 'gwolle-gb' ), $entries_total )
 		. '</div>';
+
 	return $html;
+
 }
 add_filter( 'gwolle_gb_entries_list_before', 'gwolle_gb_get_total_entries', 8, 2 );

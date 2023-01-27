@@ -56,16 +56,26 @@ function gwolle_gb_clear_cache( $entry = false ) {
 
 	/* WP Fastest Cache */
 	if ( class_exists('WpFastestCache') ) {
-		$WpFastestCache = new WpFastestCache();
-		if ( method_exists($WpFastestCache, 'deleteCache') ) {
-			$WpFastestCache->deleteCache();
+		$wp_fastest_cache = new WpFastestCache();
+		if ( method_exists($wp_fastest_cache, 'deleteCache') ) {
+			$wp_fastest_cache->deleteCache();
 		}
 	}
 
 	/* WP Super Cache */
 	if ( function_exists('wp_cache_clear_cache') ) {
-		$GLOBALS["super_cache_enabled"] = 1;
+		$GLOBALS['super_cache_enabled'] = 1;
 		wp_cache_clear_cache();
+	}
+
+	/* WP Rocket */
+	if ( function_exists('rocket_clean_domain') ) {
+		rocket_clean_domain();
+	}
+
+	/* Siteground Cache */
+	if (function_exists('sg_cachepress_purge_cache')) {
+		sg_cachepress_purge_cache();
 	}
 
 }

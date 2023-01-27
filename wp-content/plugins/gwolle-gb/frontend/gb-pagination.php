@@ -10,19 +10,19 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * gwolle_gb_pagination_frontend
  * Pagination of the entries for the guestbook frontend
  *
- * @param int $pageNum the number of the requested page.
+ * @param int $page_num the number of the requested page.
  * @param int $pages_total the total number of pages.
  * @return string $pagination the html of the pagination.
  */
-function gwolle_gb_pagination_frontend( $pageNum, $pages_total ) {
+function gwolle_gb_pagination_frontend( $page_num, $pages_total ) {
 
-	$highDotsMade = false;
+	$high_dots_made = false;
 	$pages_done = array();
 
 	$permalink = gwolle_gb_get_permalink(get_the_ID());
 	$is_search = gwolle_gb_is_search();
 	if ( $is_search ) {
-		$search_query = trim($_GET['gwolle-gb-search-input']);
+		$search_query = gwolle_gb_sanitize_input( $_GET['gwolle-gb-search-input'] );
 		$permalink = add_query_arg( 'gwolle-gb-search-input', $search_query, $permalink );
 	}
 
@@ -30,18 +30,18 @@ function gwolle_gb_pagination_frontend( $pageNum, $pages_total ) {
 				<div class="page-navigation">
 					<span class="screen-reader-text">' . esc_html__('Guestbook list navigation', 'gwolle-gb') . '</span>';
 
-	if ($pageNum > 1) {
-		$pagination .= '<a href="' . add_query_arg( 'pageNum', round($pageNum - 1), $permalink ) . '" title="' . esc_attr__('Previous page', 'gwolle-gb') . '" rel="prev">&larr;</a>';
+	if ($page_num > 1) {
+		$pagination .= '<a href="' . add_query_arg( 'pageNum', round($page_num - 1), $permalink ) . '" title="' . esc_attr__('Previous page', 'gwolle-gb') . '" rel="prev">&larr;</a>';
 	}
 
-	if ($pageNum < 5) {
-		$showRange = 5;
+	if ($page_num < 5) {
+		$showrange = 5;
 		if ($pages_total < 6) {
-			$showRange = $pages_total;
-			$highDotsMade = true; // no need for highdots.
+			$showrange = $pages_total;
+			$high_dots_made = true; // no need for highdots.
 		}
-		for ($i = 1; $i < ($showRange + 1); $i++) {
-			if ($i == $pageNum) {
+		for ( $i = 1; $i < ( $showrange + 1 ); $i++ ) {
+			if ($i === $page_num) {
 				if ( in_array( $i, $pages_done ) ) { continue; }
 				$pagination .= '<span class="page-numbers current">' . $i . '</span>';
 				$pages_done[] = $i;
@@ -49,52 +49,52 @@ function gwolle_gb_pagination_frontend( $pageNum, $pages_total ) {
 				if ( in_array( $i, $pages_done ) ) { continue; }
 				$pagination .= '<a href="' . add_query_arg( 'pageNum', $i, $permalink ) . '" title="' . esc_attr__('Page', 'gwolle-gb') . ' ' . $i . '">' . $i . '</a>';
 				$pages_done[] = $i;
-				if ( $i == $pages_total ) { break; }
+				if ( $i === $pages_total ) { break; }
 			}
 		}
 
-		if ( ($pageNum + 4 < $pages_total) && ( ! $highDotsMade) ) {
+		if ( ( $page_num + 4 < $pages_total ) && ( ! $high_dots_made ) ) {
 			$pagination .= '<span class="page-numbers dots">...</span>';
-			$highDotsMade = true;
+			$high_dots_made = true;
 		}
-	} elseif ($pageNum > 4) {
+	} else if ($page_num > 4) {
 		$pagination .= '<a href="' . add_query_arg( 'pageNum', 1, $permalink ) . '" title="' . esc_attr__('Page', 'gwolle-gb') . ' 1">1</a>';
 		if ($pages_total > 4) {
 			$pagination .= '<span class="page-numbers dots">...</span>';
 		}
-		if ($pageNum + 2 < $pages_total) {
-			$minRange = $pageNum - 2;
-			$showRange = $pageNum + 2;
+		if ( ($page_num + 2 ) < $pages_total ) {
+			$minrange = $page_num - 2;
+			$showrange = $page_num + 2;
 		} else {
-			$minRange = $pageNum - 3;
-			$showRange = $pages_total - 1;
+			$minrange = $page_num - 3;
+			$showrange = $pages_total - 1;
 		}
-		for ($i = $minRange; $i <= $showRange; $i++) {
-			if ($i == $pageNum) {
+		for ($i = $minrange; $i <= $showrange; $i++) {
+			if ($i === $page_num) {
 				$pagination .= '<span class="page-numbers current">' . $i . '</span>';
 			} else {
 				$pagination .= '<a href="' . add_query_arg( 'pageNum', $i, $permalink ) . '" title="' . esc_attr__('Page', 'gwolle-gb') . ' ' . $i . '">' . $i . '</a>';
 			}
 		}
-		if ($pageNum == $pages_total) {
-			$pagination .= '<span class="page-numbers current">' . $pageNum . '</span>';
+		if ($page_num === $pages_total) {
+			$pagination .= '<span class="page-numbers current">' . $page_num . '</span>';
 		}
 	}
 
-	if ($pageNum < $pages_total) {
-		if ( ($pageNum + 3 < $pages_total) && ( ! $highDotsMade) ) {
+	if ($page_num < $pages_total) {
+		if ( ( ( $page_num + 3 ) < $pages_total ) && ( ! $high_dots_made ) ) {
 			$pagination .= '<span class="page-numbers dots">...</span>';
-			$highDotsMade = true;
+			$high_dots_made = true;
 		}
 		if ( ! in_array( $pages_total, $pages_done ) ) {
 			$pagination .= '<a href="' . add_query_arg( 'pageNum', $pages_total, $permalink ) . '" title="' . esc_attr__('Page', 'gwolle-gb') . ' ' . $pages_total . '">' . $pages_total . '</a>';
 		}
-		$pagination .= '<a href="' . add_query_arg( 'pageNum', round($pageNum + 1), $permalink ) . '" title="' . esc_attr__('Next page', 'gwolle-gb') . '" rel="next">&rarr;</a>';
+		$pagination .= '<a href="' . add_query_arg( 'pageNum', round($page_num + 1), $permalink ) . '" title="' . esc_attr__('Next page', 'gwolle-gb') . '" rel="next">&rarr;</a>';
 	}
 
 	// 'All' link
 	if ( $pages_total >= 2 && get_option( 'gwolle_gb-paginate_all', 'false' ) === 'true' && ! $is_search ) {
-		if ( isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
+		if ( isset($_GET['show_all']) && $_GET['show_all'] === 'true' ) {
 			$pagination .= '<span class="page-numbers all">' . esc_html__('All', 'gwolle-gb') . '</span>';
 		} else {
 			$pagination .= '<a href="' . add_query_arg( 'show_all', 'true', $permalink ) . '" title="' . esc_attr__('All entries', 'gwolle-gb') . '">' . esc_html__('All', 'gwolle-gb') . '</a>';

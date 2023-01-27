@@ -16,19 +16,22 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 	class GwolleGB_Widget_search extends WP_Widget {
 
 		/* Constructor */
-		function __construct() {
-			$widget_ops = array( 'classname' => 'gwolle_gb_search', 'description' => esc_html__('Search for guestbook entries.','gwolle-gb') );
+		public function __construct() {
+			$widget_ops = array(
+				'classname'   => 'gwolle_gb_search',
+				'description' => esc_html__('Search for guestbook entries.', 'gwolle-gb'),
+			);
 			parent::__construct('gwolle_gb_search', esc_html__('Guestbook Search', 'gwolle-gb'), $widget_ops);
 			$this->alt_option_name = 'gwolle_gb_search';
 		}
 
 		/** @see WP_Widget::widget */
-		function widget($args, $instance) {
+		public function widget( $args, $instance ) {
 			extract($args);
 
 			$default_value = array(
-					'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
-				);
+				'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
+			);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
 			$widget_title  = esc_attr($instance['title']);
 			$widget_class  = 'gwolle-gb-widget-search';
@@ -56,12 +59,12 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 
 			$widget_html .= '
-					<form id="gwolle-gb-widget-search" action="#" method="GET" class="' . $widget_class . '" role="search" aria-label="' . esc_html__( 'Guestbook', 'gwolle-gb' ) . '">
+					<form id="gwolle-gb-widget-search" action="#" method="GET" class="' . esc_attr( $widget_class ) . '" role="search" aria-label="' . esc_html__( 'Guestbook', 'gwolle-gb' ) . '">
 						<div class="label">
 							<label for="gwolle-gb-search-input" class="text-info">' . esc_html__('Search:', 'gwolle-gb') . '</label>
 						</div>
 						<div class="input">
-							<input class="wp-exclude-emoji" value="' . $searchwords . '" type="text" name="gwolle-gb-search-input" id="gwolle-gb-search-input" placeholder="' . esc_attr__('Search...', 'gwolle-gb') . '" />
+							<input class="wp-exclude-emoji" value="' . esc_attr( $searchwords ) . '" type="text" name="gwolle-gb-search-input" id="gwolle-gb-search-input" placeholder="' . esc_attr__('Search...', 'gwolle-gb') . '" required="required" />
 						</div>
 						<div class="gwolle-gb-search-submit">
 							<div class="input">
@@ -84,19 +87,19 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 		}
 
 		/** @see WP_Widget::update */
-		function update($new_instance, $old_instance) {
+		public function update( $new_instance, $old_instance ) {
 			$instance = $old_instance;
-			$instance['title'] = strip_tags($new_instance['title']);
+			$instance['title'] = wp_strip_all_tags($new_instance['title']);
 
 			return $instance;
 		}
 
 		/** @see WP_Widget::form */
-		function form($instance) {
+		public function form( $instance ) {
 
 			$default_value = array(
-					'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
-				);
+				'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
+			);
 			$instance = wp_parse_args( (array) $instance, $default_value );
 			$title    = esc_attr($instance['title']);
 			?>
@@ -109,7 +112,6 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 
 			<?php
 		}
-
 	}
 
 	function gwolle_gb_widget_search() {

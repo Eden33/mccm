@@ -18,6 +18,9 @@ function ngg_ajax_operation() {
 	if ( !is_user_logged_in() )
 		die('-1');
 
+    if (!wp_verify_nonce($_POST['_wpnonce'], 'ngg-ajax'))
+        die('-1');
+
 	// check for correct NextGEN capability
 	if ( !current_user_can('NextGEN Upload images') && !current_user_can('NextGEN Manage gallery') )
 		die('-1');
@@ -57,7 +60,22 @@ function ngg_ajax_operation() {
 			break;
 			case 'get_image_ids' :
 				$result = nggAdmin::get_image_ids( $id );
-			break;
+                break;
+
+            // This will read the EXIF and then write it with the Orientation tag reset
+            case 'strip_orientation_tag':
+                $storage = C_Gallery_Storage::get_instance();
+                $image_path = $storage->get_image_abspath($id);
+                $backup_path = $image_path . '_backup';
+                $exif_abspath = @file_exists($backup_path) ? $backup_path : $image_path;
+                $exif_iptc = @C_Exif_Writer::read_metadata($exif_abspath);
+                foreach ($storage->get_image_sizes($id) as $size) {
+                    if ($size === 'backup')
+                        continue;
+                    @C_Exif_Writer::write_metadata($storage->get_image_abspath($id, $size), $exif_iptc);
+                }
+                $result = '1';
+                break;
 			default :
 				do_action( 'ngg_ajax_' . $_POST['operation'] );
 				die('-1');
@@ -82,6 +100,9 @@ function createNewThumb() {
 	// check for correct NextGEN capability
 	if ( !current_user_can('NextGEN Manage gallery') )
 		die('-1');
+
+    if (!wp_verify_nonce($_POST['nonce'], 'ngg_update_thumbnail'))
+        die('-1');
 
 	$id = (int) $_POST['id'];
 
@@ -114,6 +135,9 @@ function ngg_rotateImage() {
 	// check for correct capability
 	if ( !is_user_logged_in() )
 		die('-1');
+
+    if (!wp_verify_nonce($_POST['nonce'], 'ngg-rotate-image'))
+        die('-1');
 
 	// check for correct NextGEN capability
 	if ( !current_user_can('NextGEN Manage gallery') )
@@ -152,27 +176,4 @@ function ngg_rotateImage() {
 
 	header('HTTP/1.1 500 Internal Server Error');
 	die( $result );
-}
-
-add_action('wp_ajax_ngg_dashboard', 'ngg_ajax_dashboard');
-
-function ngg_ajax_dashboard() {
-
-   	require_once( dirname( dirname(__FILE__) ) . '/admin/admin.php');
-	require_once( dirname( dirname(__FILE__) ) . '/admin/overview.php');
-
-   	if ( !current_user_can('NextGEN Gallery overview') )
-		die('-1');
-
-    @header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-    @header( 'X-Content-Type-Options: nosniff' );
-
-    switch ( $_GET['jax'] ) {
-
-    case 'dashboard_primary' :
-    	ngg_overview_news();
-    	break;
-    }
-
-    die();
 }

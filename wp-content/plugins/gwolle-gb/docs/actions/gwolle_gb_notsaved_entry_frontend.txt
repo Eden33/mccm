@@ -19,7 +19,7 @@ function my_gwolle_gb_notsaved_entry_frontend( $entry ) {
 	// $entry is an object.
 
 	// redirect moderator to the Editor.
-	if ( current_user_can( 'moderate_comments' ) ) {
+	if ( current_user_can( 'gwolle_gb_moderate_comments' ) ) {
 			wp_redirect( admin_url('admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id() ) );
 			exit;
 	}

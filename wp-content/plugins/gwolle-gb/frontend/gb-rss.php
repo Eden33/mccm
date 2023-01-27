@@ -10,7 +10,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 /*
  * Add the feed.
  */
-function gwolle_gb_rss_init(){
+function gwolle_gb_rss_init() {
 	add_feed('gwolle_gb', 'gwolle_gb_rss');
 }
 add_action('init', 'gwolle_gb_rss_init');
@@ -21,7 +21,7 @@ add_action('init', 'gwolle_gb_rss_init');
  * There is no post_content yet, but we do have get_the_ID().
  */
 function gwolle_gb_rss_head() {
-	if ( is_singular() && function_exists('has_shortcode') ) {
+	if ( is_singular() ) {
 		$post = get_post( get_the_ID() );
 		if ( has_shortcode( $post->post_content, 'gwolle_gb' ) || has_shortcode( $post->post_content, 'gwolle_gb_read' ) ) {
 
@@ -34,11 +34,11 @@ function gwolle_gb_rss_head() {
 			$permalinks = $wp_rewrite->permalink_structure;
 			if ( $permalinks ) {
 				?>
-				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e("Guestbook Feed", 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/feed/gwolle_gb" />
+				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e('Guestbook Feed', 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/feed/gwolle_gb" />
 				<?php
 			} else {
 				?>
-				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e("Guestbook Feed", 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/?feed=gwolle_gb" />
+				<link rel="alternate" type="application/rss+xml" title="<?php esc_attr_e('Guestbook Feed', 'gwolle-gb'); ?>" href="<?php bloginfo('url'); ?>/?feed=gwolle_gb" />
 				<?php
 			}
 		}
@@ -65,24 +65,28 @@ add_filter( 'feed_content_type', 'gwolle_gb_rss_content_type', 10, 2 );
 function gwolle_gb_rss() {
 
 	// Only show the first page of entries.
-	$entriesPerPage = (int) apply_filters( 'gwolle_gb_rss_nr_entries', 20 );
+	$entries_per_page = (int) apply_filters( 'gwolle_gb_rss_nr_entries', 20 );
 
 	/* Get the entries for the RSS Feed */
 	$entries = gwolle_gb_get_entries(
 		array(
 			'offset'      => 0,
-			'num_entries' => $entriesPerPage,
+			'num_entries' => $entries_per_page,
 			'checked'     => 'checked',
 			'trash'       => 'notrash',
-			'spam'        => 'nospam'
+			'spam'        => 'nospam',
 		)
 	);
 
+	// Date in RFC 822.
+	$timezone = date_i18n('O'); // +0200 for example
+	$datetimeformat = 'd M Y H:i:s';
+
 	/* Get the time of the last entry, else of the last edited post */
-	if ( is_array($entries) && !empty($entries) ) {
-		$lastbuild = gmdate( 'D, d M Y H:i:s', $entries[0]->get_datetime() );
+	if ( is_array($entries) && ! empty($entries) ) {
+		$lastbuild = gmdate( $datetimeformat, $entries[0]->get_datetime() ) . ' ' . $timezone;
 	} else {
-		$lastbuild = mysql2date('D, d M Y H:i:s +0000', get_lastpostmodified('GMT'), false);
+		$lastbuild = mysql2date($datetimeformat, get_lastpostmodified('GMT'), false) . ' GMT';
 	}
 
 	$blog_url = get_bloginfo('wpurl');
@@ -94,12 +98,12 @@ function gwolle_gb_rss() {
 		$permalink_biggest_book = $blog_url . '?p=' . $biggest_book;
 	}
 	/* Get the Language setting */
-	$WPLANG = get_locale();
-	if ( ! $WPLANG ) {
-		$WPLANG = 'en-us';
+	$wplang = get_locale();
+	if ( ! $wplang ) {
+		$wplang = 'en-us';
 	}
-	$WPLANG = str_replace( '_', '-', $WPLANG );
-	$WPLANG = strtolower( $WPLANG );
+	$wplang = str_replace( '_', '-', $wplang );
+	$wplang = strtolower( $wplang );
 
 	/* Build the XML content */
 	header('Content-Type: ' . feed_content_type('rss2') . '; charset=' . get_option('blog_charset'), true);
@@ -116,22 +120,22 @@ function gwolle_gb_rss() {
 		<?php do_action('rss2_ns'); ?>>
 
 		<channel>
-			<title><?php bloginfo_rss('name'); echo " - " . esc_html__('Guestbook Feed', 'gwolle-gb'); ?></title>
+			<title><?php bloginfo_rss('name'); echo ' - ' . esc_html__('Guestbook Feed', 'gwolle-gb'); ?></title>
 			<atom:link href="<?php self_link(); ?>" rel="self" type="application/rss+xml" />
 			<link><?php echo $permalink_biggest_book; ?></link>
-			<description><?php bloginfo_rss('description'); echo " - " . esc_html__('Guestbook Feed', 'gwolle-gb'); ?></description>
+			<description><?php bloginfo_rss('description'); echo ' - ' . esc_html__('Guestbook Feed', 'gwolle-gb'); ?></description>
 			<lastBuildDate><?php echo $lastbuild; ?></lastBuildDate>
-			<language><?php echo $WPLANG; ?></language>
+			<language><?php echo $wplang; ?></language>
 			<sy:updatePeriod><?php echo apply_filters( 'rss_update_period', 'hourly' ); ?></sy:updatePeriod>
 			<sy:updateFrequency><?php echo apply_filters( 'rss_update_frequency', '1' ); ?></sy:updateFrequency>
 			<?php do_action('rss2_head'); ?>
 
 			<?php
-			if ( is_array($entries) && !empty($entries) ) {
+			if ( is_array($entries) && ! empty($entries) ) {
 				foreach ( $entries as $entry ) { ?>
 
 					<item>
-						<title><?php esc_html_e('Guestbook Entry by', 'gwolle-gb'); echo " " . trim( $entry->get_author_name() ) . " (" . trim(date_i18n( get_option('date_format'), $entry->get_datetime() )) . " " . trim(date_i18n( get_option('time_format'), $entry->get_datetime() )) . ")"; ?></title>
+						<title><?php esc_html_e('Guestbook Entry by', 'gwolle-gb'); echo ' ' . trim( $entry->get_author_name() ) . ' (' . trim(date_i18n( get_option('date_format'), $entry->get_datetime() )) . ' ' . trim(date_i18n( get_option('time_format'), $entry->get_datetime() )) . ')'; ?></title>
 						<link><?php
 							$postid = gwolle_gb_get_postid( (int) $entry->get_book_id() );
 							$permalink = $blog_url; // init for new entry.
@@ -144,7 +148,7 @@ function gwolle_gb_rss() {
 							$permalink = add_query_arg( 'entry_id', $entry->get_id(), $permalink );
 							$permalink = htmlspecialchars($permalink, ENT_COMPAT, 'UTF-8');
 							echo $permalink; ?></link>
-						<pubDate><?php echo gmdate( 'D, d M Y H:i:s', $entry->get_datetime() ); ?></pubDate>
+						<pubDate><?php echo gmdate( $datetimeformat, $entry->get_datetime() ) . ' ' . $timezone; ?></pubDate>
 						<dc:creator><?php echo trim( $entry->get_author_name() ); ?></dc:creator>
 						<guid isPermaLink="false"><?php echo $permalink; ?></guid>
 						<description><![CDATA[<?php echo wp_trim_words( $entry->get_content(), 12, '...' ) ?>]]></description>

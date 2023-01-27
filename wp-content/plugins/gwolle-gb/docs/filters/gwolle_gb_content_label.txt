@@ -2,7 +2,10 @@
 
 ==Description==
 
+This filter is deprecated. Please use "gwolle_gb_author_content_label".
+
 The <b>"gwolle_gb_content_label"</b> filter is used to change the text of the label for the textarea of the content at the frontend.
+This filter is deprecated, please use gwolle_gb_author_content_label.
 
 You can use this filter as:
 
@@ -17,8 +20,8 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 
 
 function my_gwolle_gb_content_label( $label ) {
-	// $label is a string
-	$label = 'test';
+	_deprecated_function( __FUNCTION__, ' 4.0.0', 'gwolle_gb_author_content_label()' );
+
 	return $label;
 }
 add_filter( 'gwolle_gb_content_label', 'my_gwolle_gb_content_label', 10, 1 );

@@ -1,7 +1,7 @@
 <?php
 /*
  * ajax.php
- * Processes AJAX requests.
+ * Processes AJAX requests on admin pages.
  */
 
 
@@ -16,7 +16,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 add_action( 'admin_footer', 'gwolle_gb_ajax_javascript' );
 function gwolle_gb_ajax_javascript() {
-	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
+	if ( ! current_user_can('gwolle_gb_moderate_comments') ) {
 		return;
 	}
 
@@ -27,7 +27,7 @@ function gwolle_gb_ajax_javascript() {
 	jQuery( document ).ready( function( $ ) {
 
 		// Page-entries.php Admin page Click events
-		jQuery( '#gwolle_gb_entries .gwolle_gb_actions a' ).click(function(event) {
+		jQuery( '#gwolle_gb_entries .gwolle_gb_actions a' ).on( 'click', function(event) {
 
 			// Do not do anything here...
 			var parent_class = jQuery(this).parent().hasClass('gwolle_gb_edit');
@@ -55,9 +55,9 @@ function gwolle_gb_ajax_javascript() {
 
 			var data = {
 				action: 'gwolle_gb_ajax',
-				security: '<?php echo $ajax_nonce; ?>',
+				security: '<?php echo esc_attr( $ajax_nonce ); ?>',
 				id: entry_id,
-				setter: setter
+				setter: setter,
 			};
 
 
@@ -66,8 +66,8 @@ function gwolle_gb_ajax_javascript() {
 
 
 			// Do the actual request
-			$.post( ajaxurl, data, function( response ) {
-				response = jQuery.trim( response );
+			jQuery.post( ajaxurl, data, function( response ) {
+				response = response.trim();
 
 				// Set classes accordingly
 				if ( response == setter ) { // We got what we wanted
@@ -141,7 +141,7 @@ function gwolle_gb_ajax_javascript() {
 
 
 		// Page-editor.php Admin page Click events
-		jQuery( '#gwolle_gb_editor .gwolle_gb_actions a' ).click(function(event) {
+		jQuery( '#gwolle_gb_editor .gwolle_gb_actions a' ).on( 'click', function(event) {
 
 			// Do not do anything here...
 			var parent_class = jQuery(this).parent().hasClass('gwolle_gb_ajax');
@@ -164,9 +164,9 @@ function gwolle_gb_ajax_javascript() {
 
 			var data = {
 				action: 'gwolle_gb_ajax',
-				security: '<?php echo $ajax_nonce; ?>',
+				security: '<?php echo esc_attr( $ajax_nonce ); ?>',
 				id: entry_id,
-				setter: setter
+				setter: setter,
 			};
 
 
@@ -175,17 +175,17 @@ function gwolle_gb_ajax_javascript() {
 
 
 			// Do the actual request
-			$.post( ajaxurl, data, function( response ) {
-				response = jQuery.trim( response );
+			jQuery.post( ajaxurl, data, function( response ) {
+				response = response.trim();
 
 				// Set classes accordingly
-				if ( response == setter ) { // We got what we wanted
+				if ( response === setter ) { // We got what we wanted
 
 					// Countdown counter in admin menu, toolbar
 					if ( jQuery( '.gwolle_gb_actions' ).hasClass('unchecked') && jQuery( '.gwolle_gb_actions' ).hasClass('nospam') && jQuery( '.gwolle_gb_actions' ).hasClass('notrash') ) {
 						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
-                        var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
-                        var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter - 1;
+						var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+						var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter - 1;
 
 						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
 						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
@@ -219,14 +219,14 @@ function gwolle_gb_ajax_javascript() {
 							jQuery( 'input#istrash' ).prop('checked', false);
 
 							jQuery( 'input#remove' ).prop('checked', false);
-							jQuery( 'label.gwolle_gb_remove' ).addClass('gwolle_gb_hide');
+							jQuery( 'label.gwolle_gb_remove' ).addClass('gwolle-gb-hide');
 							break;
 						case 'trash':
 							jQuery( '.entry-icons' ).addClass('trash').removeClass('notrash');
 							jQuery( '.gwolle_gb_actions' ).addClass('trash').removeClass('notrash');
 							jQuery( 'input#istrash' ).prop('checked', true);
 
-							jQuery( 'label.gwolle_gb_remove' ).removeClass('gwolle_gb_hide');
+							jQuery( 'label.gwolle_gb_remove' ).removeClass('gwolle-gb-hide');
 							break;
 						}
 
@@ -246,8 +246,8 @@ function gwolle_gb_ajax_javascript() {
 					// Countup counter in admin menu, toolbar
 					if ( jQuery( '.gwolle_gb_actions' ).hasClass('unchecked') && jQuery( '.gwolle_gb_actions' ).hasClass('nospam') && jQuery( '.gwolle_gb_actions' ).hasClass('notrash') ) {
 						var gwolle_gb_menu_counter = jQuery('li#toplevel_page_gwolle-gb-gwolle-gb a.menu-top span.awaiting-mod span').text();
-                        var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
-                        var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter + 1;
+						var old_gwolle_gb_menu_counter = new Number( gwolle_gb_menu_counter );
+						var new_gwolle_gb_menu_counter = old_gwolle_gb_menu_counter + 1;
 
 						jQuery('li#toplevel_page_gwolle-gb-gwolle-gb span.awaiting-mod span').text( new_gwolle_gb_menu_counter );
 						jQuery('li#wp-admin-bar-gwolle-gb span.awaiting-mod.pending-count').text( new_gwolle_gb_menu_counter );
@@ -269,7 +269,7 @@ function gwolle_gb_ajax_javascript() {
 
 
 		// Dashboard Widget Click events
-		jQuery( '#gwolle_gb_dashboard .row-actions a' ).click(function(event) {
+		jQuery( '#gwolle_gb_dashboard .row-actions a' ).on( 'click', function(event) {
 
 			// Do not do anything here...
 			var parent_class = jQuery(this).parent().hasClass('gwolle_gb_edit');
@@ -294,9 +294,9 @@ function gwolle_gb_ajax_javascript() {
 
 			var data = {
 				action: 'gwolle_gb_ajax',
-				security: '<?php echo $ajax_nonce; ?>',
+				security: '<?php echo esc_attr( $ajax_nonce ); ?>',
 				id: entry_id,
-				setter: setter
+				setter: setter,
 			};
 
 
@@ -305,10 +305,10 @@ function gwolle_gb_ajax_javascript() {
 
 
 			// Do the actual request
-			$.post( ajaxurl, data, function( response ) {
-				response = jQuery.trim( response );
+			jQuery.post( ajaxurl, data, function( response ) {
+				response = response.trim();
 
-				if ( response == setter ) { // We got what we wanted
+				if ( response === setter ) { // We got what we wanted
 					// Remove entry from widget
 					jQuery( '.gwolle-gb-dashboard div#entry_' + entry_id ).slideUp();
 				} else {
@@ -332,7 +332,7 @@ function gwolle_gb_ajax_javascript() {
 add_action( 'wp_ajax_gwolle_gb_ajax', 'gwolle_gb_ajax_callback' );
 function gwolle_gb_ajax_callback() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('moderate_comments') ) {
+	if ( ! current_user_can('gwolle_gb_moderate_comments') ) {
 		echo 'error';
 		die();
 	}
@@ -344,24 +344,24 @@ function gwolle_gb_ajax_callback() {
 	if ( isset($_POST['security']) ) {
 		$verified = wp_verify_nonce( $_POST['security'], 'gwolle_gb_ajax' );
 	}
-	if ( $verified == false ) {
+	if ( $verified === false ) {
 		// Nonce is invalid.
-		_e('Nonce check failed. Please go back and try again.', 'gwolle-gb');
+		esc_html_e('The Nonce did not validate. Please reload the page and try again.', 'gwolle-gb');
 		die();
 	}
 
 	if (isset($_POST['id'])) {
-		$id = intval( $_POST['id'] );
+		$id = (int) $_POST['id'];
 	}
 	if (isset($_POST['setter'])) {
-		$setter = strval( $_POST['setter'] );
+		$setter = (string) $_POST['setter'];
 	}
 
 
 	if ( isset($id) && $id > 0 && isset($setter) && strlen($setter) > 0) {
 		$entry = new gwolle_gb_entry();
 		$result = $entry->load( $id );
-		if ( !$result ) {
+		if ( ! $result ) {
 			echo 'error, no such entry.';
 			die();
 		}
@@ -369,7 +369,7 @@ function gwolle_gb_ajax_callback() {
 
 		switch ($setter) {
 			case 'uncheck':
-				if ( $entry->get_ischecked() == 1 ) {
+				if ( $entry->get_ischecked() === 1 ) {
 					$entry->set_ischecked( false );
 					$result = $entry->save();
 					if ($result ) {
@@ -382,8 +382,9 @@ function gwolle_gb_ajax_callback() {
 					$response = 'nochange';
 				}
 				break;
+
 			case 'check':
-				if ( $entry->get_ischecked() == 0 ) {
+				if ( $entry->get_ischecked() === 0 ) {
 					$entry->set_ischecked( true );
 					$user_id = get_current_user_id(); // returns 0 if no current user
 					$entry->set_checkedby( $user_id );
@@ -391,6 +392,7 @@ function gwolle_gb_ajax_callback() {
 					if ($result ) {
 						$response = 'check';
 						gwolle_gb_add_log_entry( $entry->get_id(), 'entry-checked' );
+						gwolle_gb_mail_author_on_moderation( $entry );
 					} else {
 						$response = 'error';
 					}
@@ -398,13 +400,15 @@ function gwolle_gb_ajax_callback() {
 					$response = 'nochange';
 				}
 				break;
+
 			case 'unspam':
-				if ( $entry->get_isspam() == 1 ) {
+				if ( $entry->get_isspam() === 1 ) {
 					$entry->set_isspam( false );
 					$result = $entry->save();
 					if ($result ) {
 						$response = 'unspam';
 						gwolle_gb_add_log_entry( $entry->get_id(), 'marked-as-not-spam' );
+						gwolle_gb_mail_author_on_moderation( $entry );
 						gwolle_gb_akismet( $entry, 'submit-ham' );
 					} else {
 						$response = 'error';
@@ -413,8 +417,9 @@ function gwolle_gb_ajax_callback() {
 					$response = 'nochange';
 				}
 				break;
+
 			case 'spam':
-				if ( $entry->get_isspam() == 0 ) {
+				if ( $entry->get_isspam() === 0 ) {
 					$entry->set_isspam( true );
 					$result = $entry->save();
 					if ($result ) {
@@ -428,13 +433,15 @@ function gwolle_gb_ajax_callback() {
 					$response = 'nochange';
 				}
 				break;
+
 			case 'untrash':
-				if ( $entry->get_istrash() == 1 ) {
+				if ( $entry->get_istrash() === 1 ) {
 					$entry->set_istrash( false );
 					$result = $entry->save();
 					if ($result ) {
 						$response = 'untrash';
 						gwolle_gb_add_log_entry( $entry->get_id(), 'entry-untrashed' );
+						gwolle_gb_mail_author_on_moderation( $entry );
 					} else {
 						$response = 'error';
 					}
@@ -442,8 +449,9 @@ function gwolle_gb_ajax_callback() {
 					$response = 'nochange';
 				}
 				break;
+
 			case 'trash':
-				if ( $entry->get_istrash() == 0 ) {
+				if ( $entry->get_istrash() === 0 ) {
 					$entry->set_istrash( true );
 					$result = $entry->save();
 					if ($result ) {
@@ -455,6 +463,10 @@ function gwolle_gb_ajax_callback() {
 				} else {
 					$response = 'nochange';
 				}
+				break;
+
+			default:
+				$response = 'nochange';
 				break;
 		}
 

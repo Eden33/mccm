@@ -689,6 +689,9 @@ class nggManageGallery {
 				case 'set_watermark':
 					nggAdmin::do_ajax_operation( 'set_watermark' , $_POST['doaction'], __('Set watermark', 'nggallery') );
 					break;
+                case 'strip_orientation_tag':
+                    nggAdmin::do_ajax_operation( 'strip_orientation_tag' , $_POST['doaction'], __('Remove EXIF Orientation', 'nggallery') );
+                    break;
 				case 'delete_images':
 					if ( is_array($_POST['doaction']) ) {
 						foreach ( $_POST['doaction'] as $imageID ) {
@@ -865,11 +868,17 @@ class nggManageGallery {
 					$this->gallery = $mapper->find($this->gid, TRUE);
 				}
 
-				if ($this->gallery)
-				{
-					foreach ($_POST as $key => $value) {
-						$this->gallery->$key = $value;
-					}
+                if ($this->gallery)
+                {
+                    foreach ($_POST as $key => $value) {
+                        // Yet another IIS hack: gallery paths can be mangled into \\wp-content\\blah\\ which causes
+                        // later errors when validating the gallery path: just automatically replace \\ with / here.
+                        if ($key === 'path')
+                            $value = str_replace('\\\\', '/', $value);
+
+                        $this->gallery->$key = $value;
+                    }
+
 					$mapper->save($this->gallery);
 
 					if ($this->gallery->is_invalid())
@@ -1056,8 +1065,13 @@ class nggManageGallery {
         $search_for_images = (array) $nggdb->search_for_images( $request );
         $search_for_tags   = (array) nggTags::find_images_for_tags( $request , 'ASC' );
 
-        // finally merge the two results together
-        $this->search_result = array_merge( $search_for_images , $search_for_tags );
+        // Merge the two arrays and deduplicate
+        $merged = array_merge($search_for_images , $search_for_tags);
+        $this->search_result = [];
+        foreach ($merged as $result) {
+            if (!in_array($result, $this->search_result))
+                $this->search_result[] = $result;
+        }
 
         // TODO: Currently we didn't support a proper pagination
         $nggdb->paged['total_objects'] = $nggdb->paged['objects_per_page'] = count ($this->search_result) ;

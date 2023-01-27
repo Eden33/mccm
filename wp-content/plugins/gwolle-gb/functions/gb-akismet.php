@@ -1,7 +1,7 @@
 <?php
 /**
  * Akismet Function
- * Akismet API: http://akismet.com/development/api/
+ * Akismet API: https://akismet.com/development/api/
  * Copied and edited from Contact Form 7
  */
 
@@ -27,7 +27,7 @@ function gwolle_gb_akismet( $entry, $action ) {
 	$actions = array(
 		'comment-check',
 		'submit-ham',
-		'submit-spam'
+		'submit-spam',
 	);
 
 	if ( ! in_array( $action, $actions ) ) {
@@ -40,7 +40,7 @@ function gwolle_gb_akismet( $entry, $action ) {
 	}
 
 	$akismet_active = get_option( 'gwolle_gb-akismet-active', 'false' );
-	if ( $akismet_active != 'true' ) {
+	if ( $akismet_active !== 'true' ) {
 		return false;
 	}
 
@@ -76,15 +76,17 @@ function gwolle_gb_akismet( $entry, $action ) {
 	$comment['blog_lang'] = get_locale();
 	$comment['blog_charset'] = get_option( 'blog_charset' );
 	$store_author_ip = get_option('gwolle_gb-store_ip', 'true');
-	if ( $store_author_ip == 'true' ) {
-		$comment['user_ip'] = preg_replace( '/[^0-9., ]/', '', $_SERVER['REMOTE_ADDR'] );
-		$comment['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+	if ( $store_author_ip === 'true' ) {
+		$comment['user_ip'] = preg_replace( '/[^0-9., ]/', '', gwolle_gb_get_user_ip() );
+		if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
+			$comment['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+		}
 	}
 	if ( isset($_SERVER['HTTP_REFERER']) ) {
 		$comment['referrer'] = $_SERVER['HTTP_REFERER'];
 	}
 
-	// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+	// https://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
 	$comment['comment_type'] = 'comment';
 
 	$permalink = gwolle_gb_get_permalink( get_the_ID() );
@@ -122,8 +124,10 @@ function gwolle_gb_akismet_entry_check( $comment, $action ) {
 	$query_string = '';
 
 	foreach ( $comment as $key => $data ) {
-		if (is_array($data)) { continue; }
-		$query_string .= $key . '=' . urlencode( wp_unslash( (string) $data ) ) . '&';
+		if ( is_array($data) ) {
+			continue;
+		}
+		$query_string .= $key . '=' . rawurlencode( wp_unslash( (string) $data ) ) . '&';
 	}
 
 	if ( is_callable( array( 'Akismet', 'http_post' ) ) ) {
@@ -135,11 +139,11 @@ function gwolle_gb_akismet_entry_check( $comment, $action ) {
 
 	//if ( WP_DEBUG ) { echo "Akismet response: "; var_dump($response); }
 
-	if ( $action == 'comment-check' && isset( $response[1] ) && 'true' == $response[1] ) {
+	if ( $action === 'comment-check' && isset( $response[1] ) && 'true' === $response[1] ) {
 		return true;
-	} else if ( $action == 'submit-ham' && isset( $response[1] ) ) {
+	} else if ( $action === 'submit-ham' && isset( $response[1] ) ) {
 		return true;
-	} else if ( $action == 'submit-spam' && isset( $response[1] ) ) {
+	} else if ( $action === 'submit-spam' && isset( $response[1] ) ) {
 		return true;
 	} else {
 		return false;

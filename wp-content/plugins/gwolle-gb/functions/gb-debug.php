@@ -15,31 +15,33 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_debug_info() {
 	global $wp_version, $wp_db_version, $wpdb;
 
-	if ( function_exists( 'current_user_can' ) && ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	} ?>
 
 	<tr>
 		<th><?php esc_html_e('WordPress version:', 'gwolle-gb'); ?></th>
-		<td><?php echo $wp_version . ' (db: ' . $wp_db_version . ')'; ?></td>
+		<td><?php
+			echo $wp_version . ' (db: ' . $wp_db_version . ')';
+			if ( version_compare( $wp_version, '3.7', '<' ) ) {
+				echo '<br />' . esc_html__( 'You have a very old version of WordPress that is not receiving security updates anymore. Please upgrade WordPress to a more recent version.', 'gwolle-gb' );
+			} ?>
+		</td>
 	</tr>
 
 	<tr>
 		<th><?php esc_html_e('WordPress theme:', 'gwolle-gb'); ?></th>
-		<td><?php
-			if ( version_compare($wp_version,'3.4', '>=') ) {
-				echo wp_get_theme()->get('Name');
-			} else if ( function_exists('get_current_theme') ) {
-				echo get_current_theme();
-			} ?>
-		</td>
+		<td><?php echo wp_get_theme()->get('Name'); ?></td>
 	</tr>
 
 	<tr>
 		<th><?php esc_html_e('Active plugins:', 'gwolle-gb'); ?></th>
 		<td><?php
 			$active_plugins = get_option('active_plugins');
-			print_r( $active_plugins ); ?>
+			$active_plugins = gwolle_gb_array_flatten( $active_plugins );
+			$active_plugins = implode( '<br />', $active_plugins );
+			echo $active_plugins;
+			?>
 		</td>
 	</tr>
 
@@ -47,8 +49,7 @@ function gwolle_gb_debug_info() {
 		<th><?php esc_html_e('PHP Version:', 'gwolle-gb'); ?></th>
 		<td><?php
 			echo PHP_VERSION;
-			if ( version_compare( PHP_VERSION, '5.3', '<' ) ) {
-				// PHP 5.2 is insecure, urge for an upgrade.
+			if ( version_compare( PHP_VERSION, '5.6', '<' ) ) {
 				echo '<br />' . esc_html__( 'You have a very old version of PHP. Please contact your hosting provider and request an upgrade.', 'gwolle-gb' );
 			} ?>
 		</td>
@@ -124,7 +125,7 @@ function gwolle_gb_debug_info() {
 	<tr>
 		<th><?php esc_html_e('MySQL / MySQLi:', 'gwolle-gb'); ?></th>
 		<td><?php
-			if ( $wpdb->use_mysqli == true ) {
+			if ( $wpdb->use_mysqli === true ) {
 				echo 'mysqli';
 			} else {
 				echo 'mysql';
@@ -143,7 +144,11 @@ function gwolle_gb_debug_info() {
 					$mysql_variables_char[$variable[0]] = $variable[1];
 				}
 			}
-			print_r( $mysql_variables_char );
+
+			$mysql_variables_char = gwolle_gb_array_flatten( $mysql_variables_char );
+			foreach ( $mysql_variables_char as $key => $value ) {
+				echo $key . ': ' . $value . '<br />';
+			}
 			?>
 		</td>
 	</tr>
@@ -186,19 +191,19 @@ function gwolle_gb_test_add_entry( $emoji = false ) {
 		'author_name'     => 'You',
 		'author_id'       => 0,
 		'author_email'    => 'test@example.com',
-		'author_origin'   => 'Zwolle',
-		'author_website'  => 'http://example.com',
+		'author_origin'   => 'Home',
+		'author_website'  => 'https://example.com',
 		'author_ip'       => '127.0.0.1',
 		'author_host'     => 'example.com',
 		'content'         => $content,
-		'datetime'        => current_time( 'timestamp' ),
+		'datetime'        => time(),
 		'ischecked'       => 0,
 		'checkedby'       => 0,
 		'istrash'         => 1,
 		'isspam'          => 0,
 		'admin_reply'     => esc_html__('Just a test', 'gwolle-gb'),
 		'admin_reply_uid' => 0,
-		'book_id'         => 1
+		'book_id'         => 1,
 	);
 	if ( $emoji ) {
 		$data['content'] = gwolle_gb_maybe_encode_emoji( $content . ' 😄👍👌', 'content' );
@@ -214,4 +219,35 @@ function gwolle_gb_test_add_entry( $emoji = false ) {
 	}
 
 	return $entry_id;
+
+}
+
+
+/*
+ * Flattens an array, or returns false on fail.
+ * Taken from:
+ * https://stackoverflow.com/questions/7179799/how-to-flatten-array-of-arrays-to-array
+ *
+ * @param array Array flat or multi-dimensional.
+ * @return array Array flat or false on fail.
+ *
+ * @since 4.2.1
+ */
+function gwolle_gb_array_flatten( $array ) {
+
+	if ( ! is_array( $array ) ) {
+		return false;
+	}
+
+	$result = array();
+	foreach ($array as $key => $value) {
+		if ( is_array($value) ) {
+			$result = array_merge( $result, array_flatten($value) );
+		} else {
+			$result[$key] = $value;
+		}
+	}
+
+	return $result;
+
 }

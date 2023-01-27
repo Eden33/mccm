@@ -654,6 +654,9 @@ class C_NextGen_API extends C_Component
         $skip_count = 0;
         $task_list_result = array();
         wp_set_current_user($job_user);
+        // Prevent PHP warnings about accessing undefined array keys
+        $app_config['ftp_path'] = isset($app_config['ftp_path']) ? $app_config['ftp_path'] : '';
+        $app_config['full_path'] = isset($app_config['full_path']) ? $app_config['full_path'] : '';
         /* This block does all of the filesystem magic:
          * - determines web paths based on FTP paths
          * - initializes the WP_Filesystem mechanism in case this host doesn't support direct file access
@@ -683,6 +686,11 @@ class C_NextGen_API extends C_Component
                 } else {
                     $path_prefix = str_replace($ftp_path, $root_path, $full_path);
                 }
+            }
+        } else {
+            include_once ABSPATH . "wp-admin/includes/class-wp-filesystem-direct.php";
+            if (!$wp_fs) {
+                $wp_fs = new WP_Filesystem_Direct($creds);
             }
         }
         foreach ($task_list as &$task_item) {

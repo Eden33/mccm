@@ -430,23 +430,23 @@ class nggMeta{
      * @param string $object
      * @return mixed $value
      */
-	function get_META($object = false) {
+	function get_META($object = FALSE)
+    {
+        if ($value = $this->get_saved_meta($object))
+            return $value;
 
-		// defined order first look into database, then XMP, IPTC and EXIF.
-		if ($value = $this->get_saved_meta($object))
-			return $value;
-		if ($value = $this->get_XMP($object))
-			return $value;
-		if ($object == 'created_timestamp' && ($d = $this->get_IPTC('created_date')) && ($t = $this->get_IPTC('created_time'))) {
-			return $this->exif_date2ts($d . ' '.$t);
-		}
-		if ($value = $this->get_IPTC($object))
-			return $value;
-		if ($value = $this->get_EXIF($object))
-			return $value;
+        if ($object == 'created_timestamp' && ($d = $this->get_IPTC('created_date')) && ($t = $this->get_IPTC('created_time')))
+            return $this->exif_date2ts($d . ' '.$t);
 
-		// nothing found ?
-		return false;
+        $order = apply_filters('ngg_metadata_parse_order', ['XMP', 'IPTC', 'EXIF']);
+
+        foreach ($order as $method) {
+            $method = 'get_' . $method;
+            if (method_exists($this, $method) && $value = $this->$method($object))
+                return $value;
+        }
+
+        return FALSE;
 	}
 
     /**
@@ -507,21 +507,22 @@ class nggMeta{
      * Return the Timestamp from the image , if possible it's read from exif data
      * @return string
      */
-	function get_date_time() {
-
-		$date = time();
-
+	function get_date_time()
+    {
 		$date = $this->exif_date2ts($this->get_META('created_timestamp'));
-		if (!$date) {
+		if (!$date)
+		{
 			$image_path = C_Gallery_Storage::get_instance()->get_backup_abspath($this->image);
-			$date = @filectime($image_path);
+			if (file_exists($image_path))
+			    $date = filectime($image_path);
 		}
 
-		// Failback
-		if (!$date) $date = time();
+		// Fallback
+		if (!$date)
+		    $date = time();
 
 		// Return the MySQL format
-		$date_time = date( 'Y-m-d H:i:s', $date);
+		$date_time = date('Y-m-d H:i:s', $date);
 
 		return $date_time;
 	}

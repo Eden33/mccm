@@ -13,25 +13,31 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * Class gwolle_gb_entry
  * Each instance is an entry in the guestbook.
  *
- * Variable:        Database field:  Type in db:   Description:                            Value when saving in db:
- * $id              id               int(10)       id of the entry/row/instance            required, autoincrement
- * $author_name     author_name      text          name of the author                      required
- * $author_id       author_id        int(5)        author is also registered user          required, default 0
- * $author_email    author_email     text          email address of the author             required
- * $author_origin   author_origin    text          city of the author                      required
- * $author_website  author_website   text          website of the author                   required
- * $author_ip       author_ip        text          ip address of the author                required
- * $author_host     author_host      text          hostname of that ip address             required
- * $content         content          longtext      content of the entry                    required
- * $date            date             varchar(10)   date of posting the entry, timestamp    deprecated
- * $datetime        datetime         bigint(8)     date of posting the entry, timestamp    required
- * $ischecked       ischecked        tinyint(1)    checked/moderated by an admin, 0 or 1   required
- * $checkedby       checkedby        int(5)        admin who checked/moderated this entry  required
- * $istrash         istrash          varchar(1)    entry is placed in the trashbin, 0 or 1 required, default 0
- * $isspam          isspam           varchar(1)    entry is considered as spam, 0 or 1     required, default 0
- * $admin_reply     admin_reply      longtext      content of the reply from an admin      required
- * $admin_reply_uid admin_reply_uid  int(5)        user_id of the admin that replied       required
- * $book_id         book_id          int(8)        the book in which the entry is placed   required, default 1
+ * Member variables are set to protected, you are supposed to use setter and getter functions.
+ *
+ * $datetime is a UNIX timestamp in local time.
+ * This does not really exist, since a UNIX timestamp is always GMT.
+ * For backwards compatibility this is used even though it is wrong.
+ *
+ * Variable:        Database field:  Type in DB   Type in PHP   Description:                             Value when saving in db:
+ * $id              id               int(10)      int           id of the entry/row/instance             required, autoincrement
+ * $author_name     author_name      text         string        name of the author                       required
+ * $author_id       author_id        int(5)       int           author is also registered user           required, default 0
+ * $author_email    author_email     text         string        email address of the author              required
+ * $author_origin   author_origin    text         string        city of the author                       required
+ * $author_website  author_website   text         string        website of the author                    required
+ * $author_ip       author_ip        text         string        ip address of the author                 required
+ * $author_host     author_host      text         string        hostname of that ip address              required
+ * $content         content          longtext     string        content of the entry                     required
+ * $date            date             varchar(10)                date of posting the entry, timestamp     deprecated, use datetime which is an int, not varchar (sorting goes wrong).
+ * $datetime        datetime         bigint(8)    int           date of posting the entry, timestamp     required, local timestamp
+ * $ischecked       ischecked        tinyint(1)   int           checked/moderated by an admin, 0 or 1    required, default 0
+ * $checkedby       checkedby        int(5)       int           admin who checked/moderated this entry   required, default 0
+ * $istrash         istrash          varchar(1)   int           entry is placed in the trashbin, 0 or 1  required, default 0
+ * $isspam          isspam           varchar(1)   int           entry is considered as spam, 0 or 1      required, default 0
+ * $admin_reply     admin_reply      longtext     string        content of the reply from an admin       required, default empty
+ * $admin_reply_uid admin_reply_uid  int(5)       int           user_id of the admin that replied        required, default 0
+ * $book_id         book_id          int(8)       int           the book in which the entry is placed    required, default 1
  *
  */
 
@@ -48,20 +54,20 @@ class gwolle_gb_entry {
 
 	public function __construct() {
 		$this->id              = (int) 0;
-		$this->author_name     = (string) "";
+		$this->author_name     = (string) '';
 		$this->author_id       = (int) 0;
-		$this->author_email    = (string) "";
-		$this->author_origin   = (string) "";
-		$this->author_website  = (string) "";
-		$this->author_ip       = (string) "";
-		$this->author_host     = (string) "";
-		$this->content         = (string) "";
-		$this->datetime        = (string) "";
+		$this->author_email    = (string) '';
+		$this->author_origin   = (string) '';
+		$this->author_website  = (string) '';
+		$this->author_ip       = (string) '';
+		$this->author_host     = (string) '';
+		$this->content         = (string) '';
+		$this->datetime        = (int) current_time( 'timestamp' );
 		$this->ischecked       = (int) 0;
 		$this->checkedby       = (int) 0;
 		$this->istrash         = (int) 0;
 		$this->isspam          = (int) 0;
-		$this->admin_reply     = (string) "";
+		$this->admin_reply     = (string) '';
 		$this->admin_reply_uid = (int) 0;
 		$this->book_id         = (int) 1;
 	}
@@ -81,13 +87,13 @@ class gwolle_gb_entry {
 		global $wpdb;
 
 		$where = " 1 = %d";
-		$values = Array(1);
+		$values = array( 1 );
 
-		if ( !is_numeric($id) ) {
+		if ( ! is_numeric($id) ) {
 			return false;
 		}
 
-		if ((int) $id > 0) {
+		if ( (int) $id > 0 ) {
 			$where .= "
 				AND
 				id = %d";
@@ -162,7 +168,7 @@ class gwolle_gb_entry {
 			'author_ip'       => $data['author_ip'],
 			'author_host'     => $data['author_host'],
 			'content'         => stripslashes($data['content']),
-			'datetime'        => $data['datetime'],
+			'datetime'        => (int) $data['datetime'],
 			'ischecked'       => (int) $data['ischecked'],
 			'checkedby'       => (int) $data['checkedby'],
 			'istrash'         => (int) $data['istrash'],
@@ -239,7 +245,7 @@ class gwolle_gb_entry {
 					$this->get_admin_reply(),
 					$this->get_admin_reply_uid(),
 					$this->get_book_id(),
-					$this->get_id()
+					$this->get_id(),
 				);
 
 			$result = $wpdb->query(
@@ -304,7 +310,7 @@ class gwolle_gb_entry {
 					$this->get_istrash(),
 					$this->get_admin_reply(),
 					$this->get_admin_reply_uid(),
-					$this->get_book_id()
+					$this->get_book_id(),
 				)
 			) );
 
@@ -357,7 +363,7 @@ class gwolle_gb_entry {
 
 	 */
 
-	public function set_data($args) {
+	public function set_data( $args ) {
 
 		if ( isset( $args['id']) ) {
 			$this->set_id( $args['id'] );
@@ -379,7 +385,7 @@ class gwolle_gb_entry {
 		}
 		if ( isset( $args['author_ip'] ) ) {
 			$this->set_author_ip( $args['author_ip'] );
-		} else if ( !$this->get_author_ip() ) {
+		} else if ( ! $this->get_author_ip() ) {
 			$this->set_author_ip(); // set as new
 		}
 		if ( isset( $args['author_host'] ) ) {
@@ -390,7 +396,7 @@ class gwolle_gb_entry {
 		}
 		if ( isset( $args['datetime'] ) ) {
 			$this->set_datetime( $args['datetime'] );
-		} else if ( !$this->get_datetime() ) {
+		} else if ( ! $this->get_datetime() ) {
 			$this->set_datetime(); // set as new
 		}
 		if ( isset( $args['ischecked'] ) ) {
@@ -418,95 +424,94 @@ class gwolle_gb_entry {
 		return true;
 	}
 
-	public function set_id($id) {
-		$id = intval($id);
+	public function set_id( $id ) {
+		$id = (int) $id;
 		if ($id) {
 			$this->id = $id;
 		}
 	}
-	public function set_author_name($author_name) {
+	public function set_author_name( $author_name ) {
 		$author_name = gwolle_gb_sanitize_input($author_name);
 		if ($author_name) {
 			$this->author_name = $author_name;
 		}
 	}
-	public function set_author_id($author_id) {
-		$author_id = intval($author_id);
-		$this->author_id = $author_id;
+	public function set_author_id( $author_id ) {
+		$this->author_id = (int) $author_id;
 	}
-	public function set_author_email($author_email) {
+	public function set_author_email( $author_email ) {
 		$author_email = gwolle_gb_sanitize_input($author_email);
 		//$author_email = filter_var($author_email, FILTER_VALIDATE_EMAIL);
 		$this->author_email = $author_email;
 	}
-	public function set_author_origin($author_origin) {
+	public function set_author_origin( $author_origin ) {
 		$author_origin = gwolle_gb_sanitize_input($author_origin);
 		$this->author_origin = $author_origin;
 	}
-	public function set_author_website($author_website) {
+	public function set_author_website( $author_website ) {
 		$author_website = gwolle_gb_sanitize_input($author_website);
 		$pattern = '/^http/';
 		if ( ! preg_match($pattern, $author_website, $matches) ) {
-			$author_website = "http://" . $author_website;
+			$author_website = 'http://' . $author_website;
 		}
 		$author_website = filter_var($author_website, FILTER_VALIDATE_URL);
 		$this->author_website = $author_website;
 	}
-	public function set_author_ip($author_ip = NULL) {
+	public function set_author_ip( $author_ip = NULL ) {
 		$author_ip = gwolle_gb_sanitize_input($author_ip);
 		$this->author_ip = $author_ip;
 	}
-	public function set_author_host($author_host = NULL) {
+	public function set_author_host( $author_host = NULL ) {
 		$author_host = gwolle_gb_sanitize_input($author_host);
 		$this->author_host = $author_host;
 	}
-	public function set_content($content) {
+	public function set_content( $content ) {
 		$content = gwolle_gb_sanitize_input($content, 'content');
 		if ( strlen($content) > 0 ) {
 			$this->content = $content;
 		}
 	}
-	public function set_date($date = NULL) {
-        _deprecated_function( __FUNCTION__, ' 1.4.2', 'set_datetime()' );
+	public function set_date( $date = NULL ) {
+		_deprecated_function( __FUNCTION__, ' 1.4.2', 'set_datetime()' );
 	}
-	public function set_datetime($date = NULL) {
-		$date = intval($date); // timestamp can be cast to int.
-		if ( ! $date ) {
-			$date = current_time( 'timestamp' );
+	public function set_datetime( $datetime = 0 ) {
+		$datetime = (int) $datetime; // timestamp can be cast to int.
+		if ( ! $datetime ) {
+			$datetime = current_time( 'timestamp' );
 		}
-		if ($date) {
-			$this->datetime = $date;
+		if ($datetime) {
+			$this->datetime = $datetime;
 		}
 	}
-	public function set_ischecked($ischecked) {
+	public function set_ischecked( $ischecked ) {
 		// $ischecked means the message has been moderated
-		$ischecked = intval($ischecked);
+		$ischecked = (int) $ischecked;
 		$this->ischecked = $ischecked;
 	}
-	public function set_checkedby($checkedby) {
+	public function set_checkedby( $checkedby ) {
 		// $checkedby is a userid of the moderator
-		$checkedby = intval($checkedby);
+		$checkedby = (int) $checkedby;
 		if ($checkedby) {
 			$this->checkedby = $checkedby;
 		}
 	}
-	public function set_istrash($istrash) {
-		$istrash = intval($istrash);
+	public function set_istrash( $istrash ) {
+		$istrash = (int) $istrash;
 		$this->istrash = $istrash;
 	}
-	public function set_isspam($isspam) {
-		$isspam = intval($isspam);
+	public function set_isspam( $isspam ) {
+		$isspam = (int) $isspam;
 		$this->isspam = $isspam;
 	}
-	public function set_admin_reply($admin_reply) {
+	public function set_admin_reply( $admin_reply ) {
 		$admin_reply = gwolle_gb_sanitize_input($admin_reply, 'admin_reply');
 		$this->admin_reply = $admin_reply;
 	}
-	public function set_admin_reply_uid($admin_reply_uid) {
-		$this->admin_reply_uid = intval($admin_reply_uid);
+	public function set_admin_reply_uid( $admin_reply_uid ) {
+		$this->admin_reply_uid = (int) $admin_reply_uid;
 	}
-	public function set_book_id($book_id) {
-		$this->book_id = intval($book_id);
+	public function set_book_id( $book_id ) {
+		$this->book_id = (int) $book_id;
 		if ( ! $book_id) {
 			$this->book_id = 1;
 		}
@@ -584,7 +589,7 @@ class gwolle_gb_entry {
 	public function delete() {
 		global $wpdb;
 
-		if ( $this->get_isspam() == 0 && $this->get_istrash() == 0 ) {
+		if ( $this->get_isspam() === 0 && $this->get_istrash() === 0 ) {
 			// Do not delete the good stuff.
 			return false;
 		}
@@ -600,7 +605,7 @@ class gwolle_gb_entry {
 			LIMIT 1";
 
 		$values = array(
-				$id
+				$id,
 			);
 
 		$result = $wpdb->query(
@@ -608,7 +613,7 @@ class gwolle_gb_entry {
 			);
 
 
-		if ($result == 1) {
+		if ($result === 1) {
 			// Also remove the log entries and possibly meta fields.
 			do_action( 'gwolle_gb_delete_entry', $id );
 
@@ -617,11 +622,11 @@ class gwolle_gb_entry {
 		return false;
 	}
 
-	function check_userids() {
+	public function check_userids() {
 		$author_id = $this->get_author_id();
 		if ( $author_id > 0 ) {
 			$userdata = get_userdata( $author_id );
-			if ( !is_object($userdata) ) {
+			if ( ! is_object($userdata) ) {
 				// reset non-existent user because of heavy load in db queries (userid 0 does not get cached).
 				$this->author_id = 0;
 			}
@@ -629,11 +634,10 @@ class gwolle_gb_entry {
 		$checkedby = $this->get_checkedby();
 		if ( $checkedby > 0 ) {
 			$userdata = get_userdata( $checkedby );
-			if ( !is_object($userdata) ) {
+			if ( ! is_object($userdata) ) {
 				// reset non-existent user because of heavy load in db queries (userid 0 does not get cached).
 				$this->checkedby = 0;
 			}
 		}
 	}
-
 }

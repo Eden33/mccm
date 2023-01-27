@@ -20,7 +20,7 @@ function gwolle_gb_is_author( $entry ) {
 		$user_id = get_current_user_id(); // returns 0 if no current user
 		if ( $user_id > 0 ) {
 			$author_id = $entry->get_author_id();
-			if ( $author_id == $user_id ) {
+			if ( $author_id === $user_id ) {
 				return true;
 			}
 		}
@@ -37,13 +37,13 @@ function gwolle_gb_is_author( $entry ) {
  * - string user_nicename or user_login if allowed
  * - bool false if not allowed
  */
-function gwolle_gb_is_moderator($user_id) {
+function gwolle_gb_is_moderator( $user_id ) {
 
 	if ( $user_id > 0 ) {
-		if ( function_exists('user_can') && user_can( $user_id, 'moderate_comments' ) ) {
+		if ( user_can( $user_id, 'gwolle_gb_moderate_comments' ) ) {
 			// Only moderators
 			$userdata = get_userdata( $user_id );
-			if (is_object($userdata)) {
+			if ( is_object($userdata) ) {
 				if ( isset( $userdata->display_name ) ) {
 					return $userdata->display_name;
 				} else {
@@ -57,7 +57,7 @@ function gwolle_gb_is_moderator($user_id) {
 
 
 /*
- * Get all the users with capability 'moderate_comments'.
+ * Get all the users with capability 'gwolle_gb_moderate_comments'.
  *
  * @return array User objects.
  */
@@ -70,7 +70,7 @@ function gwolle_gb_get_moderators() {
 	$users_query = new WP_User_Query( array(
 		'role__in' => $role__in,
 		'fields'   => 'all',
-		'orderby'  => 'display_name'
+		'orderby'  => 'display_name',
 		) );
 	$users = $users_query->get_results();
 
@@ -79,13 +79,13 @@ function gwolle_gb_get_moderators() {
 	if ( is_array($users) && ! empty($users) ) {
 		foreach ( $users as $user_info ) {
 
-			if ($user_info === FALSE) {
+			if ($user_info === false) {
 				// Invalid $user_id
 				continue;
 			}
 
 			// No capability
-			if ( ! user_can( $user_info, 'moderate_comments' ) ) {
+			if ( ! user_can( $user_info, 'gwolle_gb_moderate_comments' ) ) {
 				continue;
 			}
 
@@ -106,9 +106,9 @@ function gwolle_gb_get_moderators() {
 function gwolle_gb_deleted_user( $user_id ) {
 	$entries = gwolle_gb_get_entries(array(
 		'author_id'   => $user_id,
-		'num_entries' => -1
+		'num_entries' => -1,
 	));
-	if ( is_array( $entries ) && !empty( $entries ) ) {
+	if ( is_array( $entries ) && ! empty( $entries ) ) {
 		foreach ( $entries as $entry ) {
 			// method will take care of it...
 			$save = $entry->save();
@@ -124,7 +124,7 @@ add_action( 'deleted_user', 'gwolle_gb_deleted_user' );
  * @param object $entry instance of gb_entry class.
  * @return string $author_name_html html with formatted username
  */
-function gwolle_gb_get_author_name_html($entry) {
+function gwolle_gb_get_author_name_html( $entry ) {
 
 	$author_name = gwolle_gb_sanitize_output( trim( $entry->get_author_name() ) );
 	$author_name = apply_filters( 'gwolle_gb_entry_the_author_name', $author_name, $entry );
@@ -133,7 +133,7 @@ function gwolle_gb_get_author_name_html($entry) {
 	$author_id = $entry->get_author_id();
 	$is_moderator = gwolle_gb_is_moderator( $author_id );
 	if ( $is_moderator ) {
-		$author_name_html = '<i class="gb-moderator">' . $author_name . '</i>';
+		$author_name_html = '<i class="gb-moderator">' . esc_attr( $author_name ) . '</i>';
 	} else {
 		$author_name_html = $author_name;
 	}
@@ -144,8 +144,8 @@ function gwolle_gb_get_author_name_html($entry) {
 		$author_website = trim( bp_core_get_user_domain( $author_id ) );
 		if ($author_website) {
 			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow noopener noreferrer' );
-			$author_name_html = '<a href="' . $author_website . '" target="_blank" rel="' . $author_link_rel . '"
-							title="' . /* translators: BuddyPress profile */ esc_attr__( 'Visit the profile of', 'gwolle-gb' ) . ' ' . $author_name . ': ' . $author_website . '">' . $author_name_html . '</a>';
+			$author_name_html = '<a href="' . esc_attr( $author_website ) . '" target="_blank" rel="' . esc_attr( $author_link_rel ) . '"
+							title="' . /* translators: BuddyPress profile */ esc_attr__( 'Visit the profile of', 'gwolle-gb' ) . ' ' . esc_attr( $author_name ) . ': ' . esc_attr( $author_website ) . '">' . $author_name_html . '</a>';
 		}
 	} else if ( get_option('gwolle_gb-linkAuthorWebsite', 'true') === 'true' ) {
 		// Link to author website if set in options.
@@ -153,15 +153,16 @@ function gwolle_gb_get_author_name_html($entry) {
 		if ($author_website) {
 			$pattern = '/^http/';
 			if ( ! preg_match($pattern, $author_website, $matches) ) {
-				$author_website = "http://" . $author_website;
+				$author_website = 'http://' . $author_website;
 			}
 			$author_link_rel = apply_filters( 'gwolle_gb_author_link_rel', 'nofollow noopener noreferrer' );
-			$author_name_html = '<a href="' . $author_website . '" target="_blank" rel="' . $author_link_rel . '"
-							title="' . esc_attr__( 'Visit the website of', 'gwolle-gb' ) . ' ' . $author_name . ': ' . $author_website . '">' . $author_name_html . '</a>';
+			$author_name_html = '<a href="' . esc_attr( $author_website ) . '" target="_blank" rel="' . esc_attr( $author_link_rel ) . '"
+							title="' . esc_attr__( 'Visit the website of', 'gwolle-gb' ) . ' ' . esc_attr( $author_name ) . ': ' . esc_attr( $author_website ) . '">' . $author_name_html . '</a>';
 		}
 	}
 
 	$author_name_html = apply_filters( 'gwolle_gb_author_name_html', $author_name_html, $entry );
 
 	return $author_name_html;
+
 }

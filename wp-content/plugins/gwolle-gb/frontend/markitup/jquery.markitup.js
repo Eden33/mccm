@@ -158,26 +158,26 @@
 				if (options.resizeHandle === true && browser.safari !== true) {
 					resizeHandle = jQuery('<div class="markItUpResizeHandle"></div>')
 						.insertAfter(jQueryjQuery)
-						.bind("mousedown.markItUp", function(e) {
+						.on("mousedown.markItUp", function(e) {
 							var h = jQueryjQuery.height(), y = e.clientY, mouseMove, mouseUp;
 							mouseMove = function(e) {
 								jQueryjQuery.css("height", Math.max(20, e.clientY+h-y)+"px");
 								return false;
 							};
 							mouseUp = function(e) {
-								jQuery("html").unbind("mousemove.markItUp", mouseMove).unbind("mouseup.markItUp", mouseUp);
+								jQuery("html").off("mousemove.markItUp", mouseMove).off("mouseup.markItUp", mouseUp);
 								return false;
 							};
-							jQuery("html").bind("mousemove.markItUp", mouseMove).bind("mouseup.markItUp", mouseUp);
+							jQuery("html").on("mousemove.markItUp", mouseMove).on("mouseup.markItUp", mouseUp);
 					});
 					footer.append(resizeHandle);
 				}
 
 				// listen key events
-				jQueryjQuery.bind('keydown.markItUp', keyPressed).bind('keyup', keyPressed);
+				jQueryjQuery.on('keydown.markItUp', keyPressed).on('keyup', keyPressed);
 
 				// bind an event to catch external calls
-				jQueryjQuery.bind("insertion.markItUp", function(e, settings) {
+				jQueryjQuery.on("insertion.markItUp", function(e, settings) {
 					if (settings.target !== false) {
 						get();
 					}
@@ -187,7 +187,7 @@
 				});
 
 				// remember the last focus
-				jQueryjQuery.bind('focus.markItUp', function() {
+				jQueryjQuery.on('focus.markItUp', function() {
 					jQuery.markItUp.focused = this;
 				});
 
@@ -212,25 +212,25 @@
 							t += levels[j]+"-";
 						}
 						li = jQuery('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="" '+key+' title="'+title+'">'+(button.name||'')+'</a></li>')
-						.bind("contextmenu.markItUp", function() { // prevent contextmenu on mac and allow ctrl+click
+						.on("contextmenu.markItUp", function() { // prevent contextmenu on mac and allow ctrl+click
 							return false;
-						}).bind('click.markItUp', function(e) {
+						}).on('click.markItUp', function(e) {
 							e.preventDefault();
-						}).bind("focusin.markItUp", function(){
-                            jQueryjQuery.focus();
-						}).bind('mouseup', function() {
+						}).on("focusin.markItUp", function(){
+                            jQueryjQuery.trigger('focus');
+						}).on('mouseup', function() {
 							if (button.call) {
 								eval(button.call)();
 							}
 							setTimeout(function() { markup(button) },1);
 							return false;
-						}).bind('mouseenter.markItUp', function() {
+						}).on('mouseenter.markItUp', function() {
 								jQuery('> ul', this).show();
-								jQuery(document).one('click', function() { // close dropmenu if click outside
+								jQuery(document).on('click', function() { // close dropmenu if click outside
 										jQuery('ul ul', header).hide();
 									}
 								);
-						}).bind('mouseleave.markItUp', function() {
+						}).on('mouseleave.markItUp', function() {
 								jQuery('> ul', this).hide();
 						}).appendTo(ul);
 						if (button.dropMenu) {
@@ -278,7 +278,7 @@
 
 			// prepare action
 			function prepare(action) {
-				if (jQuery.isFunction(action)) {
+				if (typeof action === 'function') {
 					action = action(hash);
 				}
 				return magicMarkups(action);
@@ -358,7 +358,8 @@
 				if ((ctrlKey === true && shiftKey === true)) {
 					lines = selection.split(/\r?\n/);
 					for (j = 0, n = lines.length, i = 0; i < n; i++) {
-						if (jQuery.trim(lines[i]) !== '') {
+						var str_line = lines[i];
+						if (str_line.trim() !== '') {
 							jQuery.extend(hash, { line:++j, selection:lines[i] } );
 							lines[i] = build(lines[i]).block;
 						} else {
@@ -526,7 +527,7 @@
 					refreshPreview();
 				}
 				if (options.previewInWindow) {
-					previewWindow.focus();
+					previewWindow.trigger('focus');
 				}
 			}
 
@@ -634,7 +635,7 @@
 			}
 
 			function remove() {
-				jQueryjQuery.unbind(".markItUp").removeClass('markItUpEditor');
+				jQueryjQuery.off(".markItUp").removeClass('markItUpEditor');
 				jQueryjQuery.parent('div').parent('div.markItUp').parent('div').replaceWith(jQueryjQuery);
 				jQueryjQuery.data('markItUp', null);
 			}
@@ -655,7 +656,7 @@
 		jQuery.extend(options, settings);
 		if (options.target) {
 			return jQuery(options.target).each(function() {
-				jQuery(this).focus();
+				jQuery(this).trigger('focus');
 				jQuery(this).trigger('insertion', [options]);
 			});
 		} else {
@@ -681,15 +682,11 @@ var marktitup_mySettings = {
 	markupSet:  [
 		{name: gwolle_gb_localize.bold, key:'B', openWith:'(!([b]|!|<b>)!)', closeWith:'(!([/b]|!|</b>)!)' },
 		{name: gwolle_gb_localize.italic, key:'I', openWith:'(!([i]|!|<i>)!)', closeWith:'(!([/i]|!|</i>)!)'  },
-		{separator:'---------------' },
 		{name: gwolle_gb_localize.bullet, openWith:'[li]', closeWith:'[/li]', multiline:true, openBlockWith:'[ul]\n', closeBlockWith:'\n[/ul]'},
 		{name: gwolle_gb_localize.numeric, openWith:'[li]', closeWith:'[/li]', multiline:true, openBlockWith:'[ol]\n', closeBlockWith:'\n[/ol]'},
-		{separator:'---------------' },
-		{name: gwolle_gb_localize.picture, key:'P', replaceWith:'[img][![' + gwolle_gb_localize.source + ':!:http://]!][/img]' },
-		{name: gwolle_gb_localize.link, key:'L', openWith:'[url href=[![' + gwolle_gb_localize.link + ':!:http://]!]]', closeWith:'[/url]', placeHolder: gwolle_gb_localize.linktext },
-		{separator:'---------------' },
+		{name: gwolle_gb_localize.picture, key:'P', replaceWith:'[img][![' + gwolle_gb_localize.source + ':!:https://]!][/img]' },
+		{name: gwolle_gb_localize.link, key:'L', openWith:'[url href=[![' + gwolle_gb_localize.link + ':!:https://]!]]', closeWith:'[/url]', placeHolder: gwolle_gb_localize.linktext },
 		{name: gwolle_gb_localize.clean, className:'clean', replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } },
-		{separator:'---------------' },
 		{name: gwolle_gb_localize.emoji, className:'emoji' }
 	]
 }
@@ -698,12 +695,22 @@ var marktitup_mySettings = {
 jQuery(document).ready(function() {
 
 	/* Initialize BBcode editor */
-	jQuery('#gwolle_gb_content').markItUp(marktitup_mySettings);
-	jQuery('#gwolle_gb_admin_reply').markItUp(marktitup_mySettings);
+	jQuery('.gwolle-gb-write textarea.gwolle_gb_content').markItUp(marktitup_mySettings);
+	jQuery('#gwolle_gb_editor textarea#gwolle_gb_content').markItUp(marktitup_mySettings);
+	jQuery('#gwolle_gb_editor textarea#gwolle_gb_admin_reply').markItUp(marktitup_mySettings);
 
 
-	/* Slide the Emoji rows (frontend, main editor) */
-	jQuery( '#markItUpGwolle_gb_content li.markItUpButton.emoji a' ).click(function() {
+	/* Slide the Emoji rows (frontend) */
+	jQuery( '.gwolle-gb-write li.markItUpButton.emoji a' ).on( 'click', function() {
+		var form = jQuery(this).closest('form.gwolle-gb-write');
+		if ( jQuery('.gwolle_gb_emoji').css('display') == 'none' ) {
+			jQuery('.gwolle_gb_emoji', form).slideDown("slow");
+		} else {
+			jQuery('.gwolle_gb_emoji', form).slideUp("slow");
+		}
+	});
+	/* Slide the Emoji rows (main editor) */
+	jQuery( '#markItUpGwolle_gb_content li.markItUpButton.emoji a' ).on( 'click', function() {
 		if ( jQuery('.gwolle_gb_emoji').css('display') == 'none' ) {
 			jQuery('.gwolle_gb_emoji').slideDown("slow");
 		} else {
@@ -711,7 +718,7 @@ jQuery(document).ready(function() {
 		}
 	});
 	/* Slide the Emoji rows (admin_reply editor) */
-	jQuery( '#markItUpGwolle_gb_admin_reply li.markItUpButton.emoji a' ).click(function() {
+	jQuery( '#markItUpGwolle_gb_admin_reply li.markItUpButton.emoji a' ).on( 'click', function() {
 		if ( jQuery('.gwolle_gb_admin_reply_emoji').css('display') == 'none' ) {
 			jQuery('.gwolle_gb_admin_reply_emoji').slideDown("slow");
 		} else {
@@ -720,13 +727,20 @@ jQuery(document).ready(function() {
 	});
 
 
-	/* Insert the Emoji symbol (frontend, main editor) */
-	jQuery('.gwolle_gb_emoji a').click(function() {
+	/* Insert the Emoji symbol (frontend) */
+	jQuery('.gwolle_gb_emoji a').on( 'click', function() {
+		var form = jQuery(this).closest('form.gwolle-gb-write');
+		var target = jQuery('.gwolle_gb_content', form);
+		emoticon = jQuery(this).attr("title");
+		jQuery.markItUp( { target:target, replaceWith:emoticon } );
+	});
+	/* Insert the Emoji symbol (main editor) */
+	jQuery('.gwolle_gb_emoji a').on( 'click', function() {
 		emoticon = jQuery(this).attr("title");
 		jQuery.markItUp( { target:'#gwolle_gb_content', replaceWith:emoticon } );
 	});
 	/* Insert the Emoji symbol (admin_reply editor) */
-	jQuery('.gwolle_gb_admin_reply_emoji a').click(function() {
+	jQuery('.gwolle_gb_admin_reply_emoji a').on( 'click', function() {
 		emoticon = jQuery(this).attr("title");
 		jQuery.markItUp( { target:'#gwolle_gb_admin_reply', replaceWith:emoticon } );
 	});

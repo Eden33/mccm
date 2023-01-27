@@ -133,7 +133,7 @@ class nggAdmin{
      * @return array $files list of image filenames
      */
     static function scandir( $dirname = '.' ) {
-        $ext = apply_filters('ngg_allowed_file_types', array('jpeg', 'jpg', 'png', 'gif') );
+        $ext = apply_filters('ngg_allowed_file_types', NGG_DEFAULT_ALLOWED_FILE_TYPES);
 
         $files = array();
         if( $handle = opendir( $dirname ) ) {
@@ -738,10 +738,12 @@ class nggAdmin{
                 maxStep: Images.length
             };
 
-            jQuery(document).ready( function(){
-                nggProgressBar.init( nggAjaxOptions );
-                nggAjax.init( nggAjaxOptions );
-            } );
+            (function($) {
+                $(function() {
+                    nggProgressBar.init(nggAjaxOptions);
+                    nggAjax.init(nggAjaxOptions);
+                });
+            })(jQuery);
         </script>
     <?php
         $script = ob_get_clean();

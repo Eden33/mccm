@@ -14,7 +14,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_settingstab_admin() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	} ?>
 
@@ -25,20 +25,22 @@ function gwolle_gb_page_settingstab_admin() {
 
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_settings_admintab' );
-	echo '<input type="hidden" id="gwolle_gb_page_settings_admintab" name="gwolle_gb_page_settings_admintab" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_page_settings_admintab" name="gwolle_gb_page_settings_admintab" value="' . esc_attr( $nonce ) . '" />';
 	?>
 	<table class="form-table">
 		<tbody>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="entries_per_page"><?php esc_html_e('Entries per page in the admin', 'gwolle-gb'); ?></label></th>
 			<td>
 				<select name="entries_per_page" id="entries_per_page">
-					<?php $entries_per_page = get_option( 'gwolle_gb-entries_per_page', 20 );
-					$presets = array(5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 150, 200, 250);
-					for ($i = 0; $i < count($presets); $i++) {
-						echo '<option value="' . $presets[$i] . '"';
-						if ($presets[$i] == $entries_per_page) {
+					<?php
+					$entries_per_page = (int) get_option( 'gwolle_gb-entries_per_page', 20 );
+					$presets = array( 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 150, 200, 250 );
+					$presets_count = count($presets);
+					for ($i = 0; $i < $presets_count; $i++) {
+						echo '<option value="' . (int) $presets[$i] . '"';
+						if ($presets[$i] === $entries_per_page) {
 							echo ' selected="selected"';
 						}
 						echo '>' . $presets[$i] . ' ' . esc_html__('Entries', 'gwolle-gb') . '</option>';
@@ -50,7 +52,7 @@ function gwolle_gb_page_settingstab_admin() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="showEntryIcons"><?php esc_html_e('Entry icons', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input type="checkbox" <?php

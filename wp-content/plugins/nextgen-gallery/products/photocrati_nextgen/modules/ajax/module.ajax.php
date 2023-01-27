@@ -17,7 +17,7 @@ class M_Ajax extends C_Base_Module
             'photocrati-ajax',
             'AJAX',
             'Provides AJAX functionality',
-            '3.1.8',
+            '3.3.21',
             'https://www.imagely.com/wordpress-gallery-plugin/nextgen-gallery/',
             'Imagely',
             'https://www.imagely.com'
@@ -56,7 +56,6 @@ class M_Ajax extends C_Base_Module
 		if (isset($_REQUEST[NGG_AJAX_SLUG])) {
 			$controller = C_Ajax_Controller::get_instance();
 			$controller->index_action();
-            // E_Clean_Exit may cause a warning to be appended to our response, spoiling any JSON sent
             exit;
 		}
 	}
@@ -88,6 +87,18 @@ class M_Ajax extends C_Base_Module
             'ngg_param_slug'          => C_NextGen_Settings::get_instance()->get('router_param_slug', 'nggallery')
         );
         wp_localize_script('photocrati_ajax', 'photocrati_ajax', $vars);
+    }
+
+    /**
+     * Pass PHP object or array to JS, preserving numeric and boolean value
+     * @param string $handle 
+     * @param string $name 
+     * @param object|array $data 
+     */
+    static function pass_data_to_js($handle, $var_name, $data)
+    {
+        $var_name = esc_js($var_name);
+        return wp_add_inline_script($handle, "let {$var_name} = ".json_encode($data, JSON_NUMERIC_CHECK));
     }
 
     function get_type_list()

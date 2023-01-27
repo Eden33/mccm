@@ -87,240 +87,6 @@ function nggallery_picturelist($controller)
 
     ?>
 
-    <script type="text/javascript">
-        var $ = jQuery;
-
-        function showDialog(windowId, title) {
-            var form = document.getElementById('updategallery');
-            var elementlist = "";
-
-            for (var i = 0, n = form.elements.length; i < n; i++) {
-                if (form.elements[i].type === "checkbox") {
-                    if (form.elements[i].name === "doaction[]") {
-                        if (form.elements[i].checked === true) {
-                            if (elementlist === "") {
-                                elementlist = form.elements[i].value;
-                            } else {
-                                elementlist += "," + form.elements[i].value;
-                            }
-                        }
-                    }
-                }
-            }
-
-            $("#" + windowId + "_bulkaction").val($("#bulkaction").val());
-            $("#" + windowId + "_imagelist").val(elementlist);
-
-            // now show the dialog
-            $("#" + windowId).dialog({
-                width: 640,
-                resizable: false,
-                modal: true,
-                title: title,
-                position: {
-                    my: 'center',
-                    at: 'center',
-                    of: window.parent
-                }
-            });
-
-            $("#" + windowId + ' .dialog-cancel').click(function() {
-                $("#" + windowId).dialog("close");
-            });
-        }
-
-        function setURLParam(param, paramVal) {
-            var url        = window.location.href;
-            var params     = "";
-            var tmp        = "";
-            var tmpArray   = url.split("?");
-            var base       = tmpArray[0];
-            var additional = tmpArray[1];
-
-            if (additional) {
-                tmpArray = additional.split("&");
-                for (i = 0; i < tmpArray.length; i++) {
-                    if (tmpArray[i].split('=')[0] !== param) {
-                        params += tmp + tmpArray[i];
-                        tmp = "&";
-                    }
-                }
-            }
-
-            return base + "?" + params + tmp + "" + param + "=" + paramVal;
-        }
-
-        $(function() {
-
-            $('span.tooltip, label.tooltip').tooltip();
-
-            $('#ngg-manage-images-items-per-page').on('change', function() {
-                window.location.href = setURLParam('items', $(this).val());
-            });
-
-            // load a content via ajax
-            $('a.ngg-dialog').click(function() {
-                var dialogs = $('.ngg-overlay-dialog:visible');
-                if (dialogs.size() > 0) {
-                    return false;
-                }
-
-                if ($("#spinner").length === 0) {
-                    $("body").append('<div id="spinner"></div>');
-                }
-
-                var $this = $(this);
-                var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
-                var width  = (results) ? results[1] : 800;
-                results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
-                var height = (results) ? results[1] : 500;
-                var container = window;
-
-                var screen_width = window.innerWidth - 120;
-                var screen_height = window.innerHeight - 200;
-                width = (width > screen_width) ? screen_width : width;
-                height = (height > screen_height) ? screen_height : height;
-
-                if (window.parent) {
-                    container = window.parent;
-                }
-
-                $('#spinner').fadeIn()
-                             .position({my: "center", at: "center", of: container });
-
-                // load the remote content
-                var dialog = $('<div class="ngg-overlay-dialog"></div>').appendTo('body');
-                dialog.load(
-                    this.href,
-                    {},
-                    function() {
-                        $('#spinner').hide();
-
-                        dialog.dialog({
-                            title: ($this.attr('title')) ? $this.attr('title') : '',
-                            position: { my: "center center-30", at: "center", of: window.parent },
-                            width: width,
-                            height: height,
-                            modal: true,
-                            resizable: false,
-                            close: function() {
-                                dialog.remove();
-                            }
-                        }).width(width - 30)
-                          .height(height - 30);
-                    }
-                );
-
-                //prevent the browser to follow the link
-                return false;
-            });
-
-            // If too many of these are generated the cookie becomes so large servers will reject HTTP requests
-            // Wait some time for other listeners to catch this event and then purge it from the browser
-            Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data) {
-                setTimeout(function() {
-                    Frame_Event_Publisher.delete_cookie("X-Frame-Events_" + data.id);
-                }, 400);
-            });
-        });
-
-        function checkAll(form) {
-            for (var i = 0, n = form.elements.length; i < n; i++) {
-                if (form.elements[i].type === "checkbox") {
-                    if (form.elements[i].name === "doaction[]") {
-                        if (form.elements[i].checked == true) {
-                            form.elements[i].checked = false;
-                        } else {
-                            form.elements[i].checked = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        function getNumChecked(form) {
-            var num = 0;
-            for (var i = 0, n = form.elements.length; i < n; i++) {
-                if (form.elements[i].type === "checkbox") {
-                    if (form.elements[i].name === "doaction[]") {
-                        if (form.elements[i].checked === true) {
-                            num++;
-                        }
-                    }
-                }
-            }
-            return num;
-        }
-
-        // this function check for a the number of selected images, sumbmit false when no one selected
-        function checkSelected() {
-
-            var numchecked = getNumChecked(document.getElementById('updategallery'));
-
-            if (typeof document.activeElement == "undefined" && document.addEventListener) {
-                document.addEventListener("focus", function (e) {
-                    document.activeElement = e.target;
-                }, true);
-            }
-
-            if (document.activeElement.name === 'post_paged')
-                return true;
-
-            if (numchecked < 1) {
-                alert('<?php echo esc_js(__('No images selected', 'nggallery')); ?>');
-                return false;
-            }
-
-            var actionId = $('#bulkaction').val();
-
-            switch (actionId) {
-                case "copy_to":
-                    showDialog('selectgallery', '<?php echo esc_js(__('Copy image to...','nggallery')); ?>');
-                    return false;
-                    break;
-                case "move_to":
-                    showDialog('selectgallery', '<?php echo esc_js(__('Move image to...','nggallery')); ?>');
-                    return false;
-                    break;
-                case "add_tags":
-                    showDialog('entertags', '<?php echo esc_js(__('Add new tags','nggallery')); ?>');
-                    return false;
-                    break;
-                case "delete_tags":
-                    showDialog('entertags', '<?php echo esc_js(__('Delete tags','nggallery')); ?>');
-                    return false;
-                    break;
-                case "overwrite_tags":
-                    showDialog('entertags', '<?php echo esc_js(__('Overwrite','nggallery')); ?>');
-                    return false;
-                    break;
-                case "resize_images":
-                    showDialog('resize_images', '<?php echo esc_js(__('Resize images','nggallery')); ?>');
-                    return false;
-                    break;
-                case "new_thumbnail":
-                    showDialog('new_thumbnail', '<?php echo esc_js(__('Create new thumbnails','nggallery')); ?>');
-                    return false;
-                    break;
-            }
-
-            return confirm('<?php echo sprintf(esc_js(__("You are about to start the bulk edit for %s images \n \n 'Cancel' to stop, 'OK' to proceed.",'nggallery')), "' + numchecked + '") ; ?>');
-        }
-
-        $(document).ready(function($) {
-            if ($(this).data('ready')) {
-                return;
-            }
-
-            // close postboxes that should be closed
-            $('.if-js-closed').removeClass('if-js-closed')
-                              .addClass('closed');
-            postboxes.add_postbox_toggles('ngg-manage-gallery');
-
-            $(this).data('ready', true);
-        });
-    </script>
-
     <?php if ($action_status['message'] != '') { ?>
         <div id="message"
              class="<?php echo ($action_status['status'] == 'ok' ? 'updated' : $action_status['status']); ?> fade">
@@ -499,6 +265,7 @@ function nggallery_picturelist($controller)
                                     <option value="add_tags"><?php _e("Add tags",'nggallery'); ?></option>
                                     <option value="delete_tags"><?php _e("Delete tags",'nggallery'); ?></option>
                                     <option value="overwrite_tags"><?php _e("Overwrite tags",'nggallery'); ?></option>
+                                    <option value="strip_orientation_tag"><?php _e("Remove EXIF Orientation",'nggallery'); ?></option>
                                 </select>
                                 <input class="button-primary"
                                        type="submit"
@@ -576,6 +343,8 @@ function nggallery_picturelist($controller)
 
                     <br class="clear"/>
 
+                    <?php do_action('ngg_manage_images_marketing_block'); ?>
+
                 </div><!-- /div.ngg_page_content_main -->
 
     </div><!-- /#wrap -->
@@ -603,7 +372,7 @@ function nggallery_picturelist($controller)
                         <input class="button-primary"
                                type="submit"
                                name="TB_EditTags"
-                               onClick="jQuery(this).attr('disabled', true); submit();"
+                               onClick="jQuery(this).attr('disabled', 'disabled'); submit();"
                                value="<?php _e("OK",'nggallery'); ?>"/>
                         <input class="button-primary dialog-cancel"
                                type="reset"
@@ -647,7 +416,7 @@ function nggallery_picturelist($controller)
                         <input type="submit"
                                class="button-primary"
                                name="TB_SelectGallery"
-                               onClick="jQuery(this).attr('disabled', true); submit();"
+                               onClick="jQuery(this).attr('disabled', 'disabled'); submit();"
                                value="<?php _e("OK",'nggallery'); ?>"/>
                         <input class="button-primary dialog-cancel"
                                type="reset"
@@ -691,7 +460,7 @@ function nggallery_picturelist($controller)
                         <input class="button-primary"
                                type="submit"
                                name="TB_ResizeImages"
-                               onClick="jQuery(this).attr('disabled', true); submit();"
+                               onClick="jQuery(this).attr('disabled', 'disabled'); submit();"
                                value="<?php _e('OK', 'nggallery'); ?>"/>
                         <input class="button-primary dialog-cancel"
                                type="reset"
@@ -738,7 +507,7 @@ function nggallery_picturelist($controller)
                         <input class="button-primary"
                                type="submit"
                                name="TB_NewThumbnail"
-                               onClick="jQuery(this).attr('disabled', true); submit();"
+                               onClick="jQuery(this).attr('disabled', 'disabled'); submit();"
                                value="<?php _e('OK', 'nggallery');?>"/>
                         <input class="button-primary dialog-cancel"
                                type="reset"
@@ -751,21 +520,253 @@ function nggallery_picturelist($controller)
     <!-- /#new_thumbnail -->
 
     <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            columns.init('nggallery-manage-images');
+		(function($) {
+			$('#ngg-manage-images-items-per-page').on('change', function() {
+				window.location.href = setURLParam('items', $(this).val());
+			});
 
-            // Ensure that thumb preview images are always up-to-date
-            $('#ngg-listimages img.thumb').each(function() {
-                var $this       = $(this);
-                var src         = $this.attr('src');
-                var matchData   = src.match(/\?i=(\d+)$/);
-                if (matchData) {
-                    var i = parseInt(matchData[1]) + 1;
-                    src = src.replace(matchData[0], "?i=" + i.toString());
-                    $this.attr('src', src);
-                }
-            })
-        });
+			// load a content via ajax
+			$('a.ngg-dialog').on('click', function() {
+				var dialogs = $('.ngg-overlay-dialog:visible');
+				if (dialogs.length > 0) {
+					return false;
+				}
+
+				if ($("#spinner").length === 0) {
+					$("body").append('<div id="spinner"></div>');
+				}
+
+				var $this = $(this);
+				var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
+				var width  = (results) ? results[1] : 800;
+				results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
+				var height = (results) ? results[1] : 500;
+				var container = window;
+
+				var screen_width = window.innerWidth - 120;
+				var screen_height = window.innerHeight - 200;
+				width = (width > screen_width) ? screen_width : width;
+				height = (height > screen_height) ? screen_height : height;
+
+				if (window.parent) {
+					container = window.parent;
+				}
+
+				$('#spinner').fadeIn()
+					.position({my: "center", at: "center", of: container });
+
+				// load the remote content
+				var dialog = $('<div class="ngg-overlay-dialog"></div>').appendTo('body');
+				dialog.load(
+					this.href,
+					{},
+					function() {
+						$('#spinner').hide();
+
+						dialog.dialog({
+							title: ($this.attr('title')) ? $this.attr('title') : '',
+							position: { my: "center center-30", at: "center", of: window.parent },
+							width: width,
+							height: height,
+							modal: true,
+							resizable: false,
+							close: function() {
+								dialog.remove();
+							}
+						}).width(width - 30)
+							.height(height - 30);
+
+						$('.ui-dialog-titlebar-close').text('X')
+					}
+				);
+
+				//prevent the browser to follow the link
+				return false;
+			});
+
+			// If too many of these are generated the cookie becomes so large servers will reject HTTP requests
+			// Wait some time for other listeners to catch this event and then purge it from the browser
+			Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data) {
+				setTimeout(function() {
+					Frame_Event_Publisher.delete_cookie("X-Frame-Events_" + data.id);
+				}, 400);
+			});
+
+			window.showDialog = function(windowId, title) {
+				var form = document.getElementById('updategallery');
+				var elementlist = "";
+
+				for (var i = 0, n = form.elements.length; i < n; i++) {
+					if (form.elements[i].type === "checkbox") {
+						if (form.elements[i].name === "doaction[]") {
+							if (form.elements[i].checked === true) {
+								if (elementlist === "") {
+									elementlist = form.elements[i].value;
+								} else {
+									elementlist += "," + form.elements[i].value;
+								}
+							}
+						}
+					}
+				}
+
+				$("#" + windowId + "_bulkaction").val($("#bulkaction").val());
+				$("#" + windowId + "_imagelist").val(elementlist);
+
+				// now show the dialog
+				$("#" + windowId).dialog({
+					width: 640,
+					resizable: false,
+					modal: true,
+					title: title,
+					position: {
+						my: 'center',
+						at: 'center',
+						of: window.parent
+					}
+				});
+
+				$("#" + windowId + ' .dialog-cancel').on('click', function() {
+					$("#" + windowId).dialog("close");
+				});
+			}
+
+			window.setURLParam = function(param, paramVal) {
+				var url        = window.location.href;
+				var params     = "";
+				var tmp        = "";
+				var tmpArray   = url.split("?");
+				var base       = tmpArray[0];
+				var additional = tmpArray[1];
+
+				if (additional) {
+					tmpArray = additional.split("&");
+					for (i = 0; i < tmpArray.length; i++) {
+						if (tmpArray[i].split('=')[0] !== param) {
+							params += tmp + tmpArray[i];
+							tmp = "&";
+						}
+					}
+				}
+
+				return base + "?" + params + tmp + "" + param + "=" + paramVal;
+			}
+
+			window.checkAll = function(form) {
+				for (var i = 0, n = form.elements.length; i < n; i++) {
+					if (form.elements[i].type === "checkbox") {
+						if (form.elements[i].name === "doaction[]") {
+							if (form.elements[i].checked == true) {
+								form.elements[i].checked = false;
+							} else {
+								form.elements[i].checked = true;
+							}
+						}
+					}
+				}
+			}
+
+			window.getNumChecked = function(form) {
+				var num = 0;
+				for (var i = 0, n = form.elements.length; i < n; i++) {
+					if (form.elements[i].type === "checkbox") {
+						if (form.elements[i].name === "doaction[]") {
+							if (form.elements[i].checked === true) {
+								num++;
+							}
+						}
+					}
+				}
+				return num;
+			}
+
+			// this function check for a the number of selected images, sumbmit false when no one selected
+			window.checkSelected = function() {
+
+				var numchecked = getNumChecked(document.getElementById('updategallery'));
+
+				if (typeof document.activeElement == "undefined" && document.addEventListener) {
+					document.addEventListener("focus", function (e) {
+						document.activeElement = e.target;
+					}, true);
+				}
+
+				if (document.activeElement.name === 'post_paged')
+					return true;
+
+				if (numchecked < 1) {
+					alert('<?php echo esc_js(__('No images selected', 'nggallery')); ?>');
+					return false;
+				}
+
+				var actionId = document.getElementById('bulkaction').value;
+
+				switch (actionId) {
+					case "copy_to":
+						showDialog('selectgallery', '<?php echo esc_js(__('Copy image to...','nggallery')); ?>');
+						return false;
+						break;
+					case "move_to":
+						showDialog('selectgallery', '<?php echo esc_js(__('Move image to...','nggallery')); ?>');
+						return false;
+						break;
+					case "add_tags":
+						showDialog('entertags', '<?php echo esc_js(__('Add new tags','nggallery')); ?>');
+						return false;
+						break;
+					case "delete_tags":
+						showDialog('entertags', '<?php echo esc_js(__('Delete tags','nggallery')); ?>');
+						return false;
+						break;
+					case "overwrite_tags":
+						showDialog('entertags', '<?php echo esc_js(__('Overwrite','nggallery')); ?>');
+						return false;
+						break;
+					case "resize_images":
+						showDialog('resize_images', '<?php echo esc_js(__('Resize images','nggallery')); ?>');
+						return false;
+						break;
+					case "new_thumbnail":
+						showDialog('new_thumbnail', '<?php echo esc_js(__('Create new thumbnails','nggallery')); ?>');
+						return false;
+						break;
+				}
+
+				return confirm('<?php echo sprintf(esc_js(__("You are about to start the bulk edit for %s images \n \n 'Cancel' to stop, 'OK' to proceed.",'nggallery')), "' + numchecked + '") ; ?>');
+			}
+
+			if ($(this).data('ready')) {
+				return;
+			}
+
+			// close postboxes that should be closed
+			$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+
+			// Some third party plugins alter when postboxes are enqueued, so give this line a second to wait for it to be available
+			setTimeout(function() {
+				postboxes.add_postbox_toggles('ngg-manage-gallery');
+			}, 1000);
+
+			$(this).data('ready', true);
+
+			// Wait for WordPress common.js to create the window.columns object
+            (async() => {
+                while(!window.hasOwnProperty('columns')) { await new Promise(resolve => setTimeout(resolve, 25)); }
+                columns.init('nggallery-manage-images');
+            })();
+
+			// Ensure that thumb preview images are always up-to-date
+			$('#ngg-listimages img.thumb').each(function () {
+				var $this = $(this);
+				var src = $this.attr('src');
+				var matchData = src.match(/\?i=(\d+)$/);
+				if (matchData) {
+					var i = parseInt(matchData[1]) + 1;
+					src = src.replace(matchData[0], "?i=" + i.toString());
+					$this.attr('src', src);
+				}
+			})
+		})(jQuery);
     </script>
     <?php
 }

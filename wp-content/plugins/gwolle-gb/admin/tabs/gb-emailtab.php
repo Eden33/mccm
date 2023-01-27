@@ -14,7 +14,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_settingstab_email() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	} ?>
 
@@ -25,7 +25,7 @@ function gwolle_gb_page_settingstab_email() {
 
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_settings_emailtab' );
-	echo '<input type="hidden" id="gwolle_gb_page_settings_emailtab" name="gwolle_gb_page_settings_emailtab" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_page_settings_emailtab" name="gwolle_gb_page_settings_emailtab" value="' . esc_attr( $nonce ) . '" />';
 	?>
 	<table class="form-table">
 		<tbody>
@@ -33,10 +33,10 @@ function gwolle_gb_page_settingstab_email() {
 		<?php
 		$user_ids = get_option('gwolle_gb-notifyByMail' );
 		if ( strlen($user_ids) > 0 ) {
-			$user_ids = explode( ",", $user_ids );
+			$user_ids = explode( ',', $user_ids );
 		} ?>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label><?php esc_html_e('Subscription status', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php
@@ -49,7 +49,7 @@ function gwolle_gb_page_settingstab_email() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="subscribe"><?php esc_html_e('Subscribe moderators', 'gwolle-gb'); ?></label></th>
 			<td>
 				<select name="subscribe" id="subscribe">
@@ -68,28 +68,32 @@ function gwolle_gb_page_settingstab_email() {
 							}
 
 							$username = $user_info->first_name . ' ' . $user_info->last_name . ' (' . $user_info->user_email . ')';
-							if ( $user_info->ID == get_current_user_id() ) {
+							if ( $user_info->ID === get_current_user_id() ) {
 								$username .= ' ' . esc_html__('You', 'gwolle-gb');
 							}
-							echo '<option value="' . $user_info->ID . '">' . $username . '</option>';
+							echo '<option value="' . (int) $user_info->ID . '">' . $username . '</option>';
 						}
 					} ?>
 				</select><br />
 				<label for="subscribe"><?php esc_html_e('You can subscribe a moderator to the notification emails.', 'gwolle-gb'); ?><br />
 				<?php esc_html_e('Select a user that you want subscribed to the notification emails.', 'gwolle-gb'); ?>
-				<?php esc_html_e("You will only see users with the roles of Administrator, Editor and Author, who have the capability 'moderate_comments' .", 'gwolle-gb'); ?>
+				<?php esc_html_e("You will only see users with the roles of Administrator, Editor and Author, who have the capability 'gwolle_gb_moderate_comments'.", 'gwolle-gb'); ?><br />
+				<?php $link_wp = '<a href="' . admin_url( '/user-new.php' ) . '">';
+					/* translators: %s is a link */
+					echo sprintf( esc_html__( 'A new WordPress user can be added on %sAdd New in the Users menu section%s.', 'gwolle-gb' ), $link_wp, '</a>' ); ?>
+					<?php esc_html_e('After adding a new user it should be available in the dropdown menu above.', 'gwolle-gb'); ?>
 				</label>
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="unsubscribe"><?php esc_html_e('Unsubscribe moderators', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php
 				// Check if function mail() exists. If not, display a hint to the user.
 				if ( ! function_exists('mail') ) {
 					echo '<p class="setting-description">' .
-						__('Sorry, but the function <code>mail()</code> required to notify you by mail is not enabled in your PHP configuration. You might want to install a WordPress plugin that uses SMTP instead of <code>mail()</code>. Or you can contact your hosting provider to change this.','gwolle-gb')
+						__('Sorry, but the function <code>mail()</code> required to notify you by mail is not enabled in your PHP configuration. You might want to install a WordPress plugin that uses SMTP instead of <code>mail()</code>. Or you can contact your hosting provider to change this.', 'gwolle-gb')
 						. '</p>';
 				} ?>
 				<select name="unsubscribe" id="unsubscribe">
@@ -99,15 +103,15 @@ function gwolle_gb_page_settingstab_email() {
 						foreach ( $user_ids as $user_id ) {
 
 							$user_info = get_userdata( (int) $user_id );
-							if ($user_info === FALSE) {
+							if ($user_info === false) {
 								// Invalid $user_id
 								continue;
 							}
 							$username = $user_info->first_name . ' ' . $user_info->last_name . ' (' . $user_info->user_email . ')';
-							if ( $user_info->ID == get_current_user_id() ) {
+							if ( $user_info->ID === get_current_user_id() ) {
 								$username .= ' ' . esc_html__('You', 'gwolle-gb');
 							}
-							echo '<option value="' . $user_info->ID . '">' . $username . '</option>';
+							echo '<option value="' . (int) $user_info->ID . '">' . $username . '</option>';
 						}
 					} ?>
 				</select><br />
@@ -116,7 +120,7 @@ function gwolle_gb_page_settingstab_email() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="admin_mail_from"><?php /* translators: Setting for SMTP mail from header */ esc_html_e('Send from address', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input type="email" name="admin_mail_from" id="admin_mail_from" class="regular-text" value="<?php echo gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from', false) ); ?>" placeholder="info@example.com" />
@@ -131,16 +135,16 @@ function gwolle_gb_page_settingstab_email() {
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="adminMailContent"><?php esc_html_e('Admin mail content', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php
-				$mailText = gwolle_gb_sanitize_output( get_option('gwolle_gb-adminMailContent', false), 'setting_textarea' );
-				if ( ! $mailText) { // No text set by the user. Use the default text.
-					$mailText = esc_html__("
+				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-adminMailContent', false), 'setting_textarea' );
+				if ( ! $mailtext) { // No text set by the user. Use the default text.
+					$mailtext = esc_html__("
 Hello,
 
-There is a new guestbook entry at '%blog_name%'.
+There is a new guestbook entry at %blog_name%.
 You can check it at %entry_management_url%.
 
 Have a nice day.
@@ -153,31 +157,31 @@ User email: %user_email%
 Entry status: %status%
 Entry content:
 %entry_content%
-"
-, 'gwolle-gb');
-							} ?>
-				<textarea name="adminMailContent" id="adminMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo $mailText; ?></textarea>
+", 'gwolle-gb');
+				} ?>
+				<textarea name="adminMailContent" id="adminMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
 				<span class="setting-description">
 					<?php esc_html_e('You can set the content of the mail that a notification subscriber gets on new entries. The following tags are supported:', 'gwolle-gb');
 					echo '<br />';
-					$mailTags = array( 'user_email', 'user_name', 'entry_management_url', 'blog_name', 'blog_url', 'wp_admin_url', 'entry_content', 'status', 'author_ip', 'author_origin' );
-					for ($i = 0; $i < count($mailTags); $i++) {
-						if ($i != 0) {
+					$mailtags = array( 'user_email', 'user_name', 'entry_management_url', 'blog_name', 'blog_url', 'wp_admin_url', 'entry_content', 'status', 'author_ip', 'author_origin' );
+					$mailtags_count = count($mailtags);
+					for ($i = 0; $i < $mailtags_count; $i++) {
+						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailTags[$i] . '%';
+						echo '%' . $mailtags[$i] . '%';
 					}
-					echo "."; ?>
+					echo '.'; ?>
 				</span>
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="mail_author"><?php esc_html_e('Mail Author', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input <?php
-					if (get_option( 'gwolle_gb-mail_author', 'false') == 'true') {
+					if (get_option( 'gwolle_gb-mail_author', 'false') === 'true') {
 						echo 'checked="checked"';
 					} ?>
 					type="checkbox" name="mail_author" id="mail_author">
@@ -186,21 +190,21 @@ Entry content:
 				</label>
 				<br />
 				<span class="setting-description">
-					<?php esc_html_e("The author of the guestbook entry will receive an email after posting. It will have a copy of the entry.", 'gwolle-gb'); ?>
+					<?php esc_html_e('The author of the guestbook entry will receive an email after posting. It will have a copy of the entry.', 'gwolle-gb'); ?>
 				</span>
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="authorMailContent"><?php esc_html_e('Author mail content', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php
-				$mailText = gwolle_gb_sanitize_output( get_option('gwolle_gb-authorMailContent', false), 'setting_textarea' );
-				if ( ! $mailText) { // No text set by the user. Use the default text.
-					$mailText = esc_html__("
+				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-authorMailContent', false), 'setting_textarea' );
+				if ( ! $mailtext) { // No text set by the user. Use the default text.
+					$mailtext = esc_html__("
 Hello,
 
-You have just posted a new guestbook entry at '%blog_name%'.
+You have just posted a new guestbook entry at %blog_name%.
 
 Have a nice day.
 The editors at %blog_name%.
@@ -211,36 +215,94 @@ User name: %user_name%
 User email: %user_email%
 Entry content:
 %entry_content%
-"
-, 'gwolle-gb');
-							} ?>
-				<textarea name="authorMailContent" id="authorMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo $mailText; ?></textarea>
+", 'gwolle-gb');
+				} ?>
+				<textarea name="authorMailContent" id="authorMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
 				<span class="setting-description">
 					<?php esc_html_e('You can set the content of the mail that the author of the entry will receive. The following tags are supported:', 'gwolle-gb');
 					echo '<br />';
-					$mailTags = array('user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content');
-					for ($i = 0; $i < count($mailTags); $i++) {
-						if ($i != 0) {
+					$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content' );
+					$mailtags_count = count($mailtags);
+					for ($i = 0; $i < $mailtags_count; $i++) {
+						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailTags[$i] . '%';
+						echo '%' . $mailtags[$i] . '%';
 					}
 					?>
 				</span>
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
+			<th scope="row"><label for="mail_author_moderation"><?php esc_html_e('Mail Author on moderation', 'gwolle-gb'); ?></label></th>
+			<td>
+				<input <?php
+					if (get_option( 'gwolle_gb-mail_author_moderation', 'false') === 'true') {
+						echo 'checked="checked"';
+					} ?>
+					type="checkbox" name="mail_author_moderation" id="mail_author_moderation">
+				<label for="mail_author_moderation">
+					<?php esc_html_e('Mail the author on moderation.', 'gwolle-gb'); ?>
+				</label>
+				<br />
+				<span class="setting-description">
+					<?php esc_html_e('The author of the guestbook entry will receive an email after his entry was moderated.', 'gwolle-gb'); ?>
+				</span>
+			</td>
+		</tr>
+
+		<tr>
+			<th scope="row"><label for="authormoderationcontent"><?php esc_html_e('Moderation mail content', 'gwolle-gb'); ?></label></th>
+			<td>
+				<?php
+				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-authormoderationcontent', false), 'setting_textarea' );
+				if ( ! $mailtext) { // No text set by the user. Use the default text.
+					$mailtext = esc_html__("
+Hello,
+
+An admin has just moderated your guestbook entry at %blog_name%.
+
+Have a nice day.
+The editors at %blog_name%.
+
+
+Website address: %blog_url%
+
+
+Original entry posted on %date%:
+%entry_content%
+", 'gwolle-gb');
+				} ?>
+				<textarea name="authormoderationcontent" id="authormoderationcontent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
+				<br />
+				<span class="setting-description">
+					<?php esc_html_e('You can set the content of the moderation mail that the author of the entry will receive. The following tags are supported:', 'gwolle-gb');
+					echo '<br />';
+					$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content', 'date' );
+					$mailtags_count = count($mailtags);
+					for ($i = 0; $i < $mailtags_count; $i++) {
+						if ($i !== 0) {
+							echo ', ';
+						}
+						echo '%' . $mailtags[$i] . '%';
+					}
+					?>
+				</span>
+			</td>
+		</tr>
+
+		<tr>
 			<th scope="row"><label for="gwolle_gb-mail_admin_replyContent"><?php esc_html_e('Admin Reply mail content', 'gwolle-gb'); ?></label></th>
 			<td>
 				<?php
-				$mailText = gwolle_gb_sanitize_output( get_option('gwolle_gb-mail_admin_replyContent', false), 'setting_textarea' );
-				if ( ! $mailText) { // No text set by the user. Use the default text.
-					$mailText = esc_html__("
+				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-mail_admin_replyContent', false), 'setting_textarea' );
+				if ( ! $mailtext) { // No text set by the user. Use the default text.
+					$mailtext = esc_html__("
 Hello,
 
-An admin has just added or changed a reply message to your guestbook entry at '%blog_name%'.
+An admin has just added or changed a reply message to your guestbook entry at %blog_name%.
 
 Have a nice day.
 The editors at %blog_name%.
@@ -253,20 +315,20 @@ Admin Reply:
 
 Original entry posted on %date%:
 %entry_content%
-"
-, 'gwolle-gb');
+", 'gwolle-gb');
 				} ?>
-				<textarea name="gwolle_gb-mail_admin_replyContent" id="gwolle_gb-mail_admin_replyContent" style="width:400px;height:300px;" class="regular-text"><?php echo $mailText; ?></textarea>
+				<textarea name="gwolle_gb-mail_admin_replyContent" id="gwolle_gb-mail_admin_replyContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
 				<span class="setting-description">
 					<?php esc_html_e('You can set the content of the mail that the author of the entry will receive when an Admin Reply is added. The following tags are supported:', 'gwolle-gb');
 					echo '<br />';
-					$mailTags = array('user_email', 'user_name', 'blog_name', 'blog_url', 'admin_reply', 'entry_content', 'date');
-					for ($i = 0; $i < count($mailTags); $i++) {
-						if ($i != 0) {
+					$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'admin_reply', 'entry_content', 'date' );
+					$mailtags_count = count($mailtags);
+					for ($i = 0; $i < $mailtags_count; $i++) {
+						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailTags[$i] . '%';
+						echo '%' . $mailtags[$i] . '%';
 					}
 					?>
 				</span>

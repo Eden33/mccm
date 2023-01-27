@@ -20,10 +20,10 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_mail_moderators( $entry ) {
 	$isspam = $entry->get_isspam();
 	if ( ! $isspam ) {
-		$subscribers = Array();
+		$subscribers = array();
 		$recipients = get_option('gwolle_gb-notifyByMail');
-		if ( strlen($recipients) > 0 ) {
-			$recipients = explode( ",", $recipients );
+		if ( is_string( $recipients ) && strlen($recipients) > 0 ) {
+			$recipients = explode( ',', $recipients );
 		}
 		if ( is_array( $recipients ) && count( $recipients ) > 0 ) {
 			foreach ( $recipients as $recipient ) {
@@ -36,16 +36,14 @@ function gwolle_gb_mail_moderators( $entry ) {
 			return;
 		}
 
-		@ini_set('sendmail_from', get_bloginfo('admin_mail'));
-
 		// Set the Mail Content
-		$mailTags = array( 'user_email', 'user_name', 'status', 'entry_management_url', 'blog_name', 'blog_url', 'wp_admin_url', 'entry_content', 'author_ip', 'author_origin' );
+		$mailtags = array( 'user_email', 'user_name', 'status', 'entry_management_url', 'blog_name', 'blog_url', 'wp_admin_url', 'entry_content', 'author_ip', 'author_origin' );
 		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-adminMailContent', false ), 'setting_textarea' );
 		if ( ! $mail_body) {
 			$mail_body = esc_html__("
 Hello,
 
-There is a new guestbook entry at '%blog_name%'.
+There is a new guestbook entry at %blog_name%.
 You can check it at %entry_management_url%.
 
 Have a nice day.
@@ -58,8 +56,7 @@ User email: %user_email%
 Entry status: %status%
 Entry content:
 %entry_content%
-"
-, 'gwolle-gb');
+", 'gwolle-gb');
 		}
 		$mail_body = apply_filters( 'gwolle_gb_mail_moderators_body', $mail_body, $entry );
 
@@ -67,13 +64,10 @@ Entry content:
 		$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . esc_html__('New Guestbook Entry', 'gwolle-gb');
 		$subject = apply_filters( 'gwolle_gb_mail_moderators_subject', $subject );
 
-		$header = "";
+		$header = "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail.
 		if ( get_option('gwolle_gb-mail-from', false) ) {
-			$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . get_option('gwolle_gb-mail-from') . ">\r\n";
-		} else {
-			$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . get_bloginfo('admin_email') . ">\r\n";
+			$header .= 'From: ' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . ' <' . get_option('gwolle_gb-mail-from') . ">\r\n";
 		}
-		$header .= "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail.
 		$author_email = $entry->get_author_email();
 		if ( $author_email ) {
 			$header .= 'Reply-To: "' . gwolle_gb_format_values_for_mail($entry->get_author_name()) . '" <' . $author_email . ">\r\n"; // Set Reply-To for easy answering.
@@ -101,7 +95,7 @@ Entry content:
 		$info['entry_management_url'] = $wpadmin . '?page=' . GWOLLE_GB_FOLDER . '/editor.php&entry_id=' . $entry->get_id();
 
 		$info['entry_content'] = gwolle_gb_format_values_for_mail(gwolle_gb_sanitize_output( $entry->get_content(), 'content' ));
-		$info['author_ip'] = $_SERVER['REMOTE_ADDR'];
+		$info['author_ip'] = gwolle_gb_get_user_ip();
 		$info['author_origin'] = $entry->get_author_origin();
 		if ( $entry->get_ischecked() ) {
 			$info['status'] = esc_html__('Checked', 'gwolle-gb');
@@ -110,15 +104,17 @@ Entry content:
 		}
 
 		// The last tags are bloginfo-based
-		for ($tagNum = 0; $tagNum < count($mailTags); $tagNum++) {
-			$mail_body = str_replace('%' . $mailTags[$tagNum] . '%', $info[$mailTags[$tagNum]], $mail_body);
-			$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
+		$mailtags_count = count($mailtags);
+		for ($tagnum = 0; $tagnum < $mailtags_count; $tagnum++) {
+			$tagname = $mailtags["$tagnum"];
+			$mail_body = str_replace('%' . $tagname . '%', $info["$tagname"], $mail_body);
 		}
+		$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
 
 		// Add logging to mail
 		$log_entries = gwolle_gb_get_log_entries( $entry->get_id() );
 		if ( is_array($log_entries) && ! empty($log_entries) ) {
-			$mail_body .= "\r\n" .  esc_html__('Log messages:', 'gwolle-gb') . "\r\n";
+			$mail_body .= "\r\n" . esc_html__('Log messages:', 'gwolle-gb') . "\r\n";
 			if ($entry->get_datetime() > 0) {
 				$mail_body .= date_i18n( get_option('date_format'), $entry->get_datetime() ) . ', ';
 				$mail_body .= date_i18n( get_option('time_format'), $entry->get_datetime() );
@@ -129,7 +125,7 @@ Entry content:
 			}
 		}
 
-		if ( is_array($subscribers) && !empty($subscribers) ) {
+		if ( is_array($subscribers) && ! empty($subscribers) ) {
 			foreach ( $subscribers as $subscriber ) {
 				wp_mail($subscriber, $subject, $mail_body, $header);
 			}
@@ -148,17 +144,17 @@ add_action( 'gwolle_gb_save_entry_frontend', 'gwolle_gb_mail_moderators' );
  */
 function gwolle_gb_mail_author( $entry ) {
 	$isspam = $entry->get_isspam();
-	if ( !$isspam ) {
-		if ( get_option( 'gwolle_gb-mail_author', 'false' ) == 'true' ) {
+	if ( ! $isspam ) {
+		if ( get_option( 'gwolle_gb-mail_author', 'false' ) === 'true' ) {
 
 			// Set the Mail Content
-			$mailTags = array('user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content');
+			$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content' );
 			$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-authorMailContent', false ), 'setting_textarea' );
 			if ( ! $mail_body) {
 				$mail_body = esc_html__("
 Hello,
 
-You have just posted a new guestbook entry at '%blog_name%'.
+You have just posted a new guestbook entry at %blog_name%.
 
 Have a nice day.
 The editors at %blog_name%.
@@ -169,8 +165,7 @@ User name: %user_name%
 User email: %user_email%
 Entry content:
 %entry_content%
-"
-, 'gwolle-gb');
+", 'gwolle-gb');
 			}
 			$mail_body = apply_filters( 'gwolle_gb_mail_author_body', $mail_body, $entry );
 
@@ -178,13 +173,10 @@ Entry content:
 			$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . esc_html__('New Guestbook Entry', 'gwolle-gb');
 			$subject = apply_filters( 'gwolle_gb_mail_author_subject', $subject );
 
-			$header = "";
+			$header = "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail
 			if ( get_option('gwolle_gb-mail-from', false) ) {
-				$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from') ) . ">\r\n";
-			} else {
-				$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . get_bloginfo('admin_email') . ">\r\n";
+				$header .= 'From: ' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . ' <' . gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from') ) . ">\r\n";
 			}
-			$header .= "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail
 
 			// Replace the tags from the mailtemplate with real data from the website and entry
 			$info = array();
@@ -203,10 +195,12 @@ Entry content:
 				$info['blog_url'] = get_bloginfo('wpurl');
 			}
 			$info['entry_content'] = gwolle_gb_format_values_for_mail(gwolle_gb_sanitize_output( $entry->get_content(), 'content' ));
-			for ($tagNum = 0; $tagNum < count($mailTags); $tagNum++) {
-				$mail_body = str_replace('%' . $mailTags[$tagNum] . '%', $info[$mailTags[$tagNum]], $mail_body);
-				$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
+			$mailtags_count = count($mailtags);
+			for ($tagnum = 0; $tagnum < $mailtags_count; $tagnum++) {
+				$tagname = $mailtags["$tagnum"];
+				$mail_body = str_replace('%' . $tagname . '%', $info["$tagname"], $mail_body);
 			}
+			$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
 
 			wp_mail($entry->get_author_email(), $subject, $mail_body, $header);
 
@@ -214,6 +208,83 @@ Entry content:
 	}
 }
 add_action( 'gwolle_gb_save_entry_frontend', 'gwolle_gb_mail_author' );
+
+
+/*
+ * Send Notification Mail to the author that the entry is moderated and published.
+ *
+ * @param object $entry instance of gwolle_gb_entry
+ *
+ * @since 4.1.0
+ */
+function gwolle_gb_mail_author_on_moderation( $entry ) {
+
+	if (get_option( 'gwolle_gb-mail_author_moderation', 'false') !== 'true') {
+		return;
+	}
+
+	if ( $entry->get_ischecked() === 1 && $entry->get_isspam() === 0 && $entry->get_istrash() === 0 ) {
+
+		// Set the Mail Content
+		$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content', 'date' );
+		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-authormoderationcontent', false ), 'setting_textarea' );
+		if ( ! $mail_body) {
+			$mail_body = esc_html__("
+Hello,
+
+An admin has just moderated your guestbook entry at %blog_name%.
+
+Have a nice day.
+The editors at %blog_name%.
+
+
+Website address: %blog_url%
+
+
+Original entry posted on %date%:
+%entry_content%
+", 'gwolle-gb');
+		}
+		$mail_body = apply_filters( 'gwolle_gb_mail_author_on_moderation_body', $mail_body, $entry );
+
+		// Set the Mail Headers
+		$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . esc_html__('Moderated', 'gwolle-gb');
+		$subject = apply_filters( 'gwolle_gb_mail_author_on_moderation_subject', $subject );
+
+		$header = "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail
+		if ( get_option('gwolle_gb-mail-from', false) ) {
+			$header .= 'From: ' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . ' <' . gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from') ) . ">\r\n";
+		}
+
+		// Replace the tags from the mailtemplate with real data from the website and entry
+		$info = array();
+		$info['user_name'] = gwolle_gb_sanitize_output( $entry->get_author_name() );
+		$info['user_email'] = $entry->get_author_email();
+		$info['blog_name'] = get_bloginfo('name');
+		$postid = gwolle_gb_get_postid( (int) $entry->get_book_id() );
+		if ( $postid ) {
+			$permalink = gwolle_gb_get_permalink( $postid );
+			if ( is_wp_error( $permalink ) ) {
+				$info['blog_url'] = get_bloginfo('wpurl') . '?p=' . $postid;
+			} else {
+				$info['blog_url'] = $permalink;
+			}
+		} else {
+			$info['blog_url'] = get_bloginfo('wpurl');
+		}
+		$info['entry_content'] = gwolle_gb_format_values_for_mail(gwolle_gb_sanitize_output( $entry->get_content(), 'content' ));
+		$info['date'] = date_i18n( get_option('date_format'), $entry->get_datetime() );
+		$mailtags_count = count($mailtags);
+		for ($tagnum = 0; $tagnum < $mailtags_count; $tagnum++) {
+			$tagname = $mailtags["$tagnum"];
+			$mail_body = str_replace('%' . $tagname . '%', $info["$tagname"], $mail_body);
+		}
+		$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
+
+		wp_mail($entry->get_author_email(), $subject, $mail_body, $header);
+
+	}
+}
 
 
 /*
@@ -228,13 +299,13 @@ function gwolle_gb_mail_author_on_admin_reply( $entry ) {
 	if ( ! $isspam ) {
 
 		// Set the Mail Content
-		$mailTags = array('user_email', 'user_name', 'blog_name', 'blog_url', 'admin_reply', 'entry_content', 'date');
+		$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'admin_reply', 'entry_content', 'date' );
 		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-mail_admin_replyContent', false ), 'setting_textarea' );
 		if ( ! $mail_body) {
 			$mail_body = esc_html__("
 Hello,
 
-An admin has just added or changed a reply message to your guestbook entry at '%blog_name%'.
+An admin has just added or changed a reply message to your guestbook entry at %blog_name%.
 
 Have a nice day.
 The editors at %blog_name%.
@@ -247,8 +318,7 @@ Admin Reply:
 
 Original entry posted on %date%:
 %entry_content%
-"
-, 'gwolle-gb');
+", 'gwolle-gb');
 		}
 		$mail_body = apply_filters( 'gwolle_gb_mail_author_on_admin_reply_body', $mail_body, $entry );
 
@@ -256,13 +326,10 @@ Original entry posted on %date%:
 		$subject = '[' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . '] ' . esc_html__('Admin Reply', 'gwolle-gb');
 		$subject = apply_filters( 'gwolle_gb_mail_author_on_admin_reply_subject', $subject );
 
-		$header = "";
+		$header = "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail
 		if ( get_option('gwolle_gb-mail-from', false) ) {
-			$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from') ) . ">\r\n";
-		} else {
-			$header .= "From: " . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . " <" . get_bloginfo('admin_email') . ">\r\n";
+			$header .= 'From: ' . gwolle_gb_format_values_for_mail(get_bloginfo('name')) . ' <' . gwolle_gb_sanitize_output( get_option('gwolle_gb-mail-from') ) . ">\r\n";
 		}
-		$header .= "Content-Type: text/plain; charset=UTF-8\r\n"; // Encoding of the mail
 
 		// Replace the tags from the mailtemplate with real data from the website and entry
 		$info = array();
@@ -283,10 +350,12 @@ Original entry posted on %date%:
 		$info['admin_reply'] = gwolle_gb_format_values_for_mail(gwolle_gb_sanitize_output( $entry->get_admin_reply(), 'admin_reply' ));
 		$info['entry_content'] = gwolle_gb_format_values_for_mail(gwolle_gb_sanitize_output( $entry->get_content(), 'content' ));
 		$info['date'] = date_i18n( get_option('date_format'), $entry->get_datetime() );
-		for ($tagNum = 0; $tagNum < count($mailTags); $tagNum++) {
-			$mail_body = str_replace('%' . $mailTags[$tagNum] . '%', $info[$mailTags[$tagNum]], $mail_body);
-			$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
+		$mailtags_count = count($mailtags);
+		for ($tagnum = 0; $tagnum < $mailtags_count; $tagnum++) {
+			$tagname = $mailtags["$tagnum"];
+			$mail_body = str_replace('%' . $tagname . '%', $info["$tagname"], $mail_body);
 		}
+		$mail_body = gwolle_gb_format_values_for_mail( $mail_body );
 
 		wp_mail($entry->get_author_email(), $subject, $mail_body, $header);
 

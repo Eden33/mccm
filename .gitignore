@@ -11,6 +11,9 @@
 .buildpath
 .project
 
+# ignore vs-code specific directories/files
+.vscode
+
 # this files we definitely don't want to share
 phpinfo.html
 wp-config.php

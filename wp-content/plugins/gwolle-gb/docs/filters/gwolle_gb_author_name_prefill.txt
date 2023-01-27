@@ -2,7 +2,7 @@
 
 ==Description==
 
-The <b>"gwolle_gb_author_name_prefill"</b> filter is used to change the prefill of the input field for the logged in user at the frontend.
+The <b>"gwolle_gb_author_name_prefill"</b> filter is used to change the prefill of the name input field at the frontend.
 
 You can use this filter as:
 

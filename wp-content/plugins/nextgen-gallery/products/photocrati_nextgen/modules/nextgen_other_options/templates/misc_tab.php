@@ -1,4 +1,29 @@
+<?php
+/**
+ * @var string $alternate_random_method_field
+ * @var string $cache_confirmation
+ * @var string $cache_label
+ * @var string $disable_fontawesome_field
+ * @var string $disable_ngg_tags_page_field
+ * @var string $galleries_in_feeds
+ * @var string $galleries_in_feeds_help
+ * @var string $galleries_in_feeds_label
+ * @var string $galleries_in_feeds_no
+ * @var string $galleries_in_feeds_yes
+ * @var string $maximum_entity_count_field
+ * @var string $mediarss_activated
+ * @var string $mediarss_activated_help
+ * @var string $mediarss_activated_label
+ * @var string $mediarss_activated_no
+ * @var string $mediarss_activated_yes
+ * @var string $random_widget_cache_ttl_field
+ * @var string $slug_field
+ * @var string $update_legacy_featured_images_field
+ * @var string $dynamic_image_filename_separator_use_dash
+ */
+?>
 <table>
+
     <tr>
         <td class="column1">
             <label  for="mediarss_activated" 
@@ -31,6 +56,7 @@
                 />
         </td>
     </tr>
+
     <tr>
         <td class="column1">
             <label  for="galleries_in_feeds"  
@@ -63,6 +89,7 @@
                 />
         </td>
     </tr>
+
     <tr>
         <td class='column1'>
             <?php echo $cache_label; ?>
@@ -78,6 +105,8 @@
         </td>
     </tr>
 
+    <?php print $update_legacy_featured_images_field; ?>
+
     <?php print $slug_field; ?>
 
     <?php print $maximum_entity_count_field; ?>
@@ -87,4 +116,8 @@
     <?php print $alternate_random_method_field; ?>
 
     <?php print $disable_fontawesome_field; ?>
+
+    <?php print $disable_ngg_tags_page_field; ?>
+
+    <?php print $dynamic_image_filename_separator_use_dash; ?>
 </table>

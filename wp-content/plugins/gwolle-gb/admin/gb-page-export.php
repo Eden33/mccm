@@ -16,7 +16,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_export() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
 
@@ -28,13 +28,13 @@ function gwolle_gb_page_export() {
 	?>
 	<div class="wrap gwolle_gb">
 		<div id="icon-gwolle-gb"><br /></div>
-		<h1><?php esc_html_e('Export guestbook entries.', 'gwolle-gb'); ?></h1>
+		<h1><?php esc_html_e('Export guestbook entries.', 'gwolle-gb'); ?> (Gwolle Guestbook) - v<?php echo GWOLLE_GB_VER; ?></h1>
 
 		<div id="poststuff" class="gwolle_gb_export metabox-holder">
 			<div class="postbox-container">
 				<?php
-				add_meta_box('gwolle_gb_export_postbox', esc_html__('Export guestbook entries from Gwolle-GB','gwolle-gb'), 'gwolle_gb_export_postbox', 'gwolle_gb_export', 'normal');
-				add_meta_box('gwolle_gb_export_postbox_user', esc_html__('Export guestbook entries for a user','gwolle-gb'), 'gwolle_gb_export_postbox_user', 'gwolle_gb_export', 'normal');
+				add_meta_box( 'gwolle_gb_export_postbox', esc_html__('Export guestbook entries from Gwolle-GB', 'gwolle-gb'), 'gwolle_gb_export_postbox', 'gwolle_gb_export', 'normal' );
+				add_meta_box( 'gwolle_gb_export_postbox_user', esc_html__('Export guestbook entries for a user', 'gwolle-gb'), 'gwolle_gb_export_postbox_user', 'gwolle_gb_export', 'normal' );
 				do_meta_boxes( 'gwolle_gb_export', 'normal', '' );
 				?>
 			</div>
@@ -47,22 +47,22 @@ function gwolle_gb_page_export() {
 
 function gwolle_gb_export_postbox() {
 
-	$count = gwolle_gb_get_entry_count(array( 'all'  => 'all' ));
+	$count = gwolle_gb_get_entry_count(array( 'all' => 'all' ));
 	$num_entries = 2000;
-	$parts = ceil( $count / $num_entries );
+	$parts = (int) ceil( $count / $num_entries );
 	?>
 
 	<form name="gwolle_gb_export" id="gwolle_gb_export" method="POST" action="#" accept-charset="UTF-8">
 		<input type="hidden" name="gwolle_gb_page" value="gwolle_gb_export" />
 		<input type="hidden" name="gwolle_gb_export_part" id="gwolle_gb_export_part" value="1" />
-		<input type="hidden" name="gwolle_gb_export_parts" id="gwolle_gb_export_parts" value="<?php echo $parts; ?>" />
+		<input type="hidden" name="gwolle_gb_export_parts" id="gwolle_gb_export_parts" value="<?php echo esc_attr( $parts ); ?>" />
 
 	<?php
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_export' );
-	echo '<input type="hidden" id="gwolle_gb_wpnonce" name="gwolle_gb_wpnonce" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_wpnonce" name="gwolle_gb_wpnonce" value="' . esc_attr( $nonce ) . '" />';
 
-	if ( $count == 0 ) { ?>
+	if ( $count === 0 ) { ?>
 		<p><?php esc_html_e('No entries were found.', 'gwolle-gb'); ?></p><?php
 	} else {
 		?>
@@ -110,7 +110,7 @@ function gwolle_gb_export_postbox() {
 
 function gwolle_gb_export_action() {
 	if ( is_admin() ) {
-		if ( isset( $_POST['gwolle_gb_page']) &&  $_POST['gwolle_gb_page'] == 'gwolle_gb_export' ) {
+		if ( isset( $_POST['gwolle_gb_page']) && $_POST['gwolle_gb_page'] === 'gwolle_gb_export' ) {
 			gwolle_gb_export_callback();
 		}
 	}
@@ -123,7 +123,7 @@ add_action('admin_init', 'gwolle_gb_export_action');
  */
 function gwolle_gb_export_callback() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		echo 'error, no permission.';
 		die();
 	}
@@ -133,27 +133,27 @@ function gwolle_gb_export_callback() {
 	if ( isset($_POST['gwolle_gb_wpnonce']) ) {
 		$verified = wp_verify_nonce( $_POST['gwolle_gb_wpnonce'], 'gwolle_gb_page_export' );
 	}
-	if ( $verified == false ) {
+	if ( $verified === false ) {
 		// Nonce is invalid.
-		esc_html_e('Nonce check failed. Please go back and try again.', 'gwolle-gb');
+		esc_html_e('The Nonce did not validate. Please reload the page and try again.', 'gwolle-gb');
 		die();
 	}
 
-	$count = gwolle_gb_get_entry_count(array( 'all'  => 'all' ));
+	$count = gwolle_gb_get_entry_count(array( 'all' => 'all' ));
 	$num_entries = 2000;
-	$parts = ceil( $count / $num_entries );
-	if ( isset( $_POST['gwolle_gb_export_part']) && ( (int) $_POST['gwolle_gb_export_part'] < ($parts + 1) ) ) {
+	$parts = (int) ceil( $count / $num_entries );
+	if ( isset( $_POST['gwolle_gb_export_part'] ) && ( (int) $_POST['gwolle_gb_export_part'] < ( $parts + 1 ) ) ) {
 		$part = (int) $_POST['gwolle_gb_export_part'];
 	} else {
 		echo '(Gwolle-GB) Wrong part requested.';
 		die();
 	}
-	$offset = ($part * $num_entries) - $num_entries;
+	$offset = ( $part * $num_entries ) - $num_entries;
 
-	$entries = gwolle_gb_get_entries(array(
+	$entries = gwolle_gb_get_entries( array(
 			'num_entries' => $num_entries,
 			'offset'      => $offset,
-			'all'         => 'all'
+			'all'         => 'all',
 		));
 
 	if ( is_array($entries) && ! empty($entries) ) {
@@ -164,7 +164,7 @@ function gwolle_gb_export_callback() {
 		// Output headers so that the file is downloaded rather than displayed
 		$filename = 'gwolle_gb_export_' . GWOLLE_GB_VER . '_' . date('Y-m-d_H-i') . '-part_' . $part . '_of_' . $parts . '.csv';
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=' . $filename );
+		header( 'Content-Disposition: attachment; filename=' . esc_attr( $filename ) );
 
 		// Create a file pointer connected to the output stream
 		$output = fopen('php://output', 'w');
@@ -185,12 +185,12 @@ function gwolle_gb_export_callback() {
 				'istrash',
 				'admin_reply',
 				'book_id',
-				'meta_fields'
+				'meta_fields',
 			));
 
 		foreach ( $entries as $entry ) {
 
-			$row = Array();
+			$row = array();
 
 			$row[] = $entry->get_id();
 			$row[] = addslashes($entry->get_author_name());
@@ -243,20 +243,20 @@ function gwolle_gb_export_postbox_user() {
 	<?php
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_export_user' );
-	echo '<input type="hidden" id="gwolle_gb_wpnonce" name="gwolle_gb_wpnonce" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_wpnonce" name="gwolle_gb_wpnonce" value="' . esc_attr( $nonce ) . '" />';
 
 	$count = gwolle_gb_get_entry_count( array( 'all' => 'all' ) );
-	if ( $count == 0 ) { ?>
+	if ( $count === 0 ) { ?>
 		<p><?php esc_html_e('No entries were found.', 'gwolle-gb'); ?></p><?php
 	} else {
 		?>
 		<p><?php esc_html_e('Select one option below, either User ID or Email address', 'gwolle-gb'); ?></p>
 		<p>
 			<label for="gwolle_gb_user_id" class="text-info"><?php esc_html_e('User ID', 'gwolle-gb'); ?>:<br />
-				<input type="text" name="gwolle_gb_user_id" value="" placeholder="<?php esc_html_e('User ID', 'gwolle-gb'); ?>" />
+				<input type="text" name="gwolle_gb_user_id" id="gwolle_gb_user_id" value="" placeholder="<?php esc_attr_e('User ID', 'gwolle-gb'); ?>" />
 			</label><br />
 			<label for="gwolle_gb_user_email" class="text-info"><?php esc_html_e('User Email', 'gwolle-gb'); ?>:<br />
-				<input type="text" name="gwolle_gb_user_email" value="" placeholder="<?php esc_html_e('User Email', 'gwolle-gb'); ?>" />
+				<input type="text" name="gwolle_gb_user_email" id="gwolle_gb_user_email" value="" placeholder="<?php esc_attr_e('User Email', 'gwolle-gb'); ?>" />
 			</label>
 		</p>
 
@@ -275,7 +275,7 @@ function gwolle_gb_export_postbox_user() {
 
 function gwolle_gb_export_user_action() {
 	if ( is_admin() ) {
-		if ( isset( $_POST['gwolle_gb_page']) &&  $_POST['gwolle_gb_page'] == 'gwolle_gb_export_user' ) {
+		if ( isset( $_POST['gwolle_gb_page']) && $_POST['gwolle_gb_page'] === 'gwolle_gb_export_user' ) {
 			gwolle_gb_export_user_callback();
 		}
 	}
@@ -288,7 +288,7 @@ add_action('admin_init', 'gwolle_gb_export_user_action');
  */
 function gwolle_gb_export_user_callback() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		echo 'error, no permission.';
 		die();
 	}
@@ -298,9 +298,9 @@ function gwolle_gb_export_user_callback() {
 	if ( isset($_POST['gwolle_gb_wpnonce']) ) {
 		$verified = wp_verify_nonce( $_POST['gwolle_gb_wpnonce'], 'gwolle_gb_page_export_user' );
 	}
-	if ( $verified == false ) {
+	if ( $verified === false ) {
 		// Nonce is invalid.
-		esc_html_e('Nonce check failed. Please go back and try again.', 'gwolle-gb');
+		esc_html_e('The Nonce did not validate. Please reload the page and try again.', 'gwolle-gb');
 		die();
 	}
 
@@ -309,14 +309,14 @@ function gwolle_gb_export_user_callback() {
 		$entries = gwolle_gb_get_entries(array(
 				'author_id'   => $user_id,
 				'num_entries' => -1,
-				'all'         => 'all'
+				'all'         => 'all',
 			));
 	} else if ( isset( $_POST['gwolle_gb_user_email']) && strlen($_POST['gwolle_gb_user_email']) > 0 ) {
-		$user_id = $_POST['gwolle_gb_user_email'];
+		$user_id = sanitize_text_field( $_POST['gwolle_gb_user_email'] );
 		$entries = gwolle_gb_get_entries(array(
 				'email'       => $user_id,
 				'num_entries' => -1,
-				'all'         => 'all'
+				'all'         => 'all',
 			));
 	}
 
@@ -349,12 +349,12 @@ function gwolle_gb_export_user_callback() {
 				'istrash',
 				'admin_reply',
 				'book_id',
-				'meta_fields'
+				'meta_fields',
 			));
 
 		foreach ( $entries as $entry ) {
 
-			$row = Array();
+			$row = array();
 
 			$row[] = $entry->get_id();
 			$row[] = addslashes($entry->get_author_name());

@@ -2,11 +2,18 @@
 // markItUp! Universal MarkUp Engine, JQuery plugin
 // By Jay Salvat - http://markitup.jaysalvat.com/
 // ------------------------------------------------------------------*/
-#gwolle_gb .markItUp *,
+.gwolle-gb .markItUp *,
+#gwolle_gb_editor .markItUp *,
 .markItUp * {
 	margin:0px;
 	padding:0px;
 	outline:none;
+}
+.gwolle-gb .markItUpHeader {
+	width: 99%;
+	background-color: #e7ebee;
+	height: 28px;
+	border-radius: 2px 2px 0 0;
 }
 .markItUp a:link,
 .markItUp a:visited {
@@ -17,7 +24,7 @@
 	clear:both;
 	overflow:auto;
 }
-.markItUpPreviewFrame	{
+.markItUpPreviewFrame {
 	overflow:auto;
 	background-color:#FFFFFF;
 	border:1px solid #3C769D;
@@ -39,8 +46,8 @@
 }
 /***************************************************************************************/
 /* first row of buttons */
-#gwolle_gb .markItUpHeader ul li,
-.gwolle_gb .markItUpHeader ul li {
+.gwolle-gb .markItUpHeader ul li,
+#gwolle_gb_editor .markItUpHeader ul li {
 	/* Reset for theme's CSS */
 	margin: 0;
 	padding: 0;
@@ -98,21 +105,22 @@
 .markItUpHeader ul ul ul li {
 	float:none;
 }
-#gwolle_gb .markItUpHeader ul a,
-.gwolle_gb .markItUpHeader ul a {
+.gwolle-gb .markItUpHeader ul a,
+#gwolle_gb_editor .markItUpHeader ul a {
 	display: block;
 	box-sizing: content-box;
 	width: 20px;
 	height: 20px;
-	text-indent:-10000px;
-	background-repeat:no-repeat;
-	padding: 3px 3px 1px 3px;
-	margin: 0px;
+	text-indent: -10000px;
+	background-repeat: no-repeat;
+	background-size: 20px 20px;
+	padding: 3px 4px 1px 4px;
+	margin: 4px 0 0 0;
 }
-#gwolle_gb .markItUpHeader ul a::before,
-#gwolle_gb .markItUpHeader ul a::after,
-.gwolle_gb .markItUpHeader ul a::before,
-.gwolle_gb .markItUpHeader ul a::after {
+.gwolle-gb .markItUpHeader ul a::before,
+.gwolle-gb .markItUpHeader ul a::after,
+#gwolle_gb_editor .markItUpHeader ul a::before,
+#gwolle_gb_editor .markItUpHeader ul a::after {
 	box-sizing: content-box;
 }
 .markItUpHeader ul ul a {
@@ -123,8 +131,8 @@
 	padding:5px 5px 5px 25px;
 	background-position:2px 50%;
 }
-#gwolle_gb .markItUpHeader ul ul a:hover,
-.gwolle_gb .markItUpHeader ul ul a:hover {
+.gwolle-gb .markItUpHeader ul ul a:hover,
+#gwolle_gb_editor .markItUpHeader ul ul a:hover {
 	color:#FFF;
 	background-color:#3C769D;
 }

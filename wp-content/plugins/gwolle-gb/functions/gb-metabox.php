@@ -17,13 +17,15 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  * @since 2.3.0
  */
 function gwolle_gb_entry_metabox_lines_edit_link( $gb_metabox, $entry ) {
-	if ( function_exists('current_user_can') && current_user_can('moderate_comments') ) {
+
+	if ( current_user_can('gwolle_gb_moderate_comments') ) {
 		$gb_metabox .= '
 					<div class="gb-metabox-line">
 						<a class="gwolle_gb_edit_link gwolle-gb-edit-link" href="' . admin_url('admin.php?page=' . GWOLLE_GB_FOLDER . '/editor.php&amp;entry_id=' . $entry->get_id() ) . '" title="' . esc_attr__('Edit entry', 'gwolle-gb') . '">' . esc_html__('Edit in Editor', 'gwolle-gb') . '</a>
 					</div>';
 	}
 	return $gb_metabox;
+
 }
 add_filter( 'gwolle_gb_entry_metabox_lines', 'gwolle_gb_entry_metabox_lines_edit_link', 90, 2 );
 
@@ -39,7 +41,8 @@ add_filter( 'gwolle_gb_entry_metabox_lines', 'gwolle_gb_entry_metabox_lines_edit
  * @since 2.3.0
  */
 function gwolle_gb_entry_metabox_lines_ajax_icon( $gb_metabox, $entry ) {
-	if ( function_exists('current_user_can') && current_user_can('moderate_comments') ) {
+
+	if ( current_user_can('gwolle_gb_moderate_comments') ) {
 		if ( $gb_metabox ) {
 
 			$gb_metabox .= '
@@ -49,5 +52,6 @@ function gwolle_gb_entry_metabox_lines_ajax_icon( $gb_metabox, $entry ) {
 		}
 	}
 	return $gb_metabox;
+
 }
 add_filter( 'gwolle_gb_entry_metabox_lines', 'gwolle_gb_entry_metabox_lines_ajax_icon', 99, 2 );

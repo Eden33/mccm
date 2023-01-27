@@ -54,7 +54,7 @@ function get_gwolle_gb( $atts ) {
 
 
 	// Define $output
-	$output = '<div id="gwolle_gb">';
+	$output = '<div class="gwolle-gb">';
 
 	// Add the form
 	$output .= gwolle_gb_frontend_write( $shortcode_atts, $shortcode );
@@ -88,6 +88,10 @@ function get_gwolle_gb_write( $atts ) {
 	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
+	if ( is_singular() && is_main_query() && ! is_admin() ) {
+		$id = get_the_ID();
+		update_post_meta( $id, 'gwolle_gb_book_id', $shortcode_atts['book_id'] );
+	}
 
 	// Load Frontend CSS in Footer, only when it's active
 	wp_enqueue_style('gwolle_gb_frontend_css');
@@ -96,7 +100,7 @@ function get_gwolle_gb_write( $atts ) {
 
 
 	// Define $output
-	$output = '<div id="gwolle_gb">';
+	$output = '<div class="gwolle-gb">';
 
 	// Add the form
 	$output .= gwolle_gb_frontend_write( $shortcode_atts, $shortcode );
@@ -125,6 +129,10 @@ function get_gwolle_gb_read( $atts ) {
 	if ( $shortcode_atts['book_id'] === 'post_id' ) {
 		$shortcode_atts['book_id'] = get_the_ID();
 	}
+	if ( is_singular() && is_main_query() && ! is_admin() ) {
+		$id = get_the_ID();
+		update_post_meta( $id, 'gwolle_gb_book_id', $shortcode_atts['book_id'] );
+	}
 
 	// Load Frontend CSS in Footer, only when it's active
 	wp_enqueue_style('gwolle_gb_frontend_css');
@@ -133,7 +141,7 @@ function get_gwolle_gb_read( $atts ) {
 
 
 	// Define $output
-	$output = '<div id="gwolle_gb">';
+	$output = '<div class="gwolle-gb">';
 
 	// Add the list of entries to show
 	$output .= gwolle_gb_frontend_read( $shortcode_atts, $shortcode );

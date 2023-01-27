@@ -4,31 +4,32 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcbd038d0e6fda9665671ad46ec9594a2
+class ComposerStaticInit9d6ef30cd03682d10cffbfd6f9a48a5b
 {
     public static $files = array (
-        'c4ed057a6919e316c176e816418cc6a3' => __DIR__ . '/..' . '/reactr-io/pope-framework/lib/autoload.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+        'a5dbe7df96665c0b6c16ae8d91231502' => __DIR__ . '/..' . '/imagely/pope-framework/lib/autoload.php',
     );
 
-    public static $prefixLengthsPsr4 = array (
-        'P' => 
+    public static $prefixesPsr0 = array (
+        'H' => 
         array (
-            'PhpParser\\' => 10,
+            'HTMLPurifier' => 
+            array (
+                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
+            ),
         ),
     );
 
-    public static $prefixDirsPsr4 = array (
-        'PhpParser\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
-        ),
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcbd038d0e6fda9665671ad46ec9594a2::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcbd038d0e6fda9665671ad46ec9594a2::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit9d6ef30cd03682d10cffbfd6f9a48a5b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9d6ef30cd03682d10cffbfd6f9a48a5b::$classMap;
 
         }, null, ClassLoader::class);
     }

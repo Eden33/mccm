@@ -21,14 +21,14 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 function gwolle_gb_single_view( $entry, $first = false, $counter = 0 ) {
 
 	// Try to load and require_once the template from the themes folders.
-	if ( locate_template( array('gwolle_gb-entry.php'), true, true ) == '') {
+	if ( locate_template( array( 'gwolle_gb-entry.php' ), true, true ) === '') {
 
 		$output = '<!-- Gwolle-GB Entry: Default Template Loaded -->
 			';
 
 		// No template found and loaded in the theme folders.
 		// Load the template from the plugin folder.
-		require_once( GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php' );
+		require_once GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php';
 
 	} else {
 
@@ -44,4 +44,5 @@ function gwolle_gb_single_view( $entry, $first = false, $counter = 0 ) {
 	$output .= apply_filters( 'gwolle_gb_entry_read', $entry_output, $entry );
 
 	return $output;
+
 }

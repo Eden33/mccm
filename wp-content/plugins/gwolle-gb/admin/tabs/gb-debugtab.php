@@ -15,7 +15,7 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_settingstab_debug() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	} ?>
 
@@ -26,12 +26,12 @@ function gwolle_gb_page_settingstab_debug() {
 
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_settings_debugtab' );
-	echo '<input type="hidden" id="gwolle_gb_page_settings_debugtab" name="gwolle_gb_page_settings_debugtab" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_page_settings_debugtab" name="gwolle_gb_page_settings_debugtab" value="' . esc_attr( $nonce ) . '" />';
 	?>
 	<table class="form-table">
 		<tbody>
 
-		<tr valign="top">
+		<tr>
 			<td scope="row" colspan="2">
 				<p>
 					<?php esc_html_e('Please provide this information when posting a support message on the support forum.', 'gwolle-gb'); ?>
@@ -45,7 +45,7 @@ function gwolle_gb_page_settingstab_debug() {
 		if ( isset($_POST['gwolle_gb_page_settings_debugtab']) ) {
 			$verified = wp_verify_nonce( $_POST['gwolle_gb_page_settings_debugtab'], 'gwolle_gb_page_settings_debugtab' );
 		}
-		if ( $verified && isset( $_POST['gwolle_gb_debug']) ) {
+		if ( $verified && isset( $_POST['gwolle_gb_debug'] ) ) {
 			// Save test entries
 			$entry_id = gwolle_gb_test_add_entry( false );
 			$entry_id_emoji = gwolle_gb_test_add_entry( true );
@@ -54,7 +54,7 @@ function gwolle_gb_page_settingstab_debug() {
 			<tr>
 				<th><?php esc_html_e('Standard test:', 'gwolle-gb'); ?></th>
 				<td><?php
-					if ( $entry_id == 0 ) {
+					if ( $entry_id === 0 ) {
 						echo '👎 ';
 						esc_html_e('Failed.', 'gwolle-gb');
 					} else {
@@ -66,7 +66,7 @@ function gwolle_gb_page_settingstab_debug() {
 			<tr>
 				<th><?php esc_html_e('Emoji test:', 'gwolle-gb'); ?></th>
 				<td><?php
-					if ( $entry_id_emoji == 0 ) {
+					if ( $entry_id_emoji === 0 ) {
 						echo '👎 ';
 						esc_html_e('Failed.', 'gwolle-gb');
 					} else {
@@ -79,7 +79,7 @@ function gwolle_gb_page_settingstab_debug() {
 		}
 		?>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row"><label for="blogdescription"><?php esc_html_e('Test', 'gwolle-gb'); ?></label></th>
 			<td>
 				<p>
@@ -91,9 +91,7 @@ function gwolle_gb_page_settingstab_debug() {
 			</td>
 		</tr>
 
-		<tr valign="top">
-			<?php gwolle_gb_debug_info(); ?>
-		</tr>
+		<?php gwolle_gb_debug_info(); ?>
 
 		</tbody>
 	</table>

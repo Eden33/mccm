@@ -1,3 +1,24 @@
+
+/*
+Copyright 2014 - 2021  Marcel Pol  (email: marcel@timelord.nl)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+
+
 /*
  * JavaScript for Gwolle Guestbook, WP-Admin.
  */
@@ -9,13 +30,12 @@
 jQuery(document).ready(function($) {
 	jQuery('#gwolle_gb_editor_postbox_preview').addClass('closed');
 
-	jQuery('.gwolle_gb .postbox button.handlediv').click( function() {
-		jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
+	jQuery('.gwolle_gb .postbox button.handlediv').on( 'click', function() {
+		jQuery(this).closest('.postbox').toggleClass('closed');
 	});
-});
-jQuery(document).ready(function($) {
-	jQuery('.gwolle_gb .postbox h2').click( function() {
-		jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
+
+	jQuery('.gwolle_gb .postbox h2').on( 'click', function() {
+		jQuery(this).closest('.postbox').toggleClass('closed');
 	});
 });
 
@@ -25,12 +45,12 @@ jQuery(document).ready(function($) {
  */
 jQuery(document).ready(function($) {
 
-	jQuery("#gwolle_gb_entries input[name='check-all-top']").change(function() {
-		gwolle_gb_toggleCheckboxes($("input[name='check-all-top']").is(":checked"));
+	jQuery("#gwolle_gb_entries input[name='check-all-top']").on('change', function() {
+		gwolle_gb_toggleCheckboxes(jQuery("input[name='check-all-top']").is(":checked"));
 	});
 
-	jQuery("#gwolle_gb_entries input[name='check-all-bottom']").change(function() {
-		gwolle_gb_toggleCheckboxes($("input[name='check-all-bottom']").is(":checked"));
+	jQuery("#gwolle_gb_entries input[name='check-all-bottom']").on('change', function() {
+		gwolle_gb_toggleCheckboxes(jQuery("input[name='check-all-bottom']").is(":checked"));
 	});
 
 	// Function to check/uncheck all checkboxes.
@@ -47,17 +67,17 @@ jQuery(document).ready(function($) {
 
 /* Edit metadata */
 jQuery(document).ready(function($) {
-	jQuery('.gwolle_gb_edit_meta').click( function() {
+	jQuery('.gwolle_gb_edit_meta').on( 'click', function() {
 		jQuery('.gwolle_gb_editor_meta_inputs').toggle();
 		return false;
 	});
 
-	jQuery('.gwolle_gb_cancel_timestamp').click( function() {
+	jQuery('.gwolle_gb_cancel_timestamp').on( 'click', function() {
 		jQuery('.gwolle_gb_editor_meta_inputs').toggle();
 		return false;
 	});
 
-	jQuery('.gwolle_gb_save_timestamp').click( function() {
+	jQuery('.gwolle_gb_save_timestamp').on( 'click', function() {
 
 		var dd = jQuery("#dd").val();
 		var mm = jQuery("#mm").find(":selected").val();
@@ -65,13 +85,11 @@ jQuery(document).ready(function($) {
 		var hh = jQuery("#hh").val();
 		var mn = jQuery("#mn").val();
 
-		var gwolle_date = new Date( yy, mm - 1, dd, hh, mn );
-		// Calculate offset between UTC and local time, and adjust our time.
-		date_offset = gwolle_date.getTimezoneOffset() * -60;
-		var timestamp = Math.round( gwolle_date.getTime() / 1000 ) + date_offset;
-		jQuery("#gwolle_gb_timestamp").val(timestamp);
-
-		var readable_time = gb_timeconverter( timestamp );
+		var gwolle_date = new Date( yy, ( mm - 1 ), dd, hh, mn );
+		readable_time = gwolle_date.toUTCString();
+		readable_time = readable_time.replace(/GMT/i, '');
+		var timestamp = Math.round( gwolle_date.getTime() / 1000 );
+		jQuery("#gwolle_gb_timestamp").val(timestamp); // local time of the server.
 		jQuery( 'span.gb-editor-datetime' ).text( readable_time );
 
 		var author_name = jQuery("#gwolle_gb_author_name").val();
@@ -85,19 +103,6 @@ jQuery(document).ready(function($) {
 		return false;
 	});
 });
-
-/* Convert Unix timestamp to readable time. */
-function gb_timeconverter( timestamp ) {
-	var datetime = new Date( timestamp * 1000 );
-	var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-	var year = datetime.getFullYear();
-	var month = months[datetime.getMonth()];
-	var date = datetime.getDate();
-	var hour = datetime.getHours();
-	var min = datetime.getMinutes();
-	var readable_time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
-	return readable_time;
-}
 
 
 /*
@@ -121,14 +126,14 @@ jQuery(document).ready(function($) {
 	/* Checking checkbox will enable the uninstall button */
 	jQuery("input#gwolle_gb_uninstall_confirmed").prop("checked", false); // init
 
-	jQuery("input#gwolle_gb_uninstall_confirmed").change(function() {
+	jQuery("input#gwolle_gb_uninstall_confirmed").on('change', function() {
 		var checked = jQuery( "input#gwolle_gb_uninstall_confirmed" ).prop('checked');
 		if ( checked == true ) {
 			jQuery("#gwolle_gb_uninstall").addClass( 'button-primary' );
-			jQuery("#gwolle_gb_uninstall").removeAttr('disabled');
+			jQuery("#gwolle_gb_uninstall").prop('disabled', false);
 		} else {
 			jQuery("#gwolle_gb_uninstall").removeClass( 'button-primary' );
-			jQuery("#gwolle_gb_uninstall").attr('disabled', true);
+			jQuery("#gwolle_gb_uninstall").prop('disabled', true);
 		}
 	});
 
@@ -143,14 +148,14 @@ jQuery(document).ready(function($) {
 	/* Checking checkbox will enable the submit button for DMS import */
 	jQuery("input#gwolle_gb_dmsguestbook").prop("checked", false); // init
 
-	jQuery("input#gwolle_gb_dmsguestbook").change(function() {
+	jQuery("input#gwolle_gb_dmsguestbook").on('change', function() {
 		var checked = jQuery( "input#gwolle_gb_dmsguestbook" ).prop('checked');
 		if ( checked == true ) {
 			jQuery("#start_import_dms").addClass( 'button-primary' );
-			jQuery("#start_import_dms").removeAttr('disabled');
+			jQuery("#start_import_dms").prop('disabled', false);
 		} else {
 			jQuery("#start_import_dms").removeClass( 'button-primary' );
-			jQuery("#start_import_dms").attr('disabled', true);
+			jQuery("#start_import_dms").prop('disabled', true);
 		}
 	});
 
@@ -158,25 +163,25 @@ jQuery(document).ready(function($) {
 	/* Checking radio-buttons will enable the submit button for Gwolle import */
 	jQuery("input#gwolle_gb_importfrom").prop("checked", false); // init
 
-	jQuery("input#gwolle_gb_importfrom").change(function() {
+	jQuery("input#gwolle_gb_importfrom").on('change', function() {
 		if ( jQuery(this).val() ) {
 			jQuery("#start_import_wp").addClass( 'button-primary' );
-			jQuery("#start_import_wp").removeAttr('disabled');
+			jQuery("#start_import_wp").prop('disabled', false);
 		} else {
 			jQuery("#start_import_wp").removeClass( 'button-primary' );
-			jQuery("#start_import_wp").attr('disabled', true);
+			jQuery("#start_import_wp").prop('disabled', true);
 		}
 	});
 
 
 	/* Checking checkbox will enable the submit button for CSV-file */
-	jQuery("input#start_import_gwolle_file").change(function() {
+	jQuery("input#start_import_gwolle_file").on('change', function() {
 		if ( jQuery(this).val() ) {
 			jQuery("#start_import_gwolle").addClass( 'button-primary' );
-			jQuery("#start_import_gwolle").removeAttr('disabled');
+			jQuery("#start_import_gwolle").prop('disabled', false);
 		} else {
 			jQuery("#start_import_gwolle").removeClass( 'button-primary' );
-			jQuery("#start_import_gwolle").attr('disabled', true);
+			jQuery("#start_import_gwolle").prop('disabled', true);
 		}
 	});
 
@@ -192,14 +197,14 @@ jQuery(document).ready(function($) {
 	jQuery("input#start_export_enable").prop("checked", false); // init
 	jQuery("#gwolle_gb_export_part").val( 1 ); // init
 
-	jQuery("input#start_export_enable").change(function() {
+	jQuery("input#start_export_enable").on('change', function() {
 		var checked = jQuery( "input#start_export_enable" ).prop('checked');
 		if ( checked == true ) {
 			jQuery("#gwolle_gb_start_export").addClass( 'button-primary' );
-			jQuery("#gwolle_gb_start_export").removeAttr('disabled');
+			jQuery("#gwolle_gb_start_export").prop('disabled', false);
 		} else {
 			jQuery("#gwolle_gb_start_export").removeClass( 'button-primary' );
-			jQuery("#gwolle_gb_start_export").attr('disabled', true);
+			jQuery("#gwolle_gb_start_export").prop('disabled', true);
 		}
 	});
 
@@ -207,16 +212,16 @@ jQuery(document).ready(function($) {
 	/* Click Event, submit the form through AJAX and receive a CSV-file.
 	 * Will request multi part files, every 5 seconds to be easy on the webserver.
 	 */
-	jQuery( 'input#gwolle_gb_start_export' ).click(function(event) {
+	jQuery( 'input#gwolle_gb_start_export' ).on( 'click', function(event) {
 
-		if ( jQuery("#gwolle_gb_start_export").attr('disabled') ) {
+		if ( jQuery("#gwolle_gb_start_export").prop('disabled') ) {
 			// Not sure if this block is needed... Just in case.
 			return;
 		}
 
 		// Reset for to initial state.
 		jQuery( "#gwolle_gb_start_export" ).removeClass( 'button-primary' );
-		jQuery( "#gwolle_gb_start_export" ).attr( 'disabled', true );
+		jQuery( "#gwolle_gb_start_export" ).prop( 'disabled', true );
 		jQuery( "input#start_export_enable" ).prop( 'checked', false );
 		// Show that we are busy.
 		jQuery( ".gwolle_gb_export_gif" ).css( 'visibility', 'visible' );
@@ -224,14 +229,14 @@ jQuery(document).ready(function($) {
 		var parts = parseFloat( jQuery("#gwolle_gb_export_parts").val() );
 
 		for ( var part = 1; part < (parts + 1); part++ ) {
-			var timeout = (part - 1) * 10000;
+			var timeout = ( part - 1 ) * 10000;
 			gwolle_gb_export_part( part, timeout );
 		}
 
 		setTimeout(
 			function() {
 				jQuery( ".gwolle_gb_export_gif" ).css( 'visibility', 'hidden' );
-			}, ( (part - 1)  * 10000 )
+			}, ( (part - 1) * 10000 )
 		);
 
 		event.preventDefault();
@@ -243,7 +248,7 @@ jQuery(document).ready(function($) {
 			function() {
 				jQuery("#gwolle_gb_export_part").val( part );
 				var form = jQuery('form#gwolle_gb_export');
-				form.submit();
+				form.trigger('submit');
 			}, ( timeout )
 		);
 	}
@@ -259,14 +264,14 @@ jQuery(document).ready(function($) {
 	/* Checking checkbox will enable the submit button */
 	jQuery("input#start_export_user_enable").prop("checked", false); // init
 
-	jQuery("input#start_export_user_enable").change(function() {
+	jQuery("input#start_export_user_enable").on('change', function() {
 		var checked = jQuery( "input#start_export_user_enable" ).prop('checked');
 		if ( checked == true ) {
 			jQuery("#gwolle_gb_start_export_user").addClass( 'button-primary' );
-			jQuery("#gwolle_gb_start_export_user").removeAttr('disabled');
+			jQuery("#gwolle_gb_start_export_user").prop('disabled', false);
 		} else {
 			jQuery("#gwolle_gb_start_export_user").removeClass( 'button-primary' );
-			jQuery("#gwolle_gb_start_export_user").attr('disabled', true);
+			jQuery("#gwolle_gb_start_export_user").prop('disabled', true);
 		}
 	});
 
@@ -274,7 +279,7 @@ jQuery(document).ready(function($) {
 	/* Click Event, submit the form through AJAX and receive a CSV-file.
 	 * Will request multi part files, every 5 seconds to be easy on the webserver.
 	 */
-	jQuery( 'input#gwolle_gb_start_export_user' ).click(function(event) {
+	jQuery( 'input#gwolle_gb_start_export_user' ).on( 'click', function(event) {
 
 		if ( jQuery("#gwolle_gb_start_export_user").attr('disabled') ) {
 			// Not sure if this block is needed... Just in case.
@@ -282,11 +287,11 @@ jQuery(document).ready(function($) {
 		}
 
 		var form = jQuery('form#gwolle_gb_export_user');
-		form.submit();
+		form.trigger('submit');
 
 		// Reset for to initial state.
 		jQuery( "#gwolle_gb_start_export_user" ).removeClass( 'button-primary' );
-		jQuery( "#gwolle_gb_start_export_user" ).attr( 'disabled', true );
+		jQuery( "#gwolle_gb_start_export_user" ).prop( 'disabled', true );
 		jQuery( "input#start_export_user_enable" ).prop( 'checked', false );
 
 		event.preventDefault();

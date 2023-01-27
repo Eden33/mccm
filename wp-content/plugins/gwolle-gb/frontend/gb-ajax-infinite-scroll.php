@@ -17,14 +17,14 @@ function gwolle_gb_infinite_scroll_callback() {
 
 	$output = '';
 
-	$pageNum = 1;
+	$page_num = 1;
 	if ( isset($_POST['pageNum']) && is_numeric($_POST['pageNum']) ) {
-		$pageNum = intval($_POST['pageNum']);
+		$page_num = (int) $_POST['pageNum'];
 	}
 
 	$book_id = 1;
 	if ( isset($_POST['book_id']) && is_numeric($_POST['book_id']) ) {
-		$book_id = intval($_POST['book_id']);
+		$book_id = (int) $_POST['book_id'];
 	}
 	$shortcode_atts = array();
 	$shortcode_atts['book_id'] = $book_id;
@@ -32,10 +32,10 @@ function gwolle_gb_infinite_scroll_callback() {
 	$num_entries = (int) get_option('gwolle_gb-entriesPerPage', 20);
 	$num_entries = (int) apply_filters( 'gwolle_gb_read_num_entries', $num_entries, $shortcode_atts );
 
-	if ( $pageNum == 1 ) {
+	if ( $page_num === 1 ) {
 		$offset = 0;
 	} else {
-		$offset = ( $pageNum - 1 ) * $num_entries;
+		$offset = ( $page_num - 1 ) * $num_entries;
 	}
 
 
@@ -47,7 +47,7 @@ function gwolle_gb_infinite_scroll_callback() {
 			'checked'     => 'checked',
 			'trash'       => 'notrash',
 			'spam'        => 'nospam',
-			'book_id'     => $book_id
+			'book_id'     => $book_id,
 		)
 	);
 
@@ -58,14 +58,14 @@ function gwolle_gb_infinite_scroll_callback() {
 	} else {
 
 		// Try to load and require_once the template from the themes folders.
-		if ( locate_template( array('gwolle_gb-entry.php'), true, true ) == '') {
+		if ( locate_template( array( 'gwolle_gb-entry.php' ), true, true ) === '') {
 
 			$output .= '<!-- Gwolle-GB Entry: Default Template Loaded -->
 				';
 
 			// No template found and loaded in the theme folders.
 			// Load the template from the plugin folder.
-			require_once( GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php' );
+			require_once GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php';
 
 		} else {
 

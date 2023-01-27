@@ -1,6 +1,210 @@
 NextGEN Gallery
 by Imagely
 
+= V3.33  - 01.18.2023 =
+* Fixed:   FontAwesome icons were broken by 3.32 if not enqueued by another source.
+
+= V3.32  - 01.11.2023 =
+* NEW:     Added the filter 'ngg_metadata_parse_order'
+* Changed: Now including all CSS & JS resources inside the plugin to avoid GDPR issues.
+* Fixed:   Viewing sub-albums could result in a PHP warning regarding array_pop()
+
+= V3.30  - 10.05.2022 =
+* Fixed:   Rotating images was broken for some users after the last release.
+
+= V3.29  - 09.28.2022 =
+* Fixed:   Added nonce verification to some legacy XHR handlers.
+
+= V3.28  - 07.20.2022 =
+* NEW:     Added NGG_DISABLE_IMAGICK constant to disable use of ImageMagick.
+
+= V3.27  - 05.25.2022 =
+* Fixed:   A possible PHP warning in the third party compatibility warning.
+* Fixed:   PHP 8 may emit a warning in the taxonomy controller when viewing the site frontpage while no posts or pages exist.
+* Fixed:   ThickBox's loadingAnimation.gif and tb-close.png URL were incorrect.
+
+= V3.26  - 04.27.2022 =
+* Fixed:   A change in NextGEN 3.23 broke albums pagination.
+* Fixed:   Compatibility with TinyMCE editor used by Advanced Custom Fields.
+* Fixed:   Insert Gallery Window popup failed to load when Elementor is active.
+
+= V3.24  - 03.23.2022 =
+* Fixed:   A possible PHP warning could be generated if the global $post->content is an integer or boolean.
+* Fixed:   Activating NextGEN for the first time generated a PHP warning when registering default settings.
+* Fixed:   NextGEN widgets JS/CSS was enqueued on all frontend pages.
+* Fixed:   Some errors generated while image uploading were not being displayed to the user.
+
+= V3.23  - 02.09.2022 =
+* Fixed:   A potential PHP fatal error in C_Photocrati_Transient_Manager when using external object caching.
+* Fixed:   Manage Gallery page could create a javascript error if the page loads quickly enough.
+* Fixed:   Sorting images order was broken by WordPress 5.9
+* Changed: Google Fonts is no longer used for fonts loaded in the admin.
+
+= V3.22  - 01.20.2022 =
+* Fixed:   When viewing certain images NextGEN was using nggdb::get_unique_slug() on each viewing.
+
+= V3.21  - 01.19.2022 =
+* NEW:     Introducing constant NGG_DISABLE_PHOTOCRATI_CACHE_TRACKER which tracks all NGG transients when using an external object cache.
+* NEW:     Adding an option to separate generated images with dashes instead of underscores for better SEO.
+* Changed: Removed the "Custom styles" feature which was deprecated in December of 2020.
+* Fixed:   PHP 8.1 warnings of deprecations.
+
+= V3.18  - 12.08.2021 =
+* NEW:     Added a constant "NGG_DISABLE_SHORTCODE_MANAGER" to disable content protection workarounds that can be a source of incompatibility itself.
+* NEW:     Added notice to users that ctypes methods are required by NextGEN Gallery.
+* Fixed:   Compatibility with EditorsKit invalidating NextGEN Gallery blocks.
+* Fixed:   In rare circumstances the "Open album images in Pro Lightbox" feature was not working.
+* Fixed:   PHP warnings about undefined array key access when using the XMLRPC API (Lightroom)
+* Fixed:   Searching for images on Manage Galleries could result in duplicates.
+
+= V3.17  - 09.15.2021 =
+* Fixed:   NGG 3.16 created a problem with the Manage Gallery page's Edit Thumbnail, Rotate Image, and View Meta popups
+
+= V3.16  - 09.08.2021 =
+* Fixed:   Links on "Extensions" page were incorrect
+* Fixed:   Incompatibility with WP User Manager caused Manage Gallery bulk actions to be unusable
+* Fixed:   Images that failed to upload would be treated as a success in the UI if the server HTTP response code is 200
+* Changed: Removed the "Ambassadors" tab from the Overview page
+
+= V3.15  - 08.23.2021 =
+* Fixed:   A warning was generated on every request for users of PHP 5.6
+
+= V3.14  - 08.18.2021 =
+* NEW:     Added support for unanimated WebP images
+* Fixed:   PHP warning was generated when enqueueing frontend resources
+* Fixed:   "Scan folder for new images" was failing with PHP 8+
+
+= V3.13  - 08.04.2021 =
+* Fixed:   All WP-Admin links had "/wp-admin/" removed for some users
+
+= V3.12  - 07.13.2021 =
+* Fixed:   PHP warning generated for some Nimble Builder users
+* Changed: Added 'ngg_marketing_parameters' filter
+
+= V3.11  - 05.26.2021 =
+* Fixed:   Now compatible with NimbleBuilder
+* Fixed:   Importing images from the Media Library was broken due to a z-index issue
+
+= V3.10  - 05.19.2021 =
+* NEW:     Added option under Misc Options to disable the /ngg_tag/ page feature
+* Fixed:   Misc performance improvements to NGG 3.9.0
+* Fixed:   Opening the rotate-image dialog a second time could show the incorrect image
+* Fixed:   Paginated galleries on paginated WP posts linked to the incorrect URL
+* Fixed:   Widgets were not rendering correctly with some third party page builders
+
+= V3.9.3 - 04.20.2021 =
+* Changed: Updated uppy.js
+* Fixed:   Conflict with Avada builder
+* Fixed:   ACG fields cannot be toggled
+* Fixed:   Activation issues with NextGEN Starter
+
+= V3.9.2 - 04.07.2021 =
+* Fixed:   call_user_func() warning when rendering shortcodes in widgets (1168)
+* Fixed:   do_shortcode and legacy shortcodes (1170)
+* Fixed:   Incorrect use of wp_localize_script (1171)
+* Fixed:   Tooltips are illegible (1172)
+* Fixed:   PHP foreach warning (1173)
+
+= V3.9.1 - 03.29.2021 = 
+* Fixed:   C_Dynamic_Stylesheet_Controller error
+* Fixed:   Galleries not displaying
+
+= V3.9.0 - 03.24.2021 =
+* Changed: Resource manager disabled by default
+* Changed: Remove ngg_load_frontend_logic filter
+* Fixed:   Refactored to resolve over 300 plugin & theme conflicts
+* Fixed:   Problem reported with taxonomy controller
+
+= V3.8.0 - 02.24.2021 =
+* NEW:     NGG featured image support for custom post types (1076)
+* Fixed:   Compatibility with Custom Post Type UI plugin (1076)
+* Fixed:   Compatibility with Advanced Custom Fields plugin (1150)
+* Fixed:   Compatibility with Photo Station plugin (855)
+* Fixed:   Compatibility with Stackable (981)
+
+= V3.7.0 - 02.17.2021 =
+* Fixed:   Added ellipsis to pagination to show pages skipped (1099) (1157)
+* Fixed:   Deleted images could still appear in 'random' image galleries (1129)
+* Fixed:   Galleries with only one page were causing pagination links to appear (1156)
+* Fixed:   Inability to change gallerypath on multisite networks (1150)
+* Fixed:   Overriding static resources (CSS & JS) through files in wp-content/ngg/ was not working (1144)
+
+= V3.6.0 - 02.10.2021 =
+* NEW:     Added new 'Bulk actions' option to remove EXIF Orientation from existing images (1137)
+* NEW:     Allow maximum_entity_limit display setting regardless of source (1146)
+* NEW:     Provide hooks to customize Uppy settings (1139)
+* NEW:     Recreated legacy templates as modern "views" (1127)
+* Fixed:   A compatibility warning with NextGEN Plus would appear when users had NextGEN Starter (1097)
+* Fixed:   Compatibility issue with Topscorer Theme (344171)
+* Fixed:   Compatibility with Custom Post Types UI (1076)
+* Fixed:   Compatibility with jQuery.mmenu (1140)
+* Fixed:   Disable marketing additions for users with NextGEN Starter enabled
+* Fixed:   Error responses from the server when uploading images failed were not specific (1121)
+* Fixed:   Image rotation not reliable (1137)
+* Fixed:   Imagebrowser pagination broke on images with UTF8 characters in their title (1135)
+* Fixed:   Shortcodes displaying albums did not appear in the order listed (1128)
+* Fixed:   Transient tracker was calling update_option() on every page (1074)
+
+= v3.5.0 - 12.17.2020 =
+* Changed: Deprecated legacy template functionality
+* Changed: Deprecated built-in custom style / CSS mechanism
+* Fixed:   Misc updates for PHP 8.0 compatibility
+
+= v3.4.7 - 11.25.2020 =
+* NEW:     Replaced plupload with a new uppy.js based uploader for faster uploading
+* Changed: Updated select2 and Gritter to the latest versions
+* Changed: Several changes have been made for future jQuery 3.5 compatibility
+* Fixed:   Gutenberg Block and Featured Image features on wordpress.com hosting
+
+= V3.3.20 - 10.13.2020 =
+* NEW:     PHP 5.6 is the minimum supported PHP version
+* NEW:     WordPress 5.2 is the minimum support PHP version
+* Fixed:   Block disappearing in Block Editor
+* Fixed:   Gutenberg block and featured image features were broken on wordpress.com hosting
+* Note:    NextGEN Gallery will soon be licensed under GPLv3.
+
+= V3.3.17 - 08.18.2020 =
+* Fixed:   Override Thumbnail Settings not configurable
+* Fixed:   Broken gallery displays in WP 5.5 with Classic Editor
+* Fixed:   HTML in Gallery & Image fields
+* Fixed:   Inability to save Gallery Settings or Other Options
+
+= V3.3.11 - 08.14.2020 =
+* Fixed:   Fancybox lightbox not working with WordPress 5.5
+* Fixed:   Inability to upload images or create galleries in WordPress 5.5
+* Fixed:   Cannot crop images from Manage Galleries page
+* Fixed:   Removed use of jquery.size() and jquery.browser
+* Fixed:   Fixed iterator_to_array() PHP warning
+
+= V3.3.10 - 08.12.2020 =
+* NEW:     Added filter 'ngg_recent_images_sort_by_column' to control how recent images are sorted
+* Fixed:   Assigning a thumbnail to a custom post type page/post caused a fatal javsacript error
+* Fixed:   NextGEN would previously be completely unusable should it even once determine that it doesn't have the necessary roles it needs
+* Fixed:   Several SimpleLightbox issues caused by a recent version upgrade
+* Changed: Admin user interface modifications
+* Changed: Misc code improvements to take advantage of PHP 5.3+ features
+* Changed: Removed NGG_FIX_JQUERY constant
+
+= V3.3.6 - 06.24.2020 =
+* NEW:     Added a mechanism in Other Options > Misc to update page featured images assigned with NextGen version 1 that were broken by a WordPress 5.4 API change
+* NEW:     Added two filters (ngg_default_settings and ngg_default_global_settings) to allow control over default settings for new networks, sites and sub-sites
+* NEW:     Updated SimpleLightbox to the latest version. This fixes all gallery images appearing in the lightbox if more than one gallery was on the page.
+* Fixed:   Album routing was broken if the albums were named using a non-latin alphabet
+* Fixed:   Gallery path validation was broken on some IIS servers
+* Fixed:   NextGen was unable to serve AJAX requests on home.pl hosting
+* Fixed:   Removed the unused simple_html_dom module which was causing errors with PHP 7.3
+
+= V3.3.5 - 04.09.2020 =
+* Fixed:   Broken dynamic images
+
+= V3.3.2 - 04.07.2020 =
+* Fixed:   Gallery paths were calculated incorrectly on wordpress.com hosting
+* Fixed:   Insert Gallery Window could not edit an existing displayed gallery with a legacy template without breaking the displayed gallery
+* Fixed:   Manage Albums page could generate lengthy PHP warnings if galleries or other albums did not have a preview image assigned
+* Fixed:   NextGen was forcing the 'screen_options_show_screen' filter to always be true
+* Fixed:   Plugin would not load and would throw an error due to C_Component_Registry not being found
+* Fixed:   Removed last traces of javascript that were in display type templates
+
 = V3.3.0 - 03.10.2020 =
 * NEW:     Added feature on Manage Galleries page to search gallery names
 * NEW:     Added filter 'ngg_disable_shortcodes_in_request_api' to disable rendering of NextGen shortcodes in REST
@@ -152,11 +356,11 @@ by Imagely
 * Changed: Updated jquery.waitforimages.js
 * Fixed:   Uploading of non-JPEG images and uploading of JPEG with invalid EXIF data
 
-= V3.1.4 - 12.21.2018 =
-* Fixed:   Visual shortcode not displaying in WP 5.0.2
-
 = V3.1.3 - 01.08.2018 =
 * Fixed:   Post thumbnail support for NextGEN Gallery when using Block Editor
+
+= V3.1.4 - 12.21.2018 =
+* Fixed:   Visual shortcode not displaying in WP 5.0.2
 
 = V3.1.2 - 12.18.2018 =
 * Fixed:   Variable mismatch error when using central gallery management pages

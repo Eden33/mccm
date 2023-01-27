@@ -273,8 +273,10 @@ class Mixin_Attach_To_Post extends Mixin
             $this->object->_displayed_gallery = $mapper->find($id, TRUE);
         } else {
             if (isset($_REQUEST['shortcode'])) {
-                $params = str_replace('ngg_images', '', base64_decode($_REQUEST['shortcode']));
-                $params = str_replace('ngg', '', base64_decode($_REQUEST['shortcode']));
+                // Fetch the displayed gallery by shortcode
+                $shortcode = base64_decode($_REQUEST['shortcode']);
+                // $shortcode lacks the opening and closing brackets but still begins with 'ngg ' or 'ngg_images ' which are not parameters
+                $params = preg_replace('/^(ngg|ngg_images) /i', '', $shortcode, 1);
                 $params = stripslashes($params);
                 $params = str_replace(array('[', ']'), array('&#91;', '&#93;'), $params);
                 $params = shortcode_parse_atts($params);
@@ -485,7 +487,7 @@ class Mixin_Attach_To_Post extends Mixin
             $display_types[] = $display_type;
         }
         usort($display_types, array($this->object, '_display_type_list_sort'));
-        wp_enqueue_script('ngg_display_tab', $this->get_static_url('photocrati-attach_to_post#display_tab.js'), array('jquery', 'backbone', 'photocrati_ajax'), NGG_SCRIPT_VERSION);
+        wp_enqueue_script('ngg_display_tab', $this->get_static_url('photocrati-attach_to_post#display_tab.js'), array('jquery', 'backbone', 'photocrati_ajax'), NGG_ATTACH_TO_POST_VERSION);
         $this->object->mark_script('ngg_display_tab');
         wp_localize_script('ngg_display_tab', 'igw_data', array('displayed_gallery_preview_url' => $settings->gallery_preview_url, 'displayed_gallery' => $this->object->_displayed_gallery->get_entity(), 'sources' => $sources->get_all(), 'gallery_primary_key' => $gallery_mapper->get_primary_key_column(), 'galleries' => $gallery_mapper->find_all(), 'albums' => $album_mapper->find_all(), 'tags' => $tags, 'display_types' => $display_types, 'nonce' => M_Security::create_nonce('nextgen_edit_displayed_gallery'), 'image_primary_key' => $image_mapper->get_primary_key_column(), 'display_type_priority_base' => NGG_DISPLAY_PRIORITY_BASE, 'display_type_priority_step' => NGG_DISPLAY_PRIORITY_STEP, 'shortcode_ref' => isset($_REQUEST['ref']) ? floatval($_REQUEST['ref']) : null, 'shortcode_defaults' => array('order_by' => $settings->galSort, 'order_direction' => $settings->galSortDir, 'returns' => 'included', 'maximum_entity_count' => $settings->maximum_entity_count), 'shortcode_attr_replacements' => array('source' => 'src', 'container_ids' => 'ids', 'display_type' => 'display'), 'i18n' => array('sources' => __('Are you inserting a Gallery (default), an Album, or images based on Tags?', 'nggallery'), 'optional' => __('(optional)', 'nggallery'), 'slug_tooltip' => __('Sets an SEO-friendly name to this gallery for URLs. Currently only in use by the Pro Lightbox', 'nggallery'), 'slug_label' => __('Slug', 'nggallery'), 'no_entities' => __('No entities to display for this source', 'nggallery'), 'exclude_question' => __('Exclude?', 'nggallery'), 'select_gallery' => __('Select a Gallery', 'nggallery'), 'galleries' => __('Select one or more galleries (click in box to see available galleries).', 'nggallery'), 'albums' => __('Select one album (click in box to see available albums).', 'nggallery'))));
     }
@@ -525,7 +527,7 @@ class Mixin_Attach_To_Post extends Mixin
         wp_enqueue_style('ngg_attach_to_post', $this->get_static_url('photocrati-attach_to_post#attach_to_post.css'), array(), NGG_SCRIPT_VERSION);
         wp_dequeue_script('debug-bar-js');
         wp_dequeue_style('debug-bar-css');
-        $this->enqueue_display_tab_js();
+        $this->object->enqueue_display_tab_js();
         do_action('ngg_igw_enqueue_scripts');
         do_action('ngg_igw_enqueue_styles');
         $this->stop_resource_monitoring();
@@ -539,6 +541,10 @@ class Mixin_Attach_To_Post extends Mixin
     {
         $this->object->enqueue_backend_resources();
         $this->object->do_not_cache();
+        // If Elementor is also active a fatal error is generated due to this method not existing
+        if (!function_exists('wp_print_media_templates')) {
+            require_once ABSPATH . WPINC . '/media-template.php';
+        }
         // Enqueue resources
         return $this->object->render_view('photocrati-attach_to_post#attach_to_post', array('page_title' => $this->object->_get_page_title(), 'tabs' => $this->object->_get_main_tabs(), 'logo' => $this->get_static_url('photocrati-nextgen_admin#imagely_icon.png')), $return);
     }
@@ -639,7 +645,7 @@ class Mixin_Attach_To_Post extends Mixin
         // 		'title'     =>  __('Manage Tags', 'nggallery')
         // 	);
         // }
-        return $retval;
+        return apply_filters('ngg_attach_to_post_main_tabs', $retval);
     }
     /**
      * Renders a NextGen Gallery page in an iframe, suited for the attach to post

@@ -23,5 +23,5 @@ function my_gwolle_gb_entry_the_admin_reply($string, $entry) {
 	$string = str_replace( $old, $new, $string );
 	return $string;
 }
-add_filter( 'gwolle_gb_entry_the_admin_reply', my_gwolle_gb_entry_the_admin_reply', 10, 2 );
+add_filter( 'gwolle_gb_entry_the_admin_reply', 'my_gwolle_gb_entry_the_admin_reply', 10, 2 );
 

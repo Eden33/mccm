@@ -8,7 +8,7 @@
 	clear: both;
 }
 
-.gwolle_gb_hide {
+.gwolle-gb-hide {
 	display: none;
 }
 
@@ -32,6 +32,9 @@ h2.gwolle-nav-tab-wrapper {
  * Welcome page
  */
 
+.gwolle_gb_welcome {
+	clear: left;
+}
 body #dashboard-widgets .postbox#gwolle_gb_notification form p.submit {
 	margin: 1em 0;
 }
@@ -275,6 +278,9 @@ form.gwolle_gb_options.active {
 	width: 100px;
 }
 
+.gwolle_gb_options .form-table td {
+	vertical-align: top;
+}
 
 /*
  * Dashboard Widget

@@ -21,10 +21,13 @@ function gwolle_gb_get_field_name( $field ) {
 		return 'gwolle_gb_' . $field;
 	}
 
-	$blog_url = get_bloginfo('wpurl');
+	$blog_url = get_option( 'siteurl' );
+	// $blog_url = get_bloginfo('wpurl'); // Will be different depending on scheme (http/https).
+
 	$key = 'gwolle_gb_' . $field . '_field_name_' . $blog_url;
 	$field_name = wp_hash( $key, 'auth' );
 	$field_name = 'gwolle_gb_' . $field_name;
 
 	return $field_name;
+
 }

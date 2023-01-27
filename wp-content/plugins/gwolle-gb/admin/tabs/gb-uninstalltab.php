@@ -14,10 +14,11 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_page_settingstab_uninstall() {
 
-	if ( function_exists('current_user_can') && ! current_user_can('manage_options') ) {
+	if ( ! current_user_can('manage_options') ) {
 		die(esc_html__('You need a higher level of permission.', 'gwolle-gb'));
 	}
-	if ( function_exists('is_multisite') && is_multisite() ) {
+	if ( is_multisite() ) {
+		esc_html_e('You are on a multisite install of WordPress. Please take a look at the documentation how to remove all the data of this plugin on multisite.', 'gwolle-gb');
 		return;
 	} ?>
 
@@ -28,22 +29,22 @@ function gwolle_gb_page_settingstab_uninstall() {
 
 	/* Nonce */
 	$nonce = wp_create_nonce( 'gwolle_gb_page_settings_uninstalltab' );
-	echo '<input type="hidden" id="gwolle_gb_page_settings_uninstalltab" name="gwolle_gb_page_settings_uninstalltab" value="' . $nonce . '" />';
+	echo '<input type="hidden" id="gwolle_gb_page_settings_uninstalltab" name="gwolle_gb_page_settings_uninstalltab" value="' . esc_attr( $nonce ) . '" />';
 	?>
 	<table class="form-table">
 		<tbody>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row" style="color:#FF0000;"><label><?php esc_html_e('Uninstall', 'gwolle-gb'); ?></label></th>
 			<td>
-				<?php esc_html_e('Uninstalling means that all database entries are removed (settings and entries).', 'gwolle-gb');
-				echo '<br />';
-				_e('This can <strong>not</strong> be undone.', 'gwolle-gb');
+				<?php esc_html_e('Uninstalling means that all database entries are removed (settings and entries).', 'gwolle-gb'); echo '<br />';
+				_e('This can <strong>not</strong> be undone.', 'gwolle-gb'); echo '<br />';
+				esc_html_e('It is a good idea to make a backup of your website before you touch this button.', 'gwolle-gb');
 				?>
 			</td>
 		</tr>
 
-		<tr valign="top">
+		<tr>
 			<th scope="row" style="color:#FF0000;"><label for="gwolle_gb_uninstall_confirmed"><?php esc_html_e('Confirm', 'gwolle-gb'); ?></label></th>
 			<td>
 				<input type="checkbox" name="gwolle_gb_uninstall_confirmed" id="gwolle_gb_uninstall_confirmed">

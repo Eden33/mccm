@@ -17,6 +17,7 @@ RewriteRule ^(.*)wp-content\/gallery\/2016(.*)$ - [R=403,NC,L]
 RewriteRule ^(.*)wp-content\/gallery\/2017(.*)$ - [R=403,NC,L]
 RewriteRule ^(.*)wp-content\/gallery\/2019(.*)$ - [R=403,NC,L]
 
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -28,3 +29,19 @@ RewriteRule . /index.php [L]
 <Files xmlrpc.php >
 deny from all
 </Files>
+
+# BEGIN WordPress
+# Die Anweisungen (Zeilen) zwischen „BEGIN WordPress“ und „END WordPress“ sind
+# dynamisch generiert und sollten nur über WordPress-Filter geändert werden.
+# Alle Änderungen an den Anweisungen zwischen diesen Markierungen werden überschrieben.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress

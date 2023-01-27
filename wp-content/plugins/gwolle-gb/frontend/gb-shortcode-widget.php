@@ -54,8 +54,6 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 	$num_words    = $shortcode_atts['num_words'];
 	$postid       = 0;
 
-	$html5 = current_theme_supports( 'html5' );
-
 	$widget_class = 'gwolle_gb_widget gwolle-gb-widget';
 	$widget_class = apply_filters( 'gwolle_gb_widget_list_class', $widget_class );
 	$widget_item_class = 'gwolle_gb_widget gwolle-gb-widget';
@@ -81,14 +79,12 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 		);
 
 	if ( is_array( $entries ) && ! empty( $entries ) ) {
-		foreach( $entries as $entry ) {
+		foreach ( $entries as $entry ) {
 			$widget_html .= '
 						<li class="' . $widget_item_class . '">';
 
-			if ( $html5 ) {
-				$widget_html .= '
+			$widget_html .= '
 							<article>';
-			}
 
 			// Use this filter to just add something
 			$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_before', '', $entry );
@@ -115,10 +111,8 @@ function get_gwolle_gb_shortcode_widget( $atts ) {
 			// Use this filter to just add something
 			$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_after', '', $entry );
 
-			if ( $html5 ) {
-				$widget_html .= '
+			$widget_html .= '
 							</article>';
-			}
 
 			$widget_html .= '
 						</li>';

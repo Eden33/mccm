@@ -65,7 +65,7 @@ function gwolle_gb_install() {
 	$result = $wpdb->query($sql);
 
 	/* Upgrade to new shiny db collation. Since WP 4.2 */
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	if ( function_exists('maybe_convert_table_to_utf8mb4') ) {
 		if ( 'utf8mb4' === $wpdb->charset ) {
 			maybe_convert_table_to_utf8mb4( $wpdb->gwolle_gb_entries );
@@ -79,7 +79,7 @@ function gwolle_gb_install() {
 	/* Save plugin version to database only when we did install. */
 	$result_after = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_entries'");
 	$result_after2 = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->prefix . "gwolle_gb_log'");
-	if ( $result_after != 0 && $result_after2 != 0 ) {
+	if ( $result_after !== 0 && $result_after2 !== 0 ) {
 		add_option('gwolle_gb_version', GWOLLE_GB_VER);
 	}
 
@@ -136,7 +136,7 @@ function gwolle_gb_upgrade() {
 		 * 0.9 -> 0.9.1
 		 * Moved the email notification options to the WP options table.
 		 */
-		$notifyUser = "
+		$notify_user = "
 				SELECT *
 				FROM
 					" . $wpdb -> prefix . "gwolle_gb_settings
@@ -145,10 +145,10 @@ function gwolle_gb_upgrade() {
 					AND
 					setting_value = '1'
 				";
-		$notifySettings = $wpdb->get_results($notifyUser, ARRAY_A);
-		foreach ( $notifySettings as $notifySetting ) {
+		$notify_settings = $wpdb->get_results($notify_user, ARRAY_A);
+		foreach ( $notify_settings as $notify_setting ) {
 			//	Add an option for each notification subscriber.
-			add_option('gwolle_gb-notifyByMail-' . $notifySetting['user_id'], 'true');
+			add_option('gwolle_gb-notifyByMail-' . $notify_setting['user_id'], 'true');
 		}
 
 		// Delete the old settings table.
@@ -178,7 +178,7 @@ function gwolle_gb_upgrade() {
 		add_option('gwolle_gb-akismet-active', 'false');
 		$wpdb->query("
 				ALTER
-				TABLE " . $wpdb -> gwolle_gb_entries . "
+				TABLE " . $wpdb->gwolle_gb_entries . "
 				ADD
 					entry_isSpam
 						VARCHAR( 1 )
@@ -196,14 +196,14 @@ function gwolle_gb_upgrade() {
 		add_option('gwolle_gb-access-level', '10');
 		add_option('gwolle_gb-moderate-entries', 'true');
 
-		$emailNotification = "
+		$email_notification = "
 				SELECT *
 				FROM
-					" . $wpdb -> prefix . "options
+					" . $wpdb->prefix . "options
 				WHERE
 					option_name LIKE 'gwolle_gb-notifyByMail-%'
 				";
-		$notifications = $wpdb->get_results($emailNotification, ARRAY_A);
+		$notifications = $wpdb->get_results($email_notification, ARRAY_A);
 		foreach ( $notifications as $notification ) {
 			add_option('gwolle_gb-notifyAll-' . str_replace('gwolle_gb-notifyByMail-', '', $notification['option_name']), 'true');
 		}
@@ -212,7 +212,7 @@ function gwolle_gb_upgrade() {
 	if (version_compare($installed_ver, '0.9.4.1', '<')) {
 		/*
 		 **	0.9.4->0.9.4.1
-		 **	Caching the Wordpress API key so that we don't need to
+		 **	Caching the WordPress API key so that we don't need to
 		 **	validate it each time the user opens the settings panel.
 		 **	Also, add an option to show icons in the entry list.
 		 */
@@ -331,10 +331,10 @@ function gwolle_gb_upgrade() {
 				ORDER BY
 					option_name
 			";
-		$notifyUser_result = $wpdb->get_results($sql, ARRAY_A);
-		if ( count($notifyUser_result) > 0 ) {
-			$user_ids = Array();
-			foreach ( $notifyUser_result as $option ) {
+		$notify_user_result = $wpdb->get_results($sql, ARRAY_A);
+		if ( count($notify_user_result) > 0 ) {
+			$user_ids = array();
+			foreach ( $notify_user_result as $option ) {
 				$user_id = (int) str_replace('gwolle_gb-notifyByMail-', '', $option['option_name']);
 				$user_info = get_userdata($user_id);
 				if ($user_info === FALSE) {
@@ -415,9 +415,8 @@ function gwolle_gb_upgrade() {
 		 */
 		delete_option('gwolle_gb-guestbookOnly');
 		delete_option('gwolle_gb-defaultMailText');
-		if ( get_option('gwolle_gb-recaptcha-active', 'false') == 'true' ) {
-			$form_setting = Array( 'form_recaptcha_enabled' => 'true' );
-			$form_setting = serialize( $form_setting );
+		if ( get_option('gwolle_gb-recaptcha-active', 'false') === 'true' ) {
+			$form_setting = array( 'form_recaptcha_enabled' => 'true' );
 			update_option( 'gwolle_gb-form', $form_setting );
 		}
 		delete_option('gwolle_gb-recaptcha-active');
@@ -502,8 +501,24 @@ function gwolle_gb_upgrade() {
 		");
 	}
 
+	if (version_compare($installed_ver, '4.0.0', '<')) {
+		/*
+		 * 3.1.9->4.0.0
+		 * Fix serialized options.
+		 */
+		$options = array(
+			'gwolle_gb-form',
+			'gwolle_gb-read',
+		);
+		foreach ( $options as $option ) {
+			$value = get_option( $option, array() );
+			$value = maybe_unserialize( $value );
+			update_option( $option, $value );
+		}
+	}
+
 	/* Upgrade to new shiny db collation. Since WP 4.2 */
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	if ( function_exists('maybe_convert_table_to_utf8mb4') ) {
 		if ( 'utf8mb4' === $wpdb->charset ) {
 			maybe_convert_table_to_utf8mb4( $wpdb->gwolle_gb_entries );
@@ -526,23 +541,23 @@ function gwolle_gb_upgrade() {
  * @since 2.5.0
  */
 function gwolle_gb_set_defaults() {
-	if ( get_option('gwolle_gb-admin_style', false) == false ) {
+	if ( get_option('gwolle_gb-admin_style', false) === false ) {
 		update_option( 'gwolle_gb-admin_style', 'false' );
 	}
-	if ( get_option('gwolle_gb-akismet-active', false) == false ) {
+	if ( get_option('gwolle_gb-akismet-active', false) === false ) {
 		update_option( 'gwolle_gb-akismet-active', 'false' );
 	}
-	if ( get_option('gwolle_gb-entries_per_page', false) == false ) {
+	if ( get_option('gwolle_gb-entries_per_page', false) === false ) {
 		update_option( 'gwolle_gb-entries_per_page', 20 );
 	}
-	if ( get_option('gwolle_gb-entriesPerPage', false) == false ) {
+	if ( get_option('gwolle_gb-entriesPerPage', false) === false ) {
 		update_option( 'gwolle_gb-entriesPerPage', 20 );
 	}
 	if ( get_option('gwolle_gb-excerpt_length', false) === false ) {
 		update_option( 'gwolle_gb-excerpt_length', 0 );
 	}
-	if ( get_option('gwolle_gb-form', false) == false ) {
-		$defaults = Array(
+	if ( get_option('gwolle_gb-form', false) === false ) {
+		$defaults = array(
 			'form_name_enabled'       => 'true',
 			'form_name_mandatory'     => 'true',
 			'form_city_enabled'       => 'true',
@@ -553,58 +568,61 @@ function gwolle_gb_set_defaults() {
 			'form_homepage_mandatory' => 'false',
 			'form_message_enabled'    => 'true',
 			'form_message_mandatory'  => 'true',
+			'form_message_maxlength'  => 0,
 			'form_bbcode_enabled'     => 'false',
 			'form_antispam_enabled'   => 'false',
 			'form_recaptcha_enabled'  => 'false',
-			'form_privacy_enabled'    => 'false'
+			'form_privacy_enabled'    => 'false',
 			);
-		$defaults = serialize( $defaults );
 		update_option( 'gwolle_gb-form', $defaults );
 	}
-	if ( get_option('gwolle_gb-form_ajax', false) == false ) {
+	if ( get_option('gwolle_gb-form_ajax', false) === false ) {
 		update_option( 'gwolle_gb-form_ajax', 'true' );
 	}
-	if ( get_option('gwolle_gb-honeypot', false) == false ) {
+	if ( get_option('gwolle_gb-honeypot', false) === false ) {
 		update_option( 'gwolle_gb-honeypot', 'true' );
 	}
-	if ( get_option('gwolle_gb-honeypot_value', false) == false ) {
+	if ( get_option('gwolle_gb-honeypot_value', false) === false ) {
 		$random = rand( 1, 99 );
 		update_option( 'gwolle_gb-honeypot_value', $random );
 	}
-	if ( get_option('gwolle_gb-labels_float', false) == false ) {
+	if ( get_option('gwolle_gb-labels_float', false) === false ) {
 		update_option( 'gwolle_gb-labels_float', 'true' );
 	}
-	if ( get_option('gwolle_gb-linkAuthorWebsite', false) == false ) {
+	if ( get_option('gwolle_gb-linkAuthorWebsite', false) === false ) {
 		update_option( 'gwolle_gb-linkAuthorWebsite', 'true' );
 	}
-	if ( get_option('gwolle_gb-linkchecker', false) == false ) {
+	if ( get_option('gwolle_gb-linkchecker', false) === false ) {
 		update_option( 'gwolle_gb-linkchecker', 'true' );
 	}
-	if ( get_option('gwolle_gb-longtext', false) == false ) {
+	if ( get_option('gwolle_gb-longtext', false) === false ) {
 		update_option( 'gwolle_gb-longtext', 'true' );
 	}
-	if ( get_option('gwolle_gb-mail_author', false) == false ) {
+	if ( get_option('gwolle_gb-mail_author', false) === false ) {
 		update_option( 'gwolle_gb-mail_author', 'false' );
 	}
-	if ( get_option('gwolle_gb-moderate-entries', false) == false ) {
+	if ( get_option('gwolle_gb-mail_author_moderation', false) === false ) {
+		update_option( 'gwolle_gb-mail_author_moderation', 'false' );
+	}
+	if ( get_option('gwolle_gb-moderate-entries', false) === false ) {
 		update_option( 'gwolle_gb-moderate-entries', 'true' );
 	}
 	if ( get_option('gwolle_gb-navigation', false) === false ) {
 		update_option( 'gwolle_gb-navigation', 0 );
 	}
-	if ( get_option('gwolle_gb-nonce', false) == false ) {
+	if ( get_option('gwolle_gb-nonce', false) === false ) {
 		update_option( 'gwolle_gb-nonce', 'true' );
 	}
-	if ( get_option('gwolle_gb-paginate_all', false) == false ) {
+	if ( get_option('gwolle_gb-paginate_all', false) === false ) {
 		update_option( 'gwolle_gb-paginate_all', 'false' );
 	}
-	if ( get_option('gwolle_gb-read', false) == false ) {
+	if ( get_option('gwolle_gb-read', false) === false ) {
 		if ( get_option('show_avatars') ) {
 			$avatar = 'true';
 		} else {
 			$avatar = 'false';
 		}
-		$defaults = Array(
+		$defaults = array(
 			'read_avatar'   => $avatar,
 			'read_name'     => 'true',
 			'read_city'     => 'true',
@@ -612,33 +630,32 @@ function gwolle_gb_set_defaults() {
 			'read_date'     => 'false',
 			'read_content'  => 'true',
 			'read_aavatar'  => 'false',
-			'read_editlink' => 'true'
+			'read_editlink' => 'true',
 			);
-		$defaults = serialize( $defaults );
 		update_option( 'gwolle_gb-read', $defaults );
 	}
-	if ( get_option('gwolle_gb-refuse-spam', false) == false ) {
+	if ( get_option('gwolle_gb-refuse-spam', false) === false ) {
 		update_option( 'gwolle_gb-refuse-spam', 'false' );
 	}
-	if ( get_option('gwolle_gb-require_login', false) == false ) {
+	if ( get_option('gwolle_gb-require_login', false) === false ) {
 		update_option( 'gwolle_gb-require_login', 'false' );
 	}
-	if ( get_option('gwolle_gb-sfs', false) == false ) {
+	if ( get_option('gwolle_gb-sfs', false) === false ) {
 		update_option( 'gwolle_gb-sfs', 'false' );
 	}
-	if ( get_option('gwolle_gb-store_ip', false) == false ) {
+	if ( get_option('gwolle_gb-store_ip', false) === false ) {
 		update_option( 'gwolle_gb-store_ip', 'true' );
 	}
-	if ( get_option('gwolle_gb-showEntryIcons', false) == false ) {
+	if ( get_option('gwolle_gb-showEntryIcons', false) === false ) {
 		update_option( 'gwolle_gb-showEntryIcons', 'true' );
 	}
-	if ( get_option('gwolle_gb-showLineBreaks', false) == false ) {
+	if ( get_option('gwolle_gb-showLineBreaks', false) === false ) {
 		update_option( 'gwolle_gb-showLineBreaks', 'false' );
 	}
-	if ( get_option('gwolle_gb-showSmilies', false) == false ) {
+	if ( get_option('gwolle_gb-showSmilies', false) === false ) {
 		update_option( 'gwolle_gb-showSmilies', 'true' );
 	}
-	if ( get_option('gwolle_gb-timeout', false) == false ) {
+	if ( get_option('gwolle_gb-timeout', false) === false ) {
 		update_option( 'gwolle_gb-timeout', 'true' );
 	}
 }

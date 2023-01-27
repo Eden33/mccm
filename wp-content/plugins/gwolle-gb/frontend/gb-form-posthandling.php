@@ -8,12 +8,12 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
 
 /*
  * Handle the $_POST for the Frontend on a new entry.
- * Use this action, since $post is populated and we can use get_the_ID().
+ * Use the 'wp' action, since global $post is populated and we can use get_the_ID().
  */
 function gwolle_gb_handle_post() {
 	if ( ! is_admin() ) {
 		// Frontend Handling of $_POST, only one form
-		if ( isset($_POST['gwolle_gb_function']) && $_POST['gwolle_gb_function'] == 'add_entry' ) {
+		if ( isset($_POST['gwolle_gb_function']) && $_POST['gwolle_gb_function'] === 'add_entry' ) {
 			gwolle_gb_frontend_posthandling();
 		}
 	}
@@ -33,10 +33,10 @@ add_action('wp', 'gwolle_gb_handle_post');
  */
 function gwolle_gb_frontend_posthandling() {
 
-	if ( isset($_POST['gwolle_gb_function']) && $_POST['gwolle_gb_function'] == 'add_entry' ) {
+	if ( isset($_POST['gwolle_gb_function']) && $_POST['gwolle_gb_function'] === 'add_entry' ) {
 
 		// Option to allow only logged-in users to post. Don't show the form if not logged-in.
-		if ( !is_user_logged_in() && get_option('gwolle_gb-require_login', 'false') == 'true' ) {
+		if ( ! is_user_logged_in() && get_option('gwolle_gb-require_login', 'false') === 'true' ) {
 			gwolle_gb_add_message( '<p class="require_login"><strong>' . esc_html__('Submitting a new guestbook entry is only allowed for logged-in users.', 'gwolle-gb') . '</strong></p>', true, false);
 			return false;
 		}
@@ -49,47 +49,47 @@ function gwolle_gb_frontend_posthandling() {
 		$form_setting = gwolle_gb_get_setting( 'form' );
 
 		/* Name */
-		if ( isset($form_setting['form_name_enabled']) && $form_setting['form_name_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_name_enabled']) && $form_setting['form_name_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'name' );
 			if (isset($_POST["$field_name"])) {
 				$author_name = trim($_POST["$field_name"]);
 				$author_name = gwolle_gb_maybe_encode_emoji( $author_name, 'author_name' );
 				$gwolle_gb_formdata['author_name'] = $author_name;
 				gwolle_gb_add_formdata( 'author_name', $author_name );
-				if ( $author_name == "" ) {
-					if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory']  === 'true' ) {
+				if ( $author_name === '' ) {
+					if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory'] === 'true' ) {
 						gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your name is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 					}
 				}
 			} else {
-				if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory']  === 'true' ) {
+				if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your name is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			}
 		}
 
 		/* City / Origin */
-		if ( isset($form_setting['form_city_enabled']) && $form_setting['form_city_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_city_enabled']) && $form_setting['form_city_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'city' );
 			if (isset($_POST["$field_name"])) {
 				$author_origin = trim($_POST["$field_name"]);
 				$author_origin = gwolle_gb_maybe_encode_emoji( $author_origin, 'author_origin' );
 				$gwolle_gb_formdata['author_origin'] = $author_origin;
 				gwolle_gb_add_formdata( 'author_origin', $author_origin );
-				if ( $author_origin == "" ) {
-					if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory']  === 'true' ) {
+				if ( $author_origin === '' ) {
+					if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory'] === 'true' ) {
 						gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your origin is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 					}
 				}
 			} else {
-				if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory']  === 'true' ) {
+				if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your origin is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			}
 		}
 
 		/* Email */
-		if ( isset($form_setting['form_email_enabled']) && $form_setting['form_email_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_email_enabled']) && $form_setting['form_email_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'email' );
 			if (isset($_POST["$field_name"])) {
 				$author_email = trim($_POST["$field_name"]);
@@ -97,11 +97,11 @@ function gwolle_gb_frontend_posthandling() {
 				gwolle_gb_add_formdata( 'author_email', $author_email );
 				if ( filter_var( $author_email, FILTER_VALIDATE_EMAIL ) ) {
 					// Valid Email address.
-				} else if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory']  === 'true' ) {
+				} else if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your e-mail address is not filled in correctly, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			} else {
-				if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory']  === 'true' ) {
+				if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your e-mail address is not filled in correctly, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			}
@@ -114,36 +114,36 @@ function gwolle_gb_frontend_posthandling() {
 		}
 
 		/* Website / Homepage */
-		if ( isset($form_setting['form_homepage_enabled']) && $form_setting['form_homepage_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_homepage_enabled']) && $form_setting['form_homepage_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'website' );
 			if (isset($_POST["$field_name"])) {
 				$author_website = trim($_POST["$field_name"]);
 				$gwolle_gb_formdata['author_website'] = $author_website;
 				gwolle_gb_add_formdata( 'author_website', $author_website );
 				$pattern = '/^http/';
-				if ( !preg_match($pattern, $author_website, $matches) ) {
-					$author_website = "http://" . $author_website;
+				if ( ! preg_match($pattern, $author_website, $matches) ) {
+					$author_website = 'http://' . $author_website;
 				}
 				if ( filter_var( $author_website, FILTER_VALIDATE_URL ) ) {
 					// Valid Website URL.
-				} else if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory']  === 'true' ) {
+				} else if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your website is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			} else {
-				if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory']  === 'true' ) {
+				if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory'] === 'true' ) {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('Your website is not filled in, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			}
 		}
 
 		/* Message */
-		if ( isset($form_setting['form_message_enabled']) && $form_setting['form_message_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_message_enabled']) && $form_setting['form_message_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'content' );
 			if (isset($_POST["$field_name"])) {
 				$content = trim($_POST["$field_name"]);
-				if ( $content == '' ) {
-					if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory']  === 'true' ) {
-						gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There is no message, even though it is mandatory.', 'gwolle-gb') . '</strong></p>',true, $field_name); // mandatory
+				if ( $content === '' ) {
+					if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory'] === 'true' ) {
+						gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There is no message, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 					}
 				} else {
 					$content = gwolle_gb_maybe_encode_emoji( $content, 'content' );
@@ -151,20 +151,20 @@ function gwolle_gb_frontend_posthandling() {
 					gwolle_gb_add_formdata( 'content', $content );
 				}
 			} else {
-				if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory']  === 'true' ) {
-					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There is no message, even though it is mandatory.', 'gwolle-gb') . '</strong></p>',true, $field_name); // mandatory
+				if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory'] === 'true' ) {
+					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('There is no message, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
 				}
 			}
 		}
 
 		/* Custom Anti-Spam */
-		if ( isset($form_setting['form_antispam_enabled']) && $form_setting['form_antispam_enabled']  === 'true' ) {
+		if ( isset($form_setting['form_antispam_enabled']) && $form_setting['form_antispam_enabled'] === 'true' ) {
 			$field_name = gwolle_gb_get_field_name( 'custom' );
 			$antispam_question = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-question') );
 			$antispam_answer   = gwolle_gb_sanitize_output( get_option('gwolle_gb-antispam-answer') );
 
 			if ( isset($antispam_question) && strlen($antispam_question) > 0 && isset($antispam_answer) && strlen($antispam_answer) > 0 ) {
-				if ( isset($_POST["$field_name"]) && trim($_POST["$field_name"]) == trim($antispam_answer) ) {
+				if ( isset($_POST["$field_name"]) && trim($_POST["$field_name"]) === trim($antispam_answer) ) {
 					//echo "You got it!";
 				} else {
 					gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('The anti-spam question was not answered correctly, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, $field_name); // mandatory
@@ -178,9 +178,9 @@ function gwolle_gb_frontend_posthandling() {
 		}
 
 		/* Privacy checkbox for GDPR compliance. */
-		if ( isset($form_setting['form_privacy_enabled']) && $form_setting['form_privacy_enabled']  === 'true' ) {
-			if (isset($_POST['gwolle_gb_privacy']) && $_POST['gwolle_gb_privacy'] == 'on') {
-				// Should be fine.
+		if ( isset($form_setting['form_privacy_enabled']) && $form_setting['form_privacy_enabled'] === 'true' ) {
+			if (isset($_POST['gwolle_gb_privacy']) && $_POST['gwolle_gb_privacy'] === 'on') {
+				gwolle_gb_add_formdata( 'gwolle_gb_privacy', 'on' );
 			} else {
 				gwolle_gb_add_message( '<p class="error_fields gb-error-fields"><strong>' . esc_html__('You did not accept the privacy policy, even though it is mandatory.', 'gwolle-gb') . '</strong></p>', true, 'gwolle_gb_privacy'); // mandatory
 			}
@@ -204,7 +204,7 @@ function gwolle_gb_frontend_posthandling() {
 		 * Do this before the gwolle_gb_new_entry_frontend hook, so we can change it again if a hook needs to.
 		 */
 		$user_id = get_current_user_id(); // Returns 0 if no current user.
-		if ( get_option('gwolle_gb-moderate-entries', 'true') == 'true' ) {
+		if ( get_option('gwolle_gb-moderate-entries', 'true') === 'true' ) {
 			// Moderation, only set to checked for moderators.
 			if ( gwolle_gb_is_moderator($user_id) ) {
 				$entry->set_ischecked( true );
@@ -243,7 +243,7 @@ function gwolle_gb_frontend_posthandling() {
 				// Returned true, so considered spam
 				$entry->set_isspam(true);
 				$marked_by_akismet = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-akismet"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -253,13 +253,13 @@ function gwolle_gb_frontend_posthandling() {
 
 		/* Stop Forum Spam: check for spam and set accordingly */
 		$marked_by_sfs = false;
-		if ( get_option( 'gwolle_gb-sfs', 'false') == 'true' ) {
+		if ( get_option( 'gwolle_gb-sfs', 'false') === 'true' ) {
 			$isspam = gwolle_gb_stop_forum_spam( $entry );
 			if ( $isspam ) {
 				// Returned true, so considered spam
 				$entry->set_isspam(true);
 				$marked_by_sfs = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-sfs"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -270,7 +270,7 @@ function gwolle_gb_frontend_posthandling() {
 
 		/* Honeypot: check for spam and set accordingly. */
 		$marked_by_honeypot = false;
-		if (get_option( 'gwolle_gb-honeypot', 'true') == 'true') {
+		if (get_option( 'gwolle_gb-honeypot', 'true') === 'true') {
 			$field_name = gwolle_gb_get_field_name( 'honeypot' );
 			$field_name2 = gwolle_gb_get_field_name( 'honeypot2' );
 			$honeypot_value = (int) get_option( 'gwolle_gb-honeypot_value', 15 );
@@ -278,17 +278,17 @@ function gwolle_gb_frontend_posthandling() {
 				// Input field was filled in, so considered spam
 				$entry->set_isspam(true);
 				$marked_by_honeypot = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-honeypot"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
 				}
 			}
-			if ( ! isset($_POST["$field_name2"]) || $_POST["$field_name2"] != $honeypot_value ) {
+			if ( ! isset($_POST["$field_name2"]) || (int) $_POST["$field_name2"] !== $honeypot_value ) {
 				// Input field was not filled in correctly, so considered spam
 				$entry->set_isspam(true);
 				$marked_by_honeypot = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-honeypot2"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -299,14 +299,14 @@ function gwolle_gb_frontend_posthandling() {
 
 		/* Nonce: check for spam and set accordingly. */
 		$marked_by_nonce = false;
-		if (get_option( 'gwolle_gb-nonce', 'true') == 'true') {
+		if (get_option( 'gwolle_gb-nonce', 'true') === 'true') {
 			$field_name = gwolle_gb_get_field_name( 'nonce' );
-			$verified = wp_verify_nonce( $_REQUEST["$field_name"], 'gwolle_gb_add_entry' );
-			if ( $verified == false ) {
+			$verified = wp_verify_nonce( $_POST["$field_name"], 'gwolle_gb_add_entry' );
+			if ( $verified === false ) {
 				// Nonce is invalid, so considered spam
 				$entry->set_isspam(true);
 				$marked_by_nonce = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-nonce"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -317,10 +317,10 @@ function gwolle_gb_frontend_posthandling() {
 
 		/* Scan for long and abusive text. */
 		$marked_by_longtext = false;
-		if ( get_option( 'gwolle_gb-longtext', 'true') == 'true' ) {
+		if ( get_option( 'gwolle_gb-longtext', 'true') === 'true' ) {
 			// Check for abusive content (too long words). Set it to unchecked, so manual moderation is needed.
 			$maxlength = 100;
-			$words = explode( " ", $entry->get_content() );
+			$words = explode( ' ', $entry->get_content() );
 			foreach ( $words as $word ) {
 				$pattern = '/^href=http/';
 				if ( preg_match($pattern, $word, $matches) ) {
@@ -341,7 +341,7 @@ function gwolle_gb_frontend_posthandling() {
 				}
 			}
 			$maxlength = 60;
-			$words = explode( " ", $entry->get_author_name() );
+			$words = explode( ' ', $entry->get_author_name() );
 			foreach ( $words as $word ) {
 				if ( strlen($word) > $maxlength ) {
 					$entry->set_ischecked( false );
@@ -355,8 +355,8 @@ function gwolle_gb_frontend_posthandling() {
 		/* Scan with Link Checker. */
 		$marked_by_linkchecker = false;
 		$counter_for_linkchecker = 0;
-		if ( get_option( 'gwolle_gb-linkchecker', 'true') == 'true' ) {
-			$words = explode( " ", $entry->get_content() );
+		if ( get_option( 'gwolle_gb-linkchecker', 'true') === 'true' ) {
+			$words = explode( ' ', $entry->get_content() );
 			foreach ( $words as $word ) {
 				$pattern = '/(http|https)\:\/\/?/';
 				if ( preg_match( $pattern, $word, $matches ) ) {
@@ -367,7 +367,7 @@ function gwolle_gb_frontend_posthandling() {
 			if ( $counter_for_linkchecker > 1 ) {
 				$entry->set_isspam( true );
 				$marked_by_linkchecker = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-linkchecker"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -378,18 +378,18 @@ function gwolle_gb_frontend_posthandling() {
 
 		/* Form Timeout: check for spam and set accordingly. */
 		$marked_by_timeout = false;
-		if (get_option( 'gwolle_gb-timeout', 'true') == 'true') {
+		if (get_option( 'gwolle_gb-timeout', 'true') === 'true') {
 			$field_name = gwolle_gb_get_field_name( 'timeout' );
 			$field_name2 = gwolle_gb_get_field_name( 'timeout2' );
 			if ( isset($_POST["$field_name"]) && strlen($_POST["$field_name"]) > 0 && isset($_POST["$field_name2"]) && strlen($_POST["$field_name2"]) > 0 ) {
 				// Input fields were filled in, so continue.
 				$timeout  = (int) $_POST["$field_name"];
 				$timeout2 = (int) $_POST["$field_name2"];
-				if ( ($timeout2 - $timeout) < 8 ) {
-					// Submitted less then 4 seconds after loading. Considered spam.
+				if ( ( $timeout2 - $timeout ) < 2 ) {
+					// Submitted less then 1 second after loading. Considered spam.
 					$entry->set_isspam(true);
 					$marked_by_timeout = true;
-					if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+					if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 						gwolle_gb_add_message( '<p class="refuse-spam-timeout"><strong>' . esc_html__('Your entry was submitted too fast, please slow down and try again.', 'gwolle-gb') . '</strong></p>', true, false );
 						do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 						return false;
@@ -399,7 +399,7 @@ function gwolle_gb_frontend_posthandling() {
 				// Input fields were not filled in correctly. Considered spam.
 				$entry->set_isspam(true);
 				$marked_by_timeout = true;
-				if (get_option( 'gwolle_gb-refuse-spam', 'false') == 'true') {
+				if (get_option( 'gwolle_gb-refuse-spam', 'false') === 'true') {
 					gwolle_gb_add_message( '<p class="refuse-spam-timeout"><strong>' . esc_html__('Your entry was marked as spam. Please try again.', 'gwolle-gb') . '</strong></p>', true, false );
 					do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 					return false;
@@ -417,9 +417,9 @@ function gwolle_gb_frontend_posthandling() {
 		 */
 		$set_author_ip = (bool) apply_filters( 'gwolle_gb_set_author_ip', true );
 		$set_author_ip2 = get_option('gwolle_gb-store_ip', 'true');
-		if ( $set_author_ip && ($set_author_ip2 == 'true') ) {
-			$entry->set_author_ip( $_SERVER['REMOTE_ADDR'] );
-			$entry->set_author_host( gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) );
+		if ( $set_author_ip && ( $set_author_ip2 === 'true' ) ) {
+			$entry->set_author_ip( gwolle_gb_get_user_ip() );
+			$entry->set_author_host( gethostbyaddr( gwolle_gb_get_user_ip() ) );
 		}
 
 
@@ -438,29 +438,6 @@ function gwolle_gb_frontend_posthandling() {
 
 
 		/*
-		 * Check for double post using email field and content.
-		 * Only if content is mandatory.
-		 */
-		if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory']  === 'true' ) {
-			$entries = gwolle_gb_get_entries(array(
-					'email'   => $entry->get_author_email(),
-					'book_id' => $entry->get_book_id()
-				));
-			if ( is_array( $entries ) && !empty( $entries ) ) {
-				$field_name = gwolle_gb_get_field_name( 'content' );
-				foreach ( $entries as $entry_email ) {
-					if ( $entry_email->get_content() == $entry->get_content() ) {
-						// Match is double entry
-						gwolle_gb_add_message( '<p class="double_post gb-double-post"><strong>' . esc_html__('Double post: An entry with the data you entered has already been saved.', 'gwolle-gb') . '</strong></p>', true, $field_name );
-						do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
-						return false;
-					}
-				}
-			}
-		}
-
-
-		/*
 		 * Save the Entry
 		 */
 		$save = $entry->save();
@@ -471,9 +448,9 @@ function gwolle_gb_frontend_posthandling() {
 		if ( $save ) {
 			// We have been saved to the Database.
 
-			gwolle_gb_add_message( '<p class="entry_saved gb-entry-saved">' . esc_html__('Thank you for your entry.','gwolle-gb') . '</p>', false, false );
-			if ( $entry->get_ischecked() == 0 || $entry->get_isspam() == 1 ) {
-				gwolle_gb_add_message( '<p>' . esc_html__('We will review it and unlock it in a short while.','gwolle-gb') . '</p>', false, false );
+			gwolle_gb_add_message( '<p class="entry_saved gb-entry-saved">' . esc_html__('Thank you for your entry.', 'gwolle-gb') . '</p>', false, false );
+			if ( $entry->get_ischecked() === 0 || $entry->get_isspam() === 1 ) {
+				gwolle_gb_add_message( '<p>' . esc_html__('We will review it and unlock it in a short while.', 'gwolle-gb') . '</p>', false, false );
 			}
 
 
@@ -505,7 +482,7 @@ function gwolle_gb_frontend_posthandling() {
 
 
 			/* Privacy checkbox for GDPR compliance added to log. */
-			if (isset($_POST['gwolle_gb_privacy']) && $_POST['gwolle_gb_privacy'] == 'on') {
+			if (isset($_POST['gwolle_gb_privacy']) && $_POST['gwolle_gb_privacy'] === 'on') {
 				gwolle_gb_add_log_entry( $entry->get_id(), 'privacy-policy-accepted' );
 			}
 
@@ -522,10 +499,80 @@ function gwolle_gb_frontend_posthandling() {
 
 			do_action( 'gwolle_gb_notsaved_entry_frontend', $entry );
 
-			gwolle_gb_add_message( '<p class="entry_notsaved gb-entry-notsaved">' . esc_html__('Sorry, something went wrong with saving your entry. Please contact a site admin.','gwolle-gb') . '</p>', true, false );
+			gwolle_gb_add_message( '<p class="entry_notsaved gb-entry-notsaved">' . esc_html__('Sorry, something went wrong with saving your entry. Please contact a site admin.', 'gwolle-gb') . '</p>', true, false );
 
 			return false;
 
 		}
 	}
 }
+
+
+/*
+ * Check for double entry using email field and content.
+ * If there is a double entry, do not save the message and return the form with an error.
+ *
+ * @since 4.0.7
+ *
+ * @param object $entry the guestbook entry that was submitted by the user.
+ *
+ * @return object $entry the guestbook entry that was submitted by the user.
+ */
+function gwolle_gb_check_double_entry( $entry ) {
+
+	$form_setting = gwolle_gb_get_setting( 'form' );
+
+	if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory'] === 'true' ) {
+		$entries = gwolle_gb_get_entries(array(
+				'email'   => $entry->get_author_email(),
+				'book_id' => $entry->get_book_id(),
+			));
+		if ( is_array( $entries ) && ! empty( $entries ) ) {
+			$field_name = gwolle_gb_get_field_name( 'content' );
+			foreach ( $entries as $entry_email ) {
+				if ( $entry_email->get_content() === $entry->get_content() ) {
+					// Match is double entry
+					gwolle_gb_add_message( '<p class="double_post gb-double-post"><strong>' . esc_html__('Double post: An entry with the data you entered has already been saved.', 'gwolle-gb') . '</strong></p>', true, $field_name );
+					return $entry;
+				}
+			}
+		}
+	}
+	return $entry;
+
+}
+add_filter( 'gwolle_gb_new_entry_frontend', 'gwolle_gb_check_double_entry' );
+
+
+/*
+ * Check for max length in content textarea.
+ * If there are too many characters, do not save the message and return the form with an error.
+ *
+ * @since 4.2.0
+ *
+ * @param object $entry the guestbook entry that was submitted by the user.
+ *
+ * @return object $entry the guestbook entry that was submitted by the user.
+ */
+function gwolle_gb_check_maxlength( $entry ) {
+
+	$form_setting = gwolle_gb_get_setting( 'form' );
+
+	if ( isset($form_setting['form_message_maxlength']) && is_numeric($form_setting['form_message_maxlength']) && $form_setting['form_message_maxlength'] > 0 ) {
+		$form_message_maxlength = (int) $form_setting['form_message_maxlength'];
+		$content = $entry->get_content();
+		$used_characters = gwolle_gb_count_characters( $content );
+
+		if ( $used_characters > $form_message_maxlength ) {
+			// Content has too many characters.
+			$field_name = gwolle_gb_get_field_name( 'content' );
+			$message = sprintf( esc_html__('Too many characters: Allowed is %1$d characters, used is %2$d characters in content field.', 'gwolle-gb'), $form_message_maxlength, $used_characters );
+			gwolle_gb_add_message( '<p class="gb-max-length"><strong>' . $message . '</strong></p>', true, $field_name );
+			return $entry;
+		}
+	}
+	return $entry;
+
+}
+add_filter( 'gwolle_gb_new_entry_frontend', 'gwolle_gb_check_maxlength' );
+

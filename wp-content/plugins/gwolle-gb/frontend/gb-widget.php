@@ -15,14 +15,17 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 	class GwolleGB_Widget extends WP_Widget {
 
 		/* Constructor */
-		function __construct() {
-			$widget_ops = array( 'classname' => 'gwolle_gb', 'description' => esc_html__('Displays the recent guestbook entries.','gwolle-gb') );
+		public function __construct() {
+			$widget_ops = array(
+				'classname'   => 'gwolle_gb',
+				'description' => esc_html__('Displays the recent guestbook entries.', 'gwolle-gb'),
+			);
 			parent::__construct('gwolle_gb', esc_html__('Gwolle Guestbook', 'gwolle-gb'), $widget_ops);
 			$this->alt_option_name = 'gwolle_gb';
 		}
 
 		/** @see WP_Widget::widget */
-		function widget($args, $instance) {
+		public function widget( $args, $instance ) {
 			extract($args);
 
 			$default_value = array(
@@ -36,16 +39,18 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 					'num_words'   => 10,
 					'book_id'     => 0,
 					'link_text'   => esc_html__('Visit guestbook', 'gwolle-gb'),
-					'postid'      => 0
+					'postid'      => 0,
 				);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
 
 			$widget_title  = esc_attr($instance['title']);
 			$num_entries   = (int) esc_attr($instance['num_entries']);
 			$best          = esc_attr($instance['best']);
-			$best          = explode(",", $best);
+			$best          = explode(',', $best);
 			$no_mod        = (int) esc_attr($instance['no_mod']);
-			if ( $no_mod ) { $no_mod = 'true'; }
+			if ( $no_mod ) {
+				$no_mod = 'true';
+			}
 			$name          = (int) esc_attr($instance['name']);
 			$date          = (int) esc_attr($instance['date']);
 			$slider        = (int) esc_attr($instance['slider']);
@@ -54,10 +59,8 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			$link_text     = esc_attr($instance['link_text']);
 			$postid        = (int) esc_attr($instance['postid']);
 
-			$html5 = current_theme_supports( 'html5' );
-
 			// Prepare for SSS Slider. Registers Script with WordPress to wp_footer().
-			$widget_class = 'gwolle_gb_widget';
+			$widget_class = 'gwolle_gb_widget gwolle-gb-widget';
 			if ( $slider ) {
 				wp_register_script( 'gwolle_gb_widget_sss', GWOLLE_GB_URL . '/frontend/js/sss/sss.js', 'jquery', GWOLLE_GB_VER, true );
 				wp_enqueue_script( 'gwolle_gb_widget_sss' );
@@ -74,15 +77,15 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			$widget_html .= '
 				<div class="gwolle_gb_widget gwolle-gb-widget">';
 
-			if ($widget_title !== FALSE) {
+			if ($widget_title !== false) {
 				$widget_html .= $args['before_title'] . apply_filters('widget_title', $widget_title) . $args['after_title'];
 			}
 
-			$raquo = '';
+			$link = '';
 			if ( (int) $postid > 0 ) {
 				$permalink = gwolle_gb_get_permalink( $postid );
-				$raquo = '
-									<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">&raquo;</a>
+				$link = '
+									<span class="gb-guestbook-link"><a href="' . esc_attr( $permalink ) . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '"></a></span>
 								';
 			}
 
@@ -93,64 +96,19 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			// Get the best entries first
 			if ( is_array( $best ) && ! empty( $best ) ) {
 				foreach ($best as $entry_id) {
-					if ( $counter == $num_entries) { break; } // we have enough
+					if ( $counter === $num_entries ) {
+						break; // we have enough
+					}
 					$entry = new gwolle_gb_entry();
-					$entry_id = intval($entry_id);
+					$entry_id = (int) $entry_id;
 					if ( isset($entry_id) && $entry_id > 0 ) {
 						$result = $entry->load( $entry_id );
-						if ( !$result ) {
+						if ( ! $result ) {
 							// No entry loaded
 							continue;
 						}
-						// Main Content
-						$widget_html .= '
-						<li class="' . $widget_item_class . '">';
 
-						if ( $html5 ) {
-							$widget_html .= '
-							<article>';
-						}
-
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_before', '', $entry );
-
-						if ( $name ) {
-							$widget_html .= '
-								<span class="gb-author-name">' . $entry->get_author_name() . '</span>';
-						}
-						if ( $name && $date ) {
-							$widget_html .= ' / ';
-						}
-						if ( $date ) {
-							$widget_html .= '
-								<span class="gb-date">' . date_i18n( get_option('date_format'), $entry->get_datetime() ) . '</span>';
-						}
-						if ( $name || $date ) {
-							$widget_html .= ':<br />';
-						}
-
-						$entry_content = gwolle_gb_get_excerpt( gwolle_gb_bbcode_strip($entry->get_content()), $num_words );
-						if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
-							$entry_content = convert_smilies($entry_content);
-						}
-						$widget_html .= '
-								<span class="gb-entry-content">' . $entry_content . $raquo;
-
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_content', '', $entry );
-
-						$widget_html .= '</span>';
-
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_after', '', $entry );
-
-						if ( $html5 ) {
-							$widget_html .= '
-							</article>';
-						}
-
-						$widget_html .= '
-						</li>';
+						$widget_html .= $this->widget_single_view( $entry, $instance, $widget_item_class, $link );
 
 						$counter++;
 					}
@@ -158,7 +116,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 
 			// Get the latest $num_entries guestbook entries
-			if ( $counter != $num_entries) { // we have enough
+			if ( $counter !== $num_entries) { // we have enough
 				$entries = gwolle_gb_get_entries(
 					array(
 						'num_entries'   => $num_entries,
@@ -166,62 +124,19 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 						'trash'         => 'notrash',
 						'spam'          => 'nospam',
 						'book_id'       => $book_id,
-						'no_moderators' => $no_mod
+						'no_moderators' => $no_mod,
 						)
 					);
-				if ( is_array( $entries ) && !empty( $entries ) ) {
-					foreach( $entries as $entry ) {
-						if ( $counter == $num_entries) { break; } // we have enough
-						if ( is_array( $best) && in_array( $entry->get_id(), $best ) ) { continue; } // already listed
-						// Main Content
-						$widget_html .= '
-						<li class="' . $widget_item_class . '">';
-
-						if ( $html5 ) {
-							$widget_html .= '
-							<article>';
+				if ( is_array( $entries ) && ! empty( $entries ) ) {
+					foreach ( $entries as $entry ) {
+						if ( $counter === $num_entries) {
+							break; // we have enough
+						}
+						if ( is_array( $best) && in_array( $entry->get_id(), $best ) ) {
+							continue; // already listed
 						}
 
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_before', '', $entry );
-
-						if ( $name ) {
-							$widget_html .= '
-								<span class="gb-author-name">' . $entry->get_author_name() . '</span>';
-						}
-						if ( $name && $date ) {
-							$widget_html .= ' / ';
-						}
-						if ( $date ) {
-							$widget_html .= '
-								<span class="gb-date">' . date_i18n( get_option('date_format'), $entry->get_datetime() ) . '</span>';
-						}
-						if ( $name || $date ) {
-							$widget_html .= ':<br />';
-						}
-
-						$entry_content = gwolle_gb_get_excerpt( gwolle_gb_bbcode_strip($entry->get_content()), $num_words );
-						if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
-							$entry_content = convert_smilies($entry_content);
-						}
-						$widget_html .= '
-								<span class="gb-entry-content">' . $entry_content . $raquo;
-
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_content', '', $entry );
-
-						$widget_html .= '</span>';
-
-						// Use this filter to just add something
-						$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_after', '', $entry );
-
-						if ( $html5 ) {
-							$widget_html .= '
-							</article>';
-						}
-
-						$widget_html .= '
-						</li>';
+						$widget_html .= $this->widget_single_view( $entry, $instance, $widget_item_class, $link );
 
 						$counter++;
 					}
@@ -235,7 +150,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			if ( (int) $postid > 0 ) {
 				$widget_html .= '
 					<p class="gwolle_gb_link gwolle-gb-link">
-						<a href="' . $permalink . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">' . $link_text . ' &raquo;</a>
+						<a href="' . esc_attr( $permalink ) . '" title="' . esc_attr__('Click here to get to the guestbook.', 'gwolle-gb') . '">' . $link_text . '</a>
 					</p>';
 			}
 			$widget_html .= '
@@ -254,12 +169,71 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 		}
 
+		public function widget_single_view( $entry, $instance, $widget_item_class, $link ) {
+
+			$name      = (int) esc_attr($instance['name']);
+			$date      = (int) esc_attr($instance['date']);
+			$num_words = (int) esc_attr($instance['num_words']);
+
+			$widget_html = '
+						<li class="' . $widget_item_class . '">';
+
+			$widget_html .= '
+							<article>';
+
+			// Use this filter to just add something
+			$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_before', '', $entry );
+
+			if ( $name ) {
+				$widget_html .= '
+								<span class="gb-author-name">' . $entry->get_author_name() . '</span>';
+			}
+			if ( $name && $date ) {
+				$widget_html .= '<span class="gb-author-date-separator"> / </span>';
+			}
+			if ( $date ) {
+				$widget_html .= '
+								<span class="gb-date">' . date_i18n( get_option('date_format'), $entry->get_datetime() ) . '</span>';
+			}
+			if ( $name || $date ) {
+				$widget_html .= '<br />';
+			}
+
+			if ( $num_words > 0 ) {
+				$entry_content = gwolle_gb_get_excerpt( gwolle_gb_bbcode_strip( $entry->get_content() ), $num_words );
+			} else {
+				$entry_content = gwolle_gb_bbcode_strip( $entry->get_content() );
+			}
+			if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
+				$entry_content = convert_smilies($entry_content);
+			}
+			$widget_html .= '
+								<span class="gb-entry-content">' . $entry_content . $link;
+
+			// Use this filter to just add something
+			$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_content', '', $entry );
+
+			$widget_html .= '</span>';
+
+			// Use this filter to just add something
+			$widget_html .= apply_filters( 'gwolle_gb_entry_widget_add_after', '', $entry );
+
+			$widget_html .= '
+							</article>';
+
+			$widget_html .= '
+						</li>';
+
+			return $widget_html;
+
+		}
+
 		/** @see WP_Widget::update */
-		function update($new_instance, $old_instance) {
+		public function update( $new_instance, $old_instance ) {
 			$instance = $old_instance;
-			$instance['title']       = strip_tags($new_instance['title']);
-			$instance['num_entries'] = (int) strip_tags($new_instance['num_entries']);
-			$instance['best']        = strip_tags($new_instance['best']);
+			$instance['title']       = wp_strip_all_tags($new_instance['title']);
+			$instance['num_entries'] = (int) wp_strip_all_tags($new_instance['num_entries']);
+			$instance['best']        = wp_strip_all_tags($new_instance['best']);
 			if ( isset($new_instance['no_mod']) ) {
 				$instance['no_mod']  = (int) $new_instance['no_mod'];
 			} else {
@@ -282,14 +256,14 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 			$instance['num_words']   = (int) $new_instance['num_words'];
 			$instance['book_id']     = (int) $new_instance['book_id'];
-			$instance['link_text']   = strip_tags($new_instance['link_text']);
+			$instance['link_text']   = wp_strip_all_tags($new_instance['link_text']);
 			$instance['postid']      = (int) $new_instance['postid'];
 
 			return $instance;
 		}
 
 		/** @see WP_Widget::form */
-		function form($instance) {
+		public function form( $instance ) {
 
 			$default_value = array(
 					'title'       => esc_html__('Guestbook', 'gwolle-gb'),
@@ -302,7 +276,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 					'num_words'   => 10,
 					'book_id'     => 0,
 					'link_text'   => esc_html__('Visit guestbook', 'gwolle-gb'),
-					'postid'      => 0
+					'postid'      => 0,
 				);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
 
@@ -376,14 +350,24 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 				<br />
 				<select id="<?php echo $this->get_field_id('num_words'); ?>" name="<?php echo $this->get_field_name('num_words'); ?>">
 					<?php
-					for ($i = 1; $i <= 25; $i++) {
-						echo '<option value="' . $i . '"';
-						if ( $i === $num_words ) {
+					$presets = array( 10, 30, 40, 50, 60, 70, 80, 90, 100 );
+					echo '<option value="0"';
+					if ( 0 === $num_words ) {
+						echo ' selected="selected"';
+					}
+					/* translators: Number of words to display */
+					echo '>' . esc_html__('Unlimited Words', 'gwolle-gb') . '</option>
+					';
+
+					foreach ( $presets as $preset ) {
+						echo '<option value="' . (int) $preset . '"';
+						if ( $preset === $num_words ) {
 							echo ' selected="selected"';
 						}
-						echo '>' . $i . '</option>';
-					}
-					?>
+						/* translators: Number of words to display */
+						echo '>' . $preset . ' ' . esc_html__('Words', 'gwolle-gb') . '</option>
+						';
+					} ?>
 				</select>
 			</p>
 
@@ -418,27 +402,27 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 							),
 						),
 						'update_post_term_cache' => false,
-						'update_post_meta_cache' => false
+						'update_post_meta_cache' => false,
 					);
 
 					$sel_query = new WP_Query( $args );
 					if ( $sel_query->have_posts() ) {
-						while ( $sel_query->have_posts() ) : $sel_query->the_post();
+						while ( $sel_query->have_posts() ) {
+							$sel_query->the_post();
 							$selected = false;
-							if ( get_the_ID() == $postid ) {
+							if ( get_the_ID() === $postid ) {
 								$selected = true;
 							}
 							echo '<option value="' . get_the_ID() . '"'
 							. selected( $selected )
-							. '>'. get_the_title() . '</option>';
-						endwhile;
+							. '>' . get_the_title() . '</option>';
+						}
 					}
 					wp_reset_postdata(); ?>
 				</select>
 			</p>
 			<?php
 		}
-
 	}
 
 	function gwolle_gb_widget() {

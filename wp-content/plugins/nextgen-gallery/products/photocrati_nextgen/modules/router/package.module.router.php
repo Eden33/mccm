@@ -748,10 +748,12 @@ class Mixin_Routing_App extends Mixin
             $retval = $this->object->recursive_stripslashes($_REQUEST[$key]);
         }
         if (!$found && isset($_SERVER['REQUEST_URI'])) {
-            $params = array();
-            parse_str(@parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY), $params);
+            $params = [];
+            $parsed = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+            if (is_string($parsed)) {
+                parse_str($parsed, $params);
+            }
             if (isset($params[$key])) {
-                $found = TRUE;
                 $retval = $this->object->recursive_stripslashes($params[$key]);
             }
         }
@@ -1080,9 +1082,9 @@ class C_Routing_App extends C_Component
     {
         $settings = C_NextGen_Settings::get_instance();
         $object = new stdClass();
-        $object->router_param_separator = $settings->router_param_separator;
-        $object->router_param_slug = $settings->router_param_slug;
-        $object->router_param_prefix = $settings->router_param_prefix;
+        $object->router_param_separator = $settings->get('router_param_separator', '--');
+        $object->router_param_slug = $settings->get('router_param_slug', 'nggallery');
+        $object->router_param_prefix = $settings->get('router_param_prefix', '');
         return $object;
     }
     static function &get_instance($context = False)
@@ -1229,9 +1231,9 @@ class Mixin_Url_Manipulation extends Mixin
     {
         $retval = $request_uri ? $request_uri : '/';
         $settings = C_NextGen_Settings::get_instance();
-        $sep = preg_quote($settings->router_param_separator, '#');
+        $sep = preg_quote($settings->get('router_param_separator', '--'), '#');
         $param_regex = "#((?P<id>\\w+){$sep})?(?<key>\\w+){$sep}(?P<value>.+)/?\$#";
-        $slug = $settings->router_param_slug && $remove_slug ? '/' . preg_quote($settings->router_param_slug, '#') : '';
+        $slug = $settings->get('router_param_slug', 'nggallery') && $remove_slug ? '/' . preg_quote($settings->get('router_param_slug', 'nggallery'), '#') : '';
         $slug_regex = '#' . $slug . '/?$#';
         // Remove all parameters
         while (@preg_match($param_regex, $retval, $matches)) {

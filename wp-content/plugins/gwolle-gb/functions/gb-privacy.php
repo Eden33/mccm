@@ -29,6 +29,7 @@ function gwolle_gb_remove_ip_host() {
  * Add example text to the privacy policy.
  *
  * @since 2.6.0
+ * @since WordPress 4.9.6
  */
 function gwolle_gb_add_privacy_policy_content() {
 	if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
@@ -98,13 +99,13 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 	/* Used for permalinks */
 	$books = gwolle_gb_get_permalinks();
 
-	$offset = $number * ($page - 1);
+	$offset = $number * ( $page - 1 );
 	$entries = gwolle_gb_get_entries(
 		array(
 			'all'         => 'all',
 			'offset'      => $offset,
 			'num_entries' => $number,
-			'email'       => $email_address
+			'email'       => $email_address,
 		)
 	);
 
@@ -126,21 +127,27 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 				case 'author_name':
 					$value = gwolle_gb_sanitize_output( trim( $entry->get_author_name() ) );
 					break;
+
 				case 'author_email':
 					$value = $entry->get_author_email();
 					break;
+
 				case 'author_origin':
 					$value = gwolle_gb_sanitize_output( $entry->get_author_origin() );
 					break;
+
 				case 'author_website':
 					$value = $entry->get_author_website();
 					break;
+
 				case 'author_ip':
 					$value = $entry->get_author_ip();
 					break;
+
 				case 'author_host':
 					$value = $entry->get_author_host();
 					break;
+
 				case 'datetime':
 					$value = date_i18n( get_option('date_format'), $entry->get_datetime() ) . ' ' . esc_html__('at', 'gwolle-gb') . ' ' . trim(date_i18n( get_option('time_format'), $entry->get_datetime() ));
 					break;
@@ -150,7 +157,7 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 					if ( get_option( 'gwolle_gb-showLineBreaks', 'false' ) === 'true' ) {
 						$entry_content = nl2br($entry_content);
 					}
-					if ( isset($form_setting['form_bbcode_enabled']) && $form_setting['form_bbcode_enabled']  === 'true' ) {
+					if ( isset($form_setting['form_bbcode_enabled']) && $form_setting['form_bbcode_enabled'] === 'true' ) {
 						$entry_content = gwolle_gb_bbcode_parse($entry_content);
 					} else {
 						$entry_content = gwolle_gb_bbcode_strip($entry_content);
@@ -161,11 +168,11 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 				case 'entry_link':
 					$book_id = $entry->get_book_id();
 					$permalink = '';
-					if ( isset( $books["$book_id"] ) && isset( $books["$book_id"]["permalink"] ) ) {
-						$permalink = $books["$book_id"]["permalink"];
+					if ( isset( $books["$book_id"] ) && isset( $books["$book_id"]['permalink'] ) ) {
+						$permalink = $books["$book_id"]['permalink'];
 						$permalink = add_query_arg( 'entry_id', $entry_id, $permalink );
 					}
-					if ($entry->get_ischecked() == 1 && $entry->get_isspam() == 0 && $entry->get_istrash() == 0  && strlen( $permalink ) > 0 ) {
+					if ( $entry->get_ischecked() === 1 && $entry->get_isspam() === 0 && $entry->get_istrash() === 0 && strlen( $permalink ) > 0 ) {
 						$value = sprintf(
 							'<a href="%s" target="_blank" rel="noreferrer noopener">%s</a>',
 							esc_url( $permalink ),
@@ -174,6 +181,9 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 					} else {
 						$value = esc_html__('This entry is Not Visible.', 'gwolle-gb');
 					}
+					break;
+
+				default:
 					break;
 			}
 
@@ -255,17 +265,17 @@ function gwolle_gb_personal_data_eraser( $email_address, $page = 1 ) {
 		array(
 			'offset'      => 0,
 			'num_entries' => $number,
-			'email'       => $email_address
+			'email'       => $email_address,
 		)
 	);
 
 	if ( ! is_array($entries) || empty($entries) ) {
-		$messages[] = esc_html__( 'No guestbook entries have been found for this email address.' );
+		$messages[] = esc_html__( 'No guestbook entries have been found for this email address.', 'gwolle-gb' );
 		return array(
 			'items_removed'  => false,
 			'items_retained' => false,
 			'messages'       => $messages,
-			'done'           => true
+			'done'           => true,
 		);
 	}
 
@@ -279,7 +289,7 @@ function gwolle_gb_personal_data_eraser( $email_address, $page = 1 ) {
 		} else {
 			$items_retained = true;
 			/* translators: %d: Entry ID */
-			$messages[] = sprintf( esc_html__( 'Guestbook entry %d contains personal data but could not be anonymized.' ), $entry->get_id() );
+			$messages[] = sprintf( esc_html__( 'Guestbook entry %d contains personal data but could not be anonymized.', 'gwolle-gb' ), $entry->get_id() );
 		}
 	}
 
@@ -289,7 +299,7 @@ function gwolle_gb_personal_data_eraser( $email_address, $page = 1 ) {
 		'items_removed'  => $items_removed,
 		'items_retained' => $items_retained,
 		'messages'       => $messages,
-		'done'           => $done
+		'done'           => $done,
 	);
 }
 
@@ -303,6 +313,7 @@ function gwolle_gb_personal_data_eraser( $email_address, $page = 1 ) {
  * @return object $entry anonymized instance of gwolle_gb_entry class.
  */
 function gwolle_gb_privacy_anonymize_entry( $entry ) {
+
 	$entry->set_author_name( /* translators: Username */ esc_html__( 'Anonymous', 'gwolle-gb' ) );
 	$entry->set_author_id( 0 );
 	$entry->set_author_email( '' );
@@ -312,4 +323,5 @@ function gwolle_gb_privacy_anonymize_entry( $entry ) {
 	$entry->set_author_host( '' );
 
 	return $entry;
+
 }

@@ -3,7 +3,7 @@
 /*
  * WordPress Actions and Filters.
  * See the Plugin API in the Codex:
- * http://codex.wordpress.org/Plugin_API
+ * https://codex.wordpress.org/Plugin_API
  */
 
 
@@ -21,6 +21,9 @@ function gwolle_gb_adminmenu() {
 	/*
 	 * How to add new menu-entries:
 	 * add_menu_page( $page_title, $menu_title, $access_level, $file, $function = '', $icon_url = '' )
+	 *
+	 * How to add new sub-menu-entries:
+	 * add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '', $position = null )
 	 */
 
 	// Counter
@@ -30,7 +33,7 @@ function gwolle_gb_adminmenu() {
 			array(
 				'checked' => 'unchecked',
 				'trash'   => 'notrash',
-				'spam'    => 'nospam'
+				'spam'    => 'nospam',
 			)
 		);
 		set_transient( 'gwolle_gb_menu_counter', $count_unchecked, DAY_IN_SECONDS );
@@ -42,7 +45,7 @@ function gwolle_gb_adminmenu() {
 	add_menu_page(
 		esc_html__('Guestbook', 'gwolle-gb'), /* translators: Menu entry */
 		$menu_text,
-		'moderate_comments',
+		'gwolle_gb_moderate_comments',
 		GWOLLE_GB_FOLDER . '/gwolle-gb.php',
 		'gwolle_gb_welcome',
 		'dashicons-testimonial'
@@ -54,13 +57,13 @@ function gwolle_gb_adminmenu() {
 		GWOLLE_GB_FOLDER . '/gwolle-gb.php',
 		esc_html__('Entries', 'gwolle-gb'), /* translators: Menu entry */
 		$menu_text,
-		'moderate_comments',
+		'gwolle_gb_moderate_comments',
 		GWOLLE_GB_FOLDER . '/entries.php',
 		'gwolle_gb_page_entries'
 	);
 
 	// Admin page: admin/editor.php
-	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Entry editor', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Add/Edit entry', 'gwolle-gb'), 'moderate_comments', GWOLLE_GB_FOLDER . '/editor.php', 'gwolle_gb_page_editor' );
+	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Entry editor', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Add/Edit entry', 'gwolle-gb'), 'gwolle_gb_moderate_comments', GWOLLE_GB_FOLDER . '/editor.php', 'gwolle_gb_page_editor' );
 
 	// Admin page: admin/settings.php
 	add_submenu_page( GWOLLE_GB_FOLDER . '/gwolle-gb.php', esc_html__('Settings', 'gwolle-gb'), /* translators: Menu entry */ esc_html__('Settings', 'gwolle-gb'), 'manage_options', GWOLLE_GB_FOLDER . '/settings.php', 'gwolle_gb_page_settings' );
@@ -97,8 +100,8 @@ function gwolle_gb_admin_enqueue() {
  * Add Settings link to the main plugin page
  */
 function gwolle_gb_links( $links, $file ) {
-	if ( $file == plugin_basename( dirname(__FILE__).'/gwolle-gb.php' ) ) {
-		$links[] = '<a href="' . admin_url( 'admin.php?page=gwolle-gb/settings.php' ) . '">'.__( 'Settings', 'gwolle-gb' ).'</a>';
+	if ( $file === GWOLLE_GB_FOLDER . '/gwolle-gb.php' ) {
+		$links[] = '<a href="' . admin_url( 'admin.php?page=gwolle-gb/settings.php' ) . '">' . esc_html__( 'Settings', 'gwolle-gb' ) . '</a>';
 	}
 	return $links;
 }
@@ -116,7 +119,7 @@ function gwolle_gb_multisite_uninstall() {
 	global $wpdb;
 
 	if ( is_admin() ) {
-		if ( function_exists('is_multisite') && is_multisite() ) {
+		if ( is_multisite() ) {
 			$do_uninstall = apply_filters( 'gwolle_gb_multisite_uninstall', false );
 			if ( $do_uninstall ) {
 				$blogids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
@@ -134,3 +137,39 @@ function gwolle_gb_multisite_uninstall() {
 	}
 }
 add_action('admin_init', 'gwolle_gb_multisite_uninstall', 99);
+
+
+/*
+ * Show admin notice when gwolle-gb-addon is active and needs an update.
+ * Is dismissable by deactivating or updating.
+ *
+ * @since 4.0.0
+ */
+function gwolle_gb_deps_admin_notice() {
+
+	$class = 'notice notice-error';
+
+	if ( ! isset($_GET['page']) ) {
+		return;
+	}
+	$pos = strpos($_GET['page'], 'gwolle-gb');
+	if ($pos === false) {
+		return;
+	}
+
+	$active = is_plugin_active( 'gwolle-gb-addon/gwolle-gb-addon.php' ); // true or false
+	if ( $active && defined( 'GWOLLE_GB_ADDON_VER' ) ) {
+		$zeno_el = '<a href="https://zenoweb.nl/downloads/gwolle-guestbook-add-on/" target="_blank">';
+		$zeno_el_close = '</a>';
+		$required_version = '2.5.0';
+
+		if ( version_compare( GWOLLE_GB_ADDON_VER, $required_version, '>=' ) ) {
+			return; // We have the minimal version.
+		}
+
+		$message = sprintf( esc_html__( 'Gwolle Guestbook: This version of the Gwolle Guestbook Add-On is too old for this version of Gwolle Guestbook, you need at least %1$s. You have version %2$s. Go to the %3$sZenoWeb Webshop%4$s and login, download and update the Add-On.', 'gwolle-gb' ), $required_version, GWOLLE_GB_ADDON_VER, $zeno_el, $zeno_el_close );
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+	}
+
+}
+add_action( 'admin_notices', 'gwolle_gb_deps_admin_notice' );

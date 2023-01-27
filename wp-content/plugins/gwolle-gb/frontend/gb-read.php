@@ -19,9 +19,15 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	$output = '';
 
 	$is_search = gwolle_gb_is_search();
+	$entries_list_class = 'gwolle-gb-read';
+	if ( get_option( 'gwolle_gb-form_ajax', 'true' ) === 'true' ) {
+		$entries_list_class .= ' gwolle-gb-ajax';
+	}
 
 	/* Show single entry if requested and is not search. */
-	if ( ((int) $shortcode_atts['entry_id'] > 0 && ! $is_search ) || ( isset($_GET['entry_id']) && (int) $_GET['entry_id'] > 0  && ! $is_search ) ) {
+	if ( ( (int) $shortcode_atts['entry_id'] > 0 && ! $is_search ) || ( isset($_GET['entry_id']) && (int) $_GET['entry_id'] > 0 && ! $is_search ) ) {
+
+		$entries_list_class .= ' gwolle-gb-single-entry';
 
 		if ( (int) $shortcode_atts['entry_id'] > 0 ) {
 			$entry_id = (int) $shortcode_atts['entry_id'];
@@ -38,13 +44,13 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 		} else if ( $entry->get_isspam() === 1 || $entry->get_istrash() === 1 || $entry->get_ischecked() === 0 ) {
 			// Not visible.
 			$output .= esc_html__( 'Sorry, but this entry does not seem to exist.', 'gwolle-gb' );
-		} else if ( $entry_book_id != $shortcode_atts['book_id'] ) {
+		} else if ( $entry_book_id !== (int) $shortcode_atts['book_id'] ) {
 			// Not the right book.
 			$output .= esc_html__( 'Sorry, but this entry does not seem to exist.', 'gwolle-gb' );
 		} else {
 
-			$entries_list_class = apply_filters( 'gwolle_gb_entries_list_class', '' );
-			$output .= '<div id="gwolle_gb_entries" class="' . $entries_list_class . '" data-book_id="' . $shortcode_atts['book_id'] . '">';
+			$entries_list_class = apply_filters( 'gwolle_gb_entries_list_class', $entries_list_class );
+			$output .= '<div class="' . esc_attr( $entries_list_class ) . '" data-book_id="' . (int) $shortcode_atts['book_id'] . '">';
 
 			$first = true;
 			$counter = 0;
@@ -72,7 +78,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'checked' => 'checked',
 				'trash'   => 'notrash',
 				'spam'    => 'nospam',
-				'book_id' => $shortcode_atts['book_id']
+				'book_id' => $shortcode_atts['book_id'],
 			)
 		);
 	} else {
@@ -85,32 +91,37 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 					'checked' => 'checked',
 					'trash'   => 'notrash',
 					'spam'    => 'nospam',
-					'book_id' => $shortcode_atts['book_id']
+					'book_id' => $shortcode_atts['book_id'],
 				)
 			);
 			set_transient( $key, $entries_total, DAY_IN_SECONDS );
 		}
 	}
-	$pages_total = ceil( $entries_total / $num_entries );
+	$pages_total = (int) ceil( $entries_total / $num_entries );
 
-	$pageNum = 1;
+	$page_num = 1;
 	if ( isset($_GET['pageNum']) && is_numeric($_GET['pageNum']) ) {
-		$pageNum = intval($_GET['pageNum']);
+		$page_num = (int) $_GET['pageNum'];
 	}
 
-	if ( $pageNum > $pages_total ) {
+	if ( $page_num > $pages_total ) {
 		// Page doesnot exist
-		$pageNum = 1;
+		$page_num = 1;
 	}
 
-	if ( $pageNum == 1 && $entries_total > 0 ) {
+	if ( $page_num === 1 && $entries_total > 0 ) {
 		$offset = 0;
-	} elseif ( $entries_total == 0 ) {
+	} else if ( $entries_total === 0 ) {
 		$offset = 0;
 	} else {
-		$offset = ( $pageNum - 1 ) * $num_entries;
+		$offset = ( $page_num - 1 ) * $num_entries;
 	}
 
+	if ( $is_search ) {
+		$entries_list_class .= ' gwolle-gb-entries-list-search';
+	} else {
+		$entries_list_class .= ' gwolle-gb-entries-list';
+	}
 
 	/* Get the entries for the frontend */
 	if ( $is_search ) {
@@ -121,10 +132,10 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'checked'     => 'checked',
 				'trash'       => 'notrash',
 				'spam'        => 'nospam',
-				'book_id'     => $shortcode_atts['book_id']
+				'book_id'     => $shortcode_atts['book_id'],
 			)
 		);
-	} else if ( $is_search && isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
+	} else if ( $is_search && isset($_GET['show_all']) && $_GET['show_all'] === 'true' ) {
 		$entries = gwolle_gb_get_entries_from_search(
 			array(
 				'offset'      => 0,
@@ -132,11 +143,11 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'checked'     => 'checked',
 				'trash'       => 'notrash',
 				'spam'        => 'nospam',
-				'book_id'     => $shortcode_atts['book_id']
+				'book_id'     => $shortcode_atts['book_id'],
 			)
 		);
-		$pageNum = 0; // do not have it set to 1, this way the '1' will be clickable too.
-	} else if ( isset($_GET['show_all']) && $_GET['show_all'] == 'true' ) {
+		$page_num = 0; // do not have it set to 1, this way the '1' will be clickable too.
+	} else if ( isset($_GET['show_all']) && $_GET['show_all'] === 'true' ) {
 		$entries = gwolle_gb_get_entries(
 			array(
 				'offset'      => 0,
@@ -144,10 +155,10 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'checked'     => 'checked',
 				'trash'       => 'notrash',
 				'spam'        => 'nospam',
-				'book_id'     => $shortcode_atts['book_id']
+				'book_id'     => $shortcode_atts['book_id'],
 			)
 		);
-		$pageNum = 0; // do not have it set to 1, this way the '1' will be clickable too.
+		$page_num = 0; // do not have it set to 1, this way the '1' will be clickable too.
 	} else {
 		$entries = gwolle_gb_get_entries(
 			array(
@@ -156,7 +167,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 				'checked'     => 'checked',
 				'trash'       => 'notrash',
 				'spam'        => 'nospam',
-				'book_id'     => $shortcode_atts['book_id']
+				'book_id'     => $shortcode_atts['book_id'],
 			)
 		);
 	}
@@ -164,44 +175,44 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 	/* Page navigation on top */
 	$navigation = (int) get_option( 'gwolle_gb-navigation', 0 );
-	$entries_list_class = '';
-	if ( $navigation == 0 ) {
-		$pagination = gwolle_gb_pagination_frontend( $pageNum, $pages_total );
+	if ( $navigation === 0 ) {
+		$pagination = gwolle_gb_pagination_frontend( $page_num, $pages_total );
 		$output .= $pagination;
-	} else if ( $navigation == 1 ) {
-		$entries_list_class .= 'gwolle_gb_infinite gwolle-gb-infinite';
+	} else if ( $navigation === 1 ) {
+		$entries_list_class .= ' gwolle_gb_infinite gwolle-gb-infinite';
 	}
 	$entries_list_class = apply_filters( 'gwolle_gb_entries_list_class', $entries_list_class );
 
 	/* Entries from the template */
 	if ( ! is_array( $entries ) || empty( $entries ) ) {
 		$no_entries = apply_filters( 'gwolle_gb_read_no_entries', esc_html__('(no entries yet)', 'gwolle-gb') );
-		$output .= '<div id="gwolle_gb_entries" class="' . $entries_list_class . '" data-book_id="' . $shortcode_atts['book_id'] . '">';
+		$output .= '<div class="' . esc_attr( $entries_list_class ) . '" data-book_id="' . (int) $shortcode_atts['book_id'] . '">';
 		$output .= $no_entries;
 		$output .= '</div>';
 	} else {
 		$first = true;
 
-		$output .= '<div id="gwolle_gb_entries" class="' . $entries_list_class . '" data-book_id="' . $shortcode_atts['book_id'] . '">';
+		$output .= '<div class="' . esc_attr( $entries_list_class ) . '" data-book_id="' . (int) $shortcode_atts['book_id'] . '" data-page_id="' . (int) $page_num . '">
+		';
 
 		$args = array(
 				'checked' => 'checked',
 				'trash'   => 'notrash',
 				'spam'    => 'nospam',
-				'book_id' => $shortcode_atts['book_id']
+				'book_id' => (int) $shortcode_atts['book_id'],
 			);
 		$output .= apply_filters( 'gwolle_gb_entries_list_before', '', $args );
 
 
 		// Try to load and require_once the template from the themes folders.
-		if ( locate_template( array('gwolle_gb-entry.php'), true, true ) == '') {
+		if ( locate_template( array( 'gwolle_gb-entry.php' ), true, true ) === '') {
 
 			$output .= '<!-- Gwolle-GB Entry: Default Template Loaded -->
 				';
 
 			// No template found and loaded in the theme folders.
 			// Load the template from the plugin folder.
-			require_once( GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php' );
+			require_once  GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php';
 
 		} else {
 
@@ -230,7 +241,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 
 	/* Page navigation on bottom */
-	if ( $navigation == 0 ) {
+	if ( $navigation === 0 ) {
 		$output .= $pagination;
 	}
 
@@ -239,4 +250,5 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	$output = apply_filters( 'gwolle_gb_entries_read', $output);
 
 	return $output;
+
 }

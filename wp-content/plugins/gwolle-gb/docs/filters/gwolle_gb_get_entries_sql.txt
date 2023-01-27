@@ -16,12 +16,22 @@ Where 'filter_function_name' is the function WordPress should call when the filt
 ==Examples==
 
 // Set ordering to ASC.
-function my_gwolle_gb_get_entries_sql( $sql, $sql_nonprepared, $values, $args ) {
-	// $sql is a string
+function my_asc_gwolle_gb_get_entries_sql( $sql, $sql_nonprepared, $values, $args ) {
+
+	global $wpdb;
+
+	if ( is_admin() ) {
+		return $sql;
+	}
+
 	$old = 'DESC';
 	$new = 'ASC';
-	$sql = str_replace( $old, $new, $sql );
+	$sql_nonprepared = str_replace( $old, $new, $sql_nonprepared );
+	// Always use $wpdb->prepare(), no exceptions.
+	$sql = $wpdb->prepare( $sql_nonprepared, $values );
+
 	return $sql;
+
 }
-add_filter( 'gwolle_gb_get_entries_sql', 'my_gwolle_gb_get_entries_sql', 10, 4 );
+add_filter( 'gwolle_gb_get_entries_sql', 'my_asc_gwolle_gb_get_entries_sql', 10, 4 );
 

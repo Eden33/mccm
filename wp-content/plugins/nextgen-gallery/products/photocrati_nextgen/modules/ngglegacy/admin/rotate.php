@@ -35,15 +35,21 @@ $preview_image = $storage->get_image_url($id, 'full');
 
 <script type='text/javascript'>
 	var selectedImage = "thumb<?php echo $id ?>";
-	
-	function rotateImage() {
+    var rotateImageNonce = '<?php print wp_create_nonce('ngg-rotate-image'); ?>';
+
+    function rotateImage() {
 		
 		var rotate_angle = jQuery('input[name=ra]:checked').val();
-		
+
 		jQuery.ajax({
 		  url: ajaxurl,
 		  type : "POST",
-		  data:  {action: 'rotateImage', id: <?php echo $id ?>, ra: rotate_angle},
+		  data:  {
+              action: 'rotateImage',
+              nonce: rotateImageNonce,
+              id: <?php print esc_attr($id); ?>,
+              ra: rotate_angle
+          },
 		  cache: false,
 		  success: function (msg) { 
 				var d = new Date();
@@ -73,7 +79,7 @@ $preview_image = $storage->get_image_url($id, 'full');
 <table align="center">
 	<tr>
 		<td valign="middle" align="center" id="ngg-overlay-dialog-main">
-			<img src="<?php echo nextgen_esc_url( $preview_image ); ?>"
+			<img src="<?php echo nextgen_esc_url( $preview_image ) . '?' . time() . rand(1,100); ?>"
                  alt=""
                  id="imageToEdit"
                  style="max-width: 450px;
