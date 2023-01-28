@@ -18,6 +18,7 @@
 phpinfo.html
 wp-config.php
 error.log
+debug.log
 
 # ignore really-simpe-captcha tmp directory
 /wp-content/plugins/really-simple-captcha/tmp
