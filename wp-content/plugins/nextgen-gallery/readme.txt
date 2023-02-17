@@ -2,7 +2,7 @@
 Contributors: photocrati, imagely
 Tags: wordpress gallery plugin, gallery, nextgen, nextgen gallery, photo gallery, image gallery, photography, slideshow, images, photo, photo album, watermark
 Requires at least: 5.5.4
-Stable tag: 3.33
+Stable tag: 3.35
 Tested up to: 6.1.1
 License: GPLv3
 Requires PHP: 5.6
@@ -178,6 +178,12 @@ For more information, feel free to visit the official website for the NextGEN Ga
 
 
 == Changelog ==
+
+= V3.35  - 02.03.2023 =
+* Fixed:   Sites still using PHP 5.6 experience a fatal error due to an incompatibility with the latest version of Composer.
+
+= V3.34  - 02.02.2023 =
+* Fixed:   FontAwesome could load SVG font files which broke some Pro Lightbox elements.
 
 = V3.33  - 01.18.2023 =
 * Fixed:   FontAwesome icons were broken by 3.32 if not enqueued by another source.

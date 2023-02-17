@@ -284,7 +284,7 @@ class M_Gallery_Display extends C_Base_Module
         );
         if (!wp_script_is('fontawesome', 'registered'))
         {
-            // add_filter('script_loader_tag', 'M_Gallery_Display::fix_fontawesome_script_tag', 10, 2);
+            add_filter('script_loader_tag', 'M_Gallery_Display::fix_fontawesome_script_tag', 10, 2);
             wp_enqueue_script(
                 'fontawesome',
                 C_Router::get_instance()->get_static_url('photocrati-nextgen_gallery_display#fontawesome/js/all.min.js'),
@@ -321,7 +321,7 @@ class M_Gallery_Display extends C_Base_Module
         if ('fontawesome' !== $handle)
             return $tag;
 
-        return str_replace(' src', ' defer integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous" data-auto-replace-svg="false" data-keep-original-source="false" data-search-pseudo-elements src', $tag);
+        return str_replace(' src', ' defer data-auto-replace-svg="false" data-keep-original-source="false" data-search-pseudo-elements src', $tag);
     }
 
   static function _render_related_string($sluglist=array(), $maxImages=NULL, $type=NULL)
