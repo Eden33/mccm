@@ -38,7 +38,7 @@ add_action('wp_head', 'wp_head_event');
 /* REGISTER COUNTDOWN SECTION ------------------------------------------------------------------ */
 // russmedia server setting is UTC+0 
 // hour and minute configuration
-$_registration_start_date = new DateTime('2023-04-03 22:00');
+$_registration_start_date = new DateTime('2023-04-02 22:00');
 $_registration_ctr_enabled = true;
 $_registration_ip_whitelist = array(
 );
@@ -77,7 +77,7 @@ function filter_the_content( $content )
     $registration_prohibited_msg = 'Zur Zeit sind keine Rennanmeldungen m&ouml;glich.';
 	$content_currently_not_available = 'Der Inhalt dieser Seite ist zurzeit leider nicht verfügbar.';
     
-	if((is_page( 'clubsport-online-anmeldung' )
+	if((is_page( 'mx-online-anmeldung' )
 	|| is_page( 'sjmcc-online-anmeldung')
 	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' ))
 	&& is_registration_enabled() === false) 
