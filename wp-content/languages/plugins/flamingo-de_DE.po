@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Flamingo - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-02-07 23:50:28+0000\n"
+"PO-Revision-Date: 2023-02-23 17:16:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -447,7 +447,7 @@ msgstr "Vorname"
 
 #: admin/admin.php:234 admin/includes/meta-boxes.php:253
 msgid "Full name"
-msgstr "Voller Name"
+msgstr "Vollständiger Name"
 
 #: admin/admin.php:233 admin/includes/class-contacts-list-table.php:12
 msgid "Email"
