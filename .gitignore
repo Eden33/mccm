@@ -22,3 +22,6 @@ debug.log
 
 # ignore really-simpe-captcha tmp directory
 /wp-content/plugins/really-simple-captcha/tmp
+
+# ignore docker development directory
+/wordpress
