@@ -79,8 +79,8 @@ function gwolle_gb_page_settingstab_email() {
 				<?php esc_html_e('Select a user that you want subscribed to the notification emails.', 'gwolle-gb'); ?>
 				<?php esc_html_e("You will only see users with the roles of Administrator, Editor and Author, who have the capability 'gwolle_gb_moderate_comments'.", 'gwolle-gb'); ?><br />
 				<?php $link_wp = '<a href="' . admin_url( '/user-new.php' ) . '">';
-					/* translators: %s is a link */
-					echo sprintf( esc_html__( 'A new WordPress user can be added on %sAdd New in the Users menu section%s.', 'gwolle-gb' ), $link_wp, '</a>' ); ?>
+					/* translators: %1$s and %2$s is a link */
+					echo sprintf( esc_html__( 'A new WordPress user can be added on %1$sAdd New in the Users menu section%2$s.', 'gwolle-gb' ), $link_wp, '</a>' ); ?>
 					<?php esc_html_e('After adding a new user it should be available in the dropdown menu above.', 'gwolle-gb'); ?>
 				</label>
 			</td>
@@ -111,7 +111,7 @@ function gwolle_gb_page_settingstab_email() {
 							if ( $user_info->ID === get_current_user_id() ) {
 								$username .= ' ' . esc_html__('You', 'gwolle-gb');
 							}
-							echo '<option value="' . (int) $user_info->ID . '">' . $username . '</option>';
+							echo '<option value="' . (int) $user_info->ID . '">' . esc_html( $username ) . '</option>';
 						}
 					} ?>
 				</select><br />
@@ -141,7 +141,7 @@ function gwolle_gb_page_settingstab_email() {
 				<?php
 				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-adminMailContent', false), 'setting_textarea' );
 				if ( ! $mailtext) { // No text set by the user. Use the default text.
-					$mailtext = esc_html__("
+					$mailtext = esc_html__('
 Hello,
 
 There is a new guestbook entry at %blog_name%.
@@ -157,7 +157,7 @@ User email: %user_email%
 Entry status: %status%
 Entry content:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 				} ?>
 				<textarea name="adminMailContent" id="adminMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
@@ -170,7 +170,7 @@ Entry content:
 						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailtags[$i] . '%';
+						echo '%' . esc_attr( $mailtags[$i] ) . '%';
 					}
 					echo '.'; ?>
 				</span>
@@ -201,7 +201,7 @@ Entry content:
 				<?php
 				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-authorMailContent', false), 'setting_textarea' );
 				if ( ! $mailtext) { // No text set by the user. Use the default text.
-					$mailtext = esc_html__("
+					$mailtext = esc_html__('
 Hello,
 
 You have just posted a new guestbook entry at %blog_name%.
@@ -215,7 +215,7 @@ User name: %user_name%
 User email: %user_email%
 Entry content:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 				} ?>
 				<textarea name="authorMailContent" id="authorMailContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
@@ -228,7 +228,7 @@ Entry content:
 						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailtags[$i] . '%';
+						echo '%' . esc_attr( $mailtags[$i] ) . '%';
 					}
 					?>
 				</span>
@@ -259,7 +259,7 @@ Entry content:
 				<?php
 				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-authormoderationcontent', false), 'setting_textarea' );
 				if ( ! $mailtext) { // No text set by the user. Use the default text.
-					$mailtext = esc_html__("
+					$mailtext = esc_html__('
 Hello,
 
 An admin has just moderated your guestbook entry at %blog_name%.
@@ -273,7 +273,7 @@ Website address: %blog_url%
 
 Original entry posted on %date%:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 				} ?>
 				<textarea name="authormoderationcontent" id="authormoderationcontent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
@@ -286,7 +286,7 @@ Original entry posted on %date%:
 						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailtags[$i] . '%';
+						echo '%' . esc_attr( $mailtags[$i] ) . '%';
 					}
 					?>
 				</span>
@@ -299,7 +299,7 @@ Original entry posted on %date%:
 				<?php
 				$mailtext = gwolle_gb_sanitize_output( get_option('gwolle_gb-mail_admin_replyContent', false), 'setting_textarea' );
 				if ( ! $mailtext) { // No text set by the user. Use the default text.
-					$mailtext = esc_html__("
+					$mailtext = esc_html__('
 Hello,
 
 An admin has just added or changed a reply message to your guestbook entry at %blog_name%.
@@ -315,7 +315,7 @@ Admin Reply:
 
 Original entry posted on %date%:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 				} ?>
 				<textarea name="gwolle_gb-mail_admin_replyContent" id="gwolle_gb-mail_admin_replyContent" style="width:400px;height:300px;" class="regular-text"><?php echo esc_textarea( $mailtext ); ?></textarea>
 				<br />
@@ -328,7 +328,7 @@ Original entry posted on %date%:
 						if ($i !== 0) {
 							echo ', ';
 						}
-						echo '%' . $mailtags[$i] . '%';
+						echo '%' . esc_attr( $mailtags[$i] ) . '%';
 					}
 					?>
 				</span>

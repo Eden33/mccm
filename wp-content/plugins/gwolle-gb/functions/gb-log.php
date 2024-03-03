@@ -24,6 +24,7 @@ function gwolle_gb_add_log_entry( $entry_id, $subject ) {
 	$log_messages = array(
 		'entry-unchecked',
 		'entry-checked',
+		'entry-checked-by-email',
 		'marked-as-spam',
 		'marked-as-not-spam',
 		'marked-by-honeypot',
@@ -108,6 +109,7 @@ function gwolle_gb_get_log_entries( $entry_id ) {
 	$log_messages = array(
 		'entry-unchecked'             => /* translators: Log message */ esc_html__('Entry has been locked.', 'gwolle-gb'),
 		'entry-checked'               => /* translators: Log message */ esc_html__('Entry has been checked.', 'gwolle-gb'),
+		'entry-checked-by-email'      => /* translators: Log message */ esc_html__('Entry has been checked by email.', 'gwolle-gb'),
 		'marked-as-spam'              => /* translators: Log message */ esc_html__('Entry marked as spam.', 'gwolle-gb'),
 		'marked-as-not-spam'          => /* translators: Log message */ esc_html__('Entry marked as not spam.', 'gwolle-gb'),
 		'marked-by-honeypot'          => /* translators: Log message */ esc_html__('Entry marked by the Honeypot.', 'gwolle-gb'),

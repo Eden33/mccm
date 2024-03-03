@@ -80,7 +80,7 @@ function gwolle_gb_register() {
 	wp_enqueue_script('jquery');
 
 	// Register script for frontend. Load it later.
-	wp_register_script( 'gwolle_gb_frontend_js', GWOLLE_GB_URL . 'frontend/js/gwolle-gb-frontend.js', array('jquery'), GWOLLE_GB_VER, true );
+	wp_register_script( 'gwolle_gb_frontend_js', GWOLLE_GB_URL . 'frontend/js/gwolle-gb-frontend.js', array( 'jquery' ), GWOLLE_GB_VER, true );
 	$data_to_be_passed = array(
 		'ajax_url'     => admin_url('admin-ajax.php'),
 		'load_message' => /* translators: Infinite Scroll */ esc_html__('Loading more...', 'gwolle-gb'),

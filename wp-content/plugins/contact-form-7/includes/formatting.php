@@ -14,7 +14,7 @@ function wpcf7_autop( $input, $br = true ) {
 	// Replace non-HTML embedded elements with placeholders.
 	$input = preg_replace_callback(
 		'/<(math|svg).*?<\/\1>/is',
-		function ( $matches ) use ( &$placeholders ) {
+		static function ( $matches ) use ( &$placeholders ) {
 			$placeholder = sprintf(
 				'<%1$s id="%2$s" />',
 				WPCF7_HTMLFormatter::placeholder_inline,
@@ -261,7 +261,7 @@ function wpcf7_canonicalize( $text, $args = '' ) {
  * @return string Sanitized unit-tag.
  */
 function wpcf7_sanitize_unit_tag( $tag ) {
-	$tag = preg_replace( '/[^A-Za-z0-9_-]/', '', $tag );
+	$tag = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $tag );
 	return $tag;
 }
 
@@ -274,6 +274,17 @@ function wpcf7_sanitize_unit_tag( $tag ) {
  */
 function wpcf7_antiscript_file_name( $filename ) {
 	$filename = wp_basename( $filename );
+
+	// Apply part of protection logic from sanitize_file_name().
+	$filename = str_replace(
+		array(
+			'?', '[', ']', '/', '\\', '=', '<', '>', ':', ';', ',', "'", '"',
+			'&', '$', '#', '*', '(', ')', '|', '~', '`', '!', '{', '}',
+			'%', '+', '’', '«', '»', '”', '“', chr( 0 )
+		),
+		'',
+		$filename
+	);
 
 	$filename = preg_replace( '/[\r\n\t -]+/', '-', $filename );
 	$filename = preg_replace( '/[\pC\pZ]+/iu', '', $filename );
@@ -444,7 +455,7 @@ function wpcf7_kses_allowed_html( $context = 'form' ) {
 		);
 
 		$additional_tags_for_form = array_map(
-			function ( $elm ) {
+			static function ( $elm ) {
 				$global_attributes = array(
 					'aria-atomic' => true,
 					'aria-checked' => true,
@@ -502,4 +513,57 @@ function wpcf7_kses( $input, $context = 'form' ) {
 	);
 
 	return $output;
+}
+
+
+/**
+ * Returns a formatted string of HTML attributes.
+ *
+ * @param array $atts Associative array of attribute name and value pairs.
+ * @return string Formatted HTML attributes.
+ */
+function wpcf7_format_atts( $atts ) {
+	$atts_filtered = array();
+
+	foreach ( $atts as $name => $value ) {
+		$name = strtolower( trim( $name ) );
+
+		if ( ! preg_match( '/^[a-z_:][a-z_:.0-9-]*$/', $name ) ) {
+			continue;
+		}
+
+		static $boolean_attributes = array(
+			'checked',
+			'disabled',
+			'inert',
+			'multiple',
+			'readonly',
+			'required',
+			'selected',
+		);
+
+		if ( in_array( $name, $boolean_attributes ) and '' === $value ) {
+			$value = false;
+		}
+
+		if ( is_numeric( $value ) ) {
+			$value = (string) $value;
+		}
+
+		if ( null === $value or false === $value ) {
+			unset( $atts_filtered[$name] );
+		} elseif ( true === $value ) {
+			$atts_filtered[$name] = $name; // boolean attribute
+		} elseif ( is_string( $value ) ) {
+			$atts_filtered[$name] = trim( $value );
+		}
+	}
+
+	$output = '';
+
+	foreach ( $atts_filtered as $name => $value ) {
+		$output .= sprintf( ' %1$s="%2$s"', $name, esc_attr( $value ) );
+	}
+
+	return trim( $output );
 }

@@ -21,7 +21,7 @@
 .gwolle-gb-write-button {
 	margin: 20px 0 10px;
 }
-.gwolle-gb-write-button input.button {
+html body div.gwolle-gb div.gwolle-gb-write-button input[type="button"].button {
 	float: none; /* To avoid problems with too invasive themes. */
 }
 
@@ -242,7 +242,7 @@ body .gwolle-gb-content a {
 }
 .gwolle-gb .gb-entry .gb-entry-content img {
 	max-width: 100%;
-	max-height: 500px;
+	max-height: 700px;
 }
 .gwolle-gb .gb-entry .gb-highlight {
 	background-color: #ddff00;

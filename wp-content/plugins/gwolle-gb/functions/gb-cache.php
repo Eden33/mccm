@@ -14,6 +14,12 @@ if ( strpos($_SERVER['PHP_SELF'], basename(__FILE__) )) {
  */
 function gwolle_gb_clear_cache( $entry = false ) {
 
+	$page_id = 0;
+	if ( is_object( $entry ) && is_a( $entry, 'gwolle_gb_entry' ) ) {
+		$book_id = $entry->get_book_id();
+		$page_id = (int) gwolle_gb_get_postid( $book_id );
+	}
+
 	/* Default WordPress */
 	wp_cache_flush();
 
@@ -76,6 +82,12 @@ function gwolle_gb_clear_cache( $entry = false ) {
 	/* Siteground Cache */
 	if (function_exists('sg_cachepress_purge_cache')) {
 		sg_cachepress_purge_cache();
+	}
+
+	/* Litespeed Cache
+	https://docs.litespeedtech.com/lscache/lscwp/api/#purgeBest */
+	if ( defined('LSCWP_V') ) {
+		do_action( 'litespeed_purge_post', $page_id );
 	}
 
 }

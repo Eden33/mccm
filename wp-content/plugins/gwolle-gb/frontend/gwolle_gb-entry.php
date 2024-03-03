@@ -144,10 +144,11 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 			$excerpt_length = (int) get_option( 'gwolle_gb-excerpt_length', 0 );
 			if ( $excerpt_length > 0 ) {
 				$readmore = '... <a href="#" class="gwolle-gb-readmore" title="' . esc_attr__('Expand this entry and read more', 'gwolle-gb') . '">' . esc_html__('Read more', 'gwolle-gb') . '</a>';
+				$readless = '... <a href="#" class="gwolle-gb-readless" title="' . esc_attr__('Collapse this entry again', 'gwolle-gb') . '">' . esc_html__('Collapse', 'gwolle-gb') . '</a>';
 				$entry_excerpt = wp_trim_words( $entry_content, $excerpt_length, $readmore );
 				$entry_content = '
 						<div class="gb-entry-excerpt">' . $entry_excerpt . '</div>
-						<div class="gb-entry-full-content gwolle-gb-hide">' . $entry_content . '</div>';
+						<div class="gb-entry-full-content gwolle-gb-hide">' . $entry_content . $readless . '</div>';
 			}
 			if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
 				// should be done after wp_trim_words to keep all the smileys intact.
@@ -221,7 +222,7 @@ if ( ! function_exists('gwolle_gb_entry_template') ) {
 					$admin_reply .= '
 						<div class="gb-admin_reply-excerpt">' . $admin_reply_excerpt . '</div>
 						<div class="gb-admin_reply-full-content gwolle-gb-hide">
-						' . $admin_reply_content . '
+						' . $admin_reply_content . $readless . '
 						</div>';
 				} else {
 					$admin_reply .= '

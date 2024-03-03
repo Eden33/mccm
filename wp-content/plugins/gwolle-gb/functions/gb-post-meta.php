@@ -87,7 +87,7 @@ add_filter( 'the_content', 'gwolle_gb_content_filter_for_meta_keys', 1 ); // bef
  *
  * @since 2.1.5
  */
-function gwolle_gb_is_protected_meta( $protected, $meta_key, $meta_type ) {
+function gwolle_gb_is_protected_meta( $protected_meta, $meta_key, $meta_type ) {
 
 	switch ($meta_key) {
 		case 'gwolle_gb_read':
@@ -97,10 +97,10 @@ function gwolle_gb_is_protected_meta( $protected, $meta_key, $meta_type ) {
 			return true;
 
 		default:
-			return $protected;
+			return $protected_meta;
 	}
 
-	return $protected;
+	return $protected_meta;
 }
 add_filter( 'is_protected_meta', 'gwolle_gb_is_protected_meta', 10, 3 );
 

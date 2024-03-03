@@ -40,11 +40,11 @@ function gwolle_gb_mail_moderators( $entry ) {
 		$mailtags = array( 'user_email', 'user_name', 'status', 'entry_management_url', 'blog_name', 'blog_url', 'wp_admin_url', 'entry_content', 'author_ip', 'author_origin' );
 		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-adminMailContent', false ), 'setting_textarea' );
 		if ( ! $mail_body) {
-			$mail_body = esc_html__("
+			$mail_body = esc_html__('
 Hello,
 
 There is a new guestbook entry at %blog_name%.
-You can check it at %entry_management_url%.
+You can log in and check it at %entry_management_url%.
 
 Have a nice day.
 Your Gwolle-GB-Mailer
@@ -56,7 +56,7 @@ User email: %user_email%
 Entry status: %status%
 Entry content:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 		}
 		$mail_body = apply_filters( 'gwolle_gb_mail_moderators_body', $mail_body, $entry );
 
@@ -151,7 +151,7 @@ function gwolle_gb_mail_author( $entry ) {
 			$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content' );
 			$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-authorMailContent', false ), 'setting_textarea' );
 			if ( ! $mail_body) {
-				$mail_body = esc_html__("
+				$mail_body = esc_html__('
 Hello,
 
 You have just posted a new guestbook entry at %blog_name%.
@@ -165,7 +165,7 @@ User name: %user_name%
 User email: %user_email%
 Entry content:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 			}
 			$mail_body = apply_filters( 'gwolle_gb_mail_author_body', $mail_body, $entry );
 
@@ -229,7 +229,7 @@ function gwolle_gb_mail_author_on_moderation( $entry ) {
 		$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'entry_content', 'date' );
 		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-authormoderationcontent', false ), 'setting_textarea' );
 		if ( ! $mail_body) {
-			$mail_body = esc_html__("
+			$mail_body = esc_html__('
 Hello,
 
 An admin has just moderated your guestbook entry at %blog_name%.
@@ -243,7 +243,7 @@ Website address: %blog_url%
 
 Original entry posted on %date%:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 		}
 		$mail_body = apply_filters( 'gwolle_gb_mail_author_on_moderation_body', $mail_body, $entry );
 
@@ -302,7 +302,7 @@ function gwolle_gb_mail_author_on_admin_reply( $entry ) {
 		$mailtags = array( 'user_email', 'user_name', 'blog_name', 'blog_url', 'admin_reply', 'entry_content', 'date' );
 		$mail_body = gwolle_gb_sanitize_output( get_option( 'gwolle_gb-mail_admin_replyContent', false ), 'setting_textarea' );
 		if ( ! $mail_body) {
-			$mail_body = esc_html__("
+			$mail_body = esc_html__('
 Hello,
 
 An admin has just added or changed a reply message to your guestbook entry at %blog_name%.
@@ -318,7 +318,7 @@ Admin Reply:
 
 Original entry posted on %date%:
 %entry_content%
-", 'gwolle-gb');
+', 'gwolle-gb');
 		}
 		$mail_body = apply_filters( 'gwolle_gb_mail_author_on_admin_reply_body', $mail_body, $entry );
 
@@ -361,3 +361,98 @@ Original entry posted on %date%:
 
 	}
 }
+
+/*
+ * Add moderation link to Notification Mail for direct checking.
+ *
+ * @param string $mail_body text with the email body text.
+ * @param object $entry instance of gwolle_gb_entry.
+ *
+ * @return string $mail_body text with the email body text with added check link.
+ *
+ * @since 4.6.2
+ */
+function gwolle_gb_mail_moderators_body_add_check_link( $mail_body, $entry ) {
+
+	global $wp_hasher;
+
+	if ( is_object( $entry ) && is_a( $entry, 'gwolle_gb_entry' ) ) {
+
+		$entry_id = $entry->get_id();
+		$key = wp_generate_password( 20, false );
+		if ( empty( $wp_hasher ) ) {
+			require_once ABSPATH . WPINC . '/class-phpass.php';
+			$wp_hasher = new PasswordHash( 8, true );
+		}
+		$key = time() . ':' . $wp_hasher->HashPassword( $key );
+		$key = sanitize_key( $key );
+
+		set_transient( 'gwolle_gb_check_key_' . $entry_id, $key, DAY_IN_SECONDS );
+
+		$ajaxurl = admin_url('admin-ajax.php');
+		$ajaxurl = add_query_arg( 'action', 'gwolle_gb_check_by_email', $ajaxurl );
+		$ajaxurl = add_query_arg( 'entry_id', $entry_id, $ajaxurl );
+		$ajaxurl = add_query_arg( 'key', $key, $ajaxurl );
+
+		$mail_body .= "\r\n\r\n" . esc_html__('For quick checking this entry, click the next link.', 'gwolle-gb');
+		$mail_body .= "\r\n" . $ajaxurl;
+
+	}
+
+	return $mail_body;
+
+}
+add_filter( 'gwolle_gb_mail_moderators_body', 'gwolle_gb_mail_moderators_body_add_check_link', 10, 2 );
+
+
+/*
+ * Callback function for handling the Ajax request for checking an entry directly, from the moderation email in gwolle_gb_mail_moderators_body_add_check_link().
+ *
+ * @since 4.6.2
+ */
+function gwolle_gb_gwolle_gb_check_by_email() {
+
+	$entry_id = (int) $_GET['entry_id'];
+	if ( isset( $entry_id ) && $entry_id > 0 ) {
+		$entry = new gwolle_gb_entry();
+		$result = $entry->load( $entry_id );
+		if ( ! $result ) {
+			esc_html_e('error, no such entry.', 'gwolle-gb');
+			die();
+		}
+	}
+
+	$email_key = sanitize_key( $_GET['key'] );
+	$transient_key = get_transient( 'gwolle_gb_check_key_' . $entry_id );
+	if ( false === $transient_key ) {
+		esc_html_e('error, the key has expired. please log in and moderate manually.', 'gwolle-gb');
+		die();
+	}
+
+	if ( $email_key !== $transient_key ) {
+		esc_html_e('error, invalid key. please log in and moderate manually.', 'gwolle-gb');
+		die();
+	}
+
+	if ( $entry->get_ischecked() === 0 ) {
+		$entry->set_ischecked( true );
+		$user_id = get_current_user_id(); // returns 0 if no current user
+		$result = $entry->save();
+		if ( $result ) {
+			gwolle_gb_add_log_entry( $entry->get_id(), 'entry-checked-by-email' );
+			gwolle_gb_mail_author_on_moderation( $entry );
+		} else {
+			esc_html_e('error, entry could not be saved. please log in and moderate manually.', 'gwolle-gb');
+			die();
+		}
+	} else {
+		esc_html_e('entry was already moderated.', 'gwolle-gb');
+		die();
+	}
+
+	esc_html_e('entry is now moderated and visible.', 'gwolle-gb');
+	die();
+
+}
+add_action( 'wp_ajax_gwolle_gb_check_by_email', 'gwolle_gb_gwolle_gb_check_by_email' );
+add_action( 'wp_ajax_nopriv_gwolle_gb_check_by_email', 'gwolle_gb_gwolle_gb_check_by_email' );

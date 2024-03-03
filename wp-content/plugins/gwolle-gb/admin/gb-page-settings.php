@@ -54,14 +54,28 @@ function gwolle_gb_page_settings() {
 		/* Do not use nav but h2, since it is using (in)visible content, not real navigation. */
 		?>
 		<h2 class="nav-tab-wrapper gwolle-nav-tab-wrapper" role="tablist">
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_forms')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_forms"><?php /* translators: Settings page tab */ esc_html_e('Form', 'gwolle-gb'); ?></a>
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_reading')   { echo "nav-tab-active";} ?>" rel="gwolle_gb_reading"><?php /* translators: Settings page tab */ esc_html_e('Reading', 'gwolle-gb'); ?></a>
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_admin')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_admin"><?php /* translators: Settings page tab */ esc_html_e('Admin', 'gwolle-gb'); ?></a>
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_antispam')  { echo "nav-tab-active";} ?>" rel="gwolle_gb_antispam"><?php /* translators: Settings page tab */ esc_html_e('Anti-spam', 'gwolle-gb'); ?></a>
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_mail')      { echo "nav-tab-active";} ?>" rel="gwolle_gb_mail"><?php /* translators: Settings page tab */ esc_html_e('Notifications', 'gwolle-gb'); ?></a>
-			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_debug')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_debug"><?php /* translators: Settings page tab */ esc_html_e('Debug', 'gwolle-gb'); ?></a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_forms')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_forms">
+				<?php /* translators: Settings page tab */ esc_html_e('Form', 'gwolle-gb'); ?>
+			</a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_reading')   { echo "nav-tab-active";} ?>" rel="gwolle_gb_reading">
+				<?php /* translators: Settings page tab */ esc_html_e('Reading', 'gwolle-gb'); ?>
+			</a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_admin')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_admin">
+				<?php /* translators: Settings page tab */ esc_html_e('Admin', 'gwolle-gb'); ?>
+			</a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_antispam')  { echo "nav-tab-active";} ?>" rel="gwolle_gb_antispam">
+				<?php /* translators: Settings page tab */ esc_html_e('Anti-spam', 'gwolle-gb'); ?>
+			</a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_mail')      { echo "nav-tab-active";} ?>" rel="gwolle_gb_mail">
+				<?php /* translators: Settings page tab */ esc_html_e('Notifications', 'gwolle-gb'); ?>
+			</a>
+			<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_debug')     { echo "nav-tab-active";} ?>" rel="gwolle_gb_debug">
+				<?php /* translators: Settings page tab */ esc_html_e('Debug', 'gwolle-gb'); ?>
+			</a>
 			<?php if ( ! is_multisite() ) { ?>
-				<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_uninstall') { echo "nav-tab-active";} ?>" rel="gwolle_gb_uninstall"><?php /* translators: Settings page tab */ esc_html_e('Uninstall', 'gwolle-gb'); ?></a>
+				<a href="#" role="tab" class="nav-tab <?php if ($active_tab === 'gwolle_gb_uninstall') { echo "nav-tab-active";} ?>" rel="gwolle_gb_uninstall">
+					<?php /* translators: Settings page tab */ esc_html_e('Uninstall', 'gwolle-gb'); ?>
+				</a>
 			<?php } ?>
 		</h2>
 

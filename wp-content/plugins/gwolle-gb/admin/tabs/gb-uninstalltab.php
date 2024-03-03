@@ -37,8 +37,10 @@ function gwolle_gb_page_settingstab_uninstall() {
 		<tr>
 			<th scope="row" style="color:#FF0000;"><label><?php esc_html_e('Uninstall', 'gwolle-gb'); ?></label></th>
 			<td>
-				<?php esc_html_e('Uninstalling means that all database entries are removed (settings and entries).', 'gwolle-gb'); echo '<br />';
-				_e('This can <strong>not</strong> be undone.', 'gwolle-gb'); echo '<br />';
+				<?php esc_html_e('Uninstalling means that all database entries are removed (settings and entries).', 'gwolle-gb');
+				echo '<br />';
+				_e('This can <strong>not</strong> be undone.', 'gwolle-gb');
+				echo '<br />';
 				esc_html_e('It is a good idea to make a backup of your website before you touch this button.', 'gwolle-gb');
 				?>
 			</td>

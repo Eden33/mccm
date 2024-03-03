@@ -2,10 +2,10 @@
 Contributors: Gwolle, mpol
 Tags: guestbook, guest book, livre d'or, Gästebuch, review
 Requires at least: 4.1
-Tested up to: 6.1
-Stable tag: 4.5.0
+Tested up to: 6.4
+Stable tag: 4.6.2
 License: GPLv2 or later
-Requires PHP: 5.3
+Requires PHP: 7.0
 
 Gwolle Guestbook is the WordPress guestbook you've just been looking for. Beautiful and easy.
 
@@ -433,6 +433,30 @@ But if you don't use standard comments, you can just as easily use the comment s
 
 
 == Changelog ==
+
+= 4.6.2 =
+* 2024-02-09
+* Add direct link to moderation email for quick checking of an entry (thanks Paul Bergers).
+* Add log entry entry-checked-by-email.
+* Fixes for function 'gwolle_gb_array_flatten()'.
+
+= 4.6.1 =
+* 2023-09-29
+* Make author email editable too.
+* Change max-height for images from 500px to 700px.
+* Add support for Litespeed Cache.
+* Fix saving meta key for book_id.
+
+= 4.6.0 =
+* 2023-05-17
+* Add parameter 'num_entries' to shortcode for more flexibility.
+* For excerpt, add a Collapse link as well (thanks slavum).
+* Fix double slash for sss.js enqueue.
+* Small additions to spamfilters.
+* Drop 'auto_detect_line_endings' for import, deprecated in PHP 8.1.
+* Add small advertisement for a recommended plugin (free).
+* Take more hints from phpcs.
+* Update strings for Add-On.
 
 = 4.5.0 =
 * 2023-01-24

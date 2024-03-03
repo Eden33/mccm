@@ -44,7 +44,7 @@ function gwolle_gb_page_import() {
 
 		if ( $gwolle_gb_messages ) {
 			echo '
-				<div id="message" class="updated fade notice is-dismissible ' . $messageclass . ' ">' .
+				<div id="message" class="updated fade notice is-dismissible ' . esc_attr( $messageclass ) . ' ">' .
 					$gwolle_gb_messages .
 				'</div>';
 		} ?>
@@ -102,7 +102,9 @@ function gwolle_gb_import_postbox_dms() {
 
 		if ( isset($found_tables[0]) && in_array( $wpdb->prefix . 'dmsguestbook', $found_tables[0] ) ) { ?>
 			<div>
-				<?php /* translators: %s is the number of entries */ echo sprintf( _n('%s entry was found and will be imported.', ' %s entries were found and will be imported.', $count, 'gwolle-gb'), $count ); ?>
+				<?php
+				/* translators: %s is the number of entries */
+				echo sprintf( _n('%s entry was found and will be imported.', ' %s entries were found and will be imported.', (int) $count, 'gwolle-gb'), (int) $count ); ?>
 			</div>
 			<div>
 				<?php esc_html_e('The importer will preserve the following data per entry:', 'gwolle-gb'); ?>
@@ -116,7 +118,9 @@ function gwolle_gb_import_postbox_dms() {
 					<li><?php esc_html_e('"is spam" flag', 'gwolle-gb'); ?></li>
 					<li><?php esc_html_e('"is checked" flag', 'gwolle-gb'); ?></li>
 				</ul>
-				<?php /* translators: %s is for bold text */ echo sprintf( esc_html__('However, data such as HTML formatting is not supported by Gwolle-GB and %swill not%s be imported.', 'gwolle-gb'), '<strong>', '</strong>' ); ?>
+				<?php
+				/* translators: %s is for bold text */
+				echo sprintf( esc_html__('However, data such as HTML formatting is not supported by Gwolle-GB and %swill not%s be imported.', 'gwolle-gb'), '<strong>', '</strong>' ); ?>
 				<br />
 				<?php esc_html_e('The importer does not delete any data, so you can go back whenever you want.', 'gwolle-gb'); ?>
 			</div>
@@ -200,10 +204,10 @@ function gwolle_gb_import_postbox_wp() {
 						continue;
 					} else {
 						/* translators: %s is the number of comments */
-						$comments = sprintf( _n('%s Comment', '%s Comments', $num_comments, 'gwolle-gb'), $num_comments );
+						$comments = sprintf( _n('%s Comment', '%s Comments', (int) $num_comments, 'gwolle-gb'), (int) $num_comments );
 					}
 
-					echo '<option value="' . get_the_ID() . '">' . get_the_title() . ' (' . $comments . ')</option>';
+					echo '<option value="' . (int) get_the_ID() . '">' . esc_html( get_the_title() ) . ' (' . $comments . ')</option>';
 				}
 			}
 			wp_reset_postdata(); ?>
@@ -238,10 +242,10 @@ function gwolle_gb_import_postbox_wp() {
 						continue;
 					} else {
 						/* translators: %s is the number of comments */
-						$comments = sprintf( _n('%s Comment', '%s Comments', $num_comments, 'gwolle-gb'), $num_comments );
+						$comments = sprintf( _n('%s Comment', '%s Comments', (int) $num_comments, 'gwolle-gb'), (int) $num_comments );
 					}
 
-					echo '<option value="' . get_the_ID() . '">' . get_the_title() . ' (' . $comments . ')</option>';
+					echo '<option value="' . (int) get_the_ID() . '">' . esc_html( get_the_title() ) . ' (' . $comments . ')</option>';
 				}
 			}
 			wp_reset_postdata(); ?>
@@ -258,7 +262,9 @@ function gwolle_gb_import_postbox_wp() {
 		<p><label for="gwolle_gb_importfrom"><?php esc_html_e('Select where to import the comments from:', 'gwolle-gb'); ?></label><br />
 			<label><input type="radio" name="gwolle_gb_importfrom" id="gwolle_gb_importfrom" value="page" /><?php esc_html_e('Comments from selected page.', 'gwolle-gb'); ?></label><br />
 			<label><input type="radio" name="gwolle_gb_importfrom" id="gwolle_gb_importfrom" value="post" /><?php esc_html_e('Comments from selected post.', 'gwolle-gb'); ?></label><br />
-			<label><input type="radio" name="gwolle_gb_importfrom" id="gwolle_gb_importfrom" value="all" /><?php esc_html_e('All Comments', 'gwolle-gb'); echo ' (' . $num_comments . ').'; ?></label><br />
+			<label><input type="radio" name="gwolle_gb_importfrom" id="gwolle_gb_importfrom" value="all" /><?php esc_html_e('All Comments', 'gwolle-gb');
+				echo ' (' . (int) $num_comments . ').'; ?>
+			</label><br />
 		</p>
 
 		<p>
@@ -497,7 +503,6 @@ function gwolle_gb_page_import_post() {
 							gwolle_gb_add_message( '<p>' . esc_html__('You have a very old version of PHP. Please contact your hosting provider and request an upgrade.', 'gwolle-gb') . '</p>', false, false);
 						}
 
-						ini_set('auto_detect_line_endings', true);
 						$handle = fopen($_FILES['start_import_gwolle_file']['tmp_name'], 'r');
 						$row = 0;
 

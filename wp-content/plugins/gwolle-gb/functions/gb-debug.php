@@ -224,7 +224,7 @@ function gwolle_gb_test_add_entry( $emoji = false ) {
 
 
 /*
- * Flattens an array, or returns false on fail.
+ * Flattens an array to only one level deep.
  * Taken from:
  * https://stackoverflow.com/questions/7179799/how-to-flatten-array-of-arrays-to-array
  *
@@ -233,16 +233,16 @@ function gwolle_gb_test_add_entry( $emoji = false ) {
  *
  * @since 4.2.1
  */
-function gwolle_gb_array_flatten( $array ) {
+function gwolle_gb_array_flatten( $data_to_flatten ) {
 
-	if ( ! is_array( $array ) ) {
-		return false;
+	if ( ! is_array( $data_to_flatten ) ) {
+		return $data_to_flatten;
 	}
 
 	$result = array();
-	foreach ($array as $key => $value) {
-		if ( is_array($value) ) {
-			$result = array_merge( $result, array_flatten($value) );
+	foreach ( $data_to_flatten as $key => $value ) {
+		if ( is_array( $value ) ) {
+			$result = array_merge( $result, gwolle_gb_array_flatten( $value ) );
 		} else {
 			$result[$key] = $value;
 		}

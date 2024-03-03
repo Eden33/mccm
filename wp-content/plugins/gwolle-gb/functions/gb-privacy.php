@@ -99,7 +99,7 @@ function gwolle_gb_personal_data_exporter( $email_address, $page = 1 ) {
 	/* Used for permalinks */
 	$books = gwolle_gb_get_permalinks();
 
-	$offset = $number * ( $page - 1 );
+	$offset = ( $number * ( $page - 1 ) );
 	$entries = gwolle_gb_get_entries(
 		array(
 			'all'         => 'all',

@@ -37,13 +37,12 @@ function gwolle_gb_page_settingstab_reading() {
 				<select name="entriesPerPage" id="entriesPerPage">
 					<?php $entries_per_page = (int) get_option( 'gwolle_gb-entriesPerPage', 20 );
 					$presets = array( 3, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 150, 200, 250 );
-					$presets_count = count( $presets );
-					for ($i = 0; $i < $presets_count; $i++) {
-						echo '<option value="' . (int) $presets[$i] . '"';
-						if ($presets[$i] === $entries_per_page) {
+					foreach ( $presets as $preset ) {
+						echo '<option value="' . (int) $preset . '"';
+						if ( $preset === $entries_per_page ) {
 							echo ' selected="selected"';
 						}
-						echo '>' . $presets[$i] . ' ' . esc_html__('Entries', 'gwolle-gb') . '</option>';
+						echo '>' . (int) $preset . ' ' . esc_html__('Entries', 'gwolle-gb') . '</option>';
 					}
 					?>
 				</select>
@@ -69,11 +68,11 @@ function gwolle_gb_page_settingstab_reading() {
 
 					foreach ( $presets as $preset ) {
 						echo '<option value="' . (int) $preset . '"';
-						if ($preset === $excerpt_length) {
+						if ( $preset === $excerpt_length ) {
 							echo ' selected="selected"';
 						}
 						/* translators: Number of words to display */
-						echo '>' . $preset . ' ' . esc_html__('Words', 'gwolle-gb') . '</option>
+						echo '>' . (int) $preset . ' ' . esc_html__('Words', 'gwolle-gb') . '</option>
 						';
 					} ?>
 				</select>

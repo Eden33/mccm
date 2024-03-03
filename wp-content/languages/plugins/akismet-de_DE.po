@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Plugins - Akismet Anti-spam: Spam Protection - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-01-17 22:49:47+0000\n"
+"PO-Revision-Date: 2024-02-20 18:11:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.0-beta.2\n"
+"X-Generator: GlotPress/4.0.0-beta.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Akismet Anti-spam: Spam Protection - Stable (latest release)\n"
 
@@ -25,6 +25,18 @@ msgid "Spam in the %1$s older than %2$d day is deleted automatically."
 msgid_plural "Spam in the %1$s older than %2$d days is deleted automatically."
 msgstr[0] "Spam, der sich im %1$s befindet und älter als %2$d Tag ist, wird automatisch gelöscht."
 msgstr[1] "Spam, der sich im %1$s befindet und älter als %2$d Tage ist, wird automatisch gelöscht."
+
+#: views/config.php:189
+msgid "spam folder"
+msgstr "Spam-Ordner"
+
+#: views/stats.php:11
+msgid "Akismet detailed stats"
+msgstr "Detaillierte Akismet-Statistiken"
+
+#: views/stats.php:6
+msgid "Back to settings"
+msgstr "Zurück zu den Einstellungen"
 
 #: views/config.php:270
 msgid "Subscription type"
@@ -252,6 +264,10 @@ msgstr "Manuelle Konfiguration"
 msgid "On this page, you are able to update your Akismet settings and view spam stats."
 msgstr "Auf dieser Seite kannst du deine Akismet-Einstellungen aktualisieren und Spam-Statistiken betrachten."
 
+#: class.akismet-admin.php:114 class.akismet-admin.php:117
+msgid "Akismet Anti-spam"
+msgstr "Akismet Anti-Spam"
+
 #: views/enter.php:10
 msgid "Connect with API key"
 msgstr "Mit API-Schlüssel verbinden"
@@ -282,6 +298,10 @@ msgstr "Möchtest du <a href=\"%s\">ausstehende Kommentare überprüfen</a>?"
 #: views/notice.php:24 views/setup.php:3
 msgid "Set up your Akismet account"
 msgstr "Eröffne dein Akismet-Konto"
+
+#: views/config.php:36
+msgid "Detailed stats"
+msgstr "Detaillierte Statistiken"
 
 #: views/config.php:30
 msgid "Statistics"
@@ -459,6 +479,10 @@ msgstr "Dein Webserver kann keine SSL-Anfragen herstellen. Kontaktiere deinen We
 msgid "Disabled."
 msgstr "Deaktiviert."
 
+#: views/config.php:110
+msgid "SSL status"
+msgstr "SSL-Status"
+
 #: class.akismet-admin.php:645
 msgid "This comment was reported as not spam."
 msgstr "Dieser Kommentar wurde als Kein-Spam bewertet."
@@ -558,9 +582,17 @@ msgstr "Ändern"
 msgid "Upgrade"
 msgstr "Aktualisierung"
 
+#: views/config.php:295
+msgid "Next billing date"
+msgstr "Nächstes Rechnungsdatum"
+
 #: views/config.php:288
 msgid "Active"
 msgstr "Aktiv"
+
+#: views/config.php:286
+msgid "No subscription found"
+msgstr "Kein Abonnement gefunden"
 
 #: views/config.php:284
 msgid "Missing"
@@ -573,6 +605,10 @@ msgstr "Unterbrochen"
 #: views/config.php:280
 msgid "Cancelled"
 msgstr "Abgelaufen"
+
+#: views/config.php:251
+msgid "Save changes"
+msgstr "Änderungen speichern"
 
 #: views/config.php:243
 msgid "Disconnect this account"

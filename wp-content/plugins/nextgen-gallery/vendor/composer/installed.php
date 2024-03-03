@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'ezyang/htmlpurifier' => array(
-            'pretty_version' => 'v4.16.0',
-            'version' => '4.16.0.0',
-            'reference' => '523407fb06eb9e5f3d59889b3978d5bfe94299c8',
+            'pretty_version' => 'v4.17.0',
+            'version' => '4.17.0.0',
+            'reference' => 'bbc513d79acf6691fa9cf10f192c90dd2957f18c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../ezyang/htmlpurifier',
             'aliases' => array(),
@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'imagely/pope-framework' => array(
-            'pretty_version' => 'v0.17',
-            'version' => '0.17.0.0',
-            'reference' => '13da4d47779a91fbf07a68062e64974eb1427ef2',
+            'pretty_version' => 'v0.19',
+            'version' => '0.19.0.0',
+            'reference' => '78e0b0c59b68c44b86e688f447a5a80e78e44b4f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../imagely/pope-framework',
             'aliases' => array(),

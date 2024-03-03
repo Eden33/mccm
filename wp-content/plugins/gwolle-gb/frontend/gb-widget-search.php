@@ -27,7 +27,6 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 
 		/** @see WP_Widget::widget */
 		public function widget( $args, $instance ) {
-			extract($args);
 
 			$default_value = array(
 				'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
@@ -84,6 +83,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 
 			// Load Frontend CSS in Footer, only when it's active.
 			wp_enqueue_style('gwolle_gb_frontend_css');
+
 		}
 
 		/** @see WP_Widget::update */
@@ -101,13 +101,13 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 				'title' => esc_html__('Guestbook Search', 'gwolle-gb'),
 			);
 			$instance = wp_parse_args( (array) $instance, $default_value );
-			$title    = esc_attr($instance['title']);
+			$title    = $instance['title'];
 			?>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('title'); ?>" /><?php esc_html_e('Title:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('title') ); ?>" /><?php esc_html_e('Title:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('title'); ?>" value="<?php echo $title; ?>" name="<?php echo $this->get_field_name('title'); ?>" />
+				<input type="text" id="<?php echo esc_attr( $this->get_field_id('title') ); ?>" value="<?php echo esc_attr( $title ); ?>" name="<?php echo esc_attr( $this->get_field_name('title') ); ?>" />
 			</p>
 
 			<?php

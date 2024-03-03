@@ -123,8 +123,10 @@ We reserve the right to edit, delete, or not publish entries.
 				<label for="store_ip"><?php esc_html_e('Store IP Address and hostname for each entry.', 'gwolle-gb'); ?></label>
 				<br />
 				<span class="setting-description"><?php /* translators: The GDPR law often has a country specific name */
-				esc_html_e('In the EU there is the GDPR law about privacy and storing personal information.', 'gwolle-gb'); echo '<br />';
-				esc_html_e('Disabling this option will still have the IP Address used for spamfiltering in Stop Forum Spam.', 'gwolle-gb'); echo '<br />';
+				esc_html_e('In the EU there is the GDPR law about privacy and storing personal information.', 'gwolle-gb');
+				echo '<br />';
+				esc_html_e('Disabling this option will still have the IP Address used for spamfiltering in Stop Forum Spam.', 'gwolle-gb');
+				echo '<br />';
 				esc_html_e('Disabling this option will probably make the Akismet spamfilter less effective.', 'gwolle-gb'); ?></span><br />
 			</td>
 		</tr>
@@ -260,13 +262,12 @@ We reserve the right to edit, delete, or not publish entries.
 						echo '<option value="0">' . esc_html__('No Limit', 'gwolle-gb') . '</option>';
 					}
 					$presets = array( 100, 150, 200, 250, 300, 400, 500 );
-					$preset_count = count($presets);
-					for ($i = 0; $i < $preset_count; $i++) {
-						echo '<option value="' . (int) $presets[$i] . '"';
-						if ( $presets[$i] === $form_message_maxlength ) {
+					foreach ( $presets as $preset ) {
+						echo '<option value="' . (int) $preset . '"';
+						if ( $preset === $form_message_maxlength ) {
 							echo ' selected="selected"';
 						}
-						echo '>' . $presets[$i] . ' ' . esc_html__('Characters', 'gwolle-gb') . '</option>';
+						echo '>' . (int) $preset . ' ' . esc_html__('Characters', 'gwolle-gb') . '</option>';
 					}
 					?>
 				</select>
@@ -285,7 +286,8 @@ We reserve the right to edit, delete, or not publish entries.
 				<label for="form_bbcode_enabled"><?php esc_html_e('Enabled', 'gwolle-gb'); ?></label>
 			</td>
 			<td>
-				<?php esc_html_e('Will add a button row to the message field.', 'gwolle-gb'); echo '<br />';
+				<?php esc_html_e('Will add a button row to the message field.', 'gwolle-gb');
+				echo '<br />';
 				esc_html_e('Adds bold and italic style, images, links and emoji.', 'gwolle-gb'); ?>
 			</td>
 		</tr>

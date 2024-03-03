@@ -26,7 +26,6 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 
 		/** @see WP_Widget::widget */
 		public function widget( $args, $instance ) {
-			extract($args);
 
 			$default_value = array(
 					'title'       => esc_html__('Guestbook', 'gwolle-gb'),
@@ -62,7 +61,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			// Prepare for SSS Slider. Registers Script with WordPress to wp_footer().
 			$widget_class = 'gwolle_gb_widget gwolle-gb-widget';
 			if ( $slider ) {
-				wp_register_script( 'gwolle_gb_widget_sss', GWOLLE_GB_URL . '/frontend/js/sss/sss.js', 'jquery', GWOLLE_GB_VER, true );
+				wp_register_script( 'gwolle_gb_widget_sss', GWOLLE_GB_URL . 'frontend/js/sss/sss.js', 'jquery', GWOLLE_GB_VER, true );
 				wp_enqueue_script( 'gwolle_gb_widget_sss' );
 				$widget_class .= ' gwolle_gb_widget_slider gwolle-gb-widget-slider';
 			}
@@ -90,7 +89,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 
 			$widget_html .= '
-					<ul class="' . $widget_class . '">';
+					<ul class="' . esc_attr( $widget_class ) . '">';
 			$counter = 0;
 
 			// Get the best entries first
@@ -132,7 +131,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 						if ( $counter === $num_entries) {
 							break; // we have enough
 						}
-						if ( is_array( $best) && in_array( $entry->get_id(), $best ) ) {
+						if ( is_array( $best ) && in_array( $entry->get_id(), $best ) ) {
 							continue; // already listed
 						}
 
@@ -176,7 +175,7 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			$num_words = (int) esc_attr($instance['num_words']);
 
 			$widget_html = '
-						<li class="' . $widget_item_class . '">';
+						<li class="' . esc_attr( $widget_item_class ) . '">';
 
 			$widget_html .= '
 							<article>';
@@ -200,12 +199,12 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 			}
 
 			if ( $num_words > 0 ) {
-				$entry_content = gwolle_gb_get_excerpt( gwolle_gb_bbcode_strip( $entry->get_content() ), $num_words );
+				$entry_content = gwolle_gb_get_excerpt( gwolle_gb_bbcode_strip( $entry->get_content() ), (int) $num_words );
 			} else {
 				$entry_content = gwolle_gb_bbcode_strip( $entry->get_content() );
 			}
 			if ( get_option('gwolle_gb-showSmilies', 'true') === 'true' ) {
-				$entry_content = convert_smilies($entry_content);
+				$entry_content = convert_smilies( $entry_content );
 			}
 			$widget_html .= '
 								<span class="gb-entry-content">' . $entry_content . $link;
@@ -280,75 +279,75 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 				);
 			$instance      = wp_parse_args( (array) $instance, $default_value );
 
-			$title         = esc_attr($instance['title']);
-			$num_entries   = (int) esc_attr($instance['num_entries']);
-			$best          = esc_attr($instance['best']);
-			$no_mod        = (int) esc_attr($instance['no_mod']);
-			$name          = (int) esc_attr($instance['name']);
-			$date          = (int) esc_attr($instance['date']);
-			$slider        = (int) esc_attr($instance['slider']);
-			$num_words     = (int) esc_attr($instance['num_words']);
-			$book_id       = (int) esc_attr($instance['book_id']);
-			$link_text     = esc_attr($instance['link_text']);
-			$postid        = (int) esc_attr($instance['postid']);
+			$title         = $instance['title'];
+			$num_entries   = (int) $instance['num_entries'];
+			$best          = $instance['best'];
+			$no_mod        = (int) $instance['no_mod'];
+			$name          = (int) $instance['name'];
+			$date          = (int) $instance['date'];
+			$slider        = (int) $instance['slider'];
+			$num_words     = (int) $instance['num_words'];
+			$book_id       = (int) $instance['book_id'];
+			$link_text     = $instance['link_text'];
+			$postid        = (int) $instance['postid'];
 			?>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('title'); ?>" /><?php esc_html_e('Title:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('title') ); ?>" /><?php esc_html_e('Title:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('title'); ?>" value="<?php echo $title; ?>" name="<?php echo $this->get_field_name('title'); ?>" />
+				<input type="text" id="<?php echo esc_attr( $this->get_field_id('title') ); ?>" value="<?php echo esc_attr( $title ); ?>" name="<?php echo esc_attr( $this->get_field_name('title') ); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('num_entries'); ?>" /><?php esc_html_e('Number of entries:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('num_entries') ); ?>" /><?php esc_html_e('Number of entries:', 'gwolle-gb'); ?></label>
 				<br />
-				<select id="<?php echo $this->get_field_id('num_entries'); ?>" name="<?php echo $this->get_field_name('num_entries'); ?>">
+				<select id="<?php echo esc_attr( $this->get_field_id('num_entries') ); ?>" name="<?php echo esc_attr( $this->get_field_name('num_entries') ); ?>">
 					<?php
 					for ($i = 1; $i <= 15; $i++) {
-						echo '<option value="' . $i . '"';
+						echo '<option value="' . (int) $i . '"';
 						if ( $i === $num_entries ) {
 							echo ' selected="selected"';
 						}
-						echo '>' . $i . '</option>';
+						echo '>' . (int) $i . '</option>';
 					}
 					?>
 				</select>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('best'); ?>" /><?php esc_html_e('Best entries to show:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('best') ); ?>" /><?php esc_html_e('Best entries to show:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('best'); ?>" value="<?php echo $best; ?>" name="<?php echo $this->get_field_name('best'); ?>" placeholder="<?php esc_attr_e('List of entry_id\'s, comma-separated', 'gwolle-gb'); ?>" />
+				<input type="text" id="<?php echo esc_attr( $this->get_field_id('best') ); ?>" value="<?php echo esc_attr( $best ); ?>" name="<?php echo esc_attr( $this->get_field_name('best') ); ?>" placeholder="<?php esc_attr_e('List of entry_id\'s, comma-separated', 'gwolle-gb'); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('no_mod'); ?>">
-				<input type="checkbox" id="<?php echo $this->get_field_id('no_mod'); ?>" <?php checked(1, $no_mod ); ?> name="<?php echo $this->get_field_name('no_mod'); ?>" value="1" />
+				<label for="<?php echo esc_attr( $this->get_field_id('no_mod') ); ?>">
+				<input type="checkbox" id="<?php echo esc_attr( $this->get_field_id('no_mod') ); ?>" <?php checked(1, $no_mod ); ?> name="<?php echo esc_attr( $this->get_field_name('no_mod') ); ?>" value="1" />
 				<?php esc_html_e('Do not show admin entries.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('name'); ?>">
-				<input type="checkbox" id="<?php echo $this->get_field_id('name'); ?>" <?php checked(1, $name ); ?> name="<?php echo $this->get_field_name('name'); ?>" value="1" />
+				<label for="<?php echo esc_attr( $this->get_field_id('name') ); ?>">
+				<input type="checkbox" id="<?php echo esc_attr( $this->get_field_id('name') ); ?>" <?php checked(1, $name ); ?> name="<?php echo esc_attr( $this->get_field_name('name') ); ?>" value="1" />
 				<?php esc_html_e('Show name of author.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('date'); ?>">
-				<input type="checkbox" id="<?php echo $this->get_field_id('date'); ?>" <?php checked(1, $date ); ?> name="<?php echo $this->get_field_name('date'); ?>" value="1" />
+				<label for="<?php echo esc_attr( $this->get_field_id('date') ); ?>">
+				<input type="checkbox" id="<?php echo esc_attr( $this->get_field_id('date') ); ?>" <?php checked(1, $date ); ?> name="<?php echo esc_attr( $this->get_field_name('date') ); ?>" value="1" />
 				<?php esc_html_e('Show date of entry.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('slider'); ?>">
-				<input type="checkbox" id="<?php echo $this->get_field_id('slider'); ?>" <?php checked(1, $slider ); ?> name="<?php echo $this->get_field_name('slider'); ?>" value="1" />
+				<label for="<?php echo esc_attr( $this->get_field_id('slider') ); ?>">
+				<input type="checkbox" id="<?php echo esc_attr( $this->get_field_id('slider') ); ?>" <?php checked(1, $slider ); ?> name="<?php echo esc_attr( $this->get_field_name('slider') ); ?>" value="1" />
 				<?php esc_html_e('Use Slider View.', 'gwolle-gb'); ?></label>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('num_words'); ?>" /><?php esc_html_e('Number of words for each entry:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('num_words') ); ?>" /><?php esc_html_e('Number of words for each entry:', 'gwolle-gb'); ?></label>
 				<br />
-				<select id="<?php echo $this->get_field_id('num_words'); ?>" name="<?php echo $this->get_field_name('num_words'); ?>">
+				<select id="<?php echo esc_attr( $this->get_field_id('num_words') ); ?>" name="<?php echo esc_attr( $this->get_field_name('num_words') ); ?>">
 					<?php
 					$presets = array( 10, 30, 40, 50, 60, 70, 80, 90, 100 );
 					echo '<option value="0"';
@@ -365,29 +364,29 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 							echo ' selected="selected"';
 						}
 						/* translators: Number of words to display */
-						echo '>' . $preset . ' ' . esc_html__('Words', 'gwolle-gb') . '</option>
+						echo '>' . (int) $preset . ' ' . esc_html__('Words', 'gwolle-gb') . '</option>
 						';
 					} ?>
 				</select>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('book_id'); ?>" /><?php esc_html_e('Book ID:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('book_id') ); ?>" /><?php esc_html_e('Book ID:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('book_id'); ?>" value="<?php echo $book_id; ?>" name="<?php echo $this->get_field_name('book_id'); ?>" /><br />
+				<input type="text" id="<?php echo esc_attr( $this->get_field_id('book_id') ); ?>" value="<?php echo (int) $book_id; ?>" name="<?php echo esc_attr( $this->get_field_name('book_id') ); ?>" /><br />
 				<?php esc_html_e('0 means all.', 'gwolle-gb'); ?>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('link_text'); ?>" /><?php esc_html_e('Link text:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('link_text') ); ?>" /><?php esc_html_e('Link text:', 'gwolle-gb'); ?></label>
 				<br />
-				<input type="text" id="<?php echo $this->get_field_id('link_text'); ?>" value="<?php echo $link_text; ?>" name="<?php echo $this->get_field_name('link_text'); ?>" />
+				<input type="text" id="<?php echo esc_attr( $this->get_field_id('link_text') ); ?>" value="<?php echo esc_attr( $link_text ); ?>" name="<?php echo esc_attr( $this->get_field_name('link_text') ); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('postid'); ?>"><?php esc_html_e('Select the page of the guestbook:', 'gwolle-gb'); ?></label>
+				<label for="<?php echo esc_attr( $this->get_field_id('postid') ); ?>"><?php esc_html_e('Select the page of the guestbook:', 'gwolle-gb'); ?></label>
 				<br />
-				<select id="<?php echo $this->get_field_id('postid'); ?>" name="<?php echo $this->get_field_name('postid'); ?>">
+				<select id="<?php echo esc_attr( $this->get_field_id('postid') ); ?>" name="<?php echo esc_attr( $this->get_field_name('postid') ); ?>">
 					<option value="0"><?php esc_html_e('Select page', 'gwolle-gb'); ?></option>
 					<?php
 					$args = array(
@@ -413,9 +412,9 @@ if (function_exists('register_sidebar') && class_exists('WP_Widget')) {
 							if ( get_the_ID() === $postid ) {
 								$selected = true;
 							}
-							echo '<option value="' . get_the_ID() . '"'
+							echo '<option value="' . (int) get_the_ID() . '"'
 							. selected( $selected )
-							. '>' . get_the_title() . '</option>';
+							. '>' . esc_html( get_the_title() ) . '</option>';
 						}
 					}
 					wp_reset_postdata(); ?>

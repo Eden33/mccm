@@ -134,8 +134,8 @@ function gwolle_gb_editor_postbox_content( $entry ) {
 	<?php
 	if (get_option('gwolle_gb-showLineBreaks', 'false') === 'false') {
 		$settingslink = '<a href="' . admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php' ) . '">';
-		/* translators: %s is a link */
-		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %ssettings%s.', 'gwolle-gb'), $settingslink, '</a>' ) . '</p>';
+		/* translators: %1$s and %2$s is a link */
+		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %1$ssettings%2$s.', 'gwolle-gb'), $settingslink, '</a>' ) . '</p>';
 	}
 	$form_setting = gwolle_gb_get_setting( 'form' );
 
@@ -222,8 +222,8 @@ function gwolle_gb_editor_postbox_admin_reply( $entry ) {
 	<?php
 	if (get_option('gwolle_gb-showLineBreaks', 'false') === 'false') {
 		$settingslink = '<a href="' . admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/settings.php' ) . '">';
-		/* translators: %s is a link */
-		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %ssettings%s.', 'gwolle-gb'), $settingslink, '</a>' ) . '</p>';
+		/* translators: %1$s and %2$s is a link */
+		echo '<p>' . sprintf( esc_html__('Line breaks will not be visible to the visitors due to your %1$ssettings%2$s.', 'gwolle-gb'), $settingslink, '</a>' ) . '</p>';
 	}
 }
 
@@ -439,10 +439,14 @@ function gwolle_gb_editor_meta_inputs( $entry ) {
 	<label for="gwolle_gb_author_name"><?php esc_html_e('Author', 'gwolle-gb'); ?></label><br />
 	<input type="text" name="gwolle_gb_author_name" size="24" value="<?php echo esc_attr( gwolle_gb_sanitize_output( $entry->get_author_name() ) ); ?>" id="gwolle_gb_author_name" class="wp-exclude-emoji" /><br />
 
+	<?php $author_email = gwolle_gb_sanitize_output( $entry->get_author_email() ); ?>
+	<label for="gwolle_gb_author_email"><?php esc_html_e('Author Email', 'gwolle-gb'); ?></label><br />
+	<input type="text" name="gwolle_gb_author_email" size="24" value="<?php echo esc_attr( $author_email ); ?>" id="gwolle_gb_author_email" class="wp-exclude-emoji" /><br />
+
 	<label for="gwolle_gb_author_id"><?php esc_html_e('Author ID', 'gwolle-gb');
 	// Get user ID from email address.
 	$user = new WP_User();
-	$user_object = $user->get_data_by( 'email', gwolle_gb_sanitize_output( $entry->get_author_email() ) );
+	$user_object = $user->get_data_by( 'email', $author_email );
 	if ( is_object( $user_object ) && isset( $user_object->ID ) ) {
 		/* translators: %s is the user ID that is suggested. */
 		echo ' ' . sprintf( esc_html__('(suggested %s)', 'gwolle-gb'), $user_object->ID );
@@ -694,6 +698,14 @@ function gwolle_gb_page_editor_update( $entry ) {
 		if ( $_POST['gwolle_gb_author_name'] != $entry->get_author_name() ) {
 			$entry_name = gwolle_gb_maybe_encode_emoji( $_POST['gwolle_gb_author_name'], 'author_name' );
 			$entry->set_author_name( $entry_name );
+		}
+	}
+
+	/* Check if the author_email changed, and update accordingly */
+	if ( isset($_POST['gwolle_gb_author_email']) ) {
+		if ( $_POST['gwolle_gb_author_email'] != $entry->get_author_email() ) {
+			$entry_email = $_POST['gwolle_gb_author_email'];
+			$entry->set_author_email( $entry_email );
 		}
 	}
 

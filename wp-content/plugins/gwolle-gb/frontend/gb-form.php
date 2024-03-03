@@ -186,7 +186,9 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$label = apply_filters( 'gwolle_gb_author_name_label', esc_html__('Name', 'gwolle-gb') );
 		$output .= '<div class="' . esc_attr( $field_name ) . '">
 				<div class="label"><label for="' . esc_attr( $field_name ) . '" class="text-info">' . $label;
-		if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory'] === 'true' ) { $output .= $required_indicator;}
+		if ( isset($form_setting['form_name_mandatory']) && $form_setting['form_name_mandatory'] === 'true' ) {
+			$output .= $required_indicator;
+		}
 		$output .= '</label></div>
 				<div class="input"><input class="wp-exclude-emoji ' . esc_attr( $field_name );
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
@@ -213,7 +215,9 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$label = apply_filters( 'gwolle_gb_author_origin_label', esc_html__('City', 'gwolle-gb') );
 		$output .= '<div class="' . esc_attr( $field_name ) . '">
 					<div class="label"><label for="' . esc_attr( $field_name ) . '" class="text-info">' . $label;
-		if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory'] === 'true' ) { $output .= $required_indicator;}
+		if ( isset($form_setting['form_city_mandatory']) && $form_setting['form_city_mandatory'] === 'true' ) {
+			$output .= $required_indicator;
+		}
 		$output .= '</label></div>
 					<div class="input"><input class="wp-exclude-emoji ' . esc_attr( $field_name );
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
@@ -239,7 +243,9 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$label = apply_filters( 'gwolle_gb_author_email_label', esc_html__('Email', 'gwolle-gb') );
 		$output .= '<div class="' . esc_attr( $field_name ) . '">
 				<div class="label"><label for="' . esc_attr( $field_name ) . '" class="text-info">' . $label;
-		if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory'] === 'true' ) { $output .= $required_indicator;}
+		if ( isset($form_setting['form_email_mandatory']) && $form_setting['form_email_mandatory'] === 'true' ) {
+			$output .= $required_indicator;
+		}
 		$output .= '</label></div>
 				<div class="input"><input class="' . esc_attr( $field_name );
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
@@ -271,7 +277,9 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$label = apply_filters( 'gwolle_gb_author_website_label', esc_html__('Website', 'gwolle-gb') );
 		$output .= '<div class="' . esc_attr( $field_name ) . '">
 				<div class="label"><label for="' . esc_attr( $field_name ) . '" class="text-info">' . $label;
-		if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory'] === 'true' ) { $output .= $required_indicator;}
+		if ( isset($form_setting['form_homepage_mandatory']) && $form_setting['form_homepage_mandatory'] === 'true' ) {
+			$output .= $required_indicator;
+		}
 		$output .= '</label></div>
 				<div class="input"><input class="' . esc_attr( $field_name );
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
@@ -298,14 +306,14 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$field_name2 = gwolle_gb_get_field_name( 'honeypot2' );
 		$honeypot_value = (int) get_option( 'gwolle_gb-honeypot_value', 15 );
 		$output .= '
-			<div class="' . esc_attr( $field_name ) . '" style="display:none;">
+			<div class="' . esc_attr( $field_name ) . '" style="display:none;overflow:hidden;">
 				<div class="label">
 					<label for="' . esc_attr( $field_name ) . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . '</label>
 					<label for="' . esc_attr( $field_name2 ) . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . '</label>
 				</div>
 				<div class="input">
-					<input value="' . esc_attr( $honeypot_value ) . '" type="text" name="' . esc_attr( $field_name ) . '" class="' . esc_attr( $field_name ) . '" />
-					<input value="" type="text" name="' . esc_attr( $field_name2 ) . '" class="' . esc_attr( $field_name2 ) . '" />
+					<input value="' . esc_attr( $honeypot_value ) . '" type="text" name="' . esc_attr( $field_name ) . '" class="' . esc_attr( $field_name ) . '" style="transform: translateY(10000px);" />
+					<input value="" type="text" name="' . esc_attr( $field_name2 ) . '" class="' . esc_attr( $field_name2 ) . '" style="transform: translateY(10000px);" />
 				</div>
 				<div class="clearBoth"></div>
 			</div>';
@@ -317,14 +325,14 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 		$field_name2 = gwolle_gb_get_field_name( 'timeout2' );
 		$random = rand( 100, 100000 );
 		$output .= '
-			<div class="' . esc_attr( $field_name ) . '" style="display:none;">
+			<div class="' . esc_attr( $field_name ) . '" style="display:none;overflow:hidden;">
 				<div class="label">
 					<label for="' . esc_attr( $field_name ) . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . '</label>
 					<label for="' . esc_attr( $field_name2 ) . '" class="text-primary">' . esc_html__('Do not touch this', 'gwolle-gb') . '</label>
 				</div>
 				<div class="input">
-					<input value="' . esc_attr( $random ) . '" type="text" name="' . esc_attr( $field_name ) . '" class="' . esc_attr( $field_name ) . '" />
-					<input value="' . esc_attr( $random ) . '" type="text" name="' . esc_attr( $field_name2 ) . '" class="' . esc_attr( $field_name2 ) . '" />
+					<input value="' . esc_attr( $random ) . '" type="text" name="' . esc_attr( $field_name ) . '" class="' . esc_attr( $field_name ) . '" style="transform: translateY(10000px);" />
+					<input value="' . esc_attr( $random ) . '" type="text" name="' . esc_attr( $field_name2 ) . '" class="' . esc_attr( $field_name2 ) . '" style="transform: translateY(10000px);" />
 				</div>
 				<div class="clearBoth"></div>
 			</div>';
@@ -340,7 +348,9 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 
 		$output .= '<div class="' . esc_attr( $field_name ) . '">
 				<div class="label"><label for="' . esc_attr( $field_name ) . '" class="text-info">' . $label;
-		if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory'] === 'true' ) { $output .= $required_indicator;}
+		if ( isset($form_setting['form_message_mandatory']) && $form_setting['form_message_mandatory'] === 'true' ) {
+			$output .= $required_indicator;
+		}
 		$output .= '</label></div>
 				<div class="input"><textarea name="' . esc_textarea( $field_name ) . '" class="' . esc_attr( $field_name ) . ' wp-exclude-emoji';
 		if (in_array($field_name, $gwolle_gb_error_fields)) {
@@ -425,8 +435,8 @@ function gwolle_gb_frontend_write( $shortcode_atts, $shortcode ) {
 				$a_close = '</a>';
 			}
 		}
-		/* translators: %s is a link to the privacy policy page. */
-		$label = apply_filters( 'gwolle_gb_privacy_label', sprintf( esc_html__( 'I accept the %sPrivacy Policy%s', 'gwolle-gb' ), $a_open, $a_close ) );
+		/* translators: %1$s and %2$s is a link to the privacy policy page. */
+		$label = apply_filters( 'gwolle_gb_privacy_label', sprintf( esc_html__( 'I accept the %1$sPrivacy Policy%2$s', 'gwolle-gb' ), $a_open, $a_close ) );
 		$output .= '
 				<div class="gwolle_gb_privacy">
 					<div class="label"><label for="gwolle_gb_privacy" class="text-info">' . $label . $required_indicator . '</label></div>

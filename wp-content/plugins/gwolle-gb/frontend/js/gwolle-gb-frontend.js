@@ -70,7 +70,28 @@ function gwolle_gb_readmore() {
 		return false;
 	});
 }
+/* And collapse that again. */
+jQuery(document).ready(function($) {
+	gwolle_gb_readless();
+	gwolle_gb_ajax_callback.add( gwolle_gb_readless );
+});
+function gwolle_gb_readless() {
+	jQuery(".gb-entry-content .gwolle-gb-readless").off('click');
+	jQuery(".gb-entry-content .gwolle-gb-readless").on('click', function() {
+		var content_div = jQuery(this).closest( '.gb-entry-content' );
+		jQuery('.gb-entry-excerpt', content_div).css( 'display', 'block' );
+		jQuery('.gb-entry-full-content', content_div).slideUp(500);
+		return false;
+	});
 
+	jQuery(".gb-entry-admin_reply .gwolle-gb-readless").off('click');
+	jQuery(".gb-entry-admin_reply .gwolle-gb-readless").on('click', function() {
+		var content_div = jQuery(this).closest( '.gb-entry-admin_reply' );
+		jQuery('.gb-admin_reply-excerpt', content_div).css( 'display', 'block' );
+		jQuery('.gb-admin_reply-full-content', content_div).slideUp(500);
+		return false;
+	});
+}
 
 /*
  * Metabox, toggle on and off.

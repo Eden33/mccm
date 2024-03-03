@@ -47,9 +47,9 @@ function gwolle_gb_page_entries() {
 		'trash'   => 'notrash',
 		'spam'    => 'nospam',
 	));
-	$count['spam']  = gwolle_gb_get_entry_count(array( 'spam' => 'spam'  ));
-	$count['trash'] = gwolle_gb_get_entry_count(array( 'trash'=> 'trash' ));
-	$count['all']   = gwolle_gb_get_entry_count(array( 'all'  => 'all'   ));
+	$count['spam']  = gwolle_gb_get_entry_count( array( 'spam'  => 'spam' ) );
+	$count['trash'] = gwolle_gb_get_entry_count( array( 'trash' => 'trash' ) );
+	$count['all']   = gwolle_gb_get_entry_count( array( 'all'   => 'all' ) );
 	$count['user']  = 0; // dummy data, there is no pagination on user tab.
 
 	$num_entries = (int) get_option('gwolle_gb-entries_per_page', 20);
@@ -59,7 +59,7 @@ function gwolle_gb_page_entries() {
 		$page_num = (int) $_GET['pageNum'];
 	}
 
-	$pages_total = (int) ceil( $count["$show"] / $num_entries );
+	$pages_total = ( (int) ceil( $count["$show"] / $num_entries ) );
 	if ($page_num > $pages_total) {
 		$page_num = 1; // page does not exist, return to first page.
 	}
@@ -70,7 +70,7 @@ function gwolle_gb_page_entries() {
 	} else if ($count["$show"] === 0) {
 		$offset = 0;
 	} else {
-		$offset = ( $page_num - 1 ) * $num_entries;
+		$offset = ( ( $page_num - 1 ) * $num_entries );
 	}
 
 	$book_id = 0;
@@ -182,7 +182,7 @@ function gwolle_gb_page_entries() {
 		<?php
 		if ( $gwolle_gb_messages ) {
 			echo '
-				<div id="message" class="updated fade notice is-dismissible ' . $messageclass . ' ">' .
+				<div id="message" class="updated fade notice is-dismissible ' . esc_attr( $messageclass ) . ' ">' .
 					$gwolle_gb_messages .
 				'</div>';
 		} ?>
@@ -202,38 +202,54 @@ function gwolle_gb_page_entries() {
 			?>
 
 			<ul class="subsubsub">
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=all' ); ?>" <?php
-					if ($show === 'all') { echo 'class="current"'; }
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=all' ) ); ?>" <?php
+					if ($show === 'all') {
+						echo 'class="current"';
+					}
 					?>>
-					<?php esc_html_e('All', 'gwolle-gb'); ?> <span class="count gwolle_gb_all">(<?php echo $count['all']; ?>)</span></a> |
+					<?php esc_html_e('All', 'gwolle-gb'); ?> <span class="count gwolle_gb_all">(<?php echo (int) $count['all']; ?>)</span></a> |
 				</li>
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=checked' ); ?>" <?php
-					if ($show === 'checked') { echo 'class="current"'; }
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=checked' ) ); ?>" <?php
+					if ($show === 'checked') {
+						echo 'class="current"';
+					}
 					?>>
-					<?php esc_html_e('Unlocked', 'gwolle-gb'); ?> <span class="count gwolle_gb_unlocked">(<?php echo $count['checked']; ?>)</span></a> |
+					<?php esc_html_e('Unlocked', 'gwolle-gb'); ?> <span class="count gwolle_gb_unlocked">(<?php echo (int) $count['checked']; ?>)</span></a> |
 				</li>
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=unchecked' ); ?>" <?php
-					if ($show === 'unchecked') { echo 'class="current"'; }
-					?>><?php esc_html_e('New', 'gwolle-gb'); ?> <span class="count gwolle_gb_new">(<?php echo $count['unchecked']; ?>)</span></a> |
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=unchecked' ) ); ?>" <?php
+					if ($show === 'unchecked') {
+						echo 'class="current"';
+					}
+					?>><?php esc_html_e('New', 'gwolle-gb'); ?> <span class="count gwolle_gb_new">(<?php echo (int) $count['unchecked']; ?>)</span></a> |
 				</li>
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=spam' ); ?>" <?php
-					if ($show === 'spam') { echo 'class="current"'; }
-					?>><?php esc_html_e('Spam', 'gwolle-gb'); ?> <span class="count gwolle_gb_spam_">(<?php echo $count['spam']; ?>)</span></a> |
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=spam' ) ); ?>" <?php
+					if ($show === 'spam') {
+						echo 'class="current"';
+					}
+					?>><?php esc_html_e('Spam', 'gwolle-gb'); ?> <span class="count gwolle_gb_spam_">(<?php echo (int) $count['spam']; ?>)</span></a> |
 				</li>
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=trash' ); ?>" <?php
-					if ($show === 'trash') { echo 'class="current"'; }
-					?>><?php /* translators: Is in Trashcan */ esc_html_e('In Trash', 'gwolle-gb'); ?> <span class="count gwolle_gb_trash_">(<?php echo $count['trash']; ?>)</span></a> |
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=trash' ) ); ?>" <?php
+					if ($show === 'trash') {
+						echo 'class="current"';
+					}
+					?>><?php /* translators: Is in Trashcan */ esc_html_e('In Trash', 'gwolle-gb'); ?> <span class="count gwolle_gb_trash_">(<?php echo (int) $count['trash']; ?>)</span></a> |
 				</li>
-				<li><a href="<?php echo admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=user' ); ?>" <?php
-					if ($show === 'user') { echo 'class="current"'; }
+				<li><a href="<?php echo esc_attr( admin_url( 'admin.php?page=' . GWOLLE_GB_FOLDER . '/entries.php&show=user' ) ); ?>" <?php
+					if ($show === 'user') {
+						echo 'class="current"';
+					}
 					?>><?php esc_html_e('Author', 'gwolle-gb'); ?></a>
 				</li>
 			</ul>
 
 			<div class="tablenav">
 				<?php if ( $show === 'user' ) {
-					if ( empty( $user_id ) ) { $user_id = ''; }
-					if ( empty( $user_email ) ) { $user_email = ''; }
+					if ( empty( $user_id ) ) {
+						$user_id = '';
+					}
+					if ( empty( $user_email ) ) {
+						$user_email = '';
+					}
 					?>
 					<h3><?php esc_html_e('Select one option below, either User ID or Email address', 'gwolle-gb'); ?></h3>
 					<p>
@@ -294,7 +310,7 @@ function gwolle_gb_page_entries() {
 				<?php
 				if ( $show === 'user' ) {
 					echo '<div class="tablenav-pages">
-						<span class="displaying-num">' . esc_html__('Showing:', 'gwolle-gb') . ' ' . $count_entries . '</span>
+						<span class="displaying-num">' . esc_html__('Showing:', 'gwolle-gb') . ' ' . (int) $count_entries . '</span>
 					</div>';
 
 				} else {
@@ -308,8 +324,14 @@ function gwolle_gb_page_entries() {
 				<table class="widefat">
 					<thead>
 						<tr>
-							<th scope="col" class="manage-column column-cb check-column"><input name="check-all-top" id="check-all-top" type="checkbox"></th>
-							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
+							<th scope="col" class="manage-column column-cb check-column">
+								<input name="check-all-top" id="check-all-top" type="checkbox">
+							</th>
+							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb');
+								if ($book_id > 0) {
+									echo ' ' . (int) $book_id;
+								} ?>
+							</th>
 							<th scope="col"><?php esc_html_e('ID', 'gwolle-gb'); ?></th>
 							<?php
 							if (get_option('gwolle_gb-showEntryIcons', 'true') === 'true') { ?>
@@ -325,8 +347,14 @@ function gwolle_gb_page_entries() {
 
 					<tfoot>
 						<tr>
-							<th scope="col" class="manage-column column-cb check-column"><input name="check-all-bottom" id="check-all-bottom" type="checkbox"></th>
-							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb'); if ($book_id > 0) { echo ' ' . $book_id; } ?></th>
+							<th scope="col" class="manage-column column-cb check-column">
+								<input name="check-all-bottom" id="check-all-bottom" type="checkbox">
+							</th>
+							<th scope="col"><?php esc_html_e('Book', 'gwolle-gb');
+								if ($book_id > 0) {
+									echo ' ' . (int) $book_id;
+								} ?>
+							</th>
 							<th scope="col"><?php esc_html_e('ID', 'gwolle-gb'); ?></th>
 							<?php
 							if (get_option('gwolle_gb-showEntryIcons', 'true') === 'true') { ?>

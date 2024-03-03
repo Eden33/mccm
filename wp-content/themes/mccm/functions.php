@@ -41,6 +41,7 @@ add_action('wp_head', 'wp_head_event');
 $_registration_start_date = new DateTime('2029-04-02 22:00');
 $_registration_ctr_enabled = false;
 $_registration_ip_whitelist = array(
+	'194.208.181.177'
 );
 
 function head_menu_inject_registration_countdown($items) 

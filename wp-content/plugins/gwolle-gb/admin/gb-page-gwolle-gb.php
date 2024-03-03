@@ -29,6 +29,7 @@ function gwolle_gb_welcome() {
 	add_meta_box('gwolle_gb_visibility', esc_html__('Visibility', 'gwolle-gb'), 'gwolle_gb_overview_visibility', 'gwolle_gb_welcome', 'normal');
 	add_meta_box('gwolle_gb_notification', esc_html__('E-mail Notifications', 'gwolle-gb'), 'gwolle_gb_overview_notification', 'gwolle_gb_welcome', 'normal');
 	add_meta_box('gwolle_gb_thanks', esc_html__('Third Party', 'gwolle-gb'), 'gwolle_gb_overview_thanks', 'gwolle_gb_welcome', 'normal');
+	add_meta_box('gwolle_gb_recommended', esc_html__('Recommended', 'gwolle-gb'), 'gwolle_gb_overview_recommended', 'gwolle_gb_welcome', 'normal');
 
 	add_meta_box('gwolle_gb_help', esc_html__('Help', 'gwolle-gb'), 'gwolle_gb_overview_help', 'gwolle_gb_welcome', 'right');
 	add_meta_box('gwolle_gb_support', esc_html__('Support and Translations', 'gwolle-gb'), 'gwolle_gb_overview_support', 'gwolle_gb_welcome', 'right');
@@ -274,6 +275,26 @@ function gwolle_gb_overview_thanks() {
 
 
 /*
+ * Metabox with recommendation for another plugin.
+ */
+function gwolle_gb_overview_recommended() {
+
+	echo '<h3>' . esc_html__('Recommended plugin to fight spam in the rest of your WordPress website:', 'gwolle-gb') . '</h3>';
+	esc_html_e('If you can appreciate the invisible antispam features in this plugin, you are welcome to check out my special antispam plugin.', 'gwolle-gb');
+	echo '<br />';
+	esc_html_e('It supports similar JavaScript spamfilters, like the honeypot and timeout and I think it works really well.', 'gwolle-gb');
+	echo '<br />';
+	esc_html_e('It also has support for Stop Forum Spam included.', 'gwolle-gb');
+	echo '<br /><br />';
+
+	$recommended = '<a href="https://wordpress.org/plugins/la-sentinelle-antispam/" target="_blank">';
+	/* translators: %1$s and %2$s is a link */
+	echo sprintf( esc_html__( 'Check it out: %1$sLa Sentinelle antispam plugin at wordpress.org%2$s.', 'gwolle-gb' ), $recommended, '</a>' );
+
+}
+
+
+/*
  * Metabox with quick help text.
  */
 function gwolle_gb_overview_help() {
@@ -307,8 +328,8 @@ function gwolle_gb_overview_support() {
 	<h3><?php esc_html_e('Support.', 'gwolle-gb'); ?></h3>
 	<p><?php
 		$support = '<a href="https://wordpress.org/support/plugin/gwolle-gb" target="_blank">';
-		/* translators: %s is a link */
-		echo sprintf( esc_html__( 'If you have a problem or a feature request, please post it on the %ssupport forum at wordpress.org%s.', 'gwolle-gb' ), $support, '</a>' ); ?>
+		/* translators: %1$s and %2$s is a link */
+		echo sprintf( esc_html__( 'If you have a problem or a feature request, please post it on the %1$ssupport forum at wordpress.org%2$s.', 'gwolle-gb' ), $support, '</a>' ); ?>
 		<?php esc_html_e('I will do my best to respond as soon as possible.', 'gwolle-gb'); ?><br />
 		<?php esc_html_e('If you send me an email, I will not reply. Please use the support forum.', 'gwolle-gb'); ?>
 	</p>
@@ -316,12 +337,13 @@ function gwolle_gb_overview_support() {
 	<h3><?php esc_html_e('Translations.', 'gwolle-gb'); ?></h3>
 	<p><?php
 		$link = '<a href="https://translate.wordpress.org/projects/wp-plugins/gwolle-gb" target="_blank">';
-		/* translators: %s is a link */
-		echo sprintf( esc_html__( 'Translations can be added very easily through %sGlotPress%s.', 'gwolle-gb' ), $link, '</a>' ); echo '<br />';
-		echo sprintf( esc_html__( "You can start translating strings there for your locale. They need to be validated though, so if there's no validator yet, and you want to apply for being validator (PTE), please post it on the %ssupport forum%s.", 'gwolle-gb' ), $support, '</a>' ); echo '<br />';
+		/* translators: %1$s and %2$s is a link */
+		echo sprintf( esc_html__( 'Translations can be added very easily through %1$sGlotPress%2$s.', 'gwolle-gb' ), $link, '</a>' ); echo '<br />';
+		/* translators: %1$s and %2$s is a link */
+		echo sprintf( esc_html__( 'You can start translating strings there for your locale. They need to be validated though, so if there is no validator yet, and you want to apply for being validator (PTE), please post it on the %1$ssupport forum%2$s.', 'gwolle-gb' ), $support, '</a>' ); echo '<br />';
 		$make = '<a href="https://make.wordpress.org/polyglots/" target="_blank">';
-		/* translators: %s is a link */
-		echo sprintf( esc_html__( 'I will make a request on %smake/polyglots%s to have you added as validator for this plugin/locale.', 'gwolle-gb' ), $make, '</a>' ); ?>
+		/* translators: %1$s and %2$s is a link */
+		echo sprintf( esc_html__( 'I will make a request on %1$smake/polyglots%2$s to have you added as validator for this plugin/locale.', 'gwolle-gb' ), $make, '</a>' ); ?>
 	</p>
 	<?php
 }
@@ -336,8 +358,8 @@ function gwolle_gb_overview_review() {
 	<h3><?php esc_html_e('Review this plugin.', 'gwolle-gb'); ?></h3>
 	<p><?php
 		$review = '<a href="https://wordpress.org/support/view/plugin-reviews/gwolle-gb?rate=5#postform" target="_blank">';
-		/* translators: %s is a link */
-		echo sprintf( esc_html__( 'If this plugin has any value to you, then please leave a review at %sthe plugin page%s at wordpress.org.', 'gwolle-gb' ), $review, '</a>' ); ?>
+		/* translators: %1$s and %2$s is a link */
+		echo sprintf( esc_html__( 'If this plugin has any value to you, then please leave a review at %1$sthe plugin page%2$s at wordpress.org.', 'gwolle-gb' ), $review, '</a>' ); ?>
 	</p>
 	<?php
 }

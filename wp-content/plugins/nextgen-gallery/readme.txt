@@ -2,10 +2,10 @@
 Contributors: photocrati, imagely
 Tags: wordpress gallery plugin, gallery, nextgen, nextgen gallery, photo gallery, image gallery, photography, slideshow, images, photo, photo album, watermark
 Requires at least: 5.5.4
-Stable tag: 3.35
-Tested up to: 6.1.1
+Stable tag: 3.58
+Tested up to: 6.4.2
 License: GPLv3
-Requires PHP: 5.6
+Requires PHP: 7.0
 
 The most popular WordPress gallery plugin and one of the most popular plugins of all time with over 31 million downloads.
 
@@ -40,7 +40,7 @@ https://www.youtube.com/embed/ePnYGQX0Lf8
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/digital-download-demo/" target="_blank">Digital Downloads</a><br>
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-mosaic-gallery/" target="_blank">Pro Mosaic Gallery</a><br>
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-masonry-gallery/" target="_blank">Pro Masonry Gallery</a><br>
-*<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-tiled-gallery/" target="_blank">Pro Tiled Gallery</a><br>
+*<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-tiled-gallery/" target="_blank">Pro Tile Gallery</a><br>
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-filmstrip-gallery/" target="_blank">Pro Filmstrip Gallery</a><br>
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-film-gallery/" target="_blank">Pro Film Gallery</a><br>
 *<a href="https://www.imagely.com/wordpress-gallery-plugin/pro-lightbox-demo/" target="_blank">Pro Lightbox</a><br>
@@ -114,7 +114,7 @@ Yup, NextGEN is a popular and well-established WordPress gallery plugin, and has
 
 = Are the photo galleries flash based? =
 
-Nope, we use no flash elements. 
+Nope, we use no flash elements.
 
 
 = Are the galleries mobile friendly? =
@@ -154,7 +154,7 @@ Yes, you can use pagination when displaying thumbnail galleries. And you can adj
 
 = Can I customize the lightbox? =
 
-Yes, the lightbox can be configured with multiple options directly from the Dashboard, and there are multiple CSS styles which can be applied and modified as well. If you want even more options, consider upgrading to NextGEN Pro and useing the NextGEN Pro lightbox. 
+Yes, the lightbox can be configured with multiple options directly from the Dashboard, and there are multiple CSS styles which can be applied and modified as well. If you want even more options, consider upgrading to NextGEN Pro and useing the NextGEN Pro lightbox.
 
 
 = Can I add HTML to photo captions? =
@@ -178,6 +178,76 @@ For more information, feel free to visit the official website for the NextGEN Ga
 
 
 == Changelog ==
+
+= V3.58  - 02.08.2024 =
+* Fixed:   A potential fatal DivisionByZeroError caused by image files being deleted outside of NextGEN.
+* Fixed:   A potential fatal error in the XML-RPC controller.
+* Fixed:   An issue with classic (non-block) themes could break Pro's "Open album children in the Pro Lightbox" feature.
+* Fixed:   Assorted potential PHP notices and warnings.
+* Fixed:   Manage Galleries' "Images per Page" feature was not working.
+* Fixed:   Passing 'gallery_width="auto"' to a Slideshow shortcode could result in a fatal error.
+
+= V3.57  - 01.10.2024 =
+* Fixed:   Albums were generating an incorrect URL to their child galleries.
+* Fixed:   Albums could generate a fatal error when viewing a sub-album.
+* Fixed:   Do not call opcache_reset() if it does not exist.
+
+= V3.56  - 01.09.2024 =
+* Fixed:   "Open album children in Pro Lightbox" feature was only working with block based themes.
+* Fixed:   Adding more than one Pro display to one page caused galleries after the first to be unstyled.
+* Fixed:   Albums with very a large number of children may have broken gallery displays if it relies on the dynamic-css feature.
+* Fixed:   Continued fixing recently introduced incompatibilies with 3rd party extensions.
+* Fixed:   Creating a new gallery from the Manage Galleries page was just reloading the page.
+* Fixed:   Display Type settings could be forced back to their default settings when upgrading.
+* Fixed:   IIS servers may generate a fatal error searching for an absolute path to template files.
+* Fixed:   Inserting NextGEN singlepic from the Add Media popup was creating an <img> without a src attribute.
+* Fixed:   Possible PHP notices, warnings.
+* Fixed:   Restored the NGG_DISABLE_SHORTCODE_MANAGER constant.
+* Fixed:   Router->fix_page_parameter() generated a warning if the global $post is not an object.
+* Fixed:   The button 'Scan folder for new images' was re-importing existing images.
+* Fixed:   Updating tags via the Manage Tags page did not flush the displayed gallery rendering cache.
+
+= V3.55  - 12.13.2023 =
+* Changed: Changing SweetAlert library version to prevent the interference on .ru sites.
+
+= V3.54  - 12.01.2023 =
+* Fixed:   Assorted possible PHP warnings and notices with PHP 8.0+.
+* Fixed:   Compatibility with some 3rd party extensions.
+
+= V3.53  - 11.30.2023 =
+* Fixed:   A potential conflict with NextGEN Pro Lightbox.
+
+= V3.52  - 11.30.2023 =
+* Fixed:   A potential fatal error caused by accessing NextGEN Pro constants before they are defined.
+* Fixed:   Compatibility with ARI Fancy Lightbox & Imagify, both could generate a fatal exception since 3.50.
+* Fixed:   Paths to non-default template files were being calculated incorrectly, causing the incorrect template to display.
+* Fixed:   Some bulk actions in the Manage Gallery page were broken by the last release.
+* Fixed:   Users of PHP 7 and WordPress 5.8 or older could experience a fatal error due to the use of str_contains().
+
+= V3.50  - 11.29.2023 =
+* IMPORTANT: Support for PHP 5.6 and lower has been discontinued. If you are running PHP 5.6 or lower, you MUST upgrade PHP before installing NextGen 3.5.0. Failure to do that will disable NextGen core functionality.
+* Updated: Major refactor of the plugin to support future improvements! Note: This release Requires at least PHP 7.0.
+* Fixed:   We closed some issues affecting Lightroom users
+
+= V3.41  - 09.27.2023 =
+* Fixed:   NextGEN 3.39 could generate a fatal error when viewing a gallery hosted on IIS.
+* Fixed:   NextGEN 3.39 could not accept uploads from the LightRoom plugin.
+* Fixed:   NextGEN 3.39 could generate a PHP exception when using custom template paths.
+
+= V3.39  - 09.13.2023 =
+* Fixed:   Prevent template files from existing outside of the site document root, WP_CONTENT_DIR, or WP_PLUGIN_DIR
+
+= V3.37  - 05.05.2023 =
+* Fixed:   A fatal error was thrown when uploading images' whose 'Flash' EXIF field is an array instead of the integer it should be.
+* Fixed:   Correcting a possible error in our RankMath SEO compatibility.
+* Fixed:   Prevent duplicate entries from being added to the photocrati_cache_tracker transient.
+
+= V3.36  - 05.10.2023 =
+* NEW:     Added support for WP-Sweep so that NextGEN's tags will not be automatically removed.
+* NEW:     Added NextGEN Gallery images to RankMath SEO's sitemaps.
+* Fixed:   A JS error could trigger on the Manage Gallery page in some circumstances.
+* Fixed:   In some specific situations NextGEN Gallery could cause an infinite loop on all pages.
+* Fixed:   Manage Gallery's "Add Page" button used the legacy [nggallery] shortcode.
 
 = V3.35  - 02.03.2023 =
 * Fixed:   Sites still using PHP 5.6 experience a fatal error due to an incompatibility with the latest version of Composer.
@@ -289,7 +359,7 @@ For more information, feel free to visit the official website for the NextGEN Ga
 * Fixed:   Tooltips are illegible (1172)
 * Fixed:   PHP foreach warning (1173)
 
-= V3.9.1 - 03.29.2021 = 
+= V3.9.1 - 03.29.2021 =
 * Fixed:   C_Dynamic_Stylesheet_Controller error
 * Fixed:   Galleries not displaying
 
@@ -1485,7 +1555,7 @@ Fixed:     Match legacy behaviour when changing gallery path, i.e. don't move fi
 * FIXED:   Misc PHP warnings, errors, in gallery plugin
 
 = V1.9.13 - 06.11.2013 =
-* NEW:     Slideshow galleries are now centered to their content area     
+* NEW:     Slideshow galleries are now centered to their content area
 * Secured: Ensure that only logged in users can upload images via plugin
 * Fixed:   Import date is preserved are no longer Jan 1 1970
 * Fixed:   Removed mention of upgrade.php, which no longer exists

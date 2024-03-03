@@ -67,9 +67,13 @@ function gwolle_gb_export_postbox() {
 	} else {
 		?>
 		<p>
-			<?php /* translators: %s is the number of entries */ echo sprintf( _n( '%s entry was found and will be exported.', '%s entries were found and will be exported.', $count, 'gwolle-gb' ), $count ); ?>
+			<?php
+			/* translators: %s is the number of entries */
+			echo sprintf( _n( '%s entry was found and will be exported.', '%s entries were found and will be exported.', (int) $count, 'gwolle-gb' ), (int) $count ); ?>
 			<br />
-			<?php /* translators: %s is the number of file parts */ echo sprintf( _n( 'The download will happen in a CSV file in %s part.', 'The download will happen in a CSV file in %s parts.', $parts, 'gwolle-gb' ), $parts ); ?>
+			<?php
+			/* translators: %s is the number of file parts */
+			echo sprintf( _n( 'The download will happen in a CSV file in %s part.', 'The download will happen in a CSV file in %s parts.', (int) $parts, 'gwolle-gb' ), (int) $parts ); ?>
 		</p>
 		<p>
 			<?php esc_html_e('The exporter will preserve the following data per entry:', 'gwolle-gb'); ?>
@@ -148,7 +152,7 @@ function gwolle_gb_export_callback() {
 		echo '(Gwolle-GB) Wrong part requested.';
 		die();
 	}
-	$offset = ( $part * $num_entries ) - $num_entries;
+	$offset = ( ( $part * $num_entries ) - $num_entries );
 
 	$entries = gwolle_gb_get_entries( array(
 			'num_entries' => $num_entries,
@@ -162,7 +166,7 @@ function gwolle_gb_export_callback() {
 		ob_end_clean();
 
 		// Output headers so that the file is downloaded rather than displayed
-		$filename = 'gwolle_gb_export_' . GWOLLE_GB_VER . '_' . date('Y-m-d_H-i') . '-part_' . $part . '_of_' . $parts . '.csv';
+		$filename = 'gwolle_gb_export_' . GWOLLE_GB_VER . '_' . date('Y-m-d_H-i') . '-part_' . (int) $part . '_of_' . (int) $parts . '.csv';
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename=' . esc_attr( $filename ) );
 

@@ -36,6 +36,10 @@ function wpcf7_select_form_tag_handler( $tag ) {
 	$atts['id'] = $tag->get_id_option();
 	$atts['tabindex'] = $tag->get_option( 'tabindex', 'signed_int', true );
 
+	$atts['autocomplete'] = $tag->get_option(
+		'autocomplete', '[-0-9a-zA-Z]+', true
+	);
+
 	if ( $tag->is_required() ) {
 		$atts['aria-required'] = 'true';
 	}
@@ -143,6 +147,64 @@ function wpcf7_swv_add_select_rules( $schema, $contact_form ) {
 			wpcf7_swv_create_rule( 'required', array(
 				'field' => $tag->name,
 				'error' => wpcf7_get_message( 'invalid_required' ),
+			) )
+		);
+	}
+}
+
+
+add_action(
+	'wpcf7_swv_create_schema',
+	'wpcf7_swv_add_select_enum_rules',
+	20, 2
+);
+
+function wpcf7_swv_add_select_enum_rules( $schema, $contact_form ) {
+	$tags = $contact_form->scan_form_tags( array(
+		'basetype' => array( 'select' ),
+	) );
+
+	$values = array_reduce(
+		$tags,
+		function ( $values, $tag ) {
+			if ( ! isset( $values[$tag->name] ) ) {
+				$values[$tag->name] = array();
+			}
+
+			$tag_values = array_merge(
+				(array) $tag->values,
+				(array) $tag->get_data_option()
+			);
+
+			if ( $tag->has_option( 'first_as_label' ) ) {
+				$tag_values = array_slice( $tag_values, 1 );
+			}
+
+			$values[$tag->name] = array_merge(
+				$values[$tag->name],
+				$tag_values
+			);
+
+			return $values;
+		},
+		array()
+	);
+
+	foreach ( $values as $field => $field_values ) {
+		$field_values = array_filter(
+			array_unique( $field_values ),
+			function ( $value ) {
+				return is_string( $value ) && '' !== $value;
+			}
+		);
+
+		$schema->add_rule(
+			wpcf7_swv_create_rule( 'enum', array(
+				'field' => $field,
+				'accept' => array_values( $field_values ),
+				'error' => $contact_form->filter_message(
+					__( "Undefined value was submitted through this field.", 'contact-form-7' )
+				),
 			) )
 		);
 	}

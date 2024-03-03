@@ -68,8 +68,12 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	}
 
 	/* List view. */
-	$num_entries = (int) get_option('gwolle_gb-entriesPerPage', 20);
-	$num_entries = (int) apply_filters( 'gwolle_gb_read_num_entries', $num_entries, $shortcode_atts );
+	if ( (int) $shortcode_atts['num_entries'] > 0 ) {
+		$num_entries = $shortcode_atts['num_entries'];
+	} else {
+		$num_entries = (int) get_option('gwolle_gb-entriesPerPage', 20);
+		$num_entries = (int) apply_filters( 'gwolle_gb_read_num_entries', $num_entries, $shortcode_atts );
+	}
 
 	/* Get the total count for the frontend in case of search. */
 	if ( $is_search ) {
@@ -114,7 +118,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 	} else if ( $entries_total === 0 ) {
 		$offset = 0;
 	} else {
-		$offset = ( $page_num - 1 ) * $num_entries;
+		$offset = ( ( $page_num - 1 ) * $num_entries );
 	}
 
 	if ( $is_search ) {
@@ -212,7 +216,7 @@ function gwolle_gb_frontend_read( $shortcode_atts, $shortcode ) {
 
 			// No template found and loaded in the theme folders.
 			// Load the template from the plugin folder.
-			require_once  GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php';
+			require_once GWOLLE_GB_DIR . '/frontend/gwolle_gb-entry.php';
 
 		} else {
 

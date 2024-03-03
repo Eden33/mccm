@@ -49,9 +49,9 @@ function gwolle_gb_addon_translation_strings() {
 	esc_html__('Report Abuse', 'gwolle-gb');
 
 	// function gwolle_gb_report_abuse_javascript()
-	/* translators: Commercial Add-On, abuse report submitted */
+	/* translators: Commercial Add-On, abuse report submitted (no html allowed) */
 	esc_html__('Reported', 'gwolle-gb');
-	/* translators: Commercial Add-On, error on abuse report */
+	/* translators: Commercial Add-On, error on abuse report (no html allowed) */
 	esc_html__('Error', 'gwolle-gb');
 
 	// gwolle_gb_addon_mail_moderators_report_abuse()
@@ -150,6 +150,8 @@ User IP address: %author_ip%
 	esc_html_e('The slug of the field is where your data is attached to. Only change the slug if you know what you are doing.', 'gwolle-gb');
 	/* translators: Commercial Add-On */
 	esc_html_e('The name of the field is what you will see in the label in the form.', 'gwolle-gb');
+	/* translators: Commercial Add-On. */
+	esc_html_e('Reserved slugs are: ', 'gwolle-gb');
 	/* translators: Commercial Add-On. */
 	esc_html_e('Required:', 'gwolle-gb');
 	/* translators: Commercial Add-On. */

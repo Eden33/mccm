@@ -35,7 +35,7 @@ function gwolle_gb_infinite_scroll_callback() {
 	if ( $page_num === 1 ) {
 		$offset = 0;
 	} else {
-		$offset = ( $page_num - 1 ) * $num_entries;
+		$offset = ( ( $page_num - 1 ) * $num_entries );
 	}
 
 

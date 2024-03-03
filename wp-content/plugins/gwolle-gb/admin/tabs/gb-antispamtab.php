@@ -101,8 +101,8 @@ function gwolle_gb_page_settingstab_antispam() {
 					esc_html_e('This will add a Nonce to the form. It is a way to check for a human user. If it does not validate, the entry will be marked as spam.', 'gwolle-gb');
 					echo '<br />';
 					$link_wp = '<a href="https://codex.wordpress.org/Wordpress_Nonce_Implementation" target="_blank">';
-					/* translators: %s is a link */
-					echo sprintf( esc_html__( 'If you want to know more about what a Nonce is and how it works, please read about it on the %sWordPress Codex%s.', 'gwolle-gb' ), $link_wp, '</a>' );
+					/* translators: %1$s and %2$s is a link */
+					echo sprintf( esc_html__( 'If you want to know more about what a Nonce is and how it works, please read about it on the %1$sWordPress Codex%2$s.', 'gwolle-gb' ), $link_wp, '</a>' );
 					echo '<br />';
 					esc_html_e('If your website uses caching, it is possible that you get false-positives in your spamfolder. If this is the case, you could either disable the Nonce, or disable caching for the guestbook page.', 'gwolle-gb');
 					?>
@@ -125,8 +125,8 @@ function gwolle_gb_page_settingstab_antispam() {
 					<?php
 					esc_html_e('This will scan entries for long words, which can be considered abusive. If there is a word with long text found, it will be automatically set to unchecked and you will need to moderate it manually.', 'gwolle-gb');
 					echo '<br />';
-					/* translators: %s is the number of characters */
-					echo sprintf( esc_html__( 'The content has a limit set to %s characters, the author name to %s characters.', 'gwolle-gb' ), '100', '60' );
+					/* translators: %1$s and %2$s is the number of characters */
+					echo sprintf( esc_html__( 'The content has a limit set to %1$s characters, the author name to %2$s characters.', 'gwolle-gb' ), '100', '60' );
 					?>
 				</span>
 			</td>
@@ -190,8 +190,8 @@ function gwolle_gb_page_settingstab_antispam() {
 						esc_html_e("Akismet helps you to fight spam. It's free and easy to install. Download and install it today to stop spam in your guestbook.", 'gwolle-gb');
 					} else if ( ! $wordpress_api_key) {
 						// No WordPress API key is defined and set in the database.
-						/* translators: First 2 %s are a strong element. Second %s is for a link. */
-						echo sprintf( esc_html__("Sorry, wasn't able to locate your %sWordPress API key%s. You can enter it at the %sAkismet configuration page%s.", 'gwolle-gb'), '<strong>', '</strong>', '<a href="options-general.php?page=akismet-key-config">', '</a>' );
+						/* translators: %1$s and %2$s are a strong element. %3$s and %4$s is for a link. */
+						echo sprintf( esc_html__('Sorry, was not able to locate your %1$sWordPress API key%2$s. You can enter it at the %3$sAkismet configuration page%4$s.', 'gwolle-gb'), '<strong>', '</strong>', '<a href="options-general.php?page=akismet-key-config">', '</a>' );
 					} else {
 						// Akismet is installed and activated and a WordPress API key exists (we just assume it is valid).
 						echo '<input ';
@@ -202,7 +202,8 @@ function gwolle_gb_page_settingstab_antispam() {
 							<label for="akismet-active">
 							' . esc_html__('Use Akismet', 'gwolle-gb') . '
 							</label><br />';
-						esc_html_e('Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.', 'gwolle-gb'); echo '<br />';
+						esc_html_e('Akismet is an external service by Automattic that acts as a spamfilter for guestbook entries.', 'gwolle-gb');
+						echo '<br />';
 						esc_html_e('The WordPress API key has been found, so you can start using Akismet right now.', 'gwolle-gb');
 					}
 					?>
@@ -223,10 +224,11 @@ function gwolle_gb_page_settingstab_antispam() {
 				</label><br />
 				<span class="setting-description">
 					<?php
-					esc_html_e('Stop Forum Spam is an external service that acts as a spamfilter for guestbook entries.', 'gwolle-gb'); echo '<br />';
+					esc_html_e('Stop Forum Spam is an external service that acts as a spamfilter for guestbook entries.', 'gwolle-gb');
+					echo '<br />';
 					$link_wp = '<a href="https://www.stopforumspam.com" target="_blank">';
-					/* translators: %s is a link */
-					echo sprintf( esc_html__( 'If you want to know more about Stop Forum Spam and how it works, please read about it on their %swebsite%s.', 'gwolle-gb' ), $link_wp, '</a>' );
+					/* translators: %1$s and %2$s is a link */
+					echo sprintf( esc_html__( 'If you want to know more about Stop Forum Spam and how it works, please read about it on their %1$swebsite%2$s.', 'gwolle-gb' ), $link_wp, '</a>' );
 					?>
 				</span>
 			</td>
