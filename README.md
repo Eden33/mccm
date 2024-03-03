@@ -15,8 +15,8 @@ You can find an article about it here: https://www.codingcookie.com/local-git-sv
 - `wp-content\plugins\` to `wordpress\wp-content\plugins\`
 3. Take mysql dump from live website that includes `drop table procedure in case exists` in the dump file.
 4. In the dump file:
-- replace www.mccm-feldkirch.at with localhost:8080
+- replace www.mccm-feldkirch.at with localhost:8081
 - replace https with http
-5. Import modified dump file http://localhost:8180/
-6. Open website: http://localhost:8080
-7. Active the plugins you want to include into testing: http://localhost:8080\wp-admin
+5. Import modified dump file http://localhost:8181/
+6. Open website: http://localhost:8081
+7. Active the plugins you want to include into testing: http://localhost:8081\wp-admin

@@ -1,7 +1,7 @@
 version: "3.6"
 services:
  wordpress:
-   image: wordpress:6.1.1
+   image: wordpress:latest
    container_name: mccm-wp
    volumes:
      - ./wordpress:/var/www/html
@@ -17,13 +17,13 @@ services:
      - phpmyadmin
    restart: always
    ports:
-     - 8080:80
+     - 8081:80
  
  db:
    image: mariadb:latest
    container_name: mccm-db
    volumes:
-     - db_data:/var/lib/mysql
+     - db_data_wp_6_4_3:/var/lib/mysql
    environment:
      - MYSQL_ROOT_PASSWORD=password
      - MYSQL_USER=root
@@ -38,11 +38,11 @@ services:
    container_name: mccm-phpmyadmin
    restart: always
    ports:
-     - 8180:80
+     - 8181:80
    environment:
      PMA_HOST: db
      MYSQL_ROOT_PASSWORD: password
      UPLOAD_LIMIT: 20971520 #20 mb
  
 volumes:
- db_data:
+ db_data_wp_6_4_3:
