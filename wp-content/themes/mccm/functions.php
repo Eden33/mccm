@@ -79,27 +79,22 @@ function filter_the_content( $content )
     
 	if((is_page( 'mx-online-anmeldung' )
 	|| is_page( 'sjmcc-online-anmeldung')
-	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' )
-    || is_page( 'sam-seitenwagen-online-anmeldung' )
-    || is_page( 'sam-masters-online-anmeldung' ) 
-    || is_page( 'sam-women-online-anmeldung' )
-    || is_page( 'sam-quad-online-anmeldung' ))
+	|| is_page( 'oldtimer-seitenwagen-online-anmeldung' ))
 	&& is_registration_enabled() === false) 
     {
         return $registration_prohibited_msg;
 	}
-	
-	// not available in 2020
-	if( is_page( 'sam-junioren-open-online-anmeldung' ))
+
+    // not available
+    if(is_page( 'sam-junioren-open-online-anmeldung' )
+    || is_page( 'oldtimer-solo-online-anmeldung' ) 
+    || is_page( 'sam-seitenwagen-online-anmeldung' )
+    || is_page( 'sam-masters-online-anmeldung' ) 
+    || is_page( 'sam-women-online-anmeldung' )
+    || is_page( 'sam-quad-online-anmeldung' )) 
 	{
 	    return $registration_prohibited_msg;
-	}
-	
-	// not available in 2022
-	if(is_page('oldtimer-solo-online-anmeldung')) 
-	{
-	    return $registration_prohibited_msg;
-	}
+	}   
 
 	if(is_page('rennfahreranmeldung') && is_registration_enabled() === false) 
     {
